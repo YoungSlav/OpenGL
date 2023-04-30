@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ThirdParty\Include\glad.c" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Private\BravoActor.cpp" />
+    <ClCompile Include="Source\Private\BravoAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoCamera.cpp" />
+    <ClCompile Include="Source\Private\BravoCubemap.cpp" />
+    <ClCompile Include="Source\Private\BravoEngine.cpp" />
+    <ClCompile Include="Source\Private\BravoGameInstance.cpp" />
+    <ClCompile Include="Source\Private\BravoInfinitePlaneActor.cpp" />
+    <ClCompile Include="Source\Private\BravoInput.cpp" />
+    <ClCompile Include="Source\Private\BravoLightActor.cpp" />
+    <ClCompile Include="Source\Private\BravoLightManager.cpp" />
+    <ClCompile Include="Source\Private\BravoMath.cpp" />
+    <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
+    <ClCompile Include="Source\Private\BravoMesh.cpp" />
+    <ClCompile Include="Source\Private\BravoMeshActor.cpp" />
+    <ClCompile Include="Source\Private\BravoObject.cpp" />
+    <ClCompile Include="Source\Private\BravoPlayer.cpp" />
+    <ClCompile Include="Source\Private\BravoShadowMap.cpp" />
+    <ClCompile Include="Source\Private\BravoSkyboxActor.cpp" />
+    <ClCompile Include="Source\Private\BravoViewport.cpp" />
+    <ClCompile Include="Source\Private\Log.cpp" />
+    <ClCompile Include="Source\Private\BravoShader.cpp" />
+    <ClCompile Include="Source\Private\BravoTexture.cpp" />
+    <ClCompile Include="Source\ThirdParty\stb_image.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\openGL.h" />
+    <ClInclude Include="Source\Public\BravoActor.h" />
+    <ClInclude Include="Source\Public\BravoAsset.h" />
+    <ClInclude Include="Source\Public\BravoCamera.h" />
+    <ClInclude Include="Source\Public\BravoCubemap.h" />
+    <ClInclude Include="Source\Public\BravoEngine.h" />
+    <ClInclude Include="Source\Public\BravoGameInstance.h" />
+    <ClInclude Include="Source\Public\BravoInfinitePlaneActor.h" />
+    <ClInclude Include="Source\Public\BravoInput.h" />
+    <ClInclude Include="Source\Public\BravoLightActor.h" />
+    <ClInclude Include="Source\Public\BravoLightManager.h" />
+    <ClInclude Include="Source\Public\BravoMath.h" />
+    <ClInclude Include="Source\Public\BravoRenderTarget.h" />
+    <ClInclude Include="Source\Public\BravoMesh.h" />
+    <ClInclude Include="Source\Public\BravoMeshActor.h" />
+    <ClInclude Include="Source\Public\BravoObject.h" />
+    <ClInclude Include="Source\Public\BravoPlayer.h" />
+    <ClInclude Include="Source\Public\BravoShadowMap.h" />
+    <ClInclude Include="Source\Public\BravoSkyboxActor.h" />
+    <ClInclude Include="Source\Public\BravoViewport.h" />
+    <ClInclude Include="Source\Public\Log.h" />
+    <ClInclude Include="Source\Public\BravoShader.h" />
+    <ClInclude Include="Source\Public\BravoTexture.h" />
+    <ClInclude Include="Source\stdafx.h" />
+    <ClInclude Include="Source\ThirdParty\stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\Default.fs.glsl" />
+    <None Include="Source\Shaders\InfinitePlane.fs.glsl" />
+    <None Include="Source\Shaders\InfinitePlane.vs.glsl" />
+    <None Include="Source\Shaders\LightSource.fs.glsl" />
+    <None Include="Source\Shaders\Default.vs.glsl" />
+    <None Include="Source\Shaders\LightSource.vs.glsl" />
+    <None Include="Source\Shaders\PostProccess.fs.glsl" />
+    <None Include="Source\Shaders\PostProccess.vs.glsl" />
+    <None Include="Source\Shaders\ShadowMapDir.fs.glsl" />
+    <None Include="Source\Shaders\ShadowMapDir.vs.glsl" />
+    <None Include="Source\Shaders\ShadowMapPoint.fs.glsl" />
+    <None Include="Source\Shaders\ShadowMapPoint.gs.glsl" />
+    <None Include="Source\Shaders\ShadowMapPoint.vs.glsl" />
+    <None Include="Source\Shaders\Skybox.fs.glsl" />
+    <None Include="Source\Shaders\Skybox.vs.glsl" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{45E1E911-48A3-448E-A660-E941554D1A5C}</ProjectGuid>
+    <RootNamespace>Bravo</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\Build\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PublicModuleDirectories>D:\Work\opengl\ThirdParty\Include;$(PublicModuleDirectories)</PublicModuleDirectories>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>assimp.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>rmdir ..\Build\Shaders\ /s /q
+
+xcopy Source\Shaders ..\Build\Shaders /e /i /h
+
+copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
+</Command>
+    </PostBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>./CopyShaders.bat</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>rmdir ..\Build\Shaders\ /s /q
+
+xcopy Source\Shaders ..\Build\Shaders /e /i /h
+
+copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>./CopyShaders.bat</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

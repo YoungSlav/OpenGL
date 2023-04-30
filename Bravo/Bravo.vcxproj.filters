@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{b97cafae-1ba4-4309-91b6-7c775e83a0a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private">
+      <UniqueIdentifier>{d0e0e46d-892a-4d10-ada7-c027bd31691d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{a5402ccf-c93a-44a6-aade-5748fd37c392}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{ec4eae8e-8f56-446a-9cdd-3870558611b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Game">
+      <UniqueIdentifier>{48431736-178f-459c-ad1a-3591037d4a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Core">
+      <UniqueIdentifier>{d27feff3-97cb-4c4f-b7ed-ff1183721fbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Assets">
+      <UniqueIdentifier>{da71a5f4-7ded-43ff-a16b-30aedf54a301}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Game">
+      <UniqueIdentifier>{649854a3-06eb-4d82-ad29-453c2f9000b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Core">
+      <UniqueIdentifier>{579a9494-8e37-4fcd-a65c-afd9e858a5cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Assets">
+      <UniqueIdentifier>{98e01a90-1fa6-4c62-a529-74b14fb10279}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="..\ThirdParty\Include\glad.c">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\stb_image.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoShader.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoTexture.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoMesh.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\Log.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoActor.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoCamera.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoEngine.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoInput.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoObject.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoPlayer.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoViewport.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoMeshActor.cpp">
+      <Filter>Private\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoLightActor.cpp">
+      <Filter>Private\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoGameInstance.cpp">
+      <Filter>Private\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoRenderTarget.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoCubemap.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoSkyboxActor.cpp">
+      <Filter>Private\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoShadowMap.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoLightManager.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoInfinitePlaneActor.cpp">
+      <Filter>Private\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoMath.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\openGL.h" />
+    <ClInclude Include="Source\stdafx.h" />
+    <ClInclude Include="Source\ThirdParty\stb_image.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoAsset.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMesh.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoTexture.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoShader.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoObject.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoActor.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoInput.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoEngine.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoPlayer.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoCamera.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoViewport.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\Log.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMeshActor.h">
+      <Filter>Public\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoLightActor.h">
+      <Filter>Public\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoGameInstance.h">
+      <Filter>Public\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoRenderTarget.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoCubemap.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoSkyboxActor.h">
+      <Filter>Public\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoShadowMap.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoLightManager.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoInfinitePlaneActor.h">
+      <Filter>Public\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMath.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\Default.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\LightSource.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\Default.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\LightSource.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\PostProccess.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\PostProccess.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\Skybox.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\Skybox.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapDir.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapDir.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapPoint.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapPoint.gs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapPoint.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\InfinitePlane.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\InfinitePlane.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
