@@ -4,7 +4,7 @@
 
 void BravoInfinitePlaneActor::Init()
 {
-	RenderPriority = INT_MAX;
+	
 	Mesh = BravoAsset::Load<BravoMesh>("primitives\\plane.fbx");
 	Shader = BravoAsset::Load<BravoShader>("InfinitePlane");
 }

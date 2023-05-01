@@ -54,7 +54,7 @@ void BravoMeshActor::Draw(const glm::vec3& CameraLocation, const glm::mat4& Came
 	}
 }
 
-void BravoMeshActor::DrawToShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& Position) const
+void BravoMeshActor::DrawToShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const
 {
 	if ( Mesh && Shader)
 	{

@@ -10,7 +10,9 @@ class BravoInfinitePlaneActor : public BravoActor
 public:
 	BravoInfinitePlaneActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
 		BravoActor(_Engine, _Handle)
-	{}
+	{
+		RenderPriority = INT_MAX;
+	}
 
 protected:
 	virtual void Init() override;

@@ -11,7 +11,7 @@ int main()
 	Engine->Init();
 
 	std::shared_ptr<BravoGameInstance> inst = Engine->SpawnObject<BravoGameInstance>();
-	Engine->StartGame();
+	Engine->GameLoop();
 
     return 0;
 }

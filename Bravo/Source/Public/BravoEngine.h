@@ -14,13 +14,11 @@ public:
 	BravoEngine();
 	void Init();
 
-	void StartGame();
 	void GameLoop();
 	void Tick(float DeltaTime);
 	void StopGame();
 	
-	
-	void DrawDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& Position) const;
+	void DrawShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const;
 
 	
 	template <typename Class>
@@ -40,7 +38,6 @@ public:
 	std::shared_ptr<class BravoInput> GetInput() const;
 	std::shared_ptr<class BravoLightManager> GetLightManager() const;
 	std::shared_ptr<class BravoCamera> GetCamera() const;
-	std::shared_ptr<class BravoRenderTarget> GetPostProccessRT() const;
 
 	const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 
@@ -68,15 +65,15 @@ private:
 	// object managing
 	std::map< BravoHandle, std::shared_ptr<BravoObject> > Objects;
 	std::map< BravoHandle, std::weak_ptr<BravoTickable> > TickableObjects;
-	std::vector< std::weak_ptr<BravoActor> > Actors;
+	std::vector< std::weak_ptr<class BravoActor> > Actors;
 	
 
-	std::weak_ptr<BravoLightManager> LightManager;
-	std::weak_ptr<BravoCamera> Camera;
-	std::weak_ptr<BravoRenderTarget> PostProcessRenderTarget;
+	std::weak_ptr<class BravoLightManager> LightManager;
+	std::weak_ptr<class BravoCamera> Camera;
+	std::weak_ptr<class BravoRenderTarget> ViewportRenderTarget;
+	std::shared_ptr<class BravoRenderTarget> GetViewportRenderTarget() const;
 
-	// TODO: delete me
-	std::weak_ptr<BravoInput> Input;
+	std::weak_ptr<class BravoInput> Input;
 
 	BravoHandle LastUsedHandle = 0;
 

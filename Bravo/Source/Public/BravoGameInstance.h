@@ -13,14 +13,7 @@ public:
 
 protected:
 	virtual void Init() override;
-	virtual void OnDestroy() override;
 	virtual void Tick(float DeltaTime) override;
 
-	
-	std::vector<std::weak_ptr<class BravoActor>> Children;
-
-	std::weak_ptr<class BravoDirLightActor> dirLightActor;
-
-	std::weak_ptr<class BravoSpotLightActor> spotLights[2];
-
+	std::vector<std::weak_ptr<class BravoSpotLightActor>> spotLights;
 };

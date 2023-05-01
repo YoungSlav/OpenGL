@@ -10,7 +10,9 @@ public:
 	BravoLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
 		BravoActor(_Engine, _Handle),
 		BravoTickable()
-	{}
+	{
+		RenderPriority = INT_MIN;
+	}
 
 	void SetLightColor(const glm::vec3& InLightColor) { LightColor = InLightColor; }
 	virtual void Use(BravoShaderPtr OnShader);

@@ -41,7 +41,7 @@ void BravoLightActor::Init()
 {
 	
 	Shader = BravoAsset::Load<BravoShader>("LightSource");
-	RenderPriority = INT_MIN;
+	
 }
 
 void BravoLightActor::UpdateShadowMap()
@@ -76,7 +76,7 @@ void BravoDirLightActor::OnDestroy()
 void BravoDirLightActor::Use(BravoShaderPtr OnShader)
 {
 	BravoLightActor::Use(OnShader);
-	OnShader->SetVector3d(Path + "direction", glm::vec3(0.0) - GetLocation());
+	OnShader->SetVector3d(Path + "direction", GetDirection());
 	OnShader->SetVector3d(Path + "lightColor", glm::vec3(1.0));
 }
 void BravoDirLightActor::StopUsage()

@@ -8,7 +8,7 @@ void BravoSkyboxActor::SetCubemap(BravoCubemapPtr InCubemap)
 
 void BravoSkyboxActor::Init()
 {
-	RenderPriority = INT_MAX-1;
+	
 	const float skyboxVertices[] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,

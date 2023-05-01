@@ -60,7 +60,8 @@ GLFW/Solution/
 
 Build/
 Intermediate/
-
+Bravo/x64/
+Bravo/x86/
 */Debug/
 */CMakeFiles/
 

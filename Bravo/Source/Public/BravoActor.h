@@ -27,7 +27,7 @@ public:
 protected:
 
 	virtual void Draw(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const {}
-	virtual void DrawToShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& Position) const {}
+	virtual void DrawToShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const {}
 
 	glm::mat4 TransformModelMatrix() const;
 

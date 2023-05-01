@@ -40,10 +40,6 @@ void BravoEngine::Init()
 	CreateOpenGLWindow();
 }
 
-void BravoEngine::StartGame()
-{
-	GameLoop();
-}
 
 void BravoEngine::GameLoop()
 {
@@ -63,11 +59,7 @@ void BravoEngine::Tick(float DeltaTime)
 {
 	for ( auto& it : TickableObjects )
 	{
-		if ( it.second.expired() )
-		{
-			TickableObjects.erase(it.first);
-		}
-		else
+		if ( !it.second.expired() )
 		{
 			it.second.lock()->Update(DeltaTime);
 		}
@@ -76,7 +68,7 @@ void BravoEngine::Tick(float DeltaTime)
 
 void BravoEngine::UpdateViewport()
 {
-	if ( !GetLightManager() || !GetPostProccessRT() )
+	if ( !GetLightManager() || !GetViewportRenderTarget() )
 	{
 		bRequestExit = true;
 		return;
@@ -86,7 +78,7 @@ void BravoEngine::UpdateViewport()
 
 	// we want to draw into PP texture first
 	{
-		GetPostProccessRT()->Use();
+		GetViewportRenderTarget()->Use();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
@@ -95,7 +87,7 @@ void BravoEngine::UpdateViewport()
 		{
 			it.lock()->Draw(Camera.lock()->GetLocation(), Camera.lock()->GetProjectionMatrix(), Camera.lock()->GetViewMatrix());
 		}
-		GetPostProccessRT()->StopUsage();
+		GetViewportRenderTarget()->StopUsage();
 	}
 		
 	// now we want to draw PP texture to screen
@@ -105,19 +97,19 @@ void BravoEngine::UpdateViewport()
 		glDisable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		GetPostProccessRT()->Draw();
+		GetViewportRenderTarget()->Draw();
 	}
 	
 	glfwSwapBuffers(Window);
 	glfwPollEvents();
 }
 
-void BravoEngine::DrawDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& Position) const
+void BravoEngine::DrawShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const
 {
 	for ( auto& it : Actors )
 	{
 		if ( !it.expired() )
-			it.lock()->DrawToShadowMap(Shader, Position);
+			it.lock()->DrawToShadowMap(Shader, LightPosition);
 	}
 }
 
@@ -126,8 +118,8 @@ void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 	ViewportSize = InViewportSize;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, ViewportSize.x, ViewportSize.y);
-	if ( GetPostProccessRT() )
-		GetPostProccessRT()->Resize(ViewportSize*2);
+	if ( GetViewportRenderTarget() )
+		GetViewportRenderTarget()->Resize(ViewportSize*2);
 	if ( GetCamera() )
 		GetCamera()->SetAspectRatio( float(ViewportSize.x) / float(ViewportSize.y) );
 }
@@ -186,7 +178,7 @@ void BravoEngine::CreateOpenGLWindow()
 	if ( std::shared_ptr<BravoRenderTarget> rt = SpawnObject<BravoRenderTarget>() )
 	{
 		rt->Setup(ViewportSize*2, BravoAsset::Load<BravoShader>("PostProccess"));
-		PostProcessRenderTarget = rt;
+		ViewportRenderTarget = rt;
 	}
 	
 	glEnable(GL_BLEND);
@@ -301,9 +293,9 @@ std::shared_ptr<BravoCamera> BravoEngine::GetCamera() const
 		return nullptr;
 	return Camera.lock();
 }
-std::shared_ptr<BravoRenderTarget> BravoEngine::GetPostProccessRT() const
+std::shared_ptr<BravoRenderTarget> BravoEngine::GetViewportRenderTarget() const
 {
-	if ( PostProcessRenderTarget.expired() )
+	if ( ViewportRenderTarget.expired() )
 		return nullptr;
-	return PostProcessRenderTarget.lock();
+	return ViewportRenderTarget.lock();
 }

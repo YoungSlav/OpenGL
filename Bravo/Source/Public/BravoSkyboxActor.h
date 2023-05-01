@@ -8,7 +8,9 @@ class BravoSkyboxActor : public BravoActor
 public:
 	BravoSkyboxActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
 		BravoActor(_Engine, _Handle)
-	{}
+	{
+		RenderPriority = INT_MAX-1;
+	}
 
 	void SetCubemap(BravoCubemapPtr InCubemap);
 
@@ -20,5 +22,5 @@ protected:
 	BravoShaderPtr Shader;
 	BravoCubemapPtr Cubemap;
 
-	unsigned int VAO, VBO;
+	unsigned int VAO = 0, VBO = 0;
 };
