@@ -1,5 +1,6 @@
 #include "BravoInfinitePlaneActor.h"
 #include "BravoEngine.h"
+#include "BravoCamera.h"
 
 void BravoInfinitePlaneActor::Init()
 {
@@ -24,8 +25,8 @@ void BravoInfinitePlaneActor::Draw(const glm::vec3& CameraLocation, const glm::m
 					Shader->Use();
 					Shader->SetMatrix4d("projection", CameraProjection);
 					Shader->SetMatrix4d("view", CameraView);
-					Shader->SetVector1d("near", Engine->GetViewport()->GetMinDrawingDistance());
-					Shader->SetVector1d("far", Engine->GetViewport()->GetMaxDrawingDistance());
+					Shader->SetVector1d("near", GetEngine()->GetCamera()->GetMinDrawingDistance());
+					Shader->SetVector1d("far", GetEngine()->GetCamera()->GetMaxDrawingDistance());
         
 					// draw mesh
 					glBindVertexArray(part->VAO);

@@ -32,14 +32,13 @@
     <ClCompile Include="Source\Private\BravoLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoLightManager.cpp" />
     <ClCompile Include="Source\Private\BravoMath.cpp" />
+    <ClCompile Include="Source\Private\BravoObject.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
     <ClCompile Include="Source\Private\BravoMesh.cpp" />
     <ClCompile Include="Source\Private\BravoMeshActor.cpp" />
-    <ClCompile Include="Source\Private\BravoObject.cpp" />
     <ClCompile Include="Source\Private\BravoPlayer.cpp" />
     <ClCompile Include="Source\Private\BravoShadowMap.cpp" />
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp" />
-    <ClCompile Include="Source\Private\BravoViewport.cpp" />
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShader.cpp" />
     <ClCompile Include="Source\Private\BravoTexture.cpp" />
@@ -65,10 +64,10 @@
     <ClInclude Include="Source\Public\BravoPlayer.h" />
     <ClInclude Include="Source\Public\BravoShadowMap.h" />
     <ClInclude Include="Source\Public\BravoSkyboxActor.h" />
-    <ClInclude Include="Source\Public\BravoViewport.h" />
     <ClInclude Include="Source\Public\Log.h" />
     <ClInclude Include="Source\Public\BravoShader.h" />
     <ClInclude Include="Source\Public\BravoTexture.h" />
+    <ClInclude Include="Source\Public\SharedFromThis.h" />
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\ThirdParty\stb_image.h" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include "BravoLightActor.h"
 #include "BravoEngine.h"
-#include "BravoViewport.h"
+
 #include "BravoAsset.h"
 
 
@@ -46,16 +46,16 @@ void BravoLightActor::Init()
 
 void BravoLightActor::UpdateShadowMap()
 {
-	ShadowMap->Draw(this);
+	ShadowMap.lock()->Draw(Self<BravoLightActor>());
 }
 
 void BravoLightActor::Use(BravoShaderPtr OnShader)
 {
-	ShadowMap->Use(OnShader, Path);
+	ShadowMap.lock()->Use(OnShader, Path);
 }
 void BravoLightActor::StopUsage()
 {
-	ShadowMap->StopUsage();
+	ShadowMap.lock()->StopUsage();
 }
 
 
@@ -64,8 +64,8 @@ void BravoDirLightActor::Init()
 	BravoLightActor::Init();
 	Mesh = BravoAsset::Load<BravoMesh>("primitives\\cone.fbx");
 
-	ShadowMap = BravoEngine::GetInstance()->SpawnObject<BravoShadowMap_Directional>();
-	ShadowMap->Setup(glm::ivec2(2048));
+	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Directional>();
+	ShadowMap.lock()->Setup(glm::ivec2(2048));
 }
 void BravoDirLightActor::OnDestroy()
 {
@@ -90,8 +90,8 @@ void BravoPointLightActor::Init()
 	BravoLightActor::Init();
 	Mesh = BravoAsset::Load<BravoMesh>("primitives\\sphere.fbx");
 
-	ShadowMap = BravoEngine::GetInstance()->SpawnObject<BravoShadowMap_Point>();
-	ShadowMap->Setup(glm::ivec2(2048));
+	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Point>();
+	ShadowMap.lock()->Setup(glm::ivec2(2048));
 }
 
 void BravoPointLightActor::OnDestroy()
@@ -121,8 +121,8 @@ void BravoSpotLightActor::Init()
 	BravoLightActor::Init();
 	Mesh = BravoAsset::Load<BravoMesh>("primitives\\cone.fbx");
 
-	ShadowMap = BravoEngine::GetInstance()->SpawnObject<BravoShadowMap_Spot>();
-	ShadowMap->Setup(glm::ivec2(2048));
+	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Spot>();
+	ShadowMap.lock()->Setup(glm::ivec2(2048));
 }
 
 void BravoSpotLightActor::OnDestroy()

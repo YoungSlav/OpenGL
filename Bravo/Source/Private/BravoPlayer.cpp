@@ -5,35 +5,38 @@
 
 void BravoPlayer::Init()
 {
-	if ( BravoInput* Input = BravoEngine::GetInstance()->GetInput() )
+	if ( std::shared_ptr<BravoInput> Input = GetEngine()->GetInput() )
 	{
-		Input->SubscribeToKey(GLFW_KEY_W, this);
-		Input->SubscribeToKey(GLFW_KEY_S, this);
-		Input->SubscribeToKey(GLFW_KEY_A, this);
-		Input->SubscribeToKey(GLFW_KEY_D, this);
-		Input->SubscribeToKey(GLFW_KEY_E, this);
-		Input->SubscribeToKey(GLFW_KEY_Q, this);
-		Input->SubscribeToKey(GLFW_MOUSE_BUTTON_LEFT, this);
-		Input->SubscribeToKey(GLFW_MOUSE_BUTTON_RIGHT, this);
+		Input->SubscribeToKey(GLFW_KEY_W, Self<BravoPlayer>());
+		Input->SubscribeToKey(GLFW_KEY_S, Self<BravoPlayer>());
+		Input->SubscribeToKey(GLFW_KEY_A, Self<BravoPlayer>());
+		Input->SubscribeToKey(GLFW_KEY_D, Self<BravoPlayer>());
+		Input->SubscribeToKey(GLFW_KEY_E, Self<BravoPlayer>());
+		Input->SubscribeToKey(GLFW_KEY_Q, Self<BravoPlayer>());
+		Input->SubscribeToKey(GLFW_MOUSE_BUTTON_LEFT, Self<BravoPlayer>());
+		Input->SubscribeToKey(GLFW_MOUSE_BUTTON_RIGHT, Self<BravoPlayer>());
 
-		Input->SubscribeToMouseMove(this);
-		Input->SubscribeToMouseScroll(this);
+		Input->SubscribeToKey(GLFW_KEY_ESCAPE, Self<BravoPlayer>());
+
+		Input->SubscribeToMouseMove(Self<BravoPlayer>());
+		Input->SubscribeToMouseScroll(Self<BravoPlayer>());
 	}
-	Engine->GetViewport()->GetCamera()->AttachTo(this);
+	GetEngine()->GetCamera()->AttachTo(Self<BravoPlayer>());
 
 	
 }
 
 void BravoPlayer::OnDestroy()
 {
-	if ( BravoInput* Input = BravoEngine::GetInstance()->GetInput() )
+	if ( std::shared_ptr<BravoInput> Input = GetEngine()->GetInput() )
 	{
-		Input->UnsubscribeToKey(this);
-		Input->UnsubscribeToMouseMove(this);
-		Input->UnsubscribeToMouseScroll(this);
+		Input->UnsubscribeFromKey(Self<BravoPlayer>());
+		Input->UnsubscribeFromMouseMove(Self<BravoPlayer>());
+		Input->UnsubscribeFromMouseScroll(Self<BravoPlayer>());
 	}
 
-	Engine->GetViewport()->GetCamera()->Detach();
+	if ( GetEngine() && GetEngine()->GetCamera() )
+		GetEngine()->GetCamera()->Detach();
 }
 
 void BravoPlayer::Tick(float DeltaTime)
@@ -67,10 +70,16 @@ void BravoPlayer::InputKey(int Key, bool bPressed, float DeltaTime)
 	if( Key == GLFW_KEY_Q && bPressed )
 		Velocity -= sensitivity * up;
 
+	if ( Key == GLFW_KEY_ESCAPE && bPressed )
+	{
+		if( GetEngine() )
+			GetEngine()->StopGame();
+	}
+
 	if ( Key == GLFW_MOUSE_BUTTON_RIGHT )
 	{
 		bMouseInput = bPressed;
-		BravoEngine::GetInstance()->GetViewport()->SetMouseEnabled(!bPressed);
+		//BravoEngine::GetInstance()->GetViewport()->SetMouseEnabled(!bPressed);
 	}
 
 }

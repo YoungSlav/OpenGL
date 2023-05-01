@@ -9,8 +9,12 @@
 class BravoLightManager : public BravoObject
 {
 public:
-	void RegisterLightActor(BravoLightActor* LightActor);
-	void RemoveLightActor(BravoObjectHandle InHandle);
+	BravoLightManager(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoObject(_Engine, _Handle)
+	{}
+
+	void RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor);
+	void RemoveLightActor(std::shared_ptr<BravoActor> Actor);
 
 	void UpdateLightsDepthMaps();
 
@@ -19,9 +23,11 @@ public:
 
 private:
 
+
+
 	void UpdateShaderPaths();
 
-	BravoDirLightActor* DirectionalLight = nullptr;
-	std::vector<BravoSpotLightActor*> SpotLights;
-	std::vector<BravoPointLightActor*> PointLights;
+	std::weak_ptr<BravoDirLightActor> DirectionalLight;
+	std::vector< std::weak_ptr<BravoSpotLightActor>> SpotLights;
+	std::vector< std::weak_ptr<BravoPointLightActor>> PointLights;
 };

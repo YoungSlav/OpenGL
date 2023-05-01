@@ -5,17 +5,22 @@
 
 class BravoGameInstance : public BravoObject, public BravoTickable
 {
+public:
+	BravoGameInstance(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoObject(_Engine, _Handle),
+		BravoTickable()
+	{}
+
 protected:
 	virtual void Init() override;
 	virtual void OnDestroy() override;
 	virtual void Tick(float DeltaTime) override;
 
-	BravoEngine* Engine;
-	std::vector<class BravoActor*> Children;
-
 	
-	class BravoDirLightActor* dirLightActor;
+	std::vector<std::weak_ptr<class BravoActor>> Children;
 
-	class BravoSpotLightActor* spotLights[2];
+	std::weak_ptr<class BravoDirLightActor> dirLightActor;
+
+	std::weak_ptr<class BravoSpotLightActor> spotLights[2];
 
 };

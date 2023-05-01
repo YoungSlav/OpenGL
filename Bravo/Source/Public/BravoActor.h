@@ -5,8 +5,12 @@
 
 class BravoActor : public BravoObject
 {
-	friend class BravoViewport;
+	friend class BravoEngine;
 public:
+
+	BravoActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoObject(_Engine, _Handle)
+	{}
 
 	const glm::vec3& GetLocation() const { return Location; }
 	void SetLocation(const glm::vec3& InLocation) { Location = InLocation; }

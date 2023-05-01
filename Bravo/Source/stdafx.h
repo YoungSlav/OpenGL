@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <type_traits>
 
 // utilities
 #include "Log.h"
@@ -22,7 +23,4 @@
 #include "glm/gtc/type_ptr.hpp"
 
 
-
-// typedefs
-typedef unsigned int BravoObjectHandle;
-
+typedef unsigned int BravoHandle;

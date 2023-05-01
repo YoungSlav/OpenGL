@@ -2,20 +2,13 @@
 #include "BravoEngine.h"
 #include "BravoMath.h"
 
-void BravoCamera::SetActive()
-{
-	if ( Engine->GetViewport() )
-		Engine->GetViewport()->SetCamera(this);
-}
-
-void BravoCamera::AttachTo(const BravoActor* InActor)
+void BravoCamera::AttachTo(const std::shared_ptr<BravoActor> InActor)
 {
 	Owner = InActor;
 	bAttachedToActor = true;
 }
 void BravoCamera::Detach()
 {
-	Owner = nullptr;
 	bAttachedToActor = false;
 }
 
@@ -28,8 +21,11 @@ void BravoCamera::Tick(float DeltaTime)
 {
 	if ( bAttachedToActor )
 	{
-		SetLocation(Owner->GetLocation());
-		SetRotation(Owner->GetRotation());
+		if ( std::shared_ptr<BravoActor> O = GetOwner() )
+		{
+			SetLocation(O->GetLocation());
+			SetRotation(O->GetRotation());
+		}
 	}
 	CalcCamera();
 }

@@ -3,7 +3,7 @@
 #include "BravoShadowMap.h"
 #include "BravoShader.h"
 #include "BravoEngine.h"
-#include "BravoViewport.h"
+
 #include "BravoLightActor.h"
 
 
@@ -113,7 +113,7 @@ void BravoShadowMap_Cube::OnDestroy()
 	glDeleteTextures(1, &DepthCubemap);
 }
 
-void BravoShadowMap_Directional::Draw(BravoLightActor* Owner)
+void BravoShadowMap_Directional::Draw(std::shared_ptr<class BravoLightActor> Owner)
 {
 	float NearPlane = 1.0f;
 	float FarPlane = 50.0f;
@@ -131,22 +131,22 @@ void BravoShadowMap_Directional::Draw(BravoLightActor* Owner)
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		BravoEngine::GetInstance()->GetViewport()->DrawDepthMap(Shader, LightPosition);
+		GetEngine()->DrawDepthMap(Shader, LightPosition);
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	Shader->StopUsage();
 }
 
-void BravoShadowMap_Spot::Draw(BravoLightActor* Owner)
+void BravoShadowMap_Spot::Draw(std::shared_ptr<class BravoLightActor> Owner)
 {
 	float NearPlane = 0.1f;
 	float FarPlane = 50.0f;
 
 	glm::vec3 LightPosition = Owner->GetLocation();
 	
-	float FOV = glm::radians(90.0);
-	if ( BravoSpotLightActor* asSpotLight = dynamic_cast<BravoSpotLightActor*>(Owner) )
+	float FOV = glm::radians(90.0f);
+	if ( std::shared_ptr<BravoSpotLightActor> asSpotLight = std::dynamic_pointer_cast<BravoSpotLightActor>(Owner) )
 		FOV = asSpotLight->OuterCutOff;
 
 	float AspectRatio = (float)(Size.x)/(float)(Size.y);
@@ -163,13 +163,13 @@ void BravoShadowMap_Spot::Draw(BravoLightActor* Owner)
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		BravoEngine::GetInstance()->GetViewport()->DrawDepthMap(Shader, LightPosition);
+		GetEngine()->DrawDepthMap(Shader, LightPosition);
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	Shader->StopUsage();
 }
-void BravoShadowMap_Point::Draw(BravoLightActor* Owner)
+void BravoShadowMap_Point::Draw(std::shared_ptr<class BravoLightActor> Owner)
 {
 	glm::mat4 ShadowProjection;
 	
@@ -204,7 +204,7 @@ void BravoShadowMap_Point::Draw(BravoLightActor* Owner)
 		Shader->SetVector3d("lightPos", LightPosition);
 		
 		// render scene
-		BravoEngine::GetInstance()->GetViewport()->DrawDepthMap(Shader, LightPosition);
+		GetEngine()->DrawDepthMap(Shader, LightPosition);
 
 		Shader->StopUsage();
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

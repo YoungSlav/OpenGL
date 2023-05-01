@@ -1,53 +1,47 @@
 #include "BravoLightManager.h"
 
-#include "BravoViewport.h"
+
 #include "BravoEngine.h"
 #include "BravoShader.h"
 
 
-void BravoLightManager::RegisterLightActor(BravoLightActor* LightActor)
+void BravoLightManager::RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor)
 {
-	if ( BravoDirLightActor* asDir = dynamic_cast<BravoDirLightActor*>(LightActor) )
+	if ( std::shared_ptr<BravoDirLightActor> asDir = std::dynamic_pointer_cast<BravoDirLightActor>(LightActor) )
 	{
-		if ( DirectionalLight != nullptr )
+		if ( !DirectionalLight.expired() )
 		{
 			Log::LogMessage("Directional light override!", ELog::Warning);
 		}
 		DirectionalLight = asDir;
 	}
 
-	if ( BravoSpotLightActor* asSpot = dynamic_cast<BravoSpotLightActor*>(LightActor) )
+	if ( std::shared_ptr<BravoSpotLightActor> asSpot = std::dynamic_pointer_cast<BravoSpotLightActor>(LightActor) )
 	{
 		SpotLights.push_back(asSpot);
 	}
 
-	if ( BravoPointLightActor* asSpot = dynamic_cast<BravoPointLightActor*>(LightActor) )
+	if ( std::shared_ptr<BravoPointLightActor> asSpot = std::dynamic_pointer_cast<BravoPointLightActor>(LightActor) )
 	{
 		PointLights.push_back(asSpot);
 	}
 
 	UpdateShaderPaths();
 }
-void BravoLightManager::RemoveLightActor(BravoObjectHandle InHandle)
+void BravoLightManager::RemoveLightActor(std::shared_ptr<BravoActor> Actor)
 {
-	if ( DirectionalLight->GetHandle() == InHandle )
-	{
-		DirectionalLight = nullptr;
-		return;
-	}
-
 	for ( unsigned int i = 0; i < SpotLights.size(); ++i )
 	{
-		if ( SpotLights[i]->GetHandle() == InHandle )
+		if ( SpotLights[i].lock() == Actor )
 		{
 			SpotLights.erase(SpotLights.begin() + i);
 			return;
 		}
 	}
-
+	
 	for ( unsigned int i = 0; i < PointLights.size(); ++i )
 	{
-		if ( PointLights[i]->GetHandle() == InHandle )
+		if ( PointLights[i].lock() == Actor )
 		{
 			PointLights.erase(PointLights.begin() + i);
 			return;
@@ -59,44 +53,57 @@ void BravoLightManager::RemoveLightActor(BravoObjectHandle InHandle)
 
 void BravoLightManager::UpdateShaderPaths()
 {
-	if ( DirectionalLight != nullptr )
-		DirectionalLight->SetShaderPath("dirLight.");
+	if ( !DirectionalLight.expired() )
+		DirectionalLight.lock()->SetShaderPath("dirLight.");
 
 	for ( unsigned int i = 0; i < SpotLights.size(); ++i )
-		SpotLights[i]->SetShaderPath("spotLights[" + std::to_string(i) + "].");
+	{
+		if ( !SpotLights[i].expired() )
+		{
+			SpotLights[i].lock()->SetShaderPath("spotLights[" + std::to_string(i) + "].");
+		}
+	}
 
 	for ( unsigned int i = 0; i < PointLights.size(); ++i )
-		PointLights[i]->SetShaderPath("pointLights[" + std::to_string(i) + "].");
+	{
+		if ( !PointLights[i].expired() )
+		{
+			PointLights[i].lock()->SetShaderPath("pointLights[" + std::to_string(i) + "].");
+		}
+	}
 }
 
 void BravoLightManager::UpdateLightsDepthMaps()
 {
-	DirectionalLight->UpdateShadowMap();
+	if ( !DirectionalLight.expired() )
+		DirectionalLight.lock()->UpdateShadowMap();
 	for ( auto& it : SpotLights )
-		it->UpdateShadowMap();
+		it.lock()->UpdateShadowMap();
 	for ( auto& it : PointLights )
-		it->UpdateShadowMap();
+		it.lock()->UpdateShadowMap();
 }
 
 void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 {
-	DirectionalLight->Use(Shader);
+	if ( !DirectionalLight.expired() )
+		DirectionalLight.lock()->Use(Shader);
 	
 	for ( auto& it : SpotLights )
-		it->Use(Shader);
+		it.lock()->Use(Shader);
 
 	Shader->SetInt("spotLightsNum", SpotLights.size());
 
 	for ( auto& it : PointLights )
-		it->Use(Shader);
+		it.lock()->Use(Shader);
 	
 	Shader->SetInt("pointLightsNum", PointLights.size());
 }
 void BravoLightManager::ResetLightsUsage()
 {
-	DirectionalLight->StopUsage();
+	if ( !DirectionalLight.expired() )
+		DirectionalLight.lock()->StopUsage();
 	for ( auto& it : SpotLights )
-		it->StopUsage();
+		it.lock()->StopUsage();
 	for ( auto& it : PointLights )
-		it->StopUsage();
+		it.lock()->StopUsage();
 }

@@ -6,6 +6,10 @@
 class BravoSkyboxActor : public BravoActor
 {
 public:
+	BravoSkyboxActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoActor(_Engine, _Handle)
+	{}
+
 	void SetCubemap(BravoCubemapPtr InCubemap);
 
 protected:

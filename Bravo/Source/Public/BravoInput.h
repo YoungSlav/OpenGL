@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 
-class BravoInputListener
+class BravoInputListener : public SharedFromThis
 {
 	friend class BravoInput;
 protected:
@@ -11,21 +11,23 @@ protected:
 	virtual void InputMouseScroll(float DeltaX, float DeltaY, float DeltaTime) {}
 };
 
-
-
-class BravoViewport;
 class BravoInput : public BravoObject
 {
-	friend class BravoViewport;
-
+	friend class BravoEngine;
 public:
-	void SubscribeToKey(int Key, BravoInputListener* Subscriber);
-	void SubscribeToMouseMove(BravoInputListener* Subscriber);
-	void SubscribeToMouseScroll(BravoInputListener* Subscriber);
 
-	void UnsubscribeToKey(BravoInputListener* Subscriber);
-	void UnsubscribeToMouseMove(BravoInputListener* Subscriber);
-	void UnsubscribeToMouseScroll(BravoInputListener* Subscriber);
+	BravoInput(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoObject(_Engine, _Handle)
+	{}
+
+
+	void SubscribeToKey(int Key, std::shared_ptr<BravoInputListener> Subscriber);
+	void SubscribeToMouseMove(std::shared_ptr<BravoInputListener> Subscriber);
+	void SubscribeToMouseScroll(std::shared_ptr<BravoInputListener> Subscriber);
+
+	void UnsubscribeFromKey(std::shared_ptr<BravoInputListener> Subscriber);
+	void UnsubscribeFromMouseMove(std::shared_ptr<BravoInputListener> Subscriber);
+	void UnsubscribeFromMouseScroll(std::shared_ptr<BravoInputListener> Subscriber);
 
 protected:
 	void ProcessInput(struct GLFWwindow *window, float DeltaTime);
@@ -33,9 +35,9 @@ protected:
 	void OnMouseMove(struct GLFWwindow* window, float xpos, float ypos, float DeltaTime);
 
 private:
-	std::map<int, BravoInputListener*> KeyListeners;
-	std::vector<BravoInputListener*> MouseMoveListeners;
-	std::vector<BravoInputListener*> MouseScrollListeners;
+	std::map<int, std::weak_ptr<BravoInputListener>> KeyListeners;
+	std::vector<std::weak_ptr<BravoInputListener>> MouseMoveListeners;
+	std::vector<std::weak_ptr<BravoInputListener>> MouseScrollListeners;
 
 	float OldMouseX = 0.0f;
 	float OldMouseY = 0.0f;

@@ -7,6 +7,11 @@
 class BravoLightActor : public BravoActor, public BravoTickable
 {
 public:
+	BravoLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoActor(_Engine, _Handle),
+		BravoTickable()
+	{}
+
 	void SetLightColor(const glm::vec3& InLightColor) { LightColor = InLightColor; }
 	virtual void Use(BravoShaderPtr OnShader);
 	virtual void StopUsage();
@@ -19,7 +24,7 @@ protected:
 	virtual void Init() override;
 	virtual void Draw(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const override;
 	
-	BravoShadowMap* ShadowMap;
+	std::weak_ptr<BravoShadowMap> ShadowMap;
 	BravoMeshPtr Mesh;
 	BravoShaderPtr Shader;
 
@@ -31,6 +36,10 @@ protected:
 class BravoDirLightActor : public BravoLightActor
 {
 public:
+	BravoDirLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoLightActor(_Engine, _Handle)
+	{}
+
 	virtual void Use(BravoShaderPtr OnShader) override;
 	virtual void StopUsage() override;
 
@@ -42,6 +51,10 @@ protected:
 class BravoPointLightActor : public BravoLightActor
 {
 public:
+	BravoPointLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoLightActor(_Engine, _Handle)
+	{}
+
 	virtual void Use(BravoShaderPtr OnShader) override;
 	virtual void StopUsage() override;
 
@@ -55,6 +68,10 @@ protected:
 class BravoSpotLightActor : public BravoLightActor
 {
 public:
+	BravoSpotLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoLightActor(_Engine, _Handle)
+	{}
+
 	virtual void Use(BravoShaderPtr OnShader) override;
 	virtual void StopUsage() override;
 

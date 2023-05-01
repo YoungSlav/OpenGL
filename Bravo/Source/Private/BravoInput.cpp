@@ -2,45 +2,44 @@
 #include "BravoEngine.h"
 #include "openGL.h"
 
-void BravoInput::SubscribeToKey(int Key, BravoInputListener* Subscriber)
+void BravoInput::SubscribeToKey(int Key, std::shared_ptr<BravoInputListener> Subscriber)
 {
-	KeyListeners.insert( std::pair<int, BravoInputListener*>(Key, Subscriber) );
+	KeyListeners.insert( {Key, Subscriber} );
 }
-void BravoInput::SubscribeToMouseMove(BravoInputListener* Subscriber)
+void BravoInput::SubscribeToMouseMove(std::shared_ptr<BravoInputListener> Subscriber)
 {
-	if ( std::find(MouseMoveListeners.begin(), MouseMoveListeners.end(), Subscriber) == MouseMoveListeners.end() )
-		MouseMoveListeners.push_back(Subscriber);
+	MouseMoveListeners.push_back(Subscriber);
 }
-void BravoInput::SubscribeToMouseScroll(BravoInputListener* Subscriber)
+void BravoInput::SubscribeToMouseScroll(std::shared_ptr<BravoInputListener> Subscriber)
 {
-	if ( std::find(MouseScrollListeners.begin(), MouseScrollListeners.end(), Subscriber) == MouseScrollListeners.end() )
-		MouseScrollListeners.push_back(Subscriber);
+	MouseScrollListeners.push_back(Subscriber);
 }
 
-void BravoInput::UnsubscribeToKey(BravoInputListener* Subscriber)
+void BravoInput::UnsubscribeFromKey(std::shared_ptr<BravoInputListener> Subscriber)
 {
-	for(std::map<int, BravoInputListener*>::iterator it = KeyListeners.begin(); it != KeyListeners.end();)
+
+	for (auto it = KeyListeners.cbegin(); it != KeyListeners.cend(); )
 	{
-		if( (it->second) == Subscriber )
+		if ( it->second.expired() || it->second.lock() == Subscriber)
 			it = KeyListeners.erase(it);
 		else
-			it++;
+			++it;
 	}
 }
 
-void BravoInput::UnsubscribeToMouseMove(BravoInputListener* Subscriber)
+void BravoInput::UnsubscribeFromMouseMove(std::shared_ptr<BravoInputListener> Subscriber)
 {
 	for ( int i = MouseMoveListeners.size()-1; i >= 0; --i )
 	{
-		if ( MouseMoveListeners[i] == Subscriber )
+		if ( MouseMoveListeners[i].expired() || MouseMoveListeners[i].lock() == Subscriber )
 			MouseMoveListeners.erase(MouseMoveListeners.begin() + i);
 	}
 }
-void BravoInput::UnsubscribeToMouseScroll(BravoInputListener* Subscriber)
+void BravoInput::UnsubscribeFromMouseScroll(std::shared_ptr<BravoInputListener> Subscriber)
 {
 	for ( int i = MouseScrollListeners.size()-1; i >= 0; --i )
 	{
-		if ( MouseScrollListeners[i] == Subscriber )
+		if ( MouseScrollListeners[i].expired() || MouseScrollListeners[i].lock() == Subscriber )
 			MouseScrollListeners.erase(MouseScrollListeners.begin() + i);
 	}
 }
@@ -49,14 +48,22 @@ void BravoInput::ProcessInput(GLFWwindow *window, float DeltaTime)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
-		Engine->StopGame();
+		GetEngine()->StopGame();
 	}
 	else
 	{
-		for ( auto it : KeyListeners )
+		for (auto it = KeyListeners.cbegin(); it != KeyListeners.cend(); )
 		{
-			bool bPressed = glfwGetKey(window, it.first) == GLFW_PRESS || glfwGetMouseButton(window, it.first) == GLFW_PRESS;
-			it.second->InputKey(it.first, bPressed, DeltaTime);
+			if ( !it->second.expired() )
+			{
+				bool bPressed = glfwGetKey(window, it->first) == GLFW_PRESS || glfwGetMouseButton(window, it->first) == GLFW_PRESS;
+				it->second.lock()->InputKey(it->first, bPressed, DeltaTime);
+				++it;
+			}
+			else
+			{
+				it = KeyListeners.erase(it);
+			}
 		}
 	}
 
@@ -65,7 +72,10 @@ void BravoInput::ProcessInput(GLFWwindow *window, float DeltaTime)
 void BravoInput::OnMouseScroll(GLFWwindow* window, float xoffset, float yoffset, float DeltaTime)
 {
 	for ( auto it : MouseScrollListeners )
-		it->InputMouseScroll(xoffset, yoffset, DeltaTime);
+	{
+		if ( !it.expired() )
+			it.lock()->InputMouseScroll(xoffset, yoffset, DeltaTime);
+	}
 }
 
 void BravoInput::OnMouseMove(GLFWwindow* window, float xpos, float ypos, float DeltaTime)
@@ -85,5 +95,8 @@ void BravoInput::OnMouseMove(GLFWwindow* window, float xpos, float ypos, float D
 	OldMouseY = ypos;
 
 	for ( auto it : MouseMoveListeners )
-		it->InputMouseMove(deltaX, deltaY, DeltaTime);
+	{
+		if ( !it.expired() )
+			it.lock()->InputMouseMove(deltaX, deltaY, DeltaTime);
+	}
 }

@@ -7,17 +7,32 @@
 class BravoCamera : public BravoActor, public BravoTickable
 {
 public:
+	BravoCamera(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoActor(_Engine, _Handle),
+		BravoTickable()
+	{}
+
 	const glm::mat4& GetViewMatrix() const { return ViewMatrix; }
 	const glm::mat4 GetProjectionMatrix() const { return ProjectionMatrix; }
 
 	void SetFOV(float InFOV) { FOV = InFOV; }
 	void SetAspectRatio(float InAspectRatio) { AspectRatio = InAspectRatio; }
 	void SetDrawingDistance(float InMin, float InMax) { MinDrawingDistance = InMin; MaxDrawingDistance = InMax; }
+	
+	
+	float GetMinDrawingDistance() const { return MinDrawingDistance; }
+	float GetMaxDrawingDistance() const { return MaxDrawingDistance; }
 
 	void SetActive();
 
-	void AttachTo(const BravoActor* InActor);
+	void AttachTo(const std::shared_ptr<BravoActor> InActor);
 	void Detach();
+	std::shared_ptr<BravoActor> GetOwner() const
+	{
+		if ( Owner.expired() )
+			return nullptr;
+		return Owner.lock();
+	}
 
 protected:
 	virtual void Init() override;
@@ -26,13 +41,13 @@ protected:
 	virtual void CalcCamera();
 
 protected:
-	float FOV = 90.0f;
-	float AspectRatio;
-	float MinDrawingDistance;
-	float MaxDrawingDistance;
+	float FOV = 45.0f;
+	float AspectRatio = 1.3f;
+	float MinDrawingDistance = 0.1f;
+	float MaxDrawingDistance = 100.0f;
 
 	bool bAttachedToActor = false;
-	const BravoActor* Owner = nullptr;
+	std::weak_ptr<BravoActor> Owner;
 	
 
 private:

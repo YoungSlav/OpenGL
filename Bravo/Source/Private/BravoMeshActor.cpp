@@ -1,5 +1,5 @@
 #include "BravoMeshActor.h"
-#include "BravoViewport.h"
+
 #include "BravoEngine.h"
 #include "BravoLightManager.h"
 
@@ -35,7 +35,7 @@ void BravoMeshActor::Draw(const glm::vec3& CameraLocation, const glm::mat4& Came
 				Shader->SetMaterial("material", part->Material);
 				Shader->SetVector3d("viewPos", CameraLocation);
 
-				Engine->GetViewport()->GetLightManager()->ApplyLights(Shader);
+				GetEngine()->GetLightManager()->ApplyLights(Shader);
         
 				// draw mesh
 				glBindVertexArray(part->VAO);
@@ -47,7 +47,7 @@ void BravoMeshActor::Draw(const glm::vec3& CameraLocation, const glm::mat4& Came
 				if ( part->Material )
 					part->Material->StopUsage();
 
-				Engine->GetViewport()->GetLightManager()->ResetLightsUsage();
+				GetEngine()->GetLightManager()->ResetLightsUsage();
 				Shader->StopUsage();
 			}
 		}

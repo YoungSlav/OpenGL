@@ -67,13 +67,7 @@
     <ClCompile Include="Source\Private\BravoInput.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoObject.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoPlayer.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoViewport.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoMeshActor.cpp">
@@ -104,6 +98,9 @@
       <Filter>Private\Game</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoMath.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoObject.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,9 +140,6 @@
     <ClInclude Include="Source\Public\BravoCamera.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoViewport.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\Log.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
@@ -177,6 +171,9 @@
       <Filter>Public\Game</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoMath.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\SharedFromThis.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
   </ItemGroup>

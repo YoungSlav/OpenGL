@@ -9,6 +9,11 @@
 class BravoMeshActor : public BravoActor, public BravoTickable
 {
 public:
+	BravoMeshActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoActor(_Engine, _Handle),
+		BravoTickable()
+	{}
+
 	void SetMesh(BravoMeshPtr InMesh);
 	
 protected:

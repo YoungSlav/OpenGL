@@ -6,6 +6,13 @@
 
 class BravoPlayer : public BravoActor, public BravoTickable, public BravoInputListener
 {
+public:
+	BravoPlayer(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoActor(_Engine, _Handle),
+		BravoTickable(),
+		BravoInputListener()
+	{}
+
 protected:
 	virtual void Init() override;
 	virtual void OnDestroy() override;
