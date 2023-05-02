@@ -49,10 +49,23 @@ void BravoEngine::GameLoop()
 		float DeltaTime = newTime - GameTime;
 		GameTime = newTime;
 
-		ProcessInput(Window);
 		Tick(DeltaTime);
 		UpdateViewport();
+		ProcessInput(Window);
 	}
+
+
+	glfwTerminate();
+}
+
+void BravoEngine::StopGame()
+{
+	while( Objects.size() > 0 )
+	{
+		DestroyObject(Objects.cbegin()->second);
+	}
+
+	glfwSetWindowShouldClose(Window, true);
 }
 
 void BravoEngine::Tick(float DeltaTime)
@@ -122,17 +135,6 @@ void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 		GetViewportRenderTarget()->Resize(ViewportSize*2);
 	if ( GetCamera() )
 		GetCamera()->SetAspectRatio( float(ViewportSize.x) / float(ViewportSize.y) );
-}
-
-void BravoEngine::StopGame()
-{
-	while( Objects.size() > 0 )
-	{
-		DestroyObject(Objects.cbegin()->second);
-	}
-
-	glfwTerminate();
-	bRequestExit = true;
 }
 
 void BravoEngine::SetMouseEnabled(bool bNewMouseEnabled) const

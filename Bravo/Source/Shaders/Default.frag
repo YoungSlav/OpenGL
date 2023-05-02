@@ -156,9 +156,6 @@ vec3 CalcPointLight(int index, vec3 normal, vec3 viewDir)
 	
 	float shadow = 0.0;
 
-	//vec4 fragPos_LightSpace = pointLights[index].lightSpaceMatrix * vec4(fs_in.FragPos, 1.0);
-	//shadow = ShadowCalculation(fragPos_LightSpace, pointLights[index].shadowMap, normal, lightDir);
-
 	return (ambient + (1.0 - shadow)*(diffuse + specular));
 }
 
@@ -190,7 +187,7 @@ vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir)
 	specular *= attenuation;
 
 	// spotlight intensity
-	float theta = dot(lightDir, normalize(-spotLights[index].direction)); 
+	float theta = dot(lightDir, normalize(spotLights[index].direction)); 
 	float epsilon = spotLights[index].cutOff - spotLights[index].outerCutOff;
 	float intensity = clamp((theta - spotLights[index].outerCutOff) / epsilon, 0.0, 1.0);
 	ambient *= intensity;

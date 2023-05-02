@@ -72,21 +72,21 @@
     <ClInclude Include="Source\ThirdParty\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Shaders\Default.fs.glsl" />
-    <None Include="Source\Shaders\InfinitePlane.fs.glsl" />
-    <None Include="Source\Shaders\InfinitePlane.vs.glsl" />
-    <None Include="Source\Shaders\LightSource.fs.glsl" />
-    <None Include="Source\Shaders\Default.vs.glsl" />
-    <None Include="Source\Shaders\LightSource.vs.glsl" />
-    <None Include="Source\Shaders\PostProccess.fs.glsl" />
-    <None Include="Source\Shaders\PostProccess.vs.glsl" />
-    <None Include="Source\Shaders\ShadowMapDir.fs.glsl" />
-    <None Include="Source\Shaders\ShadowMapDir.vs.glsl" />
-    <None Include="Source\Shaders\ShadowMapPoint.fs.glsl" />
-    <None Include="Source\Shaders\ShadowMapPoint.gs.glsl" />
-    <None Include="Source\Shaders\ShadowMapPoint.vs.glsl" />
-    <None Include="Source\Shaders\Skybox.fs.glsl" />
-    <None Include="Source\Shaders\Skybox.vs.glsl" />
+    <None Include="Source\Shaders\Default.frag" />
+    <None Include="Source\Shaders\InfinitePlane.frag" />
+    <None Include="Source\Shaders\InfinitePlane.vert" />
+    <None Include="Source\Shaders\LightSource.frag" />
+    <None Include="Source\Shaders\Default.vert" />
+    <None Include="Source\Shaders\LightSource.vert" />
+    <None Include="Source\Shaders\PostProccess.frag" />
+    <None Include="Source\Shaders\PostProccess.vert" />
+    <None Include="Source\Shaders\ShadowMapDir.frag" />
+    <None Include="Source\Shaders\ShadowMapDir.vert" />
+    <None Include="Source\Shaders\ShadowMapPoint.frag" />
+    <None Include="Source\Shaders\ShadowMapPoint.geom" />
+    <None Include="Source\Shaders\ShadowMapPoint.vert" />
+    <None Include="Source\Shaders\Skybox.frag" />
+    <None Include="Source\Shaders\Skybox.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

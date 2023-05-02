@@ -34,23 +34,23 @@ void BravoGameInstance::Init()
 	auto groundPlane = GetEngine()->SpawnObject<BravoInfinitePlaneActor>();
 	
 	
-	//if ( auto dirLightActor = GetEngine()->SpawnObject<BravoDirLightActor>() )
-	//{
-	//	dirLightActor->SetLocation(glm::vec3(0.0f,  10.0f, 0.0f ));
-	//	dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, -90.0f));
-	//	dirLightActor->SetScale(glm::vec3(0.1f));
-	//	dirLightActor->SetLightColor(glm::vec3(1.0f));
-	//}
-	
-	for ( int i = 0; i < 1; ++i )
+	if ( auto dirLightActor = GetEngine()->SpawnObject<BravoDirLightActor>() )
 	{
-		if ( auto spotLight = GetEngine()->SpawnObject<BravoSpotLightActor>() )
-		{
-			spotLight->SetScale(glm::vec3(-0.5f));
-			spotLight->SetLightColor(glm::vec3(1.0f));
-			spotLights.push_back(spotLight);
-		}
+		dirLightActor->SetLocation(glm::vec3(0.0f,  10.0f, 0.0f ));
+		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
+		dirLightActor->SetScale(glm::vec3(0.1f));
+		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
+	
+	//for ( int i = 0; i < 1; ++i )
+	//{
+	//	if ( auto spotLight = GetEngine()->SpawnObject<BravoSpotLightActor>() )
+	//	{
+	//		spotLight->SetScale(glm::vec3(-0.5f));
+	//		spotLight->SetLightColor(glm::vec3(1.0f));
+	//		spotLights.push_back(spotLight);
+	//	}
+	//}
 
 	BravoMeshPtr cubeAsset = BravoAsset::Load<BravoMesh>("primitives\\cube.fbx");
 	BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
@@ -80,6 +80,7 @@ void BravoGameInstance::Init()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {
+	return;
 	//LifeTime = 0.0f;
 	float lightDistance = 5.0f;
 	glm::vec3 newLocation = glm::vec3(0.0f, 10.0f, 0.0f);

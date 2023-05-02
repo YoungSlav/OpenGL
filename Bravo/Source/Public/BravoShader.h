@@ -7,9 +7,9 @@
 
 namespace ShaderProgrammConstancts
 {
-	const std::string VertexShaderExtension = ".vs.glsl";
-	const std::string FragmentShaderExtension = ".fs.glsl";
-	const std::string GeometryShaderExtension = ".gs.glsl";
+	const std::string VertexShaderExtension = ".vert";
+	const std::string FragmentShaderExtension = ".frag";
+	const std::string GeometryShaderExtension = ".geom";
 }
 
 

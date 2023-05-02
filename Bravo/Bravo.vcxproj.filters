@@ -178,49 +178,49 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Shaders\Default.fs.glsl">
+    <None Include="Source\Shaders\Default.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\LightSource.fs.glsl">
+    <None Include="Source\Shaders\LightSource.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\Default.vs.glsl">
+    <None Include="Source\Shaders\Default.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\LightSource.vs.glsl">
+    <None Include="Source\Shaders\LightSource.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\PostProccess.fs.glsl">
+    <None Include="Source\Shaders\PostProccess.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\PostProccess.vs.glsl">
+    <None Include="Source\Shaders\PostProccess.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\Skybox.fs.glsl">
+    <None Include="Source\Shaders\Skybox.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\Skybox.vs.glsl">
+    <None Include="Source\Shaders\Skybox.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapDir.fs.glsl">
+    <None Include="Source\Shaders\ShadowMapDir.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapDir.vs.glsl">
+    <None Include="Source\Shaders\ShadowMapDir.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapPoint.fs.glsl">
+    <None Include="Source\Shaders\ShadowMapPoint.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapPoint.gs.glsl">
+    <None Include="Source\Shaders\ShadowMapPoint.geom">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapPoint.vs.glsl">
+    <None Include="Source\Shaders\ShadowMapPoint.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\InfinitePlane.fs.glsl">
+    <None Include="Source\Shaders\InfinitePlane.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\InfinitePlane.vs.glsl">
+    <None Include="Source\Shaders\InfinitePlane.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
