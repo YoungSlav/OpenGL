@@ -3,13 +3,14 @@
 #include "BravoShadowMap.h"
 #include "BravoShader.h"
 #include "BravoEngine.h"
-
+#include "BravoAssetManager.h"
 #include "BravoLightActor.h"
+#include "BravoTextureUnitManager.h"
 
 
 void BravoShadowMap::OnDestroy()
 {
-	Shader->UnLoad();
+	Shader->ReleaseFromGPU();
 }
 
 void BravoShadowMap_Texture::Setup(const glm::ivec2& InSize)
@@ -36,7 +37,7 @@ void BravoShadowMap_Texture::Setup(const glm::ivec2& InSize)
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	Shader = BravoAsset::Load<BravoShader>("ShadowMapDir");
+	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapDir");
 }
 
 void BravoShadowMap_Texture::OnDestroy()
@@ -49,7 +50,7 @@ void BravoShadowMap_Texture::OnDestroy()
 
 void BravoShadowMap_Texture::Use(BravoShaderPtr OnShader, const std::string& Path)
 {
-	TextureUnit = TextureUnitSelector::BindTexture();
+	TextureUnit = BravoTextureUnitManager::BindTexture();
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);
 	glBindTexture(GL_TEXTURE_2D,  DepthMap);
 
@@ -58,7 +59,7 @@ void BravoShadowMap_Texture::Use(BravoShaderPtr OnShader, const std::string& Pat
 }
 void BravoShadowMap_Texture::StopUsage()
 {
-	TextureUnitSelector::UnbindTexture(TextureUnit);
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	glBindTexture(GL_TEXTURE_2D,  0);
 }
 
@@ -94,16 +95,16 @@ void BravoShadowMap_Cube::Setup(const glm::ivec2& InSize)
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-	Shader = BravoAsset::Load<BravoShader>("ShadowMapPoint");
+	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapPoint");
 }
 
 void BravoShadowMap_Cube::Use(BravoShaderPtr OnShader, const std::string& Path)
 {
-	TextureUnit = TextureUnitSelector::BindTexture();
+	TextureUnit = BravoTextureUnitManager::BindTexture();
 }
 void BravoShadowMap_Cube::StopUsage()
 {
-	TextureUnitSelector::UnbindTexture(TextureUnit);
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 }
 
 void BravoShadowMap_Cube::OnDestroy()

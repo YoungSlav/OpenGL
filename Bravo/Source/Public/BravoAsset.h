@@ -4,111 +4,50 @@
 #include "openGL.h"
 
 
-namespace BravoAssetConstants
-{
-	const std::string ResourcesFolderPath = "..\\Resources\\";
-	const std::string ShadersFolderPath = "Shaders\\";
-}
 
-class TextureUnitSelector
-{
-public:
-	TextureUnitSelector();
-	~TextureUnitSelector();
-	static int BindTexture();
-	static void UnbindTexture(int TextureUnit);
-
-protected:
-	static TextureUnitSelector& Instance()
-	{
-		static TextureUnitSelector UnitSelector;
-		return UnitSelector;
-	}
-
-	int FindEmptyTextureUnit();
-
-private:
-	int* TextureUnitsStatus;
-	int TextureUnitCount;
-};
 
 class BravoAsset
 {
-private:
-
-	struct BravoAssetManager
-	{
-		static BravoAssetManager& Instance()
-		{
-			static BravoAssetManager BAM;
-			return BAM;
-		}
-		std::map<std::string, std::shared_ptr<BravoAsset>> LoadedAssets;
-	};
-	
 public:
 
-	template<typename ClassName>
-	static std::shared_ptr<ClassName> Load(const std::string& Path, const std::vector<std::string>& InAdditionalParams = std::vector<std::string>())
-	{
-		ClassName* newAsset = new ClassName();
-		if ( BravoAsset* asBravoAsset = dynamic_cast<BravoAsset*>(newAsset) )
-		{
-			asBravoAsset->SetPath(Path);
-			asBravoAsset->AdditionalParams = InAdditionalParams;
-			auto it = BravoAssetManager::Instance().LoadedAssets.find(newAsset->Path);
-			if ( it != BravoAssetManager::Instance().LoadedAssets.end() )
-			{
-				delete newAsset;
-				return std::dynamic_pointer_cast<ClassName>(it->second);
-			}
-			else
-			{
-				if ( asBravoAsset->Load_Internal() )
-				{
-					std::shared_ptr<ClassName> asShared;
-					asShared = std::shared_ptr<ClassName>(newAsset);
-					BravoAssetManager::Instance().LoadedAssets.insert(std::pair<std::string, std::shared_ptr<BravoAsset>>(asShared->Path, asShared));
-					return asShared;
-				}
-			}
-		}
-		delete newAsset;
-		return std::shared_ptr<ClassName>(nullptr);
-	}
+	BravoAsset(std::shared_ptr<class BravoAssetManager> _AssetManager);
+	virtual ~BravoAsset() = default;
 
-	void UnLoad()
-	{
-		UnLoad_Internal();
-		auto it = BravoAssetManager::Instance().LoadedAssets.find(Path);
-		if ( it != BravoAssetManager::Instance().LoadedAssets.end()  )
-		{
-			BravoAssetManager::Instance().LoadedAssets.erase(it);
-		}
-	}
+	bool Initialize(const std::string& _Path, const std::vector<std::string>& _Params = std::vector<std::string>());
 
-	~BravoAsset()
-	{
-		
-	}
+	virtual void Use() {};
+	virtual void StopUsage() {};
 
-	virtual void Use() = 0;
-	virtual void StopUsage() = 0;
+	inline bool IsInitialized() const { return bInitialized; }
+	inline bool IsLoadedToGPU() const { return bLoadedToGPU; }
+
+	bool LoadToGPU();
+	virtual void Render() {}
+	void ReleaseFromGPU();
 
 protected:
-	virtual void SetPath(const std::string& InPath);
-	virtual bool Load_Internal() = 0;
-	virtual void UnLoad_Internal() = 0;
+	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) {return true;}
 
-	inline static std::string GetRunningDir()
+	virtual bool LoadToGPU_Internal() {return true;}
+	virtual void ReleaseFromGPU_Internal() {}
+
+
+	std::shared_ptr<class BravoAssetManager> GetAssetManager() const
 	{
-		char buffer[MAX_PATH];
-		GetModuleFileName( NULL, buffer, MAX_PATH );
-		std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
-		return std::string( buffer ).substr( 0, pos) + "\\";
+		if ( AssetManager.expired() )
+			return nullptr;
+		return AssetManager.lock();
 	}
-
+	
 	std::string Path;
-	std::vector<std::string> AdditionalParams;
-	unsigned int AssetHandle;
+
+private:
+
+	bool bInitialized = false;
+	bool bLoadedToGPU = false;
+
+	std::weak_ptr<class BravoAssetManager> AssetManager;
+
+	BravoAsset(const BravoAsset&) = delete;
+	BravoAsset& operator=(const BravoAsset& ) = delete;
 };

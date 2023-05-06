@@ -13,7 +13,7 @@ public:
 	void Resize(const glm::ivec2& Size);
 	void Clean();
 
-	void Draw();
+	void Render();
 
 	void Use();
 	void StopUsage();

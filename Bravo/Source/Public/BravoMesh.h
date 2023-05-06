@@ -16,10 +16,18 @@ namespace MeshConstants
 	const std::string ResourcesFolderPath = "Resources\\";
 }
 
-struct BravoMeshPart
+class BravoMeshPart
 {
-	void Init();
+public:
+	BravoMeshPart(aiMesh *mesh, const aiScene *scene);
+	~BravoMeshPart();
 
+
+	void LoadToGPU();
+	void Render();
+	void ReleaseFromGPU();
+
+private:
 	struct Vertex
 	{
 		glm::vec3 Position;
@@ -31,28 +39,30 @@ struct BravoMeshPart
 
 	std::vector<Vertex> Vertices;
 	std::vector<unsigned int> Indices;
-	BravoMaterialPtr Material;
-	
 
-	unsigned int VAO = -1;
-	unsigned int VBO = -1;
-	unsigned int EBO = -1;
+	unsigned int VAO = 0;	// vertex array buffer (holds both vertex attributes and indices)
+	unsigned int VBO = 0;	// vertex attribute buffer
+	unsigned int EBO = 0;	// index buffer
 };
 
 class BravoMesh : public BravoAsset
 {
 public:
-	virtual void Use() override;
-	virtual void StopUsage() override;
-	 
-	inline std::vector<std::shared_ptr<BravoMeshPart>>& GetMeshParts() { return MeshParts; }
+	BravoMesh(std::shared_ptr<class BravoAssetManager> _AssetManager) : 
+		BravoAsset(_AssetManager)
+	{}
+	~BravoMesh();
+ 
+	BravoMaterialPtr GetMaterial() const;
+	void SetMaterial(BravoMaterialPtr _Material);
+	
+	virtual void Render() override;
 
-	void SetMaterial(unsigned int MeshIndex, BravoMaterialPtr Material);
-	
 protected:
-	virtual bool Load_Internal() override;
-	virtual void UnLoad_Internal() override;
-	
+	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
+	virtual bool LoadToGPU_Internal() override;
+	virtual void ReleaseFromGPU_Internal() override;
+
 
 private:
 	void ProcessNode(aiNode *node, const aiScene *scene);
@@ -60,6 +70,7 @@ private:
 
 protected:
 	std::vector<std::shared_ptr<BravoMeshPart>>	MeshParts;
+	BravoMaterialPtr Material;
 };
 
 typedef std::shared_ptr<BravoMesh> BravoMeshPtr;

@@ -3,6 +3,7 @@
 #include "openGL.h"
 #include "BravoShader.h"
 #include "BravoTexture.h"
+#include "BravoTextureUnitManager.h"
 
 void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class BravoShader> InShader)
 {
@@ -79,7 +80,8 @@ void BravoRenderTarget::Use()
 void BravoRenderTarget::StopUsage()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	Shader->StopUsage();
+	if ( Shader )
+		Shader->StopUsage();
 }
 
 void BravoRenderTarget::OnDestroy()
@@ -87,20 +89,23 @@ void BravoRenderTarget::OnDestroy()
 	Clean();
 }
 
-void BravoRenderTarget::Draw()
+void BravoRenderTarget::Render()
 {
-	Shader->Use();
-	int TextureUnit = TextureUnitSelector::BindTexture();
-	glActiveTexture(GL_TEXTURE0 + TextureUnit);
-    glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-	Shader->SetInt("screenTexture", 0);
+	if ( Shader )
+	{
+		Shader->Use();
+			int TextureUnit = BravoTextureUnitManager::BindTexture();
+			glActiveTexture(GL_TEXTURE0 + TextureUnit);
+			glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
+			Shader->SetInt("screenTexture", 0);
 	
-	glBindVertexArray(PlaneVAO);
+			glBindVertexArray(PlaneVAO);
     
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 	
-	TextureUnitSelector::UnbindTexture(TextureUnit);
-	glBindVertexArray(0);
-	glActiveTexture(0);
-	Shader->StopUsage();
+			BravoTextureUnitManager::UnbindTexture(TextureUnit);
+			glBindVertexArray(0);
+			glActiveTexture(0);
+		Shader->StopUsage();
+	}
 }

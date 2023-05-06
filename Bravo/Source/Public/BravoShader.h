@@ -26,11 +26,6 @@ enum EBravoTextureType : int
 
 struct BravoMaterial
 {
-	BravoMaterial()
-	{
-		EmptyTexture = BravoAsset::Load<BravoTexture>("Textures\\black.png");
-	}
-
 	void Use()
 	{
 		for ( int i = 0; i < EBravoTextureType::NUM; ++i )
@@ -47,12 +42,9 @@ struct BravoMaterial
 			if ( Textures[i] )
 				Textures[i]->StopUsage();
 		}
-		if ( EmptyTexture )
-			EmptyTexture->StopUsage();
 	}
 
 	BravoTexturePtr Textures[NUM];
-	BravoTexturePtr EmptyTexture;
 	
 	float Shininess;
 };
@@ -63,6 +55,10 @@ typedef std::shared_ptr<BravoMaterial> BravoMaterialPtr;
 class BravoShader : public BravoAsset
 {
 public:
+	BravoShader(std::shared_ptr<class BravoAssetManager> _AssetManager) : 
+		BravoAsset(_AssetManager)
+	{}
+	~BravoShader();
 
 	struct Light
 	{
@@ -94,12 +90,16 @@ public:
 	void SetMaterial(const std::string& name, const BravoMaterialPtr& val) const;
 
 protected:
-	virtual void SetPath(const std::string& InPath) override;
-	virtual bool Load_Internal() override;
-	virtual void UnLoad_Internal() override;
+	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
 
-	bool LoadShader(GLenum ShaderType);
+	bool LoadShader(GLenum ShaderType, int& OutShader);
 	bool LinkProgramm();
+
+private:
+
+	BravoTexturePtr EmptyTexture = nullptr;
+
+	unsigned int ShaderID = 0;
 
 };
 

@@ -38,6 +38,7 @@ public:
 	std::shared_ptr<class BravoInput> GetInput() const;
 	std::shared_ptr<class BravoLightManager> GetLightManager() const;
 	std::shared_ptr<class BravoCamera> GetCamera() const;
+	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager; }
 
 	const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 
@@ -66,6 +67,8 @@ private:
 	std::map< BravoHandle, std::shared_ptr<BravoObject> > Objects;
 	std::map< BravoHandle, std::weak_ptr<BravoTickable> > TickableObjects;
 	std::vector< std::weak_ptr<class BravoActor> > Actors;
+
+	std::shared_ptr<class BravoAssetManager> AssetManager = nullptr;
 	
 
 	std::weak_ptr<class BravoLightManager> LightManager;

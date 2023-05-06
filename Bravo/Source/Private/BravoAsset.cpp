@@ -1,51 +1,38 @@
 #include "stdafx.h"
 #include "BravoAsset.h"
 
-void BravoAsset::SetPath(const std::string& InPath)
+BravoAsset::BravoAsset(std::shared_ptr<class BravoAssetManager> _AssetManager) : 
+	AssetManager(_AssetManager)
 {
-	Path = GetRunningDir() + BravoAssetConstants::ResourcesFolderPath + InPath;
 }
 
-TextureUnitSelector::TextureUnitSelector()
+bool BravoAsset::Initialize(const std::string& _Path, const std::vector<std::string>& _Params)
 {
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &(TextureUnitCount));
-	TextureUnitsStatus = new int[TextureUnitCount];
-	for ( int i = 0; i < TextureUnitCount; ++i )
-		TextureUnitsStatus[i] = 0;
-}
-
-TextureUnitSelector::~TextureUnitSelector()
-{
-	delete[] TextureUnitsStatus;
-}
-
-int TextureUnitSelector::BindTexture()
-{
-	int EmptyUnit = Instance().FindEmptyTextureUnit();
-	if ( EmptyUnit < 0 || EmptyUnit >= Instance().TextureUnitCount )
-		return -1;
-	
-	return EmptyUnit;
-}
-
-void TextureUnitSelector::UnbindTexture(int TextureUnit)
-{
-	if ( TextureUnit < 0 || TextureUnit >= Instance().TextureUnitCount )
-		return;
-	Instance().TextureUnitsStatus[TextureUnit] = 0;
-}
-
-int TextureUnitSelector::FindEmptyTextureUnit()
-{
-	for ( int i = 0; i < TextureUnitCount; ++i )
+	if ( bInitialized )
 	{
-		if ( TextureUnitsStatus[i] == 0 )
-		{
-			TextureUnitsStatus[i] = 1;
-			return i;
-		}
+		Log::LogMessage("Trying to initialize asset " + Path + " twice!", ELog::Warning);
+		return false;
 	}
 
-	Log::LogMessage("No empty texture units", ELog::Warning);
-	return -1;
+	Path = _Path;
+	if ( Initialize_Internal(_Params) )
+	{
+		bInitialized = true;
+	}
+	return bInitialized;
+}
+
+bool BravoAsset::LoadToGPU()
+{
+	if ( IsInitialized() && !IsLoadedToGPU() )
+	{
+		if ( LoadToGPU_Internal() )
+			bLoadedToGPU = true;
+	}
+	return bLoadedToGPU;
+}
+void BravoAsset::ReleaseFromGPU()
+{
+	ReleaseFromGPU_Internal();
+	bLoadedToGPU = false;
 }

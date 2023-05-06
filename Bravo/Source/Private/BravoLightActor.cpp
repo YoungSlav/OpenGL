@@ -2,46 +2,27 @@
 #include "BravoEngine.h"
 
 #include "BravoAsset.h"
+#include "BravoAssetManager.h"
 
-
-void BravoLightActor::Draw(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
+void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
 {
-	if ( Mesh )
+	if ( Mesh && Shader )
 	{
-		std::vector<std::shared_ptr<BravoMeshPart>>	MeshParts = Mesh->GetMeshParts();
-		for ( std::shared_ptr<BravoMeshPart>& part : MeshParts )
-		{
-			glm::mat4 model = TransformModelMatrix();
-	
-			if ( Shader )
-			{
-				if ( part->VAO != -1 )
-				{
-					Shader->Use();
-					Shader->SetMatrix4d("projection", CameraProjection);
-					Shader->SetMatrix4d("view", CameraView);
-					Shader->SetMatrix4d("model", model);
-					Shader->SetVector3d("lightColor", LightColor);
-        
-					// draw mesh
-					glBindVertexArray(part->VAO);
-					glDrawElements(GL_TRIANGLES, part->Indices.size(), GL_UNSIGNED_INT, 0);
-
-					glBindVertexArray(0);
-					glActiveTexture(0);
-					
-					Shader->StopUsage();
-				}
-			}
-		}
+		glm::mat4 model = TransformModelMatrix();
+		Shader->Use();
+			Shader->SetMatrix4d("projection", CameraProjection);
+			Shader->SetMatrix4d("view", CameraView);
+			Shader->SetMatrix4d("model", model);
+			Shader->SetVector3d("lightColor", LightColor);
+			Mesh->Render();
+		Shader->StopUsage();
 	}
 }
 
 void BravoLightActor::Init()
 {
-	
-	Shader = BravoAsset::Load<BravoShader>("LightSource");
-	
+	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\LightSource");
+	Shader->LoadToGPU();
 }
 
 void BravoLightActor::UpdateShadowMap()
@@ -62,15 +43,16 @@ void BravoLightActor::StopUsage()
 void BravoDirLightActor::Init()
 {
 	BravoLightActor::Init();
-	Mesh = BravoAsset::Load<BravoMesh>("primitives\\cone.fbx");
+	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
+	Mesh->LoadToGPU();
 
 	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Directional>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
 }
 void BravoDirLightActor::OnDestroy()
 {
-	Mesh->UnLoad();
-	Shader->UnLoad();
+	Mesh->ReleaseFromGPU();
+	Shader->ReleaseFromGPU();
 }
 
 void BravoDirLightActor::Use(BravoShaderPtr OnShader)
@@ -88,7 +70,8 @@ void BravoDirLightActor::StopUsage()
 void BravoPointLightActor::Init()
 {
 	BravoLightActor::Init();
-	Mesh = BravoAsset::Load<BravoMesh>("primitives\\sphere.fbx");
+	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
+	Mesh->LoadToGPU();
 
 	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Point>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
@@ -96,8 +79,8 @@ void BravoPointLightActor::Init()
 
 void BravoPointLightActor::OnDestroy()
 {
-	Mesh->UnLoad();
-	Shader->UnLoad();
+	Mesh->ReleaseFromGPU();
+	Shader->ReleaseFromGPU();
 }
 
 void BravoPointLightActor::Use(BravoShaderPtr OnShader)
@@ -119,7 +102,9 @@ void BravoPointLightActor::StopUsage()
 void BravoSpotLightActor::Init()
 {
 	BravoLightActor::Init();
-	Mesh = BravoAsset::Load<BravoMesh>("primitives\\cone.fbx");
+	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
+	Mesh->LoadToGPU();
+
 
 	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Spot>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
@@ -127,8 +112,8 @@ void BravoSpotLightActor::Init()
 
 void BravoSpotLightActor::OnDestroy()
 {
-	Mesh->UnLoad();
-	Shader->UnLoad();
+	Mesh->ReleaseFromGPU();
+	Shader->ReleaseFromGPU();
 }
 
 

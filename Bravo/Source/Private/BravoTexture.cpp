@@ -1,62 +1,71 @@
 #include "BravoTexture.h"
-#include "stb_image.h"
+#include "BravoTextureData.h"
+#include "BravoTextureUnitManager.h"
 #include "openGL.h"
 #include "stdafx.h"
 
-
-
-bool BravoTexture::Load_Internal()
+BravoTexture::~BravoTexture()
 {
-	int nrChannels;
-	unsigned char *data = stbi_load(Path.c_str(), &SizeX, &SizeY, &nrChannels, 0);
-	if (data)
+	if ( TextureID )
 	{
-		glGenTextures(1, & AssetHandle);
-		glBindTexture(GL_TEXTURE_2D,  AssetHandle);
-		// set the texture wrapping/filtering options (on the currently bound texture object)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glDeleteTextures(1, &TextureID);
+		TextureID = 0;
+	}
 
-		GLenum format;
-        if (nrChannels == 1)
-            format = GL_RED;
-        else if (nrChannels == 3)
-            format = GL_RGB;
-        else if (nrChannels == 4)
-            format = GL_RGBA;
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
+}
 
-		glTexImage2D(GL_TEXTURE_2D, 0, format, SizeX, SizeY, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+bool BravoTexture::Initialize_Internal(const std::vector<std::string>& _Params)
+{
+	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(Path));
+	return TextureData != nullptr && TextureData->bInitialized;
+}
+
+bool BravoTexture::LoadToGPU_Internal()
+{
+	if (TextureData->TextureData)
+	{
+		glGenTextures(1, &TextureID);
+		glBindTexture(GL_TEXTURE_2D,  TextureID);
+			// set the texture wrapping/filtering options (on the currently bound texture object)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+		glBindTexture(GL_TEXTURE_2D,  0);
+
+		return true;
 	}
 	else
 	{
-		Log::LogMessage("Failed to load texture \"" + Path + "\"", ELog::Error);
+		Log::LogMessage("Failed to load texture \"" + Path + "\" to GPU", ELog::Error);
 		return false;
 	}
-	stbi_image_free(data);
-	return true;
 }
-void BravoTexture::UnLoad_Internal()
+void BravoTexture::ReleaseFromGPU_Internal()
 {
 	StopUsage();
-	glDeleteTextures(1, & AssetHandle);
+	glDeleteTextures(1, &TextureID);
+	TextureID = 0;
 }
 
 void BravoTexture::Use()
 {
 	if ( TextureUnit < 0 )
-		TextureUnit = TextureUnitSelector::BindTexture();
+		TextureUnit = BravoTextureUnitManager::BindTexture();
 
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);
-	glBindTexture(GL_TEXTURE_2D,  AssetHandle);
+	glBindTexture(GL_TEXTURE_2D,  TextureID);
 }
 
 void BravoTexture::StopUsage()
 {
 	glBindTexture(GL_TEXTURE_2D,  0);
-	TextureUnitSelector::UnbindTexture(TextureUnit);
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	TextureUnit = -1;
 }
 

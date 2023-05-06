@@ -1,49 +1,35 @@
 #include "BravoInfinitePlaneActor.h"
 #include "BravoEngine.h"
 #include "BravoCamera.h"
+#include "BravoAssetManager.h"
 
 void BravoInfinitePlaneActor::Init()
 {
-	
-	Mesh = BravoAsset::Load<BravoMesh>("primitives\\plane.fbx");
-	Shader = BravoAsset::Load<BravoShader>("InfinitePlane");
+	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\plane.fbx");
+	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\InfinitePlane");
+
+	Mesh->LoadToGPU();
+	Shader->LoadToGPU();
 }
 
-void BravoInfinitePlaneActor::Draw(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
+void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
 {
-	if ( Mesh )
+	if ( Mesh && Shader )
 	{
-		std::vector<std::shared_ptr<BravoMeshPart>>	MeshParts = Mesh->GetMeshParts();
-		for ( std::shared_ptr<BravoMeshPart>& part : MeshParts )
-		{
-			glm::mat4 model = TransformModelMatrix();
-	
-			if ( Shader )
-			{
-				if ( part->VAO != -1 )
-				{
-					Shader->Use();
-					Shader->SetMatrix4d("projection", CameraProjection);
-					Shader->SetMatrix4d("view", CameraView);
-					Shader->SetVector1d("near", GetEngine()->GetCamera()->GetMinDrawingDistance());
-					Shader->SetVector1d("far", GetEngine()->GetCamera()->GetMaxDrawingDistance());
-        
-					// draw mesh
-					glBindVertexArray(part->VAO);
-						glDrawElements(GL_TRIANGLES, part->Indices.size(), GL_UNSIGNED_INT, 0);
-					glBindVertexArray(0);
-					glActiveTexture(0);
+		glm::mat4 model = TransformModelMatrix();
+		Shader->Use();
+			Shader->SetMatrix4d("projection", CameraProjection);
+			Shader->SetMatrix4d("view", CameraView);
+			Shader->SetVector1d("near", GetEngine()->GetCamera()->GetMinDrawingDistance());
+			Shader->SetVector1d("far", GetEngine()->GetCamera()->GetMaxDrawingDistance());
 
-					
-					Shader->StopUsage();
-				}
-			}
-		}
+			Mesh->Render();
+		Shader->StopUsage();
 	}
 }
 
 void BravoInfinitePlaneActor::OnDestroy()
 {
-	Shader->UnLoad();
-	Mesh->UnLoad();
+	Shader->ReleaseFromGPU();
+	Mesh->ReleaseFromGPU();
 }

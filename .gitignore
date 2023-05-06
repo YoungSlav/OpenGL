@@ -60,8 +60,11 @@ GLFW/Solution/
 
 Build/
 Intermediate/
+Resources/Shaders/
 Bravo/x64/
 Bravo/x86/
+
+
 */Debug/
 */CMakeFiles/
 

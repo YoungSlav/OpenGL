@@ -1,5 +1,6 @@
 #include "BravoSkyboxActor.h"
-
+#include "BravoAssetManager.h"
+#include "BravoEngine.h"
 
 void BravoSkyboxActor::SetCubemap(BravoCubemapPtr InCubemap)
 {
@@ -53,7 +54,7 @@ void BravoSkyboxActor::Init()
 		-1.0f, -1.0f,  1.0f,
 		+1.0f, -1.0f,  1.0f
 	};
-	Shader = BravoAsset::Load<BravoShader>("Skybox");
+	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Skybox");
 
 	glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -64,7 +65,7 @@ void BravoSkyboxActor::Init()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
-void BravoSkyboxActor::Draw(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
+void BravoSkyboxActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
 {
 	Shader->Use();
 	Cubemap->Use();
@@ -88,8 +89,8 @@ void BravoSkyboxActor::Draw(const glm::vec3& CameraLocation, const glm::mat4& Ca
 
 void BravoSkyboxActor::OnDestroy()
 {
-	Shader->UnLoad();
-	Cubemap->UnLoad();
+	Shader->ReleaseFromGPU();
+	Cubemap->ReleaseFromGPU();
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

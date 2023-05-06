@@ -23,6 +23,7 @@
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Private\BravoActor.cpp" />
     <ClCompile Include="Source\Private\BravoAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoAssetManager.cpp" />
     <ClCompile Include="Source\Private\BravoCamera.cpp" />
     <ClCompile Include="Source\Private\BravoCubemap.cpp" />
     <ClCompile Include="Source\Private\BravoEngine.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="Source\Private\BravoPlayer.cpp" />
     <ClCompile Include="Source\Private\BravoShadowMap.cpp" />
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp" />
+    <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShader.cpp" />
     <ClCompile Include="Source\Private\BravoTexture.cpp" />
@@ -48,6 +50,7 @@
     <ClInclude Include="Source\openGL.h" />
     <ClInclude Include="Source\Public\BravoActor.h" />
     <ClInclude Include="Source\Public\BravoAsset.h" />
+    <ClInclude Include="Source\Public\BravoAssetManager.h" />
     <ClInclude Include="Source\Public\BravoCamera.h" />
     <ClInclude Include="Source\Public\BravoCubemap.h" />
     <ClInclude Include="Source\Public\BravoEngine.h" />
@@ -64,6 +67,8 @@
     <ClInclude Include="Source\Public\BravoPlayer.h" />
     <ClInclude Include="Source\Public\BravoShadowMap.h" />
     <ClInclude Include="Source\Public\BravoSkyboxActor.h" />
+    <ClInclude Include="Source\Public\BravoTextureData.h" />
+    <ClInclude Include="Source\Public\BravoTextureUnitManager.h" />
     <ClInclude Include="Source\Public\Log.h" />
     <ClInclude Include="Source\Public\BravoShader.h" />
     <ClInclude Include="Source\Public\BravoTexture.h" />
@@ -159,9 +164,9 @@
       <AdditionalDependencies>assimp.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>rmdir ..\Build\Shaders\ /s /q
+      <Command>rmdir ..\Resources\Shaders\ /s /q
 
-xcopy Source\Shaders ..\Build\Shaders /e /i /h
+xcopy Source\Shaders ..\Resources\Shaders /e /i /h
 
 copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
 </Command>

@@ -4,15 +4,20 @@
 #include "BravoCamera.h"
 #include "BravoLightManager.h"
 #include "BravoRenderTarget.h"
+#include "BravoAssetManager.h"
 #include "openGL.h"
 
-
-std::weak_ptr<BravoEngine> _Engine;
-std::shared_ptr<BravoEngine> Engine()
+namespace GlobalEngine
 {
-	if( _Engine.expired() )
-		return nullptr;
-	return _Engine.lock();
+
+	std::weak_ptr<BravoEngine> _Engine;
+	std::shared_ptr<BravoEngine> Engine()
+	{
+		if( _Engine.expired() )
+			return nullptr;
+		return _Engine.lock();
+	}
+
 }
 
 BravoEngine::BravoEngine()
@@ -24,7 +29,9 @@ BravoEngine::BravoEngine()
 
 void BravoEngine::Init()
 {
-	_Engine = Self<BravoEngine>();
+	GlobalEngine::_Engine = Self<BravoEngine>();
+
+	AssetManager = std::shared_ptr<BravoAssetManager>(new BravoAssetManager());
 
 	Input = SpawnObject<BravoInput>();
 
@@ -95,10 +102,9 @@ void BravoEngine::UpdateViewport()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-
 		for ( auto& it : Actors )
 		{
-			it.lock()->Draw(Camera.lock()->GetLocation(), Camera.lock()->GetProjectionMatrix(), Camera.lock()->GetViewMatrix());
+			it.lock()->Render(Camera.lock()->GetLocation(), Camera.lock()->GetProjectionMatrix(), Camera.lock()->GetViewMatrix());
 		}
 		GetViewportRenderTarget()->StopUsage();
 	}
@@ -110,7 +116,7 @@ void BravoEngine::UpdateViewport()
 		glDisable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		GetViewportRenderTarget()->Draw();
+		GetViewportRenderTarget()->Render();
 	}
 	
 	glfwSwapBuffers(Window);
@@ -122,7 +128,7 @@ void BravoEngine::DrawShadowMap(std::shared_ptr<class BravoShader> Shader, const
 	for ( auto& it : Actors )
 	{
 		if ( !it.expired() )
-			it.lock()->DrawToShadowMap(Shader, LightPosition);
+			it.lock()->RenderDepthMap(Shader, LightPosition);
 	}
 }
 
@@ -179,7 +185,7 @@ void BravoEngine::CreateOpenGLWindow()
 
 	if ( std::shared_ptr<BravoRenderTarget> rt = SpawnObject<BravoRenderTarget>() )
 	{
-		rt->Setup(ViewportSize*2, BravoAsset::Load<BravoShader>("PostProccess"));
+		rt->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
 		ViewportRenderTarget = rt;
 	}
 	
@@ -191,8 +197,8 @@ void BravoEngine::CreateOpenGLWindow()
 
 void BravoEngine::Framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	if ( Engine() )
-		Engine()->Resize(glm::ivec2(width, height));
+	if ( GlobalEngine::Engine() )
+		GlobalEngine::Engine()->Resize(glm::ivec2(width, height));
 }
 
 void BravoEngine::ProcessInput(GLFWwindow *window)
@@ -202,8 +208,8 @@ void BravoEngine::ProcessInput(GLFWwindow *window)
 	float deltaTime = newTime - oldTime;
 	oldTime = newTime;
 
-	if ( Engine() && Engine()->GetInput() )
-		Engine()->GetInput()->ProcessInput(window, deltaTime);
+	if ( GlobalEngine::Engine() && GlobalEngine::Engine()->GetInput() )
+		GlobalEngine::Engine()->GetInput()->ProcessInput(window, deltaTime);
 }
 
 void BravoEngine::Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -213,8 +219,8 @@ void BravoEngine::Scroll_callback(GLFWwindow* window, double xoffset, double yof
 	float deltaTime = newTime - oldTime;
 	oldTime = newTime;
 
-	if ( Engine() && Engine()->GetInput() )
-		Engine()->GetInput()->OnMouseScroll(window, (float)xoffset, (float)yoffset, deltaTime);
+	if ( GlobalEngine::Engine() && GlobalEngine::Engine()->GetInput() )
+		GlobalEngine::Engine()->GetInput()->OnMouseScroll(window, (float)xoffset, (float)yoffset, deltaTime);
 }
 
 void BravoEngine::Mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -224,8 +230,8 @@ void BravoEngine::Mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	float deltaTime = newTime - oldTime;
 	oldTime = newTime;
 
-	if ( Engine() && Engine()->GetInput() )
-		Engine()->GetInput()->OnMouseMove(window, (float)xpos, (float)ypos, deltaTime);
+	if ( GlobalEngine::Engine() && GlobalEngine::Engine()->GetInput() )
+		GlobalEngine::Engine()->GetInput()->OnMouseMove(window, (float)xpos, (float)ypos, deltaTime);
 }
 
 void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)

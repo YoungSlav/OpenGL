@@ -1,40 +1,43 @@
 #include "BravoCubemap.h"
-#include "stb_image.h"
+#include "BravoTextureUnitManager.h"
+#include "BravoTextureData.h"
 #include "openGL.h"
 #include "stdafx.h"
 
-bool BravoCubemap::Load_Internal()
+BravoCubemap::~BravoCubemap()
 {
-	glGenTextures(1, &AssetHandle);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, AssetHandle);
-		int width, height, nrChannels;
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
+	glDeleteTextures(1, &TextureID);
+	TextureID = 0;
+}
 
+bool BravoCubemap::Initialize_Internal(const std::vector<std::string>& _Params)
+{
+	if ( _Params.size() != 6 )
+	{
+		Log::LogMessage("Invalid number of textures to initialize cubemap: " + Path, ELog::Error);
+		return false;
+	}
+	bool success = true;
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(Path + _Params[i]));
 
-		stbi_set_flip_vertically_on_load(false);
+		success = success && Textures[i] != nullptr && Textures[i]->bInitialized;
+	}
+
+	return success;
+}
+
+bool BravoCubemap::LoadToGPU_Internal()
+{
+	glGenTextures(1, &TextureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, TextureID);
+
 		for (unsigned int i = 0; i < 6; i++)
 		{
-			std::string texturePath = Path + AdditionalParams[i];
-			unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
-			if (data)
-			{
-				GLenum format;
-				if (nrChannels == 1)
-					format = GL_RED;
-				else if (nrChannels == 3)
-					format = GL_RGB;
-				else if (nrChannels == 4)
-					format = GL_RGBA;
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-				stbi_image_free(data);
-			}
-			else
-			{
-				Log::LogMessage("Cubemap texture failed to load at path: "  + AdditionalParams[i], ELog::Error);
-				stbi_image_free(data);
-
-				glDeleteTextures(1, &AssetHandle);
-				return false;
-			}
+			if ( Textures[i] && Textures[i]->TextureData )
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, Textures[i]->TextureFormat, Textures[i]->SizeX, Textures[i]->SizeY, 0, Textures[i]->TextureFormat, GL_UNSIGNED_BYTE, Textures[i]->TextureData);
 		}
 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -47,24 +50,25 @@ bool BravoCubemap::Load_Internal()
 
 	return true;
 }
-void BravoCubemap::UnLoad_Internal()
+void BravoCubemap::ReleaseFromGPU_Internal()
 {
 	StopUsage();
-	glDeleteTextures(1, &AssetHandle);
+	glDeleteTextures(1, &TextureID);
 }
 
 
 void BravoCubemap::Use()
 {
 	if ( TextureUnit < 0 )
-		TextureUnit = TextureUnitSelector::BindTexture();
+		TextureUnit = BravoTextureUnitManager::BindTexture();
 
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);
-	glBindTexture(GL_TEXTURE_CUBE_MAP,  AssetHandle);
+	glBindTexture(GL_TEXTURE_CUBE_MAP,  TextureID);
 }
+
 void BravoCubemap::StopUsage()
 {
 	glBindTexture(GL_TEXTURE_CUBE_MAP,  0);
-	TextureUnitSelector::UnbindTexture(TextureUnit);
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	TextureUnit = -1;
 }

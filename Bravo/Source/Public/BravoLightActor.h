@@ -24,7 +24,7 @@ public:
 
 protected:
 	virtual void Init() override;
-	virtual void Draw(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const override;
+	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const override;
 	
 	std::weak_ptr<BravoShadowMap> ShadowMap;
 	BravoMeshPtr Mesh;

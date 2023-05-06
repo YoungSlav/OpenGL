@@ -103,6 +103,12 @@
     <ClCompile Include="Source\Private\BravoObject.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoAssetManager.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -174,6 +180,15 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\SharedFromThis.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoAssetManager.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoTextureData.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoTextureUnitManager.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
   </ItemGroup>

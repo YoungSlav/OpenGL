@@ -1,43 +1,55 @@
 #include "BravoShader.h"
+#include "BravoAssetManager.h"
 
 #include <windows.h>
 #include <fstream>
 #include <sstream>
 
 
-bool BravoShader::Load_Internal()
+bool BravoShader::Initialize_Internal(const std::vector<std::string>& _Params)
 {
-	AssetHandle = glCreateProgram();
-	if ( LoadShader(GL_VERTEX_SHADER) &&
-		LoadShader(GL_FRAGMENT_SHADER) &&
-		LoadShader(GL_GEOMETRY_SHADER) &&
+	ShaderID = glCreateProgram();
+	int VertShader = 0;
+	int GeomShader = 0;
+	int FragShader = 0;
+
+	EmptyTexture = GetAssetManager()->LoadAsset<BravoTexture>("Textures\\black.png");
+
+	if ( LoadShader(GL_VERTEX_SHADER, VertShader) &&
+		LoadShader(GL_FRAGMENT_SHADER, FragShader) &&
+		LoadShader(GL_GEOMETRY_SHADER, GeomShader) &&
 		LinkProgramm() )
+	{
+		if ( VertShader ) glDeleteShader(VertShader);
+		if ( GeomShader ) glDeleteShader(GeomShader);
+		if ( FragShader ) glDeleteShader(FragShader);
+
 		return true;
+	}
 	return false;
 }
-void BravoShader::UnLoad_Internal()
+
+BravoShader::~BravoShader()
 {
-	StopUsage();
-	glDeleteProgram(AssetHandle);
+	glUseProgram(0);
+	glDeleteProgram(ShaderID);
 }
 
 void BravoShader::Use()
 {
-	glUseProgram(AssetHandle);
+	glUseProgram(ShaderID);
 }
 
 void BravoShader::StopUsage()
 {
 	glUseProgram(0);
+	if( EmptyTexture )
+		EmptyTexture->StopUsage();
 }
 
-void BravoShader::SetPath(const std::string& InPath)
+bool BravoShader::LoadShader(GLenum ShaderType, int& OutShader)
 {
-	Path = GetRunningDir() + BravoAssetConstants::ShadersFolderPath + InPath;
-}
-
-bool BravoShader::LoadShader(GLenum ShaderType)
-{
+	OutShader = 0;
 	std::string RealShaderName;
 
 	if ( ShaderType == GL_VERTEX_SHADER )
@@ -91,9 +103,8 @@ bool BravoShader::LoadShader(GLenum ShaderType)
 		return false;
 	}
 		
-	glAttachShader(AssetHandle, Shader);
-
-	glDeleteShader(Shader);
+	glAttachShader(ShaderID, Shader);
+	OutShader = Shader;
 
 	return true;
 }
@@ -102,11 +113,11 @@ bool BravoShader::LinkProgramm()
 {
 	int success;
 	char infoLog[512];
-	glLinkProgram(AssetHandle);
+	glLinkProgram(ShaderID);
     // check for linking errors
-    glGetProgramiv(AssetHandle, GL_LINK_STATUS, &success);
+    glGetProgramiv(ShaderID, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(AssetHandle, 512, NULL, infoLog);
+        glGetProgramInfoLog(ShaderID, 512, NULL, infoLog);
 		Log::LogMessage("PROGRAM::LINKING_FAILED", ELog::Error);
 		Log::LogMessage(infoLog, ELog::Error);
 		return false;
@@ -120,7 +131,7 @@ void BravoShader::SetTexture(const std::string& name, BravoTexturePtr val) const
 	if ( val )
 	{
 		val->Use();
-		glUniform1i(glGetUniformLocation(AssetHandle, name.c_str()), val->GetTextureUnit());
+		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val->GetTextureUnit());
 	}
 	else
 	{
@@ -133,7 +144,7 @@ void BravoShader::SetCubemap(const std::string& name, BravoCubemapPtr val) const
 	if ( val )
 	{
 		val->Use();
-		glUniform1i(glGetUniformLocation(AssetHandle, name.c_str()), val->GetTextureUnit());
+		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val->GetTextureUnit());
 	}
 	else
 	{
@@ -143,47 +154,47 @@ void BravoShader::SetCubemap(const std::string& name, BravoCubemapPtr val) const
 
 void BravoShader::SetBool(const std::string& name, const bool val) const
 {
-	glUniform1i(glGetUniformLocation(AssetHandle, name.c_str()), (int)val); 
+	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int)val); 
 }
 
 void BravoShader::SetInt(const std::string& name, const int val) const
 {
-	glUniform1i(glGetUniformLocation(AssetHandle, name.c_str()), val);
+	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);
 }
 
 void BravoShader::SetVector1d(const std::string& name, const float val) const
 {
-	glUniform1f(glGetUniformLocation(AssetHandle, name.c_str()), val);
+	glUniform1f(glGetUniformLocation(ShaderID, name.c_str()), val);
 }
 
 void BravoShader::SetVector2d(const std::string& name, const glm::vec2& val) const
 {
-	glUniform2f(glGetUniformLocation(AssetHandle, name.c_str()), val.x, val.y);
+	glUniform2f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y);
 }
 
 void BravoShader::SetVector3d(const std::string& name, const glm::vec3& val) const
 {
-	glUniform3f(glGetUniformLocation(AssetHandle, name.c_str()), val.x, val.y, val.z);
+	glUniform3f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y, val.z);
 }
 
 void BravoShader::SetVector4d(const std::string& name, const glm::vec4& val) const
 {
-	glUniform4f(glGetUniformLocation(AssetHandle, name.c_str()), val.x, val.y, val.z, val.w);
+	glUniform4f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y, val.z, val.w);
 }
 
 void BravoShader::SetMatrix2d(const std::string& name, const glm::mat2& val) const
 {
-	glUniformMatrix2fv(glGetUniformLocation(AssetHandle, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
+	glUniformMatrix2fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
 void BravoShader::SetMatrix3d(const std::string& name, const glm::mat3& val) const
 {
-	glUniformMatrix3fv(glGetUniformLocation(AssetHandle, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
+	glUniformMatrix3fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
 void BravoShader::SetMatrix4d(const std::string& name, const glm::mat4& val) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(AssetHandle, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
+	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
 void BravoShader::SetMaterial(const std::string& name, const BravoMaterialPtr& val) const
@@ -215,7 +226,7 @@ void BravoShader::SetMaterial(const std::string& name, const BravoMaterialPtr& v
 			if ( val->Textures[i] )
 				SetTexture(name + "." + textureName, val->Textures[i]);
 			else
-				SetTexture(name + "." + textureName, val->EmptyTexture);
+				SetTexture(name + "." + textureName, EmptyTexture);
 		}
 		SetVector1d(name + ".shininess", val->Shininess);
 	}
