@@ -94,7 +94,7 @@ void BravoRenderTarget::Render()
 	if ( Shader )
 	{
 		Shader->Use();
-			int TextureUnit = BravoTextureUnitManager::BindTexture();
+			int32 TextureUnit = BravoTextureUnitManager::BindTexture();
 			glActiveTexture(GL_TEXTURE0 + TextureUnit);
 			glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
 			Shader->SetInt("screenTexture", 0);

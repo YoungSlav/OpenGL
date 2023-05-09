@@ -22,10 +22,10 @@ protected:
 
 	virtual void OnDestroy() override;
 
-	unsigned int FBO = 0, RBO = 0;
-	unsigned int PlaneVAO = 0, PlaneVBO = 0;
+	uint32 FBO = 0, RBO = 0;
+	uint32 PlaneVAO = 0, PlaneVBO = 0;
 
-	unsigned int TextureColorBuffer = 0;
+	uint32 TextureColorBuffer = 0;
 
 	std::shared_ptr<class BravoShader> Shader;
 

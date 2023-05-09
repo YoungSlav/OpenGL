@@ -17,7 +17,7 @@ public:
 	virtual void Use() override;
 	virtual void StopUsage() override;
 
-	inline const int GetTextureUnit() const { return TextureUnit; }
+	inline const int32 GetTextureUnit() const { return TextureUnit; }
 	inline std::shared_ptr<class BravoTextureData> GetTextureData() const { return TextureData; }
 
 protected:
@@ -29,8 +29,8 @@ protected:
 	std::shared_ptr<class BravoTextureData> TextureData;
 
 private:
-	unsigned int TextureID = 0;
-	int TextureUnit = -1;
+	GLuint TextureID = 0;
+	int32 TextureUnit = -1;
 };
 
 typedef std::shared_ptr<BravoTexture> BravoTexturePtr;

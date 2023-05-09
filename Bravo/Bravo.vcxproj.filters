@@ -109,6 +109,18 @@
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoHUD.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoFont.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\stb_rect_pack.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -189,6 +201,24 @@
       <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoHUD.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\stb_truetype.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\stb_rect_pack.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoFont.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\stb_image_write.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoTypes.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
   </ItemGroup>

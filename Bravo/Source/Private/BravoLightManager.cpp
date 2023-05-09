@@ -30,7 +30,7 @@ void BravoLightManager::RegisterLightActor(std::shared_ptr<BravoLightActor> Ligh
 }
 void BravoLightManager::RemoveLightActor(std::shared_ptr<BravoActor> Actor)
 {
-	for ( unsigned int i = 0; i < SpotLights.size(); ++i )
+	for ( uint32 i = 0; i < SpotLights.size(); ++i )
 	{
 		if ( SpotLights[i].lock() == Actor )
 		{
@@ -39,7 +39,7 @@ void BravoLightManager::RemoveLightActor(std::shared_ptr<BravoActor> Actor)
 		}
 	}
 	
-	for ( unsigned int i = 0; i < PointLights.size(); ++i )
+	for ( uint32 i = 0; i < PointLights.size(); ++i )
 	{
 		if ( PointLights[i].lock() == Actor )
 		{
@@ -56,7 +56,7 @@ void BravoLightManager::UpdateShaderPaths()
 	if ( !DirectionalLight.expired() )
 		DirectionalLight.lock()->SetShaderPath("dirLight.");
 
-	for ( unsigned int i = 0; i < SpotLights.size(); ++i )
+	for ( uint32 i = 0; i < SpotLights.size(); ++i )
 	{
 		if ( !SpotLights[i].expired() )
 		{
@@ -64,7 +64,7 @@ void BravoLightManager::UpdateShaderPaths()
 		}
 	}
 
-	for ( unsigned int i = 0; i < PointLights.size(); ++i )
+	for ( uint32 i = 0; i < PointLights.size(); ++i )
 	{
 		if ( !PointLights[i].expired() )
 		{

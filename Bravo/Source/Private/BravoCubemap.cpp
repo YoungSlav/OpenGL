@@ -19,7 +19,7 @@ bool BravoCubemap::Initialize_Internal(const std::vector<std::string>& _Params)
 		return false;
 	}
 	bool success = true;
-	for (unsigned int i = 0; i < 6; i++)
+	for (uint32 i = 0; i < 6; i++)
 	{
 		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(Path + _Params[i]));
 
@@ -34,7 +34,7 @@ bool BravoCubemap::LoadToGPU_Internal()
 	glGenTextures(1, &TextureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, TextureID);
 
-		for (unsigned int i = 0; i < 6; i++)
+		for (uint32 i = 0; i < 6; i++)
 		{
 			if ( Textures[i] && Textures[i]->TextureData )
 				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, Textures[i]->TextureFormat, Textures[i]->SizeX, Textures[i]->SizeY, 0, Textures[i]->TextureFormat, GL_UNSIGNED_BYTE, Textures[i]->TextureData);

@@ -22,5 +22,5 @@ protected:
 	BravoShaderPtr Shader;
 	BravoCubemapPtr Cubemap;
 
-	unsigned int VAO = 0, VBO = 0;
+	uint32 VAO = 0, VBO = 0;
 };

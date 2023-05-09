@@ -45,7 +45,7 @@ void BravoPlayer::Tick(float DeltaTime)
 	Velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-void BravoPlayer::InputKey(int Key, bool bPressed, float DeltaTime)
+void BravoPlayer::InputKey(int32 Key, bool bPressed, float DeltaTime)
 {
 	static const float sensitivity = 2.5f;
 	glm::vec3 front;
@@ -54,17 +54,17 @@ void BravoPlayer::InputKey(int Key, bool bPressed, float DeltaTime)
     front.z = sin(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.z));
     front = glm::normalize(front);
 
-	glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));
+	glm::vec3 up = BravoMath::upV;
 	
 	if( Key == GLFW_KEY_W && bPressed )
 		Velocity += sensitivity * front;
 	if( Key == GLFW_KEY_S && bPressed )
 		Velocity -= sensitivity * front;
 	if( Key == GLFW_KEY_A && bPressed )
-		Velocity -= sensitivity * right;
-	if( Key == GLFW_KEY_D && bPressed )
 		Velocity += sensitivity * right;
+	if( Key == GLFW_KEY_D && bPressed )
+		Velocity -= sensitivity * right;
 	if( Key == GLFW_KEY_E && bPressed )
 		Velocity += sensitivity * up;
 	if( Key == GLFW_KEY_Q && bPressed )
@@ -97,7 +97,7 @@ void BravoPlayer::InputMouseMove(float DeltaX, float DeltaY, float DeltaTime)
 void BravoPlayer::InputMouseScroll(float DeltaX, float DeltaY, float DeltaTime)
 {
 	static const float sensitivity = 1.0f;
-	int delta = (int)(DeltaY / glm::abs(DeltaY));
+	int32 delta = (int32)(DeltaY / glm::abs(DeltaY));
 	MoveSpeed = glm::clamp(MoveSpeed + sensitivity * delta, MinMoveSpeed, MaxMoveSpeed);
 	Log::LogMessage(std::to_string(MoveSpeed));
 }

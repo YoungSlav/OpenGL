@@ -9,9 +9,9 @@
 bool BravoShader::Initialize_Internal(const std::vector<std::string>& _Params)
 {
 	ShaderID = glCreateProgram();
-	int VertShader = 0;
-	int GeomShader = 0;
-	int FragShader = 0;
+	int32 VertShader = 0;
+	int32 GeomShader = 0;
+	int32 FragShader = 0;
 
 	EmptyTexture = GetAssetManager()->LoadAsset<BravoTexture>("Textures\\black.png");
 
@@ -47,7 +47,7 @@ void BravoShader::StopUsage()
 		EmptyTexture->StopUsage();
 }
 
-bool BravoShader::LoadShader(GLenum ShaderType, int& OutShader)
+bool BravoShader::LoadShader(GLenum ShaderType, int32& OutShader)
 {
 	OutShader = 0;
 	std::string RealShaderName;
@@ -86,13 +86,13 @@ bool BravoShader::LoadShader(GLenum ShaderType, int& OutShader)
 	shaderFile.close();
 	std::string ShaderSource = buffer.str();
 
-	int Shader = glCreateShader(ShaderType);
-	const char *c_str = ShaderSource.c_str();
+	int32 Shader = glCreateShader(ShaderType);
+	const int8 *c_str = ShaderSource.c_str();
 	glShaderSource(Shader, 1, &c_str, NULL);
 	glCompileShader(Shader);
 	// check for shader compile errors
-	int success;
-	char infoLog[512];
+	int32 success;
+	int8 infoLog[512];
 	glGetShaderiv(Shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
@@ -111,8 +111,8 @@ bool BravoShader::LoadShader(GLenum ShaderType, int& OutShader)
 
 bool BravoShader::LinkProgramm()
 {
-	int success;
-	char infoLog[512];
+	int32 success;
+	int8 infoLog[512];
 	glLinkProgram(ShaderID);
     // check for linking errors
     glGetProgramiv(ShaderID, GL_LINK_STATUS, &success);
@@ -154,10 +154,10 @@ void BravoShader::SetCubemap(const std::string& name, BravoCubemapPtr val) const
 
 void BravoShader::SetBool(const std::string& name, const bool val) const
 {
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int)val); 
+	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int32)val); 
 }
 
-void BravoShader::SetInt(const std::string& name, const int val) const
+void BravoShader::SetInt(const std::string& name, const int32 val) const
 {
 	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);
 }
@@ -201,7 +201,7 @@ void BravoShader::SetMaterial(const std::string& name, const BravoMaterialPtr& v
 {
 	if ( val )
 	{
-		for ( int i = 0; i < EBravoTextureType::NUM; ++i )
+		for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
 		{
 			EBravoTextureType type = (EBravoTextureType)i;
 			std::string textureName;

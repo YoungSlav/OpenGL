@@ -9,40 +9,18 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
+#include "assimp/color4.h"
 #include <assimp/postprocess.h>
 
-namespace MeshConstants
+
+struct Vertex
 {
-	const std::string ResourcesFolderPath = "Resources\\";
-}
-
-class BravoMeshPart
-{
-public:
-	BravoMeshPart(aiMesh *mesh, const aiScene *scene);
-	~BravoMeshPart();
-
-
-	void LoadToGPU();
-	void Render();
-	void ReleaseFromGPU();
-
-private:
-	struct Vertex
-	{
-		glm::vec3 Position;
-		glm::vec3 Normal;
-		glm::vec2 TexCoords;
-		glm::vec3 Tangent;
-		glm::vec3 Bitangent;
-	};
-
-	std::vector<Vertex> Vertices;
-	std::vector<unsigned int> Indices;
-
-	unsigned int VAO = 0;	// vertex array buffer (holds both vertex attributes and indices)
-	unsigned int VBO = 0;	// vertex attribute buffer
-	unsigned int EBO = 0;	// index buffer
+	glm::vec3 Position;
+	glm::vec3 Normal;
+	glm::vec2 TexCoords;
+	glm::vec3 Tangent;
+	glm::vec3 Bitangent;
+	glm::vec4 Color;
 };
 
 class BravoMesh : public BravoAsset
@@ -66,10 +44,17 @@ protected:
 
 private:
 	void ProcessNode(aiNode *node, const aiScene *scene);
-	std::shared_ptr<BravoMeshPart> ProcessMesh(aiMesh *mesh, const aiScene *scene);
 
 protected:
-	std::vector<std::shared_ptr<BravoMeshPart>>	MeshParts;
+
+	std::vector<Vertex> Vertices;
+	std::vector<uint32> Indices;
+
+	GLuint VAO = 0;	// vertex array buffer (holds both vertex attributes and indices)
+	GLuint VBO = 0;	// vertex attribute buffer
+	GLuint EBO = 0;	// index buffer
+
+
 	BravoMaterialPtr Material;
 };
 

@@ -4,31 +4,31 @@
 
 BravoTextureUnitManager::BravoTextureUnitManager()
 {
-	int TextureUnitCount = 0;
+	int32 TextureUnitCount = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &(TextureUnitCount));
 	TextureUnits.resize(TextureUnitCount, false);
 }
 
-int BravoTextureUnitManager::BindTexture()
+int32 BravoTextureUnitManager::BindTexture()
 {
-	int EmptyUnit = Instance().FindEmptyTextureUnit();
+	int32 EmptyUnit = Instance().FindEmptyTextureUnit();
 	
-	if ( EmptyUnit < 0 || EmptyUnit >= (int)Instance().TextureUnits.size() )
+	if ( EmptyUnit < 0 || EmptyUnit >= (int32)Instance().TextureUnits.size() )
 		return -1;
 	
 	return EmptyUnit;
 }
 
-void BravoTextureUnitManager::UnbindTexture(int TextureUnit)
+void BravoTextureUnitManager::UnbindTexture(int32 TextureUnit)
 {
-	if ( TextureUnit < 0 || TextureUnit >= (int)Instance().TextureUnits.size() )
+	if ( TextureUnit < 0 || TextureUnit >= (int32)Instance().TextureUnits.size() )
 		return;
 	Instance().TextureUnits[TextureUnit] = false;
 }
 
-int BravoTextureUnitManager::FindEmptyTextureUnit()
+int32 BravoTextureUnitManager::FindEmptyTextureUnit()
 {
-	for ( unsigned int i = 0; i < TextureUnits.size(); ++i )
+	for ( uint32 i = 0; i < TextureUnits.size(); ++i )
 	{
 		if ( !TextureUnits[i] )
 		{

@@ -27,7 +27,9 @@
     <ClCompile Include="Source\Private\BravoCamera.cpp" />
     <ClCompile Include="Source\Private\BravoCubemap.cpp" />
     <ClCompile Include="Source\Private\BravoEngine.cpp" />
+    <ClCompile Include="Source\Private\BravoFont.cpp" />
     <ClCompile Include="Source\Private\BravoGameInstance.cpp" />
+    <ClCompile Include="Source\Private\BravoHUD.cpp" />
     <ClCompile Include="Source\Private\BravoInfinitePlaneActor.cpp" />
     <ClCompile Include="Source\Private\BravoInput.cpp" />
     <ClCompile Include="Source\Private\BravoLightActor.cpp" />
@@ -45,6 +47,8 @@
     <ClCompile Include="Source\Private\BravoShader.cpp" />
     <ClCompile Include="Source\Private\BravoTexture.cpp" />
     <ClCompile Include="Source\ThirdParty\stb_image.cpp" />
+    <ClCompile Include="Source\ThirdParty\stb_rect_pack.cpp" />
+    <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -54,7 +58,9 @@
     <ClInclude Include="Source\Public\BravoCamera.h" />
     <ClInclude Include="Source\Public\BravoCubemap.h" />
     <ClInclude Include="Source\Public\BravoEngine.h" />
+    <ClInclude Include="Source\Public\BravoFont.h" />
     <ClInclude Include="Source\Public\BravoGameInstance.h" />
+    <ClInclude Include="Source\Public\BravoHUD.h" />
     <ClInclude Include="Source\Public\BravoInfinitePlaneActor.h" />
     <ClInclude Include="Source\Public\BravoInput.h" />
     <ClInclude Include="Source\Public\BravoLightActor.h" />
@@ -69,12 +75,16 @@
     <ClInclude Include="Source\Public\BravoSkyboxActor.h" />
     <ClInclude Include="Source\Public\BravoTextureData.h" />
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h" />
+    <ClInclude Include="Source\Public\BravoTypes.h" />
     <ClInclude Include="Source\Public\Log.h" />
     <ClInclude Include="Source\Public\BravoShader.h" />
     <ClInclude Include="Source\Public\BravoTexture.h" />
     <ClInclude Include="Source\Public\SharedFromThis.h" />
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\ThirdParty\stb_image.h" />
+    <ClInclude Include="Source\ThirdParty\stb_image_write.h" />
+    <ClInclude Include="Source\ThirdParty\stb_rect_pack.h" />
+    <ClInclude Include="Source\ThirdParty\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\Default.frag" />
@@ -152,7 +162,12 @@
     <IntDir>$(SolutionDir)\Intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PublicModuleDirectories>D:\Work\opengl\ThirdParty\Include;$(PublicModuleDirectories)</PublicModuleDirectories>
+    <PublicModuleDirectories>
+    </PublicModuleDirectories>
+    <OutDir>$(SolutionDir)\Build\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\</IntDir>
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -189,6 +204,9 @@ copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
     <PostBuildEvent>
       <Command>./CopyShaders.bat</Command>
     </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>assimp.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

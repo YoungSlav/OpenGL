@@ -2,7 +2,7 @@
 #include "BravoEngine.h"
 #include "BravoMath.h"
 
-glm::mat4 BravoActor::TransformModelMatrix() const
+glm::mat4 BravoActor::GetTransformMatrix() const
 {
 	glm::mat4 model;
 	model = glm::translate(model, Location);

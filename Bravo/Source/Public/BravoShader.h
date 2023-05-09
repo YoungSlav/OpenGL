@@ -13,7 +13,7 @@ namespace ShaderProgrammConstancts
 }
 
 
-enum EBravoTextureType : int
+enum EBravoTextureType : int32
 {
 	diffuse,
 	specular,
@@ -28,7 +28,7 @@ struct BravoMaterial
 {
 	void Use()
 	{
-		for ( int i = 0; i < EBravoTextureType::NUM; ++i )
+		for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
 		{
 			if ( Textures[i] )
 				Textures[i]->Use();
@@ -37,7 +37,7 @@ struct BravoMaterial
 
 	void StopUsage()
 	{
-		for ( int i = 0; i < EBravoTextureType::NUM; ++i )
+		for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
 		{
 			if ( Textures[i] )
 				Textures[i]->StopUsage();
@@ -77,7 +77,7 @@ public:
 	void SetTexture(const std::string& name, BravoTexturePtr val) const;
 	void SetCubemap(const std::string& name, BravoCubemapPtr val) const;
 	void SetBool(const std::string& name, const bool val) const;
-	void SetInt(const std::string& name, const int val) const;
+	void SetInt(const std::string& name, const int32 val) const;
 	void SetVector1d(const std::string& name, const float val) const;
 	void SetVector2d(const std::string& name, const glm::vec2& val) const;
 	void SetVector3d(const std::string& name, const glm::vec3& val) const;
@@ -92,14 +92,14 @@ public:
 protected:
 	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
 
-	bool LoadShader(GLenum ShaderType, int& OutShader);
+	bool LoadShader(GLenum ShaderType, int32& OutShader);
 	bool LinkProgramm();
 
 private:
 
 	BravoTexturePtr EmptyTexture = nullptr;
 
-	unsigned int ShaderID = 0;
+	GLuint ShaderID = 0;
 
 };
 

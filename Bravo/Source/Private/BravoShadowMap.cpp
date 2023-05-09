@@ -74,7 +74,7 @@ void BravoShadowMap_Cube::Setup(const glm::ivec2& InSize)
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, DepthCubemap);
 
-		for (unsigned int i = 0; i < 6; ++i)
+		for (uint32 i = 0; i < 6; ++i)
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
 				Size.x, Size.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -114,7 +114,7 @@ void BravoShadowMap_Cube::OnDestroy()
 	glDeleteTextures(1, &DepthCubemap);
 }
 
-void BravoShadowMap_Directional::Draw(std::shared_ptr<class BravoLightActor> Owner)
+void BravoShadowMap_Directional::Render(std::shared_ptr<class BravoLightActor> Owner)
 {
 	float NearPlane = 1.0f;
 	float FarPlane = 50.0f;
@@ -132,14 +132,14 @@ void BravoShadowMap_Directional::Draw(std::shared_ptr<class BravoLightActor> Own
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		GetEngine()->DrawShadowMap(Shader, LightPosition);
+		GetEngine()->RenderDepthMap(Shader, LightPosition);
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	Shader->StopUsage();
 }
 
-void BravoShadowMap_Spot::Draw(std::shared_ptr<class BravoLightActor> Owner)
+void BravoShadowMap_Spot::Render(std::shared_ptr<class BravoLightActor> Owner)
 {
 	float NearPlane = 0.1f;
 	float FarPlane = 50.0f;
@@ -164,13 +164,13 @@ void BravoShadowMap_Spot::Draw(std::shared_ptr<class BravoLightActor> Owner)
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		GetEngine()->DrawShadowMap(Shader, LightPosition);
+		GetEngine()->RenderDepthMap(Shader, LightPosition);
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	Shader->StopUsage();
 }
-void BravoShadowMap_Point::Draw(std::shared_ptr<class BravoLightActor> Owner)
+void BravoShadowMap_Point::Render(std::shared_ptr<class BravoLightActor> Owner)
 {
 	glm::mat4 ShadowProjection;
 	
@@ -198,14 +198,14 @@ void BravoShadowMap_Point::Draw(std::shared_ptr<class BravoLightActor> Owner)
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Shader->Use();
-		for (unsigned int i = 0; i < 6; ++i)
+		for (uint32 i = 0; i < 6; ++i)
 			Shader->SetMatrix4d("shadowMatrices[" + std::to_string(i) + "]", ShadowTransforms[i]);
 
 		Shader->SetVector1d("far_plane", FarPlane);
 		Shader->SetVector3d("lightPos", LightPosition);
 		
 		// render scene
-		GetEngine()->DrawShadowMap(Shader, LightPosition);
+		GetEngine()->RenderDepthMap(Shader, LightPosition);
 
 		Shader->StopUsage();
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

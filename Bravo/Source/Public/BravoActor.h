@@ -29,13 +29,13 @@ protected:
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const {}
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const {}
 
-	glm::mat4 TransformModelMatrix() const;
+	glm::mat4 GetTransformMatrix() const;
 
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	int RenderPriority = 0;
+	int32 RenderPriority = 0;
 
 private:
 };

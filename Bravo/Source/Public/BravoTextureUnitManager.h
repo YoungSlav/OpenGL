@@ -5,8 +5,8 @@ class BravoTextureUnitManager
 {
 public:
 	BravoTextureUnitManager();
-	static int BindTexture();
-	static void UnbindTexture(int TextureUnit);
+	static int32 BindTexture();
+	static void UnbindTexture(int32 TextureUnit);
 
 protected:
 	static BravoTextureUnitManager& Instance()
@@ -15,7 +15,7 @@ protected:
 		return UnitSelector;
 	}
 
-	int FindEmptyTextureUnit();
+	int32 FindEmptyTextureUnit();
 
 private:
 	std::vector<bool> TextureUnits;

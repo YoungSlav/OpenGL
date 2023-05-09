@@ -8,7 +8,7 @@ void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& C
 {
 	if ( Mesh && Shader )
 	{
-		glm::mat4 model = TransformModelMatrix();
+		glm::mat4 model = GetTransformMatrix();
 		Shader->Use();
 			Shader->SetMatrix4d("projection", CameraProjection);
 			Shader->SetMatrix4d("view", CameraView);
@@ -27,7 +27,7 @@ void BravoLightActor::Init()
 
 void BravoLightActor::UpdateShadowMap()
 {
-	ShadowMap.lock()->Draw(Self<BravoLightActor>());
+	ShadowMap.lock()->Render(Self<BravoLightActor>());
 }
 
 void BravoLightActor::Use(BravoShaderPtr OnShader)

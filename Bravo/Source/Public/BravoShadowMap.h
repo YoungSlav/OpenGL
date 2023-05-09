@@ -10,7 +10,7 @@ public:
 	{}
 
 	virtual void Setup(const glm::ivec2& Size) = 0;
-	virtual void Draw(std::shared_ptr<class BravoLightActor> Owner) = 0;
+	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) = 0;
 
 	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) = 0;
 	virtual void StopUsage() = 0;
@@ -39,9 +39,9 @@ protected:
 
 	glm::mat4 LightSpaceMatrix;
 	
-	int TextureUnit = 0;
-	unsigned int DepthMapFBO = 0;
-	unsigned int DepthMap = 0;
+	int32 TextureUnit = 0;
+	uint32 DepthMapFBO = 0;
+	uint32 DepthMap = 0;
 };
 
 class BravoShadowMap_Cube : public BravoShadowMap
@@ -62,9 +62,9 @@ protected:
 
 	std::vector<glm::mat4> ShadowTransforms;
 
-	int TextureUnit = 0;
-	unsigned int DepthMapFBO = 0;
-	unsigned int DepthCubemap = 0;
+	int32 TextureUnit = 0;
+	uint32 DepthMapFBO = 0;
+	uint32 DepthCubemap = 0;
 };
 
 class BravoShadowMap_Directional : public BravoShadowMap_Texture
@@ -74,7 +74,7 @@ public:
 		BravoShadowMap_Texture(_Engine, _Handle)
 	{}
 
-	virtual void Draw(std::shared_ptr<class BravoLightActor> Owner) override;
+	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 };
 
 class BravoShadowMap_Spot : public BravoShadowMap_Texture
@@ -84,7 +84,7 @@ public:
 		BravoShadowMap_Texture(_Engine, _Handle)
 	{}
 
-	virtual void Draw(std::shared_ptr<class BravoLightActor> Owner) override;
+	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 };
 
 class BravoShadowMap_Point : public BravoShadowMap_Cube
@@ -94,5 +94,5 @@ public:
 		BravoShadowMap_Cube(_Engine, _Handle)
 	{}
 
-	virtual void Draw(std::shared_ptr<class BravoLightActor> Owner) override;
+	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 };

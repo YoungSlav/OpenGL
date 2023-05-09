@@ -6,6 +6,7 @@
 #include "BravoRenderTarget.h"
 #include "BravoAssetManager.h"
 #include "openGL.h"
+#include "BravoHUD.h"
 
 namespace GlobalEngine
 {
@@ -43,6 +44,8 @@ void BravoEngine::Init()
 	}
 
 	LightManager = SpawnObject<BravoLightManager>();
+
+	HUD = SpawnObject<BravoHUD>();
 
 	CreateOpenGLWindow();
 }
@@ -123,7 +126,7 @@ void BravoEngine::UpdateViewport()
 	glfwPollEvents();
 }
 
-void BravoEngine::DrawShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const
+void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const
 {
 	for ( auto& it : Actors )
 	{
@@ -195,7 +198,7 @@ void BravoEngine::CreateOpenGLWindow()
 	glCullFace(GL_BACK);
 }
 
-void BravoEngine::Framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void BravoEngine::Framebuffer_size_callback(GLFWwindow* window, int32 width, int32 height)
 {
 	if ( GlobalEngine::Engine() )
 		GlobalEngine::Engine()->Resize(glm::ivec2(width, height));
@@ -270,7 +273,7 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 		{
 			GetLightManager()->RemoveLightActor(asActor);
 		}
-		for ( unsigned int i = 0; i < Actors.size(); ++i )
+		for ( uint32 i = 0; i < Actors.size(); ++i )
 		{
 			if ( Actors[i].lock() == asActor )
 			{
@@ -306,4 +309,10 @@ std::shared_ptr<BravoRenderTarget> BravoEngine::GetViewportRenderTarget() const
 	if ( ViewportRenderTarget.expired() )
 		return nullptr;
 	return ViewportRenderTarget.lock();
+}
+std::shared_ptr<BravoHUD> BravoEngine::GetHUD() const
+{
+	if ( HUD.expired() )
+		return nullptr;
+	return HUD.lock();
 }

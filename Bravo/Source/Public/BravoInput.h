@@ -6,7 +6,7 @@ class BravoInputListener : public SharedFromThis
 {
 	friend class BravoInput;
 protected:
-	virtual void InputKey(int Key, bool bPressed, float DeltaTime) {}
+	virtual void InputKey(int32 Key, bool bPressed, float DeltaTime) {}
 	virtual void InputMouseMove(float DeltaX, float DeltaY, float DeltaTime) {}
 	virtual void InputMouseScroll(float DeltaX, float DeltaY, float DeltaTime) {}
 };
@@ -21,7 +21,7 @@ public:
 	{}
 
 
-	void SubscribeToKey(int Key, std::shared_ptr<BravoInputListener> Subscriber);
+	void SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber);
 	void SubscribeToMouseMove(std::shared_ptr<BravoInputListener> Subscriber);
 	void SubscribeToMouseScroll(std::shared_ptr<BravoInputListener> Subscriber);
 
@@ -35,7 +35,7 @@ protected:
 	void OnMouseMove(struct GLFWwindow* window, float xpos, float ypos, float DeltaTime);
 
 private:
-	std::map<int, std::weak_ptr<BravoInputListener>> KeyListeners;
+	std::map<int32, std::weak_ptr<BravoInputListener>> KeyListeners;
 	std::vector<std::weak_ptr<BravoInputListener>> MouseMoveListeners;
 	std::vector<std::weak_ptr<BravoInputListener>> MouseScrollListeners;
 

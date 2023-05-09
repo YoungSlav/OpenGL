@@ -2,7 +2,7 @@
 #include "BravoEngine.h"
 #include "openGL.h"
 
-void BravoInput::SubscribeToKey(int Key, std::shared_ptr<BravoInputListener> Subscriber)
+void BravoInput::SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber)
 {
 	KeyListeners.insert( {Key, Subscriber} );
 }
@@ -29,7 +29,7 @@ void BravoInput::UnsubscribeFromKey(std::shared_ptr<BravoInputListener> Subscrib
 
 void BravoInput::UnsubscribeFromMouseMove(std::shared_ptr<BravoInputListener> Subscriber)
 {
-	for ( int i = MouseMoveListeners.size()-1; i >= 0; --i )
+	for ( int32 i = MouseMoveListeners.size()-1; i >= 0; --i )
 	{
 		if ( MouseMoveListeners[i].expired() || MouseMoveListeners[i].lock() == Subscriber )
 			MouseMoveListeners.erase(MouseMoveListeners.begin() + i);
@@ -37,7 +37,7 @@ void BravoInput::UnsubscribeFromMouseMove(std::shared_ptr<BravoInputListener> Su
 }
 void BravoInput::UnsubscribeFromMouseScroll(std::shared_ptr<BravoInputListener> Subscriber)
 {
-	for ( int i = MouseScrollListeners.size()-1; i >= 0; --i )
+	for ( int32 i = MouseScrollListeners.size()-1; i >= 0; --i )
 	{
 		if ( MouseScrollListeners[i].expired() || MouseScrollListeners[i].lock() == Subscriber )
 			MouseScrollListeners.erase(MouseScrollListeners.begin() + i);

@@ -14,7 +14,7 @@
 #include "BravoSkyboxActor.h"
 #include "BravoInfinitePlaneActor.h"
 #include "BravoMath.h"
-
+#include "BravoFont.h"
 
 void BravoGameInstance::Init()
 {
@@ -33,10 +33,11 @@ void BravoGameInstance::Init()
 	
 	if ( auto skyboxActor = Engine->SpawnObject<BravoSkyboxActor>() )
 	{
-		std::vector<std::string> skyboxFaces
-		{ "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", };
-		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", skyboxFaces));
+		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
+
+	
+	AssetManager->LoadAsset<BravoFont>("Fonts\\arial.ttf", { "128", "96", "64", "48", "32" });
 
 	auto groundPlane = Engine->SpawnObject<BravoInfinitePlaneActor>();
 	
@@ -49,15 +50,15 @@ void BravoGameInstance::Init()
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
 	
-	//for ( int i = 0; i < 1; ++i )
-	//{
-	//	if ( auto spotLight = Engine->SpawnObject<BravoSpotLightActor>() )
-	//	{
-	//		spotLight->SetScale(glm::vec3(-0.5f));
-	//		spotLight->SetLightColor(glm::vec3(1.0f));
-	//		spotLights.push_back(spotLight);
-	//	}
-	//}
+	for ( int32 i = 0; i < 1; ++i )
+	{
+		if ( auto spotLight = Engine->SpawnObject<BravoSpotLightActor>() )
+		{
+			spotLight->SetScale(glm::vec3(-0.5f));
+			spotLight->SetLightColor(glm::vec3(1.0f));
+			spotLights.push_back(spotLight);
+		}
+	}
 
 	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
 	BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
@@ -73,7 +74,7 @@ void BravoGameInstance::Init()
 		glm::vec3(2.0, 1.0, -3.0),
 	};
 	float angle = 0.0f;
-	for ( unsigned int i = 0; i < locations.size(); ++i )
+	for ( uint32 i = 0; i < locations.size(); ++i )
 	{
 		if ( auto cubeActor = Engine->SpawnObject<BravoMeshActor>() )
 		{
@@ -87,7 +88,6 @@ void BravoGameInstance::Init()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {
-	return;
 	//LifeTime = 0.0f;
 	float lightDistance = 5.0f;
 	glm::vec3 newLocation = glm::vec3(0.0f, 10.0f, 0.0f);

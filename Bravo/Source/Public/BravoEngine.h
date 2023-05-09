@@ -18,7 +18,7 @@ public:
 	void Tick(float DeltaTime);
 	void StopGame();
 	
-	void DrawShadowMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const;
+	void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const;
 
 	
 	template <typename Class>
@@ -53,7 +53,7 @@ private:
 	void RegisterObject(std::shared_ptr<BravoObject> Object);
 
 	// input
-	static void Framebuffer_size_callback(struct GLFWwindow* window, int width, int height);
+	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);
 	static void ProcessInput(GLFWwindow *window);
 	static void Scroll_callback(struct GLFWwindow* window, double xoffset, double yoffset);
 	static void Mouse_callback(struct GLFWwindow* window, double xpos, double ypos);
@@ -75,6 +75,8 @@ private:
 	std::weak_ptr<class BravoCamera> Camera;
 	std::weak_ptr<class BravoRenderTarget> ViewportRenderTarget;
 	std::shared_ptr<class BravoRenderTarget> GetViewportRenderTarget() const;
+	std::weak_ptr<class BravoHUD> HUD;
+	std::shared_ptr<class BravoHUD> GetHUD() const;
 
 	std::weak_ptr<class BravoInput> Input;
 

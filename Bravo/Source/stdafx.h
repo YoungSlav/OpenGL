@@ -22,5 +22,5 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "BravoTypes.h"
 
-typedef unsigned int BravoHandle;

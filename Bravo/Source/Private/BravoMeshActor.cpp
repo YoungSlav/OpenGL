@@ -22,7 +22,7 @@ void BravoMeshActor::Render(const glm::vec3& CameraLocation, const glm::mat4& Ca
 {
 	if ( Mesh && Shader )
 	{
-		glm::mat4 model = TransformModelMatrix();
+		glm::mat4 model = GetTransformMatrix();
 
 		Shader->Use();
 			Shader->SetMatrix4d("projection", CameraProjection);
@@ -41,7 +41,7 @@ void BravoMeshActor::RenderDepthMap(std::shared_ptr<class BravoShader> Shader, c
 {
 	if ( Mesh && Shader)
 	{
-		glm::mat4 model = TransformModelMatrix();
+		glm::mat4 model = GetTransformMatrix();
 
 		Shader->Use();
 			Shader->SetMatrix4d("model", model);

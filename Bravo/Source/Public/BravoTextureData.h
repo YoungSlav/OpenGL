@@ -7,7 +7,7 @@ class BravoTextureData
 public:
 	BravoTextureData(const std::string& _Path)
 	{
-		int nrChannels;
+		int32 nrChannels;
 		if ( TextureData = stbi_load(_Path.c_str(), &SizeX, &SizeY, &nrChannels, 0) )
 		{
 			if (nrChannels == 1)
@@ -39,9 +39,9 @@ public:
 
 	bool bInitialized = false;
 
-	int SizeX = -1;
-	int SizeY = -1;
+	int32 SizeX = -1;
+	int32 SizeY = -1;
 	GLenum TextureFormat = 0;
-	unsigned char* TextureData = nullptr;
+	uint8* TextureData = nullptr;
 };
 
