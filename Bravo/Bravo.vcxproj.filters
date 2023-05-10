@@ -37,6 +37,15 @@
     <Filter Include="Private\Core\Assets">
       <UniqueIdentifier>{98e01a90-1fa6-4c62-a529-74b14fb10279}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\HUD">
+      <UniqueIdentifier>{fb4007a8-c582-45d7-b3ad-c2f0b265ccde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Lights">
+      <UniqueIdentifier>{434feb13-c1a3-4af2-a5ba-c22a905f17aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PostProcess">
+      <UniqueIdentifier>{a6aec723-f51b-4be4-986d-707635c855d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -135,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\Delegates.cpp">
       <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoWidget_Plane.cpp">
+      <Filter>Private\Core\HUD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +257,9 @@
     <ClInclude Include="Source\ThirdParty\Delegates.h">
       <Filter>ThirdParty</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoWidget_Plane.h">
+      <Filter>Public\Core\HUD</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\Default.frag">
@@ -259,31 +274,10 @@
     <None Include="Source\Shaders\LightSource.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\PostProccess.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\PostProccess.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Source\Shaders\Skybox.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\Skybox.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\ShadowMapDir.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\ShadowMapDir.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\ShadowMapPoint.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\ShadowMapPoint.geom">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\ShadowMapPoint.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\InfinitePlane.frag">
@@ -292,11 +286,38 @@
     <None Include="Source\Shaders\InfinitePlane.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\Text.frag">
-      <Filter>Shaders</Filter>
+    <None Include="Source\Shaders\wText.frag">
+      <Filter>Shaders\HUD</Filter>
     </None>
-    <None Include="Source\Shaders\Text.vert">
-      <Filter>Shaders</Filter>
+    <None Include="Source\Shaders\wText.vert">
+      <Filter>Shaders\HUD</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapDir.frag">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapDir.vert">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapPoint.frag">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapPoint.geom">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapPoint.vert">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="Source\Shaders\PostProccess.frag">
+      <Filter>Shaders\PostProcess</Filter>
+    </None>
+    <None Include="Source\Shaders\PostProccess.vert">
+      <Filter>Shaders\PostProcess</Filter>
+    </None>
+    <None Include="Source\Shaders\wPlane.vert">
+      <Filter>Shaders\HUD</Filter>
+    </None>
+    <None Include="Source\Shaders\wPlane.frag">
+      <Filter>Shaders\HUD</Filter>
     </None>
   </ItemGroup>
 </Project>

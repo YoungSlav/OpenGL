@@ -8,7 +8,7 @@
 
 bool BravoWidget_Text::Initialize_Internal()
 {
-	Shader = GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Text");
+	Shader = GetAssetManager()->LoadAsset<BravoShader>("Shaders\\wText");
 	return true;
 }
 
@@ -37,6 +37,11 @@ void BravoWidget_Text::SetMargin(const glm::vec2& _Margin)
 	Margin = _Margin;
 }
 
+void BravoWidget_Text::SetShader(std::shared_ptr<class BravoShader> _Shader)
+{
+	Shader = _Shader;
+}
+
 // TODO: optimize?
 void BravoWidget_Text::Render_Internal()
 {
@@ -47,7 +52,6 @@ void BravoWidget_Text::Render_Internal()
 		return;
 
 	std::vector<HUDVertex> TextVertecies;
-	TextVertecies.reserve(Text.size());
 
 	GLuint VAO = 0;	// vertex array buffer (holds both vertex attributes and indices)
 	GLuint VBO = 0;	// vertex attribute buffer
@@ -70,10 +74,6 @@ void BravoWidget_Text::Render_Internal()
 
 			glm::vec2 actualSize = GetActualSize();
 
-			// Safe actual data in size
-			Size = actualSize / GetHUD()->GetSize();
-
-
 			glm::vec2 pos = Position * GetHUD()->GetSize();
 			pos -= Origin * actualSize;
 			pos.y += actualSize.y;
@@ -81,6 +81,7 @@ void BravoWidget_Text::Render_Internal()
 			if ( const BravoFontInfo* fontInfo = GetFont()->GetFontInfo(TextSize, 1.0f) )
 				pos.y -= abs(fontInfo->Descent) * GetHUD()->GetTargetScale().y;
 
+			TextVertecies.reserve(Text.size());
 			for(char& symbol : Text)
 			{
 				stbtt_aligned_quad RenderQuad;
@@ -93,8 +94,6 @@ void BravoWidget_Text::Render_Internal()
 				TextVertecies.push_back(HUDVertex(glm::vec2(RenderQuad.x0, RenderQuad.y1), glm::vec2(RenderQuad.s0, RenderQuad.t1)));
 			}
 
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(HUDVertex) * TextVertecies.size(), TextVertecies.data());
 			glDrawArrays(GL_TRIANGLES, 0, TextVertecies.size());
 

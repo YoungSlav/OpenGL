@@ -3,19 +3,22 @@
 #include "BravoAssetManager.h"
 #include "BravoShader.h"
 #include "BravoWidget.h"
-#include "BravoWidget_Text.h"
 #include "BravoFont.h"
+#include "BravoTexture.h"
 
-
+#include "openGL.h"
 #include <iomanip>
 #include <sstream>
+
+#include "BravoWidget_Text.h"
+#include "BravoWidget_Plane.h"
 
 void BravoHUD::Initialize_Internal()
 {
 	Size = TargetSize;
 	ModelMatrix = glm::ortho(0.0f, Size.x,  Size.y, 0.0f);
 
-	auto font = GetEngine()->GetAssetManager()->LoadAsset<BravoFont>("Fonts\\arial.ttf", {"100", "50", "25"});
+	auto font = GetEngine()->GetAssetManager()->LoadAsset<BravoFont>("Fonts\\arial.ttf", {"50", "25", "12" });
 	std::shared_ptr<BravoWidget_Text> _fps = std::shared_ptr<BravoWidget_Text>(new BravoWidget_Text(Self<BravoHUD>(), GetEngine()->GetAssetManager()));
 	_fps->Initialize();
 	_fps->SetPosition(glm::vec2(1.0f, 0.0f));
@@ -26,6 +29,15 @@ void BravoHUD::Initialize_Internal()
 	_fps->SetFont(font);
 	fps = _fps;
 	Widgets.push_back(_fps);
+
+	std::shared_ptr<BravoWidget_Plane> plane = std::shared_ptr<BravoWidget_Plane>(new BravoWidget_Plane(Self<BravoHUD>(), GetEngine()->GetAssetManager()));
+	plane->Initialize();
+	plane->SetPosition(glm::vec2(0.5f, 0.5f));
+	plane->SetSize(glm::vec2(0.1f, 0.1f));
+	plane->SetOrigin(glm::vec2(1.0f, 1.0f));
+	//plane->SetColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	plane->SetTexture(GetEngine()->GetAssetManager()->LoadAsset<BravoTexture>("Textures\\noise.png"));
+	Widgets.push_back(plane);
 }
 
 void BravoHUD::SetSize(const glm::vec2& _Size)
@@ -36,6 +48,9 @@ void BravoHUD::SetSize(const glm::vec2& _Size)
 
 void BravoHUD::Render()
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	for ( auto w : Widgets )
 		w->Render();
 }

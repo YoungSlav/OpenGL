@@ -3,6 +3,7 @@
 #include "BravoWidget.h"
 
 // TODO: multiline support
+// TODO: fit to size
 class BravoWidget_Text : public BravoWidget
 {
 public:
@@ -23,8 +24,9 @@ public:
 	void SetMargin(const glm::vec2& _Margin);
 	const glm::vec2& GetMargin() const { return Margin; }
 
-
 	void SetFont(std::shared_ptr<class BravoFont> _Font);
+
+	void SetShader(std::shared_ptr<class BravoShader> _Shader);
 
 	virtual glm::vec2 GetActualSize() const override;
 

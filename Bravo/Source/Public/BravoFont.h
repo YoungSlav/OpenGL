@@ -52,8 +52,8 @@ protected:
 
 	std::vector<uint8> AtlasBitmap;
 
-	const int32 AtlasSizeX = 4096;
-	const int32 AtlasSizeY = 4096;
+	const int32 AtlasSizeX = 2048;
+	const int32 AtlasSizeY = 2048;
 
 	const int32 FirstGlyph = 32;
 	const int32 GlyphsNum = 96;

@@ -23,8 +23,8 @@ protected:
 	virtual void Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 
-	std::vector<std::shared_ptr<class BravoWidget_Text>> Widgets;
-	std::weak_ptr<BravoWidget_Text> fps;
+	std::vector<std::shared_ptr<class BravoWidget>> Widgets;
+	std::weak_ptr<class BravoWidget_Text> fps;
 
 protected:
 	glm::vec2 Size = glm::ivec2(0.0f, 0.0f);
