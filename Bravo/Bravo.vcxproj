@@ -48,6 +48,7 @@
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShader.cpp" />
     <ClCompile Include="Source\Private\BravoTexture.cpp" />
+    <ClCompile Include="Source\ThirdParty\Delegates.cpp" />
     <ClCompile Include="Source\ThirdParty\stb_image.cpp" />
     <ClCompile Include="Source\ThirdParty\stb_rect_pack.cpp" />
     <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="Source\Public\BravoTexture.h" />
     <ClInclude Include="Source\Public\SharedFromThis.h" />
     <ClInclude Include="Source\stdafx.h" />
+    <ClInclude Include="Source\ThirdParty\Delegates.h" />
     <ClInclude Include="Source\ThirdParty\stb_image.h" />
     <ClInclude Include="Source\ThirdParty\stb_image_write.h" />
     <ClInclude Include="Source\ThirdParty\stb_rect_pack.h" />

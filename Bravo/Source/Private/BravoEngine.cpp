@@ -24,8 +24,7 @@ namespace GlobalEngine
 BravoEngine::BravoEngine()
 	: SharedFromThis()
 {
-	ViewportSize.x = 1024;
-	ViewportSize.y = 768;
+	ViewportSize = glm::vec2(1024.0f, 768.0f);
 }
 
 void BravoEngine::Init()

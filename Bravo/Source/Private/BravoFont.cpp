@@ -3,13 +3,12 @@
 #include <fstream>
 #include "stb_rect_pack.h"
 #include "BravoTextureUnitManager.h"
-#include "BravoAssetManager.h"
 #include <math.h>
+
+#define POINT_TO_PIXEL 1.333f
 
 bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
 {
-	Shader = GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Text");
-
 	if ( !_Params.size() )
 	{
 		Log::LogMessage("Failed to load font " + Path +". Expecting sizes array in params.", ELog::Error );
@@ -30,17 +29,20 @@ bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
 		Log::LogMessage("Failed to read font from file " + Path, ELog::Error);
 		return false;
 	}
+	stbtt_fontinfo fontInfo;
+    stbtt_InitFont(&fontInfo, reinterpret_cast<const uint8*>(fontBuffer.data()), stbtt_GetFontOffsetForIndex(reinterpret_cast<const uint8*>(fontBuffer.data()),0));
 
-	for ( uint32 size : FontSizes )
+	for ( uint32 fSize : FontSizes )
 	{
-		Fonts.insert({size, BravoFontInfo(GlyphsNum)});
+		Fonts.insert({fSize, BravoFontInfo(GlyphsNum, fSize)});
 	}
 
 	std::vector<stbtt_pack_range> ranges;
 	ranges.reserve(FontSizes.size());
-	for ( uint32 size : FontSizes )
+	for ( uint32 fSize : FontSizes )
 	{
-		stbtt_pack_range newRange { (float)size, FirstGlyph, NULL, GlyphsNum, Fonts[size].Glyphs.data(), 0, 0 };
+		float fontSize = (float)fSize * POINT_TO_PIXEL;
+		stbtt_pack_range newRange { fontSize, FirstGlyph, NULL, GlyphsNum, Fonts[fSize].Glyphs.data(), 0, 0 };
 		ranges.push_back(newRange);
 	}
 
@@ -49,7 +51,7 @@ bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
 	  // do the packing, based on the ranges specified
     stbtt_pack_context pc;
     stbtt_PackBegin(&pc, AtlasBitmap.data(), AtlasSizeX, AtlasSizeY, 0, 1, NULL);   
-    stbtt_PackSetOversampling(&pc, 1, 1); // say, choose 3x1 oversampling for subpixel positioning
+    stbtt_PackSetOversampling(&pc, 3, 3); // say, choose 3x1 oversampling for subpixel positioning
     if ( !stbtt_PackFontRanges(&pc, reinterpret_cast<const uint8*>(fontBuffer.data()), 0, ranges.data(), ranges.size()) )
 	{
 		Log::LogMessage("Failed to load font " + Path +". Atlas size is too small", ELog::Error );
@@ -59,22 +61,16 @@ bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
 	}
     stbtt_PackEnd(&pc);
 
-	 // get the global metrics for each size/range
-    stbtt_fontinfo info;
-    stbtt_InitFont(&info, reinterpret_cast<const uint8*>(fontBuffer.data()), stbtt_GetFontOffsetForIndex(reinterpret_cast<const uint8*>(fontBuffer.data()),0));
-
-	for ( uint32 i = 0; i < ranges.size(); ++i )
+	for ( auto& font : Fonts )
 	{
-		float size = ranges[i].font_size;
-		float scale = stbtt_ScaleForPixelHeight(&info, ranges[i].font_size);
+		float scale = stbtt_ScaleForPixelHeight(&fontInfo, (float)font.first);
 		int32 a, d, l;
-		stbtt_GetFontVMetrics(&info, &a, &d, &l);
+		stbtt_GetFontVMetrics(&fontInfo, &a, &d, &l);
 		
-		Fonts[(uint32)ranges[i].font_size].Ascent  = a*scale;
-		Fonts[(uint32)ranges[i].font_size].Descent = d*scale;
-		Fonts[(uint32)ranges[i].font_size].Linegap = l*scale;
+		font.second.Ascent  = a*scale;
+		font.second.Descent = d*scale;
+		font.second.Linegap = l*scale;
 	}	
-
 	return true;
 }
 
@@ -113,40 +109,75 @@ void BravoFont::Use()
 
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);
 	glBindTexture(GL_TEXTURE_2D,  TextureID);
-
-	Shader->Use();
 }
 
-void BravoFont::SetModelMatrix(const glm::mat4& matrix)
-{
-	Shader->SetMatrix4d("model", matrix);
-}
-void BravoFont::SetColor(const glm::vec4& _color)
-{
-	Shader->SetVector4d("uTextColor", _color);
-}
 
 void BravoFont::StopUsage()
 {
 	glBindTexture(GL_TEXTURE_2D,  0);
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	TextureUnit = -1;
-
-	Shader->StopUsage();
 }
 
-void BravoFont::GetCharacterQuad(char symbol, int32 TextSize, float *xpos, float *ypos, stbtt_aligned_quad* OutQuad, bool align_to_integer) const
+const BravoFontInfo* BravoFont::GetFontInfo( uint32 TextSize, float TargetScale ) const
 {
-	auto it = Fonts.find(TextSize);
-	if ( it == Fonts.end() )
-		return;
+	return FindBestFont((uint32)((float)(TextSize)*TargetScale));
+}
+
+float BravoFont::GetCharacterQuad(char symbol, uint32 TextSize, float TargetScale, float xpos, float ypos, bool bAlignToInteger, stbtt_aligned_quad* OutQuad) const
+{
+	const BravoFontInfo* BestFont = FindBestFont((uint32)((float)(TextSize)*TargetScale));
+	if ( BestFont == nullptr )
+		return 0.0f;
 		
 	const int32 CharIndex = (int32)(symbol) - FirstGlyph;
-	if ( CharIndex < 0 || (uint32)CharIndex >= it->second.Glyphs.size() )
-		return;
+	if ( CharIndex < 0 || (uint32)CharIndex >= BestFont->Glyphs.size() )
+		return 0.0f;
+		
+	float Scale = 1.0f;
+	if ( TextSize != BestFont->Size )
+	{
+		Scale = (float)(TextSize) / (float)(BestFont->Size);
+	}
+	Scale *= TargetScale;
 
+	const stbtt_packedchar *b = &BestFont->Glyphs[CharIndex];
 
-	const stbtt_packedchar& CharData = it->second.Glyphs[CharIndex];
-	
-	stbtt_GetPackedQuad(it->second.Glyphs.data(), AtlasSizeX, AtlasSizeY, CharIndex, xpos, ypos, OutQuad, align_to_integer);
+	if (bAlignToInteger)
+	{
+		float x = (float) ((int32) floor((xpos + b->xoff*Scale) + 0.5f));
+		float y = (float) ((int32) floor((ypos + b->yoff*Scale) + 0.5f));
+		OutQuad->x0 = x;
+		OutQuad->y0 = y;
+		OutQuad->x1 = x + b->xoff2*Scale - b->xoff*Scale;
+		OutQuad->y1 = y + b->yoff2*Scale - b->yoff*Scale;
+	}
+	else
+	{
+		OutQuad->x0 = xpos + b->xoff*Scale;
+		OutQuad->y0 = ypos + b->yoff*Scale;
+		OutQuad->x1 = xpos + b->xoff2*Scale;
+		OutQuad->y1 = ypos + b->yoff2*Scale;
+	}
+
+	float ipw = 1.0f / (float)AtlasSizeX;
+	float iph = 1.0f / (float)AtlasSizeY;
+
+	OutQuad->s0 = b->x0 * ipw;
+	OutQuad->t0 = b->y0 * iph;
+	OutQuad->s1 = b->x1 * ipw;
+	OutQuad->t1 = b->y1 * iph;
+
+	return b->xadvance*Scale;
+}
+
+const BravoFontInfo* BravoFont::FindBestFont(uint32 TextSize) const
+{
+	if ( Fonts.empty() )
+		return nullptr;
+
+	auto it = Fonts.lower_bound(TextSize);
+	if ( it == Fonts.end() )
+		it--;
+	return &it->second;
 }

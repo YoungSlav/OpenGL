@@ -133,6 +133,9 @@
     <ClCompile Include="Source\Private\BravoWidget_Text.cpp">
       <Filter>Private\Core\HUD</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ThirdParty\Delegates.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoWidget_Text.h">
       <Filter>Public\Core\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\Delegates.h">
+      <Filter>ThirdParty</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

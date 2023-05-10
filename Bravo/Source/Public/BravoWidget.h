@@ -21,21 +21,27 @@ struct HUDVertex
 class BravoWidget : public SharedFromThis
 {
 public:
-	BravoWidget(std::shared_ptr<class BravoHUD> _HUD) : 
+	BravoWidget(std::shared_ptr<class BravoHUD> _HUD, std::shared_ptr<class BravoAssetManager> _AssetManager) : 
 		HUD(_HUD),
+		AssetManager(_AssetManager),
 		SharedFromThis()
 	{}
 
-	void Render();
+	bool Initialize();
 
 	void SetPosition(const glm::ivec2& _Position);
 	const glm::ivec2& GetPosition() const { return ScreenPosition; }
 
+	void Render();
 protected:
+	virtual bool Initialize_Internal() { return true; }
 	virtual void Render_Internal() {}
 
 	glm::vec2 ScreenPosition = glm::vec2(0.0f,0.0f);
 
 	std::weak_ptr<class BravoHUD> HUD;
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
+
+	std::weak_ptr<class BravoAssetManager> AssetManager;
+	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
 };

@@ -14,6 +14,7 @@ public:
 	{}
 
 	void Render();
+	float GetTargetScale() const { return Size.y / TargetSize.y; };
 	void SetSize(const glm::vec2& _Size);
 	const glm::mat4& GetModelMatrix() const { return ModelMatrix; }
 
@@ -25,7 +26,7 @@ protected:
 protected:
 	glm::vec2 Size = glm::ivec2(0.0f, 0.0f);
 
-	glm::vec2 TargetSize = glm::ivec2(1024.0f, 768.0f);
+	glm::vec2 TargetSize = glm::vec2(1024.0f, 768.0f);
 
 	glm::mat4 ModelMatrix;
 };

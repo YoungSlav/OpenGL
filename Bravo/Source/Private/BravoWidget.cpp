@@ -1,5 +1,10 @@
 #include "BravoWidget.h"
 
+bool BravoWidget::Initialize()
+{
+	return Initialize_Internal();
+}
+
 void BravoWidget::Render()
 {
 	Render_Internal();
