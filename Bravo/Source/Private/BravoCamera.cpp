@@ -12,7 +12,7 @@ void BravoCamera::Detach()
 	bAttachedToActor = false;
 }
 
-void BravoCamera::Init()
+void BravoCamera::Initialize_Internal()
 {
 	CalcCamera();
 }

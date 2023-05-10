@@ -27,7 +27,7 @@ BravoEngine::BravoEngine()
 	ViewportSize = glm::vec2(1024.0f, 768.0f);
 }
 
-void BravoEngine::Init()
+void BravoEngine::Initialize()
 {
 	GlobalEngine::_Engine = Self<BravoEngine>();
 

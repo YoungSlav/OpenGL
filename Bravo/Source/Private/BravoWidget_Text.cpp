@@ -32,12 +32,12 @@ void BravoWidget_Text::SetTextColor(const glm::vec4& _TextColor)
 	TextColor = _TextColor;
 }
 
-void BravoWidget_Text::SetTextAlignment(EBravoTextAlignment _TextAlignment)
+void BravoWidget_Text::SetMargin(const glm::vec2& _Margin)
 {
-	TextAlignment = _TextAlignment;
+	Margin = _Margin;
 }
 
-
+// TODO: optimize?
 void BravoWidget_Text::Render_Internal()
 {
 	if ( Text.empty() )
@@ -68,13 +68,19 @@ void BravoWidget_Text::Render_Internal()
 			GetShader()->SetMatrix4d("model", GetHUD()->GetModelMatrix());
 			GetShader()->SetVector4d("uTextColor", TextColor);
 
-			glm::vec2 pos = ScreenPosition * GetHUD()->GetTargetScale();
-			pos.y += GetActualSizeY(false);
-			if ( TextAlignment != EBravoTextAlignment::Left )
-			{
-				float SizeX = GetActualSizeX();
-				pos.x -= TextAlignment == EBravoTextAlignment::Center ? SizeX / 2.0f : SizeX;
-			}
+			glm::vec2 actualSize = GetActualSize();
+
+			// Safe actual data in size
+			Size = actualSize / GetHUD()->GetSize();
+
+
+			glm::vec2 pos = Position * GetHUD()->GetSize();
+			pos -= Origin * actualSize;
+			pos.y += actualSize.y;
+			// TODO: god knows why, but whatever...
+			if ( const BravoFontInfo* fontInfo = GetFont()->GetFontInfo(TextSize, 1.0f) )
+				pos.y -= abs(fontInfo->Descent) * GetHUD()->GetTargetScale().y;
+
 			for(char& symbol : Text)
 			{
 				stbtt_aligned_quad RenderQuad;
@@ -102,28 +108,24 @@ void BravoWidget_Text::Render_Internal()
 	glBindVertexArray(0);
 }
 
-float BravoWidget_Text::GetActualSizeX() const
+glm::vec2 BravoWidget_Text::GetActualSize() const
 {
 	if ( Text.empty() )
-		return 0.0f;
-	glm::vec2 pos = glm::vec2(0.0f, 0.0f);
+		return  glm::vec2(0.0f, 0.0f);
+
+	glm::vec2 size = glm::vec2(0.0f, 0.0f);
 	for(const char& symbol : Text)
 	{
 		stbtt_aligned_quad RenderQuad;
-		pos.x += GetFont()->GetCharacterQuad(symbol, TextSize, GetHUD()->GetTargetScale().y, pos.x, pos.y, true, &RenderQuad);
+		size.x += GetFont()->GetCharacterQuad(symbol, TextSize, GetHUD()->GetTargetScale().y, size.x, size.y, true, &RenderQuad);
 	}
-	return pos.x;
-}
-
-float BravoWidget_Text::GetActualSizeY(bool bIncludeLinegap) const
-{
-	if ( Text.empty() )
-		return 0.0f;
-	
-	if ( const BravoFontInfo* fontInfo = GetFont()->GetFontInfo(TextSize, GetHUD()->GetTargetScale().y) )
+	if ( const BravoFontInfo* fontInfo = GetFont()->GetFontInfo(TextSize, 1.0f) )
 	{
-		return (abs(fontInfo->Ascent) + abs(fontInfo->Descent) + ( bIncludeLinegap ? abs(fontInfo->Linegap) : 0.0f )) * GetHUD()->GetTargetScale().y;
+		size.y = (abs(fontInfo->Ascent) + abs(fontInfo->Descent) + abs(fontInfo->Linegap)) * GetHUD()->GetTargetScale().y;
 	}
-	return 0.0f;
 
+	// add margin
+	size += Margin * GetHUD()->GetTargetScale().y * 2.0f;
+
+	return size;
 }

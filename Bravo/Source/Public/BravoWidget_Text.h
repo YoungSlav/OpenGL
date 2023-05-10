@@ -2,13 +2,7 @@
 #include "stdafx.h"
 #include "BravoWidget.h"
 
-enum EBravoTextAlignment
-{
-	Left,
-	Center,
-	Right
-};
-
+// TODO: multiline support
 class BravoWidget_Text : public BravoWidget
 {
 public:
@@ -25,14 +19,14 @@ public:
 	void SetTextColor(const glm::vec4& _TextColor);
 	const glm::vec4& GetTextColor() const { return TextColor; }
 
-	void SetTextAlignment(EBravoTextAlignment _TextAlignment);
-	EBravoTextAlignment GetTextAlignment() const { return TextAlignment; }
+	// Margin in pixels
+	void SetMargin(const glm::vec2& _Margin);
+	const glm::vec2& GetMargin() const { return Margin; }
+
 
 	void SetFont(std::shared_ptr<class BravoFont> _Font);
 
-	float GetActualSizeX() const;
-	float GetActualSizeY(bool bIncludeLinegap = false) const;
-	glm::vec2 GetActualSize() const { return glm::vec2(GetActualSizeX(), GetActualSizeY()); }
+	virtual glm::vec2 GetActualSize() const override;
 
 protected:
 	virtual bool Initialize_Internal() override;
@@ -46,8 +40,9 @@ protected:
 	std::string Text = "";
 	uint32 TextSize = 0;
 	glm::vec4 TextColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glm::vec2 Margin = glm::vec2(0.0f, 0.0f);
 	
-	EBravoTextAlignment TextAlignment = EBravoTextAlignment::Left;
 
 	std::weak_ptr<class BravoFont> Font;
 	std::weak_ptr<class BravoShader> Shader;

@@ -16,12 +16,12 @@
 #include "BravoMath.h"
 #include "BravoFont.h"
 
-void BravoGameInstance::Init()
+void BravoGameInstance::Initialize_Internal()
 {
 	std::shared_ptr<BravoEngine> Engine = GetEngine();
 	if ( !Engine )
 		return;
-
+	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
 	if ( auto Player = Engine->SpawnObject<BravoPlayer>() )

@@ -33,7 +33,7 @@ public:
 		Engine(_Engine),
 		Handle(_Handle)
 	{}
-
+	void Initialize();
 	void Destroy();
 
 	const BravoHandle& GetHandle() const { return Handle; }
@@ -45,7 +45,7 @@ public:
 	}
 
 protected:
-	virtual void Init() {}
+	virtual void Initialize_Internal() {}
 	virtual void OnDestroy() {}
 
 

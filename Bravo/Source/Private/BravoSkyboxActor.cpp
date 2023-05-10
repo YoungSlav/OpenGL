@@ -7,7 +7,7 @@ void BravoSkyboxActor::SetCubemap(BravoCubemapPtr InCubemap)
 	Cubemap = InCubemap;
 }
 
-void BravoSkyboxActor::Init()
+void BravoSkyboxActor::Initialize_Internal()
 {
 	
 	const float skyboxVertices[] = {

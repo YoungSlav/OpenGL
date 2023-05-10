@@ -12,7 +12,7 @@ class BravoEngine : public SharedFromThis
 {
 public:
 	BravoEngine();
-	void Init();
+	void Initialize();
 
 	void GameLoop();
 	void Tick(float DeltaTime);
@@ -28,7 +28,7 @@ public:
 		
 		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(Self<BravoEngine>(), ++LastUsedHandle));
 		RegisterObject(newObject);
-		newObject->Init();
+		newObject->Initialize();
 		return std::dynamic_pointer_cast<Class>(newObject);
 	}
 

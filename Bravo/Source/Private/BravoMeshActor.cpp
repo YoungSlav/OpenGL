@@ -4,7 +4,7 @@
 #include "BravoAssetManager.h"
 #include "BravoLightManager.h"
 
-void BravoMeshActor::Init()
+void BravoMeshActor::Initialize_Internal()
 {
 	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Default");
 }

@@ -19,7 +19,7 @@ void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& C
 	}
 }
 
-void BravoLightActor::Init()
+void BravoLightActor::Initialize_Internal()
 {
 	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\LightSource");
 	Shader->LoadToGPU();
@@ -40,9 +40,9 @@ void BravoLightActor::StopUsage()
 }
 
 
-void BravoDirLightActor::Init()
+void BravoDirLightActor::Initialize_Internal()
 {
-	BravoLightActor::Init();
+	BravoLightActor::Initialize_Internal();
 	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
 	Mesh->LoadToGPU();
 
@@ -67,9 +67,9 @@ void BravoDirLightActor::StopUsage()
 }
 
 
-void BravoPointLightActor::Init()
+void BravoPointLightActor::Initialize_Internal()
 {
-	BravoLightActor::Init();
+	BravoLightActor::Initialize_Internal();
 	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
 	Mesh->LoadToGPU();
 
@@ -99,9 +99,9 @@ void BravoPointLightActor::StopUsage()
 
 
 
-void BravoSpotLightActor::Init()
+void BravoSpotLightActor::Initialize_Internal()
 {
-	BravoLightActor::Init();
+	BravoLightActor::Initialize_Internal();
 	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
 	Mesh->LoadToGPU();
 

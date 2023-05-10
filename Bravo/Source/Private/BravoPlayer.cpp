@@ -3,7 +3,7 @@
 #include "BravoInput.h"
 #include "openGL.h"
 
-void BravoPlayer::Init()
+void BravoPlayer::Initialize_Internal()
 {
 	if ( std::shared_ptr<BravoInput> Input = GetEngine()->GetInput() )
 	{

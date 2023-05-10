@@ -8,7 +8,7 @@
 int main()
 {
     std::shared_ptr<BravoEngine> Engine(new BravoEngine());
-	Engine->Init();
+	Engine->Initialize();
 
 	std::shared_ptr<BravoGameInstance> inst = Engine->SpawnObject<BravoGameInstance>();
 	Engine->GameLoop();

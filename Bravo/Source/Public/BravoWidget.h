@@ -29,15 +29,37 @@ public:
 
 	bool Initialize();
 
-	void SetPosition(const glm::ivec2& _Position);
-	const glm::ivec2& GetPosition() const { return ScreenPosition; }
+	// Position in normalized coords: [0..1]
+	void SetPosition(const glm::vec2& _Position);
+	const glm::vec2& GetPosition() const { return Position; }
+
+	// Size in normalized coords: [0..1]
+	void SetSize(const glm::vec2& _Size);
+	const glm::vec2& GetSize() const { return Size; }
+
+	// Origin in normalized coords: [0..1]
+	void SetOrigin(const glm::vec2& _Origin);
+	const glm::vec2& GetOrigin() const { return Origin; }
+
+	// Returns actual widget size in pixels.
+	// !! Might be different from intensional size if widget's content gets out of bounds. (text for example)
+	virtual glm::vec2 GetActualSize() const;
 
 	void Render();
+
+
 protected:
 	virtual bool Initialize_Internal() { return true; }
 	virtual void Render_Internal() {}
 
-	glm::vec2 ScreenPosition = glm::vec2(0.0f,0.0f);
+	// Position in normalized coords: [0..1]
+	glm::vec2 Position = glm::vec2(0.0f,0.0f);
+	
+	// Desired size in normalized coords: [0..1]
+	glm::vec2 Size = glm::vec2(0.0f,0.0f);
+
+	// Origin of the widget.
+	glm::vec2 Origin = glm::vec2(0.0f, 0.0f);
 
 	std::weak_ptr<class BravoHUD> HUD;
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }

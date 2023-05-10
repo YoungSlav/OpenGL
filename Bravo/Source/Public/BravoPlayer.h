@@ -14,7 +14,7 @@ public:
 	{}
 
 protected:
-	virtual void Init() override;
+	virtual void Initialize_Internal() override;
 	virtual void OnDestroy() override;
 
 	virtual void Tick(float DeltaTime) override;
