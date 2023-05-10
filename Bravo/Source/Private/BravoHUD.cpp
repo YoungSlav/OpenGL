@@ -16,9 +16,9 @@ void BravoHUD::Init()
 	Test->Initialize();
 	Test->SetPosition(glm::vec2(512.0f, 0.0f));
 	Test->SetTextAlignment(EBravoTextAlignment::Center);
-	Test->SetTextSize(100);
-	Test->SetText("Qfj");
-	Test->SetFont(GetEngine()->GetAssetManager()->LoadAsset<BravoFont>("Fonts\\arial.ttf", {"100"}));
+	Test->SetTextSize(25);
+	Test->SetText("{{{The quick brown fox jumps over the lazy dog}}}");
+	Test->SetFont(GetEngine()->GetAssetManager()->LoadAsset<BravoFont>("Fonts\\arial.ttf", {"100", "50", "25"}));
 }
 
 void BravoHUD::SetSize(const glm::vec2& _Size)

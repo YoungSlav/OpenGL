@@ -27,7 +27,8 @@ protected:
 
 	uint32 TextureColorBuffer = 0;
 
-	std::shared_ptr<class BravoShader> Shader;
+	std::weak_ptr<class BravoShader> Shader;
+	std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 
 	glm::ivec2 Size;
 };

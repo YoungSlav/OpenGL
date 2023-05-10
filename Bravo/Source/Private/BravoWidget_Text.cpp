@@ -78,7 +78,7 @@ void BravoWidget_Text::Render_Internal()
 			for(char& symbol : Text)
 			{
 				stbtt_aligned_quad RenderQuad;
-				pos.x += GetFont()->GetCharacterQuad(symbol, TextSize, GetHUD()->GetTargetScale(), pos.x, pos.y, true, &RenderQuad);
+				pos.x += GetFont()->GetCharacterQuad(symbol, TextSize, GetHUD()->GetTargetScale().y, pos.x, pos.y, true, &RenderQuad);
 				TextVertecies.push_back(HUDVertex(glm::vec2(RenderQuad.x1, RenderQuad.y1), glm::vec2(RenderQuad.s1, RenderQuad.t1)));
 				TextVertecies.push_back(HUDVertex(glm::vec2(RenderQuad.x1, RenderQuad.y0), glm::vec2(RenderQuad.s1, RenderQuad.t0)));
 				TextVertecies.push_back(HUDVertex(glm::vec2(RenderQuad.x0, RenderQuad.y0), glm::vec2(RenderQuad.s0, RenderQuad.t0)));
@@ -110,7 +110,7 @@ float BravoWidget_Text::GetActualSizeX() const
 	for(const char& symbol : Text)
 	{
 		stbtt_aligned_quad RenderQuad;
-		pos.x += GetFont()->GetCharacterQuad(symbol, TextSize, GetHUD()->GetTargetScale(), pos.x, pos.y, true, &RenderQuad);
+		pos.x += GetFont()->GetCharacterQuad(symbol, TextSize, GetHUD()->GetTargetScale().y, pos.x, pos.y, true, &RenderQuad);
 	}
 	return pos.x;
 }
@@ -120,9 +120,9 @@ float BravoWidget_Text::GetActualSizeY(bool bIncludeLinegap) const
 	if ( Text.empty() )
 		return 0.0f;
 	
-	if ( const BravoFontInfo* fontInfo = GetFont()->GetFontInfo(TextSize, GetHUD()->GetTargetScale()) )
+	if ( const BravoFontInfo* fontInfo = GetFont()->GetFontInfo(TextSize, GetHUD()->GetTargetScale().y) )
 	{
-		return (abs(fontInfo->Ascent) + abs(fontInfo->Descent) + ( bIncludeLinegap ? abs(fontInfo->Linegap) : 0.0f )) * GetHUD()->GetTargetScale();
+		return (abs(fontInfo->Ascent) + abs(fontInfo->Descent) + ( bIncludeLinegap ? abs(fontInfo->Linegap) : 0.0f )) * GetHUD()->GetTargetScale().y;
 	}
 	return 0.0f;
 

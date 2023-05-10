@@ -31,13 +31,10 @@ public:
 	
 
 	virtual void Use() override;
-	void SetModelMatrix(const glm::mat4& _matrix);
-	void SetColor(const glm::vec4& _color);
 	virtual void StopUsage() override;
 
 
 	float GetCharacterQuad(char symbol, uint32 TextSize, float TargetScale, float xpos, float ypos, bool bAlignToInteger, stbtt_aligned_quad* OutQuad) const;
-
 	const BravoFontInfo* GetFontInfo( uint32 TextSize, float TargetScale ) const;
 
 protected:

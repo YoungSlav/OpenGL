@@ -58,7 +58,7 @@ void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class Br
 void BravoRenderTarget::Resize(const glm::ivec2& InSize)
 {
 	Clean();
-	Setup(InSize, Shader);
+	Setup(InSize, GetShader());
 }
 
 void BravoRenderTarget::Clean()
@@ -80,8 +80,8 @@ void BravoRenderTarget::Use()
 void BravoRenderTarget::StopUsage()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	if ( Shader )
-		Shader->StopUsage();
+	if ( GetShader() )
+		GetShader()->StopUsage();
 }
 
 void BravoRenderTarget::OnDestroy()
@@ -91,13 +91,13 @@ void BravoRenderTarget::OnDestroy()
 
 void BravoRenderTarget::Render()
 {
-	if ( Shader )
+	if ( GetShader() )
 	{
-		Shader->Use();
+		GetShader()->Use();
 			int32 TextureUnit = BravoTextureUnitManager::BindTexture();
 			glActiveTexture(GL_TEXTURE0 + TextureUnit);
 			glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-			Shader->SetInt("screenTexture", 0);
+			GetShader()->SetInt("screenTexture", 0);
 	
 			glBindVertexArray(PlaneVAO);
     
@@ -106,6 +106,6 @@ void BravoRenderTarget::Render()
 			BravoTextureUnitManager::UnbindTexture(TextureUnit);
 			glBindVertexArray(0);
 			glActiveTexture(0);
-		Shader->StopUsage();
+		GetShader()->StopUsage();
 	}
 }

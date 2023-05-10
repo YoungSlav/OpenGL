@@ -48,8 +48,6 @@ void BravoEngine::Init()
 
 	HUD = SpawnObject<BravoHUD>();
 	GetHUD()->SetSize(ViewportSize);
-
-	
 }
 
 
@@ -64,6 +62,8 @@ void BravoEngine::GameLoop()
 		Tick(DeltaTime);
 		UpdateViewport();
 		ProcessInput(Window);
+
+		// TODO: collect garbage
 	}
 
 

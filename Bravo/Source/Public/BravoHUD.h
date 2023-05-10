@@ -14,7 +14,7 @@ public:
 	{}
 
 	void Render();
-	float GetTargetScale() const { return Size.y / TargetSize.y; };
+	glm::vec2 GetTargetScale() const { return Size / TargetSize; };
 	void SetSize(const glm::vec2& _Size);
 	const glm::mat4& GetModelMatrix() const { return ModelMatrix; }
 

@@ -19,7 +19,8 @@ protected:
 	virtual void OnDestroy() override;
 
 	glm::ivec2 Size;
-	std::shared_ptr<class BravoShader> Shader;
+	std::weak_ptr<class BravoShader> Shader;
+	std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 };
 
 class BravoShadowMap_Texture : public BravoShadowMap
