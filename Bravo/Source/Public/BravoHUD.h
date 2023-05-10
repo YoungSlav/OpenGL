@@ -13,4 +13,19 @@ public:
 		BravoObject(_Engine, _Handle)
 	{}
 
+	void Render();
+	void SetSize(const glm::vec2& _Size);
+	const glm::mat4& GetModelMatrix() const { return ModelMatrix; }
+
+protected:
+	virtual void Init() override;
+
+	std::shared_ptr<class BravoWidget_Text> Test;
+
+protected:
+	glm::vec2 Size = glm::ivec2(0.0f, 0.0f);
+
+	glm::vec2 TargetSize = glm::ivec2(1024.0f, 768.0f);
+
+	glm::mat4 ModelMatrix;
 };

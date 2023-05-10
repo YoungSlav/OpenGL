@@ -34,6 +34,8 @@ void BravoEngine::Init()
 
 	AssetManager = std::shared_ptr<BravoAssetManager>(new BravoAssetManager());
 
+	CreateOpenGLWindow();
+
 	Input = SpawnObject<BravoInput>();
 
 	if ( std::shared_ptr<BravoCamera> cam = SpawnObject<BravoCamera>() )
@@ -46,8 +48,9 @@ void BravoEngine::Init()
 	LightManager = SpawnObject<BravoLightManager>();
 
 	HUD = SpawnObject<BravoHUD>();
+	GetHUD()->SetSize(ViewportSize);
 
-	CreateOpenGLWindow();
+	
 }
 
 
@@ -98,7 +101,7 @@ void BravoEngine::UpdateViewport()
 	}
 	
 	GetLightManager()->UpdateLightsDepthMaps();
-
+	
 	// we want to draw into PP texture first
 	{
 		GetViewportRenderTarget()->Use();
@@ -111,16 +114,23 @@ void BravoEngine::UpdateViewport()
 		}
 		GetViewportRenderTarget()->StopUsage();
 	}
-		
-	// now we want to draw PP texture to screen
+
+	glDisable(GL_DEPTH_TEST);
+
+	// render everything on screen
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, ViewportSize.x, ViewportSize.y);
-		glDisable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
 		GetViewportRenderTarget()->Render();
 	}
+
+	if ( GetHUD() )
+		GetHUD()->Render();
+
+
 	
 	glfwSwapBuffers(Window);
 	glfwPollEvents();
@@ -144,6 +154,8 @@ void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 		GetViewportRenderTarget()->Resize(ViewportSize*2);
 	if ( GetCamera() )
 		GetCamera()->SetAspectRatio( float(ViewportSize.x) / float(ViewportSize.y) );
+	if ( GetHUD() )
+		GetHUD()->SetSize(ViewportSize);
 }
 
 void BravoEngine::SetMouseEnabled(bool bNewMouseEnabled) const

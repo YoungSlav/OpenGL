@@ -19,16 +19,22 @@
     <Filter Include="Public\Core">
       <UniqueIdentifier>{d27feff3-97cb-4c4f-b7ed-ff1183721fbc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Public\Assets">
-      <UniqueIdentifier>{da71a5f4-7ded-43ff-a16b-30aedf54a301}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Private\Game">
       <UniqueIdentifier>{649854a3-06eb-4d82-ad29-453c2f9000b4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Private\Core">
       <UniqueIdentifier>{579a9494-8e37-4fcd-a65c-afd9e858a5cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Private\Assets">
+    <Filter Include="Public\Core\HUD">
+      <UniqueIdentifier>{cea6cec1-f839-4355-8063-66b17c1876a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Core\HUD">
+      <UniqueIdentifier>{c0f5b9b2-cab5-41f3-9f35-a6b915becf12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Core\Assets">
+      <UniqueIdentifier>{da71a5f4-7ded-43ff-a16b-30aedf54a301}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Core\Assets">
       <UniqueIdentifier>{98e01a90-1fa6-4c62-a529-74b14fb10279}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -41,16 +47,16 @@
       <Filter>ThirdParty</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoAsset.cpp">
-      <Filter>Private\Assets</Filter>
+      <Filter>Private\Core\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoShader.cpp">
-      <Filter>Private\Assets</Filter>
+      <Filter>Private\Core\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoTexture.cpp">
-      <Filter>Private\Assets</Filter>
+      <Filter>Private\Core\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoMesh.cpp">
-      <Filter>Private\Assets</Filter>
+      <Filter>Private\Core\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\Log.cpp">
       <Filter>Private\Core</Filter>
@@ -83,7 +89,7 @@
       <Filter>Private\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoCubemap.cpp">
-      <Filter>Private\Assets</Filter>
+      <Filter>Private\Core\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp">
       <Filter>Private\Game</Filter>
@@ -104,22 +110,28 @@
       <Filter>Private\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoAssetManager.cpp">
-      <Filter>Private\Assets</Filter>
+      <Filter>Private\Core\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoHUD.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoFont.cpp">
-      <Filter>Private\Assets</Filter>
+      <Filter>Private\Core\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\stb_rect_pack.cpp">
       <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoHUD.cpp">
+      <Filter>Private\Core\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoWidget.cpp">
+      <Filter>Private\Core\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoWidget_Text.cpp">
+      <Filter>Private\Core\HUD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,16 +141,16 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoAsset.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoMesh.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTexture.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoShader.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoObject.h">
       <Filter>Public\Core</Filter>
@@ -174,7 +186,7 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoCubemap.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoSkyboxActor.h">
       <Filter>Public\Game</Filter>
@@ -195,15 +207,12 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoAssetManager.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTextureData.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoHUD.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\stb_truetype.h">
@@ -213,13 +222,22 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoFont.h">
-      <Filter>Public\Assets</Filter>
+      <Filter>Public\Core\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\stb_image_write.h">
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTypes.h">
       <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoHUD.h">
+      <Filter>Public\Core\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoWidget.h">
+      <Filter>Public\Core\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoWidget_Text.h">
+      <Filter>Public\Core\HUD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -266,6 +284,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\InfinitePlane.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\Text.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\Text.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

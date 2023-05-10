@@ -43,6 +43,8 @@
     <ClCompile Include="Source\Private\BravoShadowMap.cpp" />
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp" />
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
+    <ClCompile Include="Source\Private\BravoWidget.cpp" />
+    <ClCompile Include="Source\Private\BravoWidget_Text.cpp" />
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShader.cpp" />
     <ClCompile Include="Source\Private\BravoTexture.cpp" />
@@ -76,6 +78,8 @@
     <ClInclude Include="Source\Public\BravoTextureData.h" />
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h" />
     <ClInclude Include="Source\Public\BravoTypes.h" />
+    <ClInclude Include="Source\Public\BravoWidget.h" />
+    <ClInclude Include="Source\Public\BravoWidget_Text.h" />
     <ClInclude Include="Source\Public\Log.h" />
     <ClInclude Include="Source\Public\BravoShader.h" />
     <ClInclude Include="Source\Public\BravoTexture.h" />
@@ -102,6 +106,8 @@
     <None Include="Source\Shaders\ShadowMapPoint.vert" />
     <None Include="Source\Shaders\Skybox.frag" />
     <None Include="Source\Shaders\Skybox.vert" />
+    <None Include="Source\Shaders\Text.frag" />
+    <None Include="Source\Shaders\Text.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

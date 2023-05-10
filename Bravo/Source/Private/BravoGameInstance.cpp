@@ -37,7 +37,7 @@ void BravoGameInstance::Init()
 	}
 
 	
-	AssetManager->LoadAsset<BravoFont>("Fonts\\arial.ttf", { "128", "96", "64", "48", "32" });
+	
 
 	auto groundPlane = Engine->SpawnObject<BravoInfinitePlaneActor>();
 	
