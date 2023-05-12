@@ -32,12 +32,7 @@ protected:
 	virtual void ReleaseFromGPU_Internal() {}
 
 
-	std::shared_ptr<class BravoAssetManager> GetAssetManager() const
-	{
-		if ( AssetManager.expired() )
-			return nullptr;
-		return AssetManager.lock();
-	}
+	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
 	
 	std::string Path;
 

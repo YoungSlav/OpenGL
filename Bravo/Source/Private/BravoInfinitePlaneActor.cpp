@@ -3,16 +3,18 @@
 #include "BravoCamera.h"
 #include "BravoAssetManager.h"
 
-void BravoInfinitePlaneActor::Initialize_Internal()
+bool BravoInfinitePlaneActor::Initialize_Internal()
 {
-	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\plane.fbx");
-	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\InfinitePlane");
+	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\plane.fbx");
+	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\InfinitePlane");
 
 	if ( Mesh && Shader )
 	{
-	Mesh->LoadToGPU();
-	Shader->LoadToGPU();
+		Mesh->LoadToGPU();
+		Shader->LoadToGPU();
+		return true;
 	}
+	return false;
 }
 
 void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
@@ -23,8 +25,8 @@ void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm:
 		Shader->Use();
 			Shader->SetMatrix4d("projection", CameraProjection);
 			Shader->SetMatrix4d("view", CameraView);
-			Shader->SetVector1d("near", GetEngine()->GetCamera()->GetMinDrawingDistance());
-			Shader->SetVector1d("far", GetEngine()->GetCamera()->GetMaxDrawingDistance());
+			Shader->SetVector1d("near", Engine->GetCamera()->GetMinDrawingDistance());
+			Shader->SetVector1d("far", Engine->GetCamera()->GetMaxDrawingDistance());
 
 			Mesh->Render();
 		Shader->StopUsage();

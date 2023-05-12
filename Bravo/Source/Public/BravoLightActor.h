@@ -23,7 +23,7 @@ public:
 	virtual void UpdateShadowMap();
 
 protected:
-	virtual void Initialize_Internal() override;
+	virtual bool Initialize_Internal() override;
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const override;
 	
 	std::weak_ptr<BravoShadowMap> ShadowMap;
@@ -46,7 +46,7 @@ public:
 	virtual void StopUsage() override;
 
 protected:
-	virtual void Initialize_Internal() override;
+	virtual bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
 };
 
@@ -61,7 +61,7 @@ public:
 	virtual void StopUsage() override;
 
 protected:
-	virtual void Initialize_Internal() override;
+	virtual bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
 
 
@@ -84,7 +84,7 @@ public:
 	float Quadratic;
 
 protected:
-	virtual void Initialize_Internal() override;
+	virtual bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
 
 };

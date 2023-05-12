@@ -1,12 +1,13 @@
 #include "BravoObject.h"
 #include "BravoEngine.h"
 
-void BravoObject::Initialize()
+bool BravoObject::Initialize()
 {
-	Initialize_Internal();
+	return Initialize_Internal();
 }
 
 void BravoObject::Destroy()
 {
-	GetEngine()->DestroyObject(Self<BravoObject>());
+	if ( Engine )
+		Engine->DestroyObject(Self<BravoObject>());
 }

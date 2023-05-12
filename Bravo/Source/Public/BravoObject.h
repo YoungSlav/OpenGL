@@ -33,24 +33,18 @@ public:
 		Engine(_Engine),
 		Handle(_Handle)
 	{}
-	void Initialize();
+	bool Initialize();
 	void Destroy();
 
 	const BravoHandle& GetHandle() const { return Handle; }
-	std::shared_ptr<BravoEngine> GetEngine() const
-	{
-		if ( Engine.expired() )
-			return nullptr;
-		return Engine.lock();
-	}
 
 protected:
-	virtual void Initialize_Internal() {}
+	virtual bool Initialize_Internal() { return true; }
 	virtual void OnDestroy() {}
 
 
-private:
-	std::weak_ptr<BravoEngine> Engine;
+protected:
+	const std::shared_ptr<BravoEngine> Engine;
 
 	const BravoHandle Handle = 0;
 };

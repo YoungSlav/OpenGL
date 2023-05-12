@@ -4,9 +4,12 @@
 #include "BravoAssetManager.h"
 #include "BravoLightManager.h"
 
-void BravoMeshActor::Initialize_Internal()
+bool BravoMeshActor::Initialize_Internal()
 {
-	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Default");
+	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Default");
+	if ( !Shader )
+		return false;
+	return true;
 }
 
 void BravoMeshActor::SetMesh(BravoMeshPtr InMesh)
@@ -30,9 +33,9 @@ void BravoMeshActor::Render(const glm::vec3& CameraLocation, const glm::mat4& Ca
 			Shader->SetMatrix4d("model", model);
 			Shader->SetMaterial("material", Mesh->GetMaterial());
 			Shader->SetVector3d("viewPos", CameraLocation);
-			GetEngine()->GetLightManager()->ApplyLights(Shader);
-			Mesh->Render();
-			GetEngine()->GetLightManager()->ResetLightsUsage();
+			Engine->GetLightManager()->ApplyLights(Shader);
+				Mesh->Render();
+			Engine->GetLightManager()->ResetLightsUsage();
 		Shader->StopUsage();
 	}
 }

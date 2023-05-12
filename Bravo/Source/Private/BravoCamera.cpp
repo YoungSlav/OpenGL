@@ -12,9 +12,10 @@ void BravoCamera::Detach()
 	bAttachedToActor = false;
 }
 
-void BravoCamera::Initialize_Internal()
+bool BravoCamera::Initialize_Internal()
 {
 	CalcCamera();
+	return true;
 }
 
 void BravoCamera::Tick(float DeltaTime)

@@ -41,6 +41,8 @@ public:
 	void SetOrigin(const glm::vec2& _Origin);
 	const glm::vec2& GetOrigin() const { return Origin; }
 
+	void SetTrueScaling(bool _bTrueScaling);
+
 	// Returns actual widget size in pixels.
 	// !! Might be different from intensional size if widget's content gets out of bounds. (text for example)
 	virtual glm::vec2 GetActualSize() const;
@@ -60,6 +62,10 @@ protected:
 
 	// Origin of the widget.
 	glm::vec2 Origin = glm::vec2(0.0f, 0.0f);
+
+	// If true, the widget will be scaled to true HUD size along X. Otherwise only HUD height is scaling the widget.
+	// !! Does not affect text
+	bool bTrueScaling = false;
 
 	std::weak_ptr<class BravoHUD> HUD;
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }

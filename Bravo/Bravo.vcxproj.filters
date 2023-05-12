@@ -148,6 +148,9 @@
     <ClCompile Include="Source\Private\BravoWidget_Plane.cpp">
       <Filter>Private\Core\HUD</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoScreen.cpp">
+      <Filter>Private\Core\HUD</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -258,6 +261,9 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoWidget_Plane.h">
+      <Filter>Public\Core\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoScreen.h">
       <Filter>Public\Core\HUD</Filter>
     </ClInclude>
   </ItemGroup>

@@ -21,11 +21,7 @@ namespace GlobalEngine
 
 }
 
-BravoEngine::BravoEngine()
-	: SharedFromThis()
-{
-	ViewportSize = glm::vec2(1024.0f, 768.0f);
-}
+
 
 void BravoEngine::Initialize()
 {
@@ -37,11 +33,10 @@ void BravoEngine::Initialize()
 
 	Input = SpawnObject<BravoInput>();
 
-	if ( std::shared_ptr<BravoCamera> cam = SpawnObject<BravoCamera>() )
+	if ( std::shared_ptr<BravoCamera> camera = SpawnObject<BravoCamera>() )
 	{
-		cam->SetAspectRatio(float(ViewportSize.x) / float(ViewportSize.y) );
-
-		Camera = cam;
+		camera->SetAspectRatio(float(ViewportSize.x) / float(ViewportSize.y) );
+		Camera = camera;
 	}
 
 	LightManager = SpawnObject<BravoLightManager>();
@@ -62,8 +57,6 @@ void BravoEngine::GameLoop()
 		Tick(DeltaTime);
 		UpdateViewport();
 		ProcessInput(Window);
-
-		// TODO: collect garbage
 	}
 
 
@@ -74,7 +67,7 @@ void BravoEngine::StopGame()
 {
 	while( Objects.size() > 0 )
 	{
-		DestroyObject(Objects.cbegin()->second);
+		DestroyObject(*Objects.cbegin());
 	}
 
 	glfwSetWindowShouldClose(Window, true);
@@ -82,36 +75,35 @@ void BravoEngine::StopGame()
 
 void BravoEngine::Tick(float DeltaTime)
 {
-	for ( auto& it : TickableObjects )
-	{
-		if ( !it.second.expired() )
-		{
-			it.second.lock()->Update(DeltaTime);
-		}
-	}
+	for ( auto it : TickableObjects )
+		it->Update(DeltaTime);
 }
 
 void BravoEngine::UpdateViewport()
 {
-	if ( !GetLightManager() || !GetViewportRenderTarget() )
+	std::shared_ptr<BravoCamera> camera = GetCamera();
+	std::shared_ptr<BravoLightManager> lightManager = GetLightManager();
+	std::shared_ptr<BravoRenderTarget> viewportRT = GetViewportRenderTarget();
+
+	if ( !lightManager || !viewportRT || !camera )
 	{
 		bRequestExit = true;
 		return;
 	}
 	
-	GetLightManager()->UpdateLightsDepthMaps();
+	lightManager->UpdateLightsDepthMaps();
 	
 	// we want to draw into PP texture first
 	{
-		GetViewportRenderTarget()->Use();
+		viewportRT->Use();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		for ( auto& it : Actors )
 		{
-			it.lock()->Render(Camera.lock()->GetLocation(), Camera.lock()->GetProjectionMatrix(), Camera.lock()->GetViewMatrix());
+			it->Render(camera->GetLocation(), camera->GetProjectionMatrix(), camera->GetViewMatrix());
 		}
-		GetViewportRenderTarget()->StopUsage();
+		viewportRT->StopUsage();
 	}
 
 	glDisable(GL_DEPTH_TEST);
@@ -123,14 +115,12 @@ void BravoEngine::UpdateViewport()
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		GetViewportRenderTarget()->Render();
+		viewportRT->Render();
 	}
 
-	if ( GetHUD() )
-		GetHUD()->Render();
+	if ( std::shared_ptr<BravoHUD> hud = GetHUD() )
+		hud->Render();
 
-
-	
 	glfwSwapBuffers(Window);
 	glfwPollEvents();
 }
@@ -139,8 +129,7 @@ void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShader> Shader, cons
 {
 	for ( auto& it : Actors )
 	{
-		if ( !it.expired() )
-			it.lock()->RenderDepthMap(Shader, LightPosition);
+		it->RenderDepthMap(Shader, LightPosition);
 	}
 }
 
@@ -149,12 +138,15 @@ void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 	ViewportSize = InViewportSize;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, ViewportSize.x, ViewportSize.y);
-	if ( GetViewportRenderTarget() )
-		GetViewportRenderTarget()->Resize(ViewportSize*2);
-	if ( GetCamera() )
-		GetCamera()->SetAspectRatio( float(ViewportSize.x) / float(ViewportSize.y) );
-	if ( GetHUD() )
-		GetHUD()->SetSize(ViewportSize);
+	
+	if ( std::shared_ptr<BravoRenderTarget> viewportRT = GetViewportRenderTarget() )
+		viewportRT->Resize(ViewportSize*2);
+	
+	if ( std::shared_ptr<BravoCamera> camera = GetCamera() )
+		camera->SetAspectRatio( float(ViewportSize.x) / float(ViewportSize.y) );
+	
+	if ( std::shared_ptr<BravoHUD> hud = GetHUD() )
+		hud->SetSize(ViewportSize);
 }
 
 void BravoEngine::SetMouseEnabled(bool bNewMouseEnabled) const
@@ -197,10 +189,10 @@ void BravoEngine::CreateOpenGLWindow()
     glfwSetFramebufferSizeCallback(Window, BravoEngine::Framebuffer_size_callback);
 
 
-	if ( std::shared_ptr<BravoRenderTarget> rt = SpawnObject<BravoRenderTarget>() )
+	if ( std::shared_ptr<BravoRenderTarget> viewportRT = SpawnObject<BravoRenderTarget>() )
 	{
-		rt->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
-		ViewportRenderTarget = rt;
+		viewportRT->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
+		ViewportRenderTarget = viewportRT;
 	}
 	
 	glEnable(GL_BLEND);
@@ -250,24 +242,27 @@ void BravoEngine::Mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 {
-	Objects.insert({newObject->GetHandle(), newObject});
+	Objects.push_back(newObject);
+	
 	if ( std::shared_ptr<BravoTickable> asTickable = std::dynamic_pointer_cast<BravoTickable>(newObject) )
 	{
-		TickableObjects.insert({newObject->GetHandle(), asTickable});
+		TickableObjects.push_back(asTickable);
 	}
 	if ( std::shared_ptr<BravoActor> asActor = std::dynamic_pointer_cast<BravoActor>(newObject) )
 	{
 		Actors.push_back(asActor);
 		sort(Actors.begin(), Actors.end(), 
-			[](std::weak_ptr<BravoActor> left, std::weak_ptr<BravoActor> right) -> bool
+			[](std::shared_ptr<BravoActor> left, std::shared_ptr<BravoActor> right) -> bool
 			{ 
-				return left.lock()->RenderPriority < right.lock()->RenderPriority; 
+				return left->RenderPriority < right->RenderPriority; 
 			});
 
-		if ( std::shared_ptr<BravoLightActor> asLight = std::dynamic_pointer_cast<BravoLightActor>(asActor) )
+		if ( std::shared_ptr<BravoLightManager> lightManager = GetLightManager() )
 		{
-			if ( GetLightManager() )
-				GetLightManager()->RegisterLightActor(asLight);
+			if ( std::shared_ptr<BravoLightActor> asLight = std::dynamic_pointer_cast<BravoLightActor>(asActor) )
+			{
+				lightManager->RegisterLightActor(asLight);
+			}
 		}
 	}
 }
@@ -276,54 +271,18 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 {
 	Object->OnDestroy();
 
-	TickableObjects.erase(Object->GetHandle());
-
 	if ( std::shared_ptr<BravoActor> asActor = std::dynamic_pointer_cast<BravoActor>(Object) )
 	{
-		if ( GetLightManager() )
+		if ( std::shared_ptr<BravoLightManager> lightManager = GetLightManager() )
 		{
-			GetLightManager()->RemoveLightActor(asActor);
+			if ( std::shared_ptr<BravoLightActor> asLight = std::dynamic_pointer_cast<BravoLightActor>(asActor) )
+				lightManager->RemoveLightActor(asLight);
 		}
-		for ( uint32 i = 0; i < Actors.size(); ++i )
-		{
-			if ( Actors[i].lock() == asActor )
-			{
-				Actors.erase(Actors.begin() + i);
-				break;
-			}
-		}
+		Actors.erase(std::remove(Actors.begin(), Actors.end(), asActor), Actors.end());
 	}
 
-	Objects.erase(Object->GetHandle());
-}
+	if ( std::shared_ptr<BravoTickable> asTiackble = std::dynamic_pointer_cast<BravoTickable>(Object) )
+		TickableObjects.erase(std::remove(TickableObjects.begin(), TickableObjects.end(), asTiackble), TickableObjects.end());
 
-std::shared_ptr<BravoInput> BravoEngine::GetInput() const
-{
-	if ( Input.expired() )
-		return nullptr;
-	return Input.lock();
-}
-std::shared_ptr<BravoLightManager> BravoEngine::GetLightManager() const
-{
-	if ( LightManager.expired() )
-		return nullptr;
-	return LightManager.lock();
-}
-std::shared_ptr<BravoCamera> BravoEngine::GetCamera() const
-{
-	if ( Camera.expired() )
-		return nullptr;
-	return Camera.lock();
-}
-std::shared_ptr<BravoRenderTarget> BravoEngine::GetViewportRenderTarget() const
-{
-	if ( ViewportRenderTarget.expired() )
-		return nullptr;
-	return ViewportRenderTarget.lock();
-}
-std::shared_ptr<BravoHUD> BravoEngine::GetHUD() const
-{
-	if ( HUD.expired() )
-		return nullptr;
-	return HUD.lock();
+	Objects.erase(std::remove(Objects.begin(), Objects.end(), Object), Objects.end());
 }

@@ -19,10 +19,12 @@ void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& C
 	}
 }
 
-void BravoLightActor::Initialize_Internal()
+bool BravoLightActor::Initialize_Internal()
 {
-	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\LightSource");
-	Shader->LoadToGPU();
+	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\LightSource");
+	if ( Shader->LoadToGPU() )
+		return true;
+	return false;
 }
 
 void BravoLightActor::UpdateShadowMap()
@@ -40,14 +42,19 @@ void BravoLightActor::StopUsage()
 }
 
 
-void BravoDirLightActor::Initialize_Internal()
+bool BravoDirLightActor::Initialize_Internal()
 {
-	BravoLightActor::Initialize_Internal();
-	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-	Mesh->LoadToGPU();
+	if ( !BravoLightActor::Initialize_Internal() )
+		return false;
 
-	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Directional>();
+	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
+	if ( !Mesh || !Mesh->LoadToGPU() )
+		return false;
+
+	ShadowMap = Engine->SpawnObject<BravoShadowMap_Directional>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
+
+	return true;
 }
 void BravoDirLightActor::OnDestroy()
 {
@@ -67,14 +74,19 @@ void BravoDirLightActor::StopUsage()
 }
 
 
-void BravoPointLightActor::Initialize_Internal()
+bool BravoPointLightActor::Initialize_Internal()
 {
-	BravoLightActor::Initialize_Internal();
-	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
-	Mesh->LoadToGPU();
+	if ( !BravoLightActor::Initialize_Internal() )
+		return false;
 
-	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Point>();
+	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
+	if ( !Mesh || !Mesh->LoadToGPU() )
+		return false;
+
+	ShadowMap = Engine->SpawnObject<BravoShadowMap_Point>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
+	
+	return true;
 }
 
 void BravoPointLightActor::OnDestroy()
@@ -99,15 +111,20 @@ void BravoPointLightActor::StopUsage()
 
 
 
-void BravoSpotLightActor::Initialize_Internal()
+bool BravoSpotLightActor::Initialize_Internal()
 {
-	BravoLightActor::Initialize_Internal();
-	Mesh = GetEngine()->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-	Mesh->LoadToGPU();
+	if ( !BravoLightActor::Initialize_Internal() )
+		return false;
+
+	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
+	if ( !Mesh || !Mesh->LoadToGPU() )
+		return false;
 
 
-	ShadowMap = GetEngine()->SpawnObject<BravoShadowMap_Spot>();
+	ShadowMap = Engine->SpawnObject<BravoShadowMap_Spot>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
+
+	return true;
 }
 
 void BravoSpotLightActor::OnDestroy()

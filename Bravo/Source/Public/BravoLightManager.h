@@ -14,7 +14,7 @@ public:
 	{}
 
 	void RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor);
-	void RemoveLightActor(std::shared_ptr<BravoActor> Actor);
+	void RemoveLightActor(std::shared_ptr<BravoLightActor> Actor);
 
 	void UpdateLightsDepthMaps();
 
@@ -27,7 +27,7 @@ private:
 
 	void UpdateShaderPaths();
 
-	std::weak_ptr<BravoDirLightActor> DirectionalLight;
-	std::vector< std::weak_ptr<BravoSpotLightActor>> SpotLights;
-	std::vector< std::weak_ptr<BravoPointLightActor>> PointLights;
+	std::shared_ptr<BravoDirLightActor> DirectionalLight;
+	std::vector< std::shared_ptr<BravoSpotLightActor>> SpotLights;
+	std::vector< std::shared_ptr<BravoPointLightActor>> PointLights;
 };

@@ -38,7 +38,7 @@ void BravoShadowMap_Texture::Setup(const glm::ivec2& InSize)
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapDir");
+	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapDir");
 }
 
 void BravoShadowMap_Texture::OnDestroy()
@@ -96,7 +96,7 @@ void BravoShadowMap_Cube::Setup(const glm::ivec2& InSize)
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapPoint");
+	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapPoint");
 }
 
 void BravoShadowMap_Cube::Use(BravoShaderPtr OnShader, const std::string& Path)
@@ -135,7 +135,7 @@ void BravoShadowMap_Directional::Render(std::shared_ptr<class BravoLightActor> O
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		GetEngine()->RenderDepthMap(GetShader(), LightPosition);
+		Engine->RenderDepthMap(GetShader(), LightPosition);
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -170,7 +170,7 @@ void BravoShadowMap_Spot::Render(std::shared_ptr<class BravoLightActor> Owner)
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		GetEngine()->RenderDepthMap(GetShader(), LightPosition);
+		Engine->RenderDepthMap(GetShader(), LightPosition);
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -214,7 +214,7 @@ void BravoShadowMap_Point::Render(std::shared_ptr<class BravoLightActor> Owner)
 		GetShader()->SetVector3d("lightPos", LightPosition);
 		
 		// render scene
-		GetEngine()->RenderDepthMap(GetShader(), LightPosition);
+		Engine->RenderDepthMap(GetShader(), LightPosition);
 
 		GetShader()->StopUsage();
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

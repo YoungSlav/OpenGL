@@ -45,6 +45,7 @@
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
     <ClCompile Include="Source\Private\BravoWidget.cpp" />
     <ClCompile Include="Source\Private\BravoWidget_Plane.cpp" />
+    <ClCompile Include="Source\Private\BravoScreen.cpp" />
     <ClCompile Include="Source\Private\BravoWidget_Text.cpp" />
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShader.cpp" />
@@ -82,6 +83,7 @@
     <ClInclude Include="Source\Public\BravoTypes.h" />
     <ClInclude Include="Source\Public\BravoWidget.h" />
     <ClInclude Include="Source\Public\BravoWidget_Plane.h" />
+    <ClInclude Include="Source\Public\BravoScreen.h" />
     <ClInclude Include="Source\Public\BravoWidget_Text.h" />
     <ClInclude Include="Source\Public\Log.h" />
     <ClInclude Include="Source\Public\BravoShader.h" />

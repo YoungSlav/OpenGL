@@ -12,7 +12,7 @@ public:
 	{}
 
 protected:
-	virtual void Initialize_Internal() override;
+	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 
 	std::vector<std::weak_ptr<class BravoSpotLightActor>> spotLights;

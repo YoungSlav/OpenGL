@@ -28,5 +28,17 @@ void BravoWidget::SetOrigin(const glm::vec2& _Origin)
 
 glm::vec2 BravoWidget::GetActualSize() const
 {
-	return GetSize() * GetHUD()->GetSize();
+	if ( !GetHUD() )
+		return Size;
+
+	if ( bTrueScaling )
+		return GetSize() * GetHUD()->GetSize();
+	else
+		return GetSize() * GetHUD()->GetTargetSize() * GetHUD()->GetTargetScale().y;
+
+}
+
+void BravoWidget::SetTrueScaling(bool _bTrueScaling)
+{
+	bTrueScaling = _bTrueScaling;
 }

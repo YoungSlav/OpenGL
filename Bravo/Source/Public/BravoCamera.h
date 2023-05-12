@@ -27,15 +27,11 @@ public:
 
 	void AttachTo(const std::shared_ptr<BravoActor> InActor);
 	void Detach();
-	std::shared_ptr<BravoActor> GetOwner() const
-	{
-		if ( Owner.expired() )
-			return nullptr;
-		return Owner.lock();
-	}
+
+	std::shared_ptr<BravoActor> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
 
 protected:
-	virtual void Initialize_Internal() override;
+	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void CalcCamera();

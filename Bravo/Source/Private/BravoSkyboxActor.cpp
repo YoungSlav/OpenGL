@@ -7,7 +7,7 @@ void BravoSkyboxActor::SetCubemap(BravoCubemapPtr InCubemap)
 	Cubemap = InCubemap;
 }
 
-void BravoSkyboxActor::Initialize_Internal()
+bool BravoSkyboxActor::Initialize_Internal()
 {
 	
 	const float skyboxVertices[] = {
@@ -54,7 +54,7 @@ void BravoSkyboxActor::Initialize_Internal()
 		-1.0f, -1.0f,  1.0f,
 		+1.0f, -1.0f,  1.0f
 	};
-	Shader = GetEngine()->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Skybox");
+	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Skybox");
 
 	glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -63,6 +63,8 @@ void BravoSkyboxActor::Initialize_Internal()
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	return true;
 }
 
 void BravoSkyboxActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const

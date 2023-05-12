@@ -16,28 +16,23 @@
 #include "BravoMath.h"
 #include "BravoFont.h"
 
-void BravoGameInstance::Initialize_Internal()
+bool BravoGameInstance::Initialize_Internal()
 {
-	std::shared_ptr<BravoEngine> Engine = GetEngine();
 	if ( !Engine )
-		return;
+		return false;
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-
-	if ( auto Player = Engine->SpawnObject<BravoPlayer>() )
+	
+	if ( std::shared_ptr<BravoPlayer> Player = Engine->SpawnObject<BravoPlayer>() )
 	{
 		Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
 		Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
 	}
-
 	
 	if ( auto skyboxActor = Engine->SpawnObject<BravoSkyboxActor>() )
 	{
 		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
-
-	
-	
 
 	auto groundPlane = Engine->SpawnObject<BravoInfinitePlaneActor>();
 	
@@ -83,7 +78,8 @@ void BravoGameInstance::Initialize_Internal()
 			angle += 20.0f;
 			cubeActor->SetMesh(cubeAsset);
 		}
-	}	
+	}
+	return true;
 }
 
 void BravoGameInstance::Tick(float DeltaTime)

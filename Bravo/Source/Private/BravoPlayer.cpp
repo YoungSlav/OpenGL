@@ -3,9 +3,9 @@
 #include "BravoInput.h"
 #include "openGL.h"
 
-void BravoPlayer::Initialize_Internal()
+bool BravoPlayer::Initialize_Internal()
 {
-	if ( std::shared_ptr<BravoInput> Input = GetEngine()->GetInput() )
+	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
 		Input->SubscribeToKey(GLFW_KEY_W, Self<BravoPlayer>());
 		Input->SubscribeToKey(GLFW_KEY_S, Self<BravoPlayer>());
@@ -21,22 +21,22 @@ void BravoPlayer::Initialize_Internal()
 		Input->SubscribeToMouseMove(Self<BravoPlayer>());
 		Input->SubscribeToMouseScroll(Self<BravoPlayer>());
 	}
-	GetEngine()->GetCamera()->AttachTo(Self<BravoPlayer>());
+	Engine->GetCamera()->AttachTo(Self<BravoPlayer>());
 
-	
+	return true;
 }
 
 void BravoPlayer::OnDestroy()
 {
-	if ( std::shared_ptr<BravoInput> Input = GetEngine()->GetInput() )
+	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
 		Input->UnsubscribeFromKey(Self<BravoPlayer>());
 		Input->UnsubscribeFromMouseMove(Self<BravoPlayer>());
 		Input->UnsubscribeFromMouseScroll(Self<BravoPlayer>());
 	}
 
-	if ( GetEngine() && GetEngine()->GetCamera() )
-		GetEngine()->GetCamera()->Detach();
+	if ( Engine && Engine->GetCamera() )
+		Engine->GetCamera()->Detach();
 }
 
 void BravoPlayer::Tick(float DeltaTime)
@@ -72,8 +72,8 @@ void BravoPlayer::InputKey(int32 Key, bool bPressed, float DeltaTime)
 
 	if ( Key == GLFW_KEY_ESCAPE && bPressed )
 	{
-		if( GetEngine() )
-			GetEngine()->StopGame();
+		if( Engine )
+			Engine->StopGame();
 	}
 
 	if ( Key == GLFW_MOUSE_BUTTON_RIGHT )
