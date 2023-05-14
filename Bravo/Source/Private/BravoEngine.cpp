@@ -173,6 +173,8 @@ void BravoEngine::CreateOpenGLWindow()
         glfwTerminate();
 		return;
     }
+
+
     glfwMakeContextCurrent(Window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

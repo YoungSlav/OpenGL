@@ -91,21 +91,21 @@ void BravoRenderTarget::OnDestroy()
 
 void BravoRenderTarget::Render()
 {
-	if ( GetShader() )
-	{
-		GetShader()->Use();
-			int32 TextureUnit = BravoTextureUnitManager::BindTexture();
-			glActiveTexture(GL_TEXTURE0 + TextureUnit);
-			glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-			GetShader()->SetInt("screenTexture", 0);
+	if ( !GetShader() )
+		return;
+
+	GetShader()->Use();
+		int32 TextureUnit = BravoTextureUnitManager::BindTexture();
+		glActiveTexture(GL_TEXTURE0 + TextureUnit);
+		glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
+		GetShader()->SetInt("screenTexture", 0);
 	
-			glBindVertexArray(PlaneVAO);
+		glBindVertexArray(PlaneVAO);
     
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	
-			BravoTextureUnitManager::UnbindTexture(TextureUnit);
-			glBindVertexArray(0);
-			glActiveTexture(0);
-		GetShader()->StopUsage();
-	}
+		BravoTextureUnitManager::UnbindTexture(TextureUnit);
+		glBindVertexArray(0);
+		glActiveTexture(0);
+	GetShader()->StopUsage();
 }

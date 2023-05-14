@@ -69,6 +69,9 @@ bool BravoSkyboxActor::Initialize_Internal()
 
 void BravoSkyboxActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
 {
+	if ( !Shader || !Cubemap || !VAO )
+		return;
+
 	Shader->Use();
 	Cubemap->Use();
 
@@ -91,8 +94,10 @@ void BravoSkyboxActor::Render(const glm::vec3& CameraLocation, const glm::mat4& 
 
 void BravoSkyboxActor::OnDestroy()
 {
-	Shader->ReleaseFromGPU();
-	Cubemap->ReleaseFromGPU();
+	if ( Shader )
+		Shader->ReleaseFromGPU();
+	if ( Cubemap )
+		Cubemap->ReleaseFromGPU();
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

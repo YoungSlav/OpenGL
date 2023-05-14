@@ -199,40 +199,40 @@ void BravoShader::SetMatrix4d(const std::string& name, const glm::mat4& val) con
 
 void BravoShader::SetMaterial(const std::string& name, const BravoMaterialPtr& val) const
 {
-	if ( val )
-	{
-		for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
-		{
-			EBravoTextureType type = (EBravoTextureType)i;
-			std::string textureName;
-			switch(type)
-			{
-			case EBravoTextureType::diffuse:
-				textureName = "diffuse";
-				break;
-			case EBravoTextureType::specular:
-				textureName = "specular";
-				break;
-			case EBravoTextureType::height:
-				textureName = "height";
-				break;
-			case EBravoTextureType::ambient:
-				textureName = "ambient";
-				break;
-			case EBravoTextureType::normal:
-				textureName = "normal";
-				break;
-			}
-			if ( val->Textures[i] )
-				SetTexture(name + "." + textureName, val->Textures[i]);
-			else
-				SetTexture(name + "." + textureName, EmptyTexture);
-		}
-		SetVector1d(name + ".shininess", val->Shininess);
-	}
-	else
+	if ( !val )
 	{
 		Log::LogMessage("BravoShader::SetMaterial() value is none!");
+		return;
 	}
+
+
+	for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
+	{
+		EBravoTextureType type = (EBravoTextureType)i;
+		std::string textureName;
+		switch(type)
+		{
+		case EBravoTextureType::diffuse:
+			textureName = "diffuse";
+			break;
+		case EBravoTextureType::specular:
+			textureName = "specular";
+			break;
+		case EBravoTextureType::height:
+			textureName = "height";
+			break;
+		case EBravoTextureType::ambient:
+			textureName = "ambient";
+			break;
+		case EBravoTextureType::normal:
+			textureName = "normal";
+			break;
+		}
+		if ( val->Textures[i] )
+			SetTexture(name + "." + textureName, val->Textures[i]);
+		else
+			SetTexture(name + "." + textureName, EmptyTexture);
+	}
+	SetVector1d(name + ".shininess", val->Shininess);
 
 }

@@ -49,24 +49,22 @@ void BravoInput::ProcessInput(GLFWwindow *window, float DeltaTime)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		Engine->StopGame();
-	}
-	else
-	{
-		for (auto it = KeyListeners.cbegin(); it != KeyListeners.cend(); )
-		{
-			if ( !it->second.expired() )
-			{
-				bool bPressed = glfwGetKey(window, it->first) == GLFW_PRESS || glfwGetMouseButton(window, it->first) == GLFW_PRESS;
-				it->second.lock()->InputKey(it->first, bPressed, DeltaTime);
-				++it;
-			}
-			else
-			{
-				it = KeyListeners.erase(it);
-			}
-		}
+		return;
 	}
 
+	for (auto it = KeyListeners.cbegin(); it != KeyListeners.cend(); )
+	{
+		if ( !it->second.expired() )
+		{
+			bool bPressed = glfwGetKey(window, it->first) == GLFW_PRESS || glfwGetMouseButton(window, it->first) == GLFW_PRESS;
+			it->second.lock()->InputKey(it->first, bPressed, DeltaTime);
+			++it;
+		}
+		else
+		{
+			it = KeyListeners.erase(it);
+		}
+	}
 }
 
 void BravoInput::OnMouseScroll(GLFWwindow* window, float xoffset, float yoffset, float DeltaTime)

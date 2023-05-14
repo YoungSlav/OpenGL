@@ -6,17 +6,18 @@
 
 void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
 {
-	if ( Mesh && Shader )
-	{
-		glm::mat4 model = GetTransformMatrix();
-		Shader->Use();
-			Shader->SetMatrix4d("projection", CameraProjection);
-			Shader->SetMatrix4d("view", CameraView);
-			Shader->SetMatrix4d("model", model);
-			Shader->SetVector3d("lightColor", LightColor);
-			Mesh->Render();
-		Shader->StopUsage();
-	}
+	if ( !Mesh || !Shader )
+		return;
+	
+	glm::mat4 model = GetTransformMatrix();
+	Shader->Use();
+		Shader->SetMatrix4d("projection", CameraProjection);
+		Shader->SetMatrix4d("view", CameraView);
+		Shader->SetMatrix4d("model", model);
+		Shader->SetVector3d("lightColor", LightColor);
+		Mesh->Render();
+	Shader->StopUsage();
+	
 }
 
 bool BravoLightActor::Initialize_Internal()
@@ -58,8 +59,10 @@ bool BravoDirLightActor::Initialize_Internal()
 }
 void BravoDirLightActor::OnDestroy()
 {
-	Mesh->ReleaseFromGPU();
-	Shader->ReleaseFromGPU();
+	if ( Mesh )
+		Mesh->ReleaseFromGPU();
+	if ( Shader )
+		Shader->ReleaseFromGPU();
 }
 
 void BravoDirLightActor::Use(BravoShaderPtr OnShader)
@@ -91,8 +94,10 @@ bool BravoPointLightActor::Initialize_Internal()
 
 void BravoPointLightActor::OnDestroy()
 {
-	Mesh->ReleaseFromGPU();
-	Shader->ReleaseFromGPU();
+	if ( Mesh )
+		Mesh->ReleaseFromGPU();
+	if ( Shader )
+		Shader->ReleaseFromGPU();
 }
 
 void BravoPointLightActor::Use(BravoShaderPtr OnShader)
@@ -129,8 +134,10 @@ bool BravoSpotLightActor::Initialize_Internal()
 
 void BravoSpotLightActor::OnDestroy()
 {
-	Mesh->ReleaseFromGPU();
-	Shader->ReleaseFromGPU();
+	if ( Mesh )
+		Mesh->ReleaseFromGPU();
+	if ( Shader )
+		Shader->ReleaseFromGPU();
 }
 
 
