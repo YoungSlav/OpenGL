@@ -26,13 +26,11 @@ public:
 protected:
 	virtual bool Initialize_Internal() override;
 
-	std::vector<std::shared_ptr<class BravoScreen>> Screens;
 
-protected:
+private:
 	glm::vec2 Size = glm::ivec2(0.0f, 0.0f);
 	glm::vec2 TargetSize = glm::vec2(1024.0f, 768.0f);
 	glm::mat4 ModelMatrix;
 
-	float FPSUpdateRate = 0.5f;
-	float FPSUpdateTimer = 0.0f;
+	std::vector<std::shared_ptr<class BravoScreen>> Screens;
 };

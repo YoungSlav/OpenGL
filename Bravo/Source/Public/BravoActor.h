@@ -5,8 +5,8 @@
 
 class BravoActor : public BravoObject
 {
-	friend class BravoEngine;
 public:
+	friend class BravoEngine;
 
 	BravoActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
 		BravoObject(_Engine, _Handle)

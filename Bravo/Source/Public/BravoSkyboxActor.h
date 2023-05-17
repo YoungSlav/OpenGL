@@ -19,6 +19,7 @@ protected:
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const override;
 	virtual void OnDestroy() override;
 
+private:
 	BravoShaderPtr Shader;
 	BravoCubemapPtr Cubemap;
 

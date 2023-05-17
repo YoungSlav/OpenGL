@@ -59,7 +59,6 @@ void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
 			glm::vec3 vector;
 			if ( mesh->mVertices )
 			{
-				// positions
 				vector.x = mesh->mVertices[i].x;
 				vector.y = mesh->mVertices[i].y;
 				vector.z = mesh->mVertices[i].z;
@@ -68,13 +67,11 @@ void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
 		
 			if ( mesh->mNormals )
 			{
-				// normals
 				vector.x = mesh->mNormals[i].x;
 				vector.y = mesh->mNormals[i].y;
 				vector.z = mesh->mNormals[i].z;
 				vertex.Normal = vector;
 			}
-			// texture coordinates
 			if(mesh->mTextureCoords[0])
 			{
 				glm::vec2 vec;
@@ -88,7 +85,6 @@ void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
 			}
 			if ( mesh->mTangents )
 			{
-				// tangent
 				vector.x = mesh->mTangents[i].x;
 				vector.y = mesh->mTangents[i].y;
 				vector.z = mesh->mTangents[i].z;
@@ -96,7 +92,6 @@ void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
 			}
 			if ( mesh->mBitangents )
 			{
-				// bitangent
 				vector.x = mesh->mBitangents[i].x;
 				vector.y = mesh->mBitangents[i].y;
 				vector.z = mesh->mBitangents[i].z;
@@ -108,7 +103,8 @@ void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
 			}
 			Vertices.push_back(vertex);
 		}
-		// Indices
+		
+
 		for(uint32 i = 0; i < mesh->mNumFaces; i++)
 		{
 			aiFace face = mesh->mFaces[i];
@@ -119,7 +115,7 @@ void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
 			}
 		}
 	}
-	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
+
 	for(uint32 i = 0; i < node->mNumChildren; i++)
 	{
 		ProcessNode(node->mChildren[i], scene);

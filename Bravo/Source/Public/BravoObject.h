@@ -6,7 +6,7 @@
 
 class BravoEngine;
 
-class BravoTickable : public SharedFromThis
+class BravoTickable
 {
 	friend class BravoEngine;
 protected:
@@ -46,5 +46,6 @@ protected:
 protected:
 	const std::shared_ptr<BravoEngine> Engine;
 
+private:
 	const BravoHandle Handle = 0;
 };

@@ -1,9 +1,19 @@
 #include "BravoWidget.h"
+#include "BravoEngine.h"
 #include "BravoHUD.h"
 
-bool BravoWidget::Initialize()
+bool BravoWidget::Initialize_Internal()
 {
-	return Initialize_Internal();
+	if ( !BravoObject::Initialize_Internal() )
+		return false;
+
+	if ( !Engine || !Engine->GetHUD() || !Engine->GetAssetManager() )
+		return false;
+
+	HUD = Engine->GetHUD();
+	AssetManager = Engine->GetAssetManager();
+
+	return true;
 }
 
 void BravoWidget::Render()

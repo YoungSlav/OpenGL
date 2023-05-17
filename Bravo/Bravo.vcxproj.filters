@@ -151,6 +151,9 @@
     <ClCompile Include="Source\Private\BravoScreen.cpp">
       <Filter>Private\Core\HUD</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoScreen_Debug.cpp">
+      <Filter>Private\Core\HUD</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -264,6 +267,9 @@
       <Filter>Public\Core\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoScreen.h">
+      <Filter>Public\Core\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoScreen_Debug.h">
       <Filter>Public\Core\HUD</Filter>
     </ClInclude>
   </ItemGroup>

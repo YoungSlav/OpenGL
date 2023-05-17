@@ -21,6 +21,9 @@ public:
 protected:
 
 	virtual void OnDestroy() override;
+	std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
+
+private:
 
 	uint32 FBO = 0, RBO = 0;
 	uint32 PlaneVAO = 0, PlaneVBO = 0;
@@ -28,7 +31,6 @@ protected:
 	uint32 TextureColorBuffer = 0;
 
 	std::weak_ptr<class BravoShader> Shader;
-	std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 
 	glm::ivec2 Size;
 };

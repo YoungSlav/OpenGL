@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 
-class BravoInputListener : public SharedFromThis
+class BravoInputListener
 {
 	friend class BravoInput;
 protected:

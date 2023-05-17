@@ -23,8 +23,6 @@ public:
 	float GetMinDrawingDistance() const { return MinDrawingDistance; }
 	float GetMaxDrawingDistance() const { return MaxDrawingDistance; }
 
-	void SetActive();
-
 	void AttachTo(const std::shared_ptr<BravoActor> InActor);
 	void Detach();
 
@@ -36,7 +34,7 @@ protected:
 
 	virtual void CalcCamera();
 
-protected:
+private:
 	float FOV = 45.0f;
 	float AspectRatio = 1.3f;
 	float MinDrawingDistance = 0.1f;
@@ -45,8 +43,6 @@ protected:
 	bool bAttachedToActor = false;
 	std::weak_ptr<BravoActor> Owner;
 	
-
-private:
 	glm::mat4 ViewMatrix;
 	glm::mat4 ProjectionMatrix;
 };

@@ -7,8 +7,8 @@
 class BravoWidget_Text : public BravoWidget
 {
 public:
-	BravoWidget_Text(std::shared_ptr<class BravoHUD> _HUD, std::shared_ptr<class BravoAssetManager> _AssetManager) : 
-		BravoWidget(_HUD, _AssetManager)
+	BravoWidget_Text(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) : 
+		BravoWidget(_Engine, _Handle)
 	{}
 
 	void SetText(const std::string& _Text);
@@ -38,7 +38,7 @@ protected:
 	const std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 
 
-protected:
+private:
 	std::string Text = "";
 	uint32 TextSize = 0;
 	glm::vec4 TextColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);

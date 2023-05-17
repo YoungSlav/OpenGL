@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "SharedFromThis.h"
+#include "BravoObject.h"
 
 struct HUDVertex
 {
@@ -18,16 +18,12 @@ struct HUDVertex
 	glm::vec2 TexCoords = glm::vec2(0.0f, 0.0f);
 };
 
-class BravoWidget : public SharedFromThis
+class BravoWidget : public BravoObject
 {
 public:
-	BravoWidget(std::shared_ptr<class BravoHUD> _HUD, std::shared_ptr<class BravoAssetManager> _AssetManager) : 
-		HUD(_HUD),
-		AssetManager(_AssetManager),
-		SharedFromThis()
+	BravoWidget(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) : 
+		BravoObject(_Engine, _Handle)
 	{}
-
-	bool Initialize();
 
 	// Position in normalized coords: [0..1]
 	void SetPosition(const glm::vec2& _Position);
@@ -42,6 +38,7 @@ public:
 	const glm::vec2& GetOrigin() const { return Origin; }
 
 	void SetTrueScaling(bool _bTrueScaling);
+	bool GetTrueScaling() const { return bTrueScaling; }
 
 	// Returns actual widget size in pixels.
 	// !! Might be different from intensional size if widget's content gets out of bounds. (text for example)
@@ -51,9 +48,13 @@ public:
 
 
 protected:
-	virtual bool Initialize_Internal() { return true; }
+	virtual bool Initialize_Internal() override;
 	virtual void Render_Internal() {}
 
+	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
+	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
+
+private:
 	// Position in normalized coords: [0..1]
 	glm::vec2 Position = glm::vec2(0.0f,0.0f);
 	
@@ -67,9 +68,7 @@ protected:
 	// !! Does not affect text
 	bool bTrueScaling = false;
 
-	std::weak_ptr<class BravoHUD> HUD;
-	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
 
+	std::weak_ptr<class BravoHUD> HUD;
 	std::weak_ptr<class BravoAssetManager> AssetManager;
-	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
 };

@@ -8,7 +8,8 @@
 
 // TODO:
 /*
-* Asset management
+* Renderable should be an interface
+* Asset management refactoring
 * Move geometries to separate component classes
 * 
 * HUD widgets management
@@ -47,7 +48,7 @@ public:
 
 	
 	template <typename Class>
-	std::shared_ptr<Class> SpawnObject()
+	std::shared_ptr<Class> NewObject()
 	{
 		static_assert(std::is_base_of_v<BravoObject, Class>);
 		
@@ -88,7 +89,7 @@ private:
 
 
 private:
-	glm::ivec2 ViewportSize = glm::vec2(1024.0f, 768.0f);;
+	glm::ivec2 ViewportSize = glm::vec2(1024.0f, 768.0f);
 
 	struct GLFWwindow* Window = nullptr;
 

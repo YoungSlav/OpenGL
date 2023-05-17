@@ -52,7 +52,7 @@ bool BravoDirLightActor::Initialize_Internal()
 	if ( !Mesh || !Mesh->LoadToGPU() )
 		return false;
 
-	ShadowMap = Engine->SpawnObject<BravoShadowMap_Directional>();
+	ShadowMap = Engine->NewObject<BravoShadowMap_Directional>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
 
 	return true;
@@ -86,7 +86,7 @@ bool BravoPointLightActor::Initialize_Internal()
 	if ( !Mesh || !Mesh->LoadToGPU() )
 		return false;
 
-	ShadowMap = Engine->SpawnObject<BravoShadowMap_Point>();
+	ShadowMap = Engine->NewObject<BravoShadowMap_Point>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
 	
 	return true;
@@ -126,7 +126,7 @@ bool BravoSpotLightActor::Initialize_Internal()
 		return false;
 
 
-	ShadowMap = Engine->SpawnObject<BravoShadowMap_Spot>();
+	ShadowMap = Engine->NewObject<BravoShadowMap_Spot>();
 	ShadowMap.lock()->Setup(glm::ivec2(2048));
 
 	return true;

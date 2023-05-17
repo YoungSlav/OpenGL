@@ -8,6 +8,9 @@
 
 bool BravoWidget_Plane::Initialize_Internal()
 {
+	if ( !BravoWidget::Initialize_Internal() )
+		return false;
+
 	Shader = GetAssetManager()->LoadAsset<BravoShader>("Shaders\\wPlane");
 	return true;
 }
@@ -66,8 +69,8 @@ void BravoWidget_Plane::Render_Internal()
 			}
 
 			glm::vec2 actualSize = GetActualSize();
-			glm::vec2 pos0 = Position * GetHUD()->GetSize();
-			pos0 -= Origin * actualSize;
+			glm::vec2 pos0 = GetPosition() * GetHUD()->GetSize();
+			pos0 -= GetOrigin() * actualSize;
 			glm::vec2 pos1 = pos0 + actualSize;
 			
 			PlaneVertecies.reserve(6);

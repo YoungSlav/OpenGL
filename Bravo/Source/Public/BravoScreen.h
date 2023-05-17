@@ -1,31 +1,33 @@
 #pragma once
 #include "stdafx.h"
-#include "SharedFromThis.h"
+#include "BravoObject.h"
 
-class BravoScreen : public SharedFromThis
+class BravoScreen : public BravoObject
 {
 public:
-	BravoScreen(std::shared_ptr<class BravoHUD> _HUD, std::shared_ptr<class BravoAssetManager> _AssetManager) :
-		HUD(_HUD),
-		AssetManager(_AssetManager)
+	BravoScreen(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+		BravoObject(_Engine, _Handle)
 	{}
 
-	bool Initialize();
 	int32 GetRenderPriority() const { return RenderPriority; }
 	void Render();
 
 protected:
-	virtual bool Initialize_Internal() { return true; }
+	
+	void SetRenderPriority(int32 _RenderPriority);
+	void AddWidget(std::shared_ptr<class BravoWidget> _Widget);
+	
+	virtual bool Initialize_Internal() override;
 
 
-protected:
-	std::weak_ptr<class BravoHUD> HUD;
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
 
 	std::weak_ptr<class BravoAssetManager> AssetManager;
 	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
 
+private:
 	std::vector<std::shared_ptr<class BravoWidget>> Widgets;
+	std::weak_ptr<class BravoHUD> HUD;
 
 	int32 RenderPriority = 0;
 };

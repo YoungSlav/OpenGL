@@ -31,17 +31,17 @@ void BravoEngine::Initialize()
 
 	CreateOpenGLWindow();
 
-	Input = SpawnObject<BravoInput>();
+	Input = NewObject<BravoInput>();
 
-	if ( std::shared_ptr<BravoCamera> camera = SpawnObject<BravoCamera>() )
+	if ( std::shared_ptr<BravoCamera> camera = NewObject<BravoCamera>() )
 	{
 		camera->SetAspectRatio(float(ViewportSize.x) / float(ViewportSize.y) );
 		Camera = camera;
 	}
 
-	LightManager = SpawnObject<BravoLightManager>();
+	LightManager = NewObject<BravoLightManager>();
 
-	HUD = SpawnObject<BravoHUD>();
+	HUD = NewObject<BravoHUD>();
 	GetHUD()->SetSize(ViewportSize);
 }
 
@@ -191,7 +191,7 @@ void BravoEngine::CreateOpenGLWindow()
     glfwSetFramebufferSizeCallback(Window, BravoEngine::Framebuffer_size_callback);
 
 
-	if ( std::shared_ptr<BravoRenderTarget> viewportRT = SpawnObject<BravoRenderTarget>() )
+	if ( std::shared_ptr<BravoRenderTarget> viewportRT = NewObject<BravoRenderTarget>() )
 	{
 		viewportRT->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
 		ViewportRenderTarget = viewportRT;

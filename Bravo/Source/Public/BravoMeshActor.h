@@ -22,6 +22,7 @@ protected:
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const override;
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const override;
 
+private:
 	BravoMeshPtr Mesh;
 	BravoShaderPtr Shader;
 };

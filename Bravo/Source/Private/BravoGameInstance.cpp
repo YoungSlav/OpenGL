@@ -14,30 +14,38 @@
 #include "BravoSkyboxActor.h"
 #include "BravoInfinitePlaneActor.h"
 #include "BravoMath.h"
-#include "BravoFont.h"
+
+#include "BravoScreen_Debug.h"
+#include "BravoHUD.h"
 
 bool BravoGameInstance::Initialize_Internal()
 {
 	if ( !Engine )
 		return false;
+
+	if ( Engine->GetHUD() )
+	{
+		Engine->GetHUD()->AddScreen(Engine->NewObject<BravoScreen_Debug>());
+	}
+	
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
-	if ( std::shared_ptr<BravoPlayer> Player = Engine->SpawnObject<BravoPlayer>() )
+	if ( std::shared_ptr<BravoPlayer> Player = Engine->NewObject<BravoPlayer>() )
 	{
 		Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
 		Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
 	}
 	
-	if ( auto skyboxActor = Engine->SpawnObject<BravoSkyboxActor>() )
+	if ( auto skyboxActor = Engine->NewObject<BravoSkyboxActor>() )
 	{
 		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
 
-	auto groundPlane = Engine->SpawnObject<BravoInfinitePlaneActor>();
+	auto groundPlane = Engine->NewObject<BravoInfinitePlaneActor>();
 	
 	
-	if ( auto dirLightActor = Engine->SpawnObject<BravoDirLightActor>() )
+	if ( auto dirLightActor = Engine->NewObject<BravoDirLightActor>() )
 	{
 		dirLightActor->SetLocation(glm::vec3(0.0f,  10.0f, 0.0f ));
 		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
@@ -47,7 +55,7 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	for ( int32 i = 0; i < 1; ++i )
 	{
-		if ( auto spotLight = Engine->SpawnObject<BravoSpotLightActor>() )
+		if ( auto spotLight = Engine->NewObject<BravoSpotLightActor>() )
 		{
 			spotLight->SetScale(glm::vec3(-0.5f));
 			spotLight->SetLightColor(glm::vec3(1.0f));
@@ -71,7 +79,7 @@ bool BravoGameInstance::Initialize_Internal()
 	float angle = 0.0f;
 	for ( uint32 i = 0; i < locations.size(); ++i )
 	{
-		if ( auto cubeActor = Engine->SpawnObject<BravoMeshActor>() )
+		if ( auto cubeActor = Engine->NewObject<BravoMeshActor>() )
 		{
 			cubeActor->SetLocation(locations[i]);
 			cubeActor->SetRotation(glm::vec3(angle, angle, angle));

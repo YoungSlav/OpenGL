@@ -8,6 +8,9 @@
 
 bool BravoWidget_Text::Initialize_Internal()
 {
+	if ( !BravoWidget::Initialize_Internal() )
+		return false;
+
 	Shader = GetAssetManager()->LoadAsset<BravoShader>("Shaders\\wText");
 	return true;
 }
@@ -74,8 +77,8 @@ void BravoWidget_Text::Render_Internal()
 
 			glm::vec2 actualSize = GetActualSize();
 
-			glm::vec2 pos = Position * GetHUD()->GetSize();
-			pos -= Origin * actualSize;
+			glm::vec2 pos = GetPosition() * GetHUD()->GetSize();
+			pos -= GetOrigin() * actualSize;
 			pos.y += actualSize.y;
 			// TODO: god knows why, but whatever...
 			if ( const BravoFontInfo* fontInfo = GetFont()->GetFontInfo(TextSize, 1.0f) )

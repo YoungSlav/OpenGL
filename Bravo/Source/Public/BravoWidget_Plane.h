@@ -5,8 +5,8 @@
 class BravoWidget_Plane : public BravoWidget
 {
 public:
-	BravoWidget_Plane(std::shared_ptr<class BravoHUD> _HUD, std::shared_ptr<class BravoAssetManager> _AssetManager) : 
-		BravoWidget(_HUD, _AssetManager)
+	BravoWidget_Plane(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) : 
+		BravoWidget(_Engine, _Handle)
 	{}
 
 	void SetColor(const glm::vec4& _Color);
@@ -23,7 +23,7 @@ protected:
 
 	const std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 
-protected:
+private:
 	glm::vec4 Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	std::weak_ptr<class BravoShader> Shader;
