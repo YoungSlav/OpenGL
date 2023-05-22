@@ -256,7 +256,7 @@ void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 		sort(Actors.begin(), Actors.end(), 
 			[](std::shared_ptr<BravoActor> left, std::shared_ptr<BravoActor> right) -> bool
 			{ 
-				return left->RenderPriority < right->RenderPriority; 
+				return left->GetRenderPriority() < right->GetRenderPriority(); 
 			});
 
 		if ( std::shared_ptr<BravoLightManager> lightManager = GetLightManager() )
@@ -271,8 +271,6 @@ void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 
 void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 {
-	Object->OnDestroy();
-
 	if ( std::shared_ptr<BravoActor> asActor = std::dynamic_pointer_cast<BravoActor>(Object) )
 	{
 		if ( std::shared_ptr<BravoLightManager> lightManager = GetLightManager() )

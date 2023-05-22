@@ -48,7 +48,7 @@ bool BravoGameInstance::Initialize_Internal()
 	if ( auto dirLightActor = Engine->NewObject<BravoDirLightActor>() )
 	{
 		dirLightActor->SetLocation(glm::vec3(0.0f,  10.0f, 0.0f ));
-		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
+		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, -90.0f));
 		dirLightActor->SetScale(glm::vec3(0.1f));
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
@@ -92,7 +92,6 @@ bool BravoGameInstance::Initialize_Internal()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {
-	//LifeTime = 0.0f;
 	float lightDistance = 5.0f;
 	glm::vec3 newLocation = glm::vec3(0.0f, 10.0f, 0.0f);
 	newLocation.x = -glm::sin(LifeTime) * lightDistance;

@@ -6,8 +6,6 @@
 class BravoActor : public BravoObject
 {
 public:
-	friend class BravoEngine;
-
 	BravoActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
 		BravoObject(_Engine, _Handle)
 	{}
@@ -18,24 +16,26 @@ public:
 	const glm::vec3& GetRotation() const { return Rotation; }
 	void SetRotation(const glm::vec3& InRotation) { Rotation = InRotation; }
 	
-	inline glm::vec3 GetDirection() const { return BravoMath::RotationToDirection(Rotation); }
-	inline void SetDirection(const glm::vec3& Direction) { Rotation = BravoMath::DirectionToRotation(Direction); }
+	glm::vec3 GetDirection() const { return BravoMath::RotationToDirection(Rotation); }
+	void SetDirection(const glm::vec3& Direction) { Rotation = BravoMath::DirectionToRotation(Direction); }
 
 	const glm::vec3& GetScale() const { return Scale; }
 	void SetScale(const glm::vec3& InScale) { Scale = InScale; }
 
-protected:
+	void SetRenderPriority(int32 _RenderPriority) { RenderPriority = _RenderPriority; }
+	int32 GetRenderPriority() const { return RenderPriority; }
 
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const {}
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const {}
 
+protected:
 	glm::mat4 GetTransformMatrix() const;
 
+protected:
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	int32 RenderPriority = 0;
 
-private:
 };

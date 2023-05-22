@@ -9,7 +9,6 @@
 class BravoAsset
 {
 public:
-
 	BravoAsset(std::shared_ptr<class BravoAssetManager> _AssetManager);
 	virtual ~BravoAsset() = default;
 

@@ -44,6 +44,7 @@ protected:
 
 	const BravoFontInfo* FindBestFont(uint32 TextSize) const;
 
+private:
 	GLuint TextureID = 0;
 	int32 TextureUnit = -1;
 

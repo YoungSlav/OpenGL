@@ -9,5 +9,8 @@ bool BravoObject::Initialize()
 void BravoObject::Destroy()
 {
 	if ( Engine )
+	{
+		OnDestroy();
 		Engine->DestroyObject(Self<BravoObject>());
+	}
 }

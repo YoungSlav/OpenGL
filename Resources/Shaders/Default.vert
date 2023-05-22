@@ -66,8 +66,8 @@ void main()
 	vs_out.TexCoords = aTexCoords;
 
 	mat3 normalMatrix = mat3(model);
-	vec3 T = normalize(vec3(normalMatrix * aTangent));
-	vec3 N = normalize(vec3(normalMatrix * aNormal));
+	vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
+	vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
 	T = normalize(T - dot(T, N) * N);
 	vec3 B = cross(N, T);
 	vs_out.TBN = mat3(T, B, N);

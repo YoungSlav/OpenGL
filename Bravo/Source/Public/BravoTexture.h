@@ -26,9 +26,9 @@ protected:
 	virtual void ReleaseFromGPU_Internal() override;
 
 
+private:
 	std::shared_ptr<class BravoTextureData> TextureData;
 
-private:
 	GLuint TextureID = 0;
 	int32 TextureUnit = -1;
 };

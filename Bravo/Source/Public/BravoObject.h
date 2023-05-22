@@ -25,8 +25,6 @@ protected:
 
 class BravoObject : public SharedFromThis
 {
-	friend class BravoEngine;
-
 public:
 	BravoObject(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
 		SharedFromThis(),

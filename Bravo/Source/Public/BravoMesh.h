@@ -45,7 +45,7 @@ protected:
 private:
 	void ProcessNode(aiNode *node, const aiScene *scene);
 
-protected:
+private:
 
 	std::vector<Vertex> Vertices;
 	std::vector<uint32> Indices;

@@ -4,9 +4,9 @@
 
 glm::mat4 BravoActor::GetTransformMatrix() const
 {
-	glm::mat4 model;
-	model = glm::translate(model, Location);
-	model = model * glm::toMat4(BravoMath::EulerToQuat(Rotation));
-	model = glm::scale(model, Scale);
-	return model;
+	glm::mat4 transform;
+	transform = glm::translate(transform, Location);
+	transform = transform * glm::toMat4(BravoMath::EulerToQuat(Rotation));
+	transform = glm::scale(transform, Scale);
+	return transform;
 }

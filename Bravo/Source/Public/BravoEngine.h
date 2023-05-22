@@ -8,17 +8,17 @@
 
 // TODO:
 /*
-* Renderable should be an interface
 * Asset management refactoring
+* Material refactoring!
 * Move geometries to separate component classes
+*
+* !!!!!!!!! Fix lightning !!!!!!!!!
 * 
 * HUD widgets management
 * Input refactoring (utilize delegates)
 * Input text widget
 * widgets mouse clicking
 * console commands?
-* 
-* Bug: fix lightning
 * 
 * 
 * Collisions?
