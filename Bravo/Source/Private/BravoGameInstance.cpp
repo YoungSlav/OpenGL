@@ -43,6 +43,18 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 
 	auto groundPlane = Engine->NewObject<BravoInfinitePlaneActor>();
+
+	BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
+	BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+	planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+	planeMat->Shininess = 64.0f;
+	planeAsset->SetMaterial(planeMat);
+	if ( auto planeActor = Engine->NewObject<BravoMeshActor>() )
+	{
+		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		planeActor->SetMesh(planeAsset);
+	}
 	
 	
 	if ( auto dirLightActor = Engine->NewObject<BravoDirLightActor>() )
