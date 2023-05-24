@@ -7,8 +7,8 @@ struct Material
 {
 	sampler2D diffuse;
 	sampler2D specular;
-	sampler2D height;
-	sampler2D ambient;
+	sampler2D height;	//TODO
+	sampler2D ambient;	//TODO
 	sampler2D normal;
 
 	float shininess;
@@ -91,15 +91,15 @@ void main()
 	vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     
 	// directional lighting
-	vec3 result = CalcDirLight(norm, viewDir);
+	vec3 outColor = CalcDirLight(norm, viewDir);
 	// point lights
 	for(int i = 0; i < pointLightsNum; i++)
-		result += CalcPointLight(i, norm, viewDir);
+		outColor += CalcPointLight(i, norm, viewDir);
 	// spot light
 	for(int i = 0; i < spotLightsNum; i++)
-		result += CalcSpotLight(i, norm, viewDir);    
+		outColor += CalcSpotLight(i, norm, viewDir);    
 		
-	FragColor = vec4(result, 1.0);
+	FragColor = vec4(outColor, 1.0);
 }
 
 // calculates the color when using a directional light.
@@ -203,6 +203,7 @@ vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir)
 	return (ambient + (1.0 - shadow)*(diffuse + specular));
 }
 
+
 float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm, vec3 lightDir)
 {
     // perform perspective divide
@@ -216,7 +217,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm, 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
-	float bias = 0.0;//max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
+	float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
 	float shadow = 0.0;
 	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
 	for(int x = -1; x <= 1; ++x)
@@ -228,7 +229,6 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm, 
 		}    
 	}
 	shadow /= 9.0;
-	//shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
     return shadow;
 }
