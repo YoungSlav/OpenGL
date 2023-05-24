@@ -9,10 +9,10 @@
 // TODO:
 /*
 * Asset management refactoring
-* Material refactoring!
 * Move geometries to separate component classes
 *
-* !!!!!!!!! Fix lightning !!!!!!!!!
+* !!!!!!!!! Fix shadows !!!!!!!!!
+* refactor lights
 * 
 * HUD widgets management
 * Input refactoring (utilize delegates)

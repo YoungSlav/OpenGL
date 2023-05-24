@@ -59,21 +59,21 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	if ( auto dirLightActor = Engine->NewObject<BravoDirLightActor>() )
 	{
-		dirLightActor->SetLocation(glm::vec3(0.0f,  10.0f, 0.0f ));
+		dirLightActor->SetLocation(glm::vec3(10.0f,  10.0f, 0.0f ));
 		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, -90.0f));
 		dirLightActor->SetScale(glm::vec3(0.1f));
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
 	
-	for ( int32 i = 0; i < 1; ++i )
-	{
-		if ( auto spotLight = Engine->NewObject<BravoSpotLightActor>() )
-		{
-			spotLight->SetScale(glm::vec3(-0.5f));
-			spotLight->SetLightColor(glm::vec3(1.0f));
-			spotLights.push_back(spotLight);
-		}
-	}
+	//for ( int32 i = 0; i < 1; ++i )
+	//{
+	//	if ( auto spotLight = Engine->NewObject<BravoSpotLightActor>() )
+	//	{
+	//		spotLight->SetScale(glm::vec3(-0.5f));
+	//		spotLight->SetLightColor(glm::vec3(1.0f));
+	//		spotLights.push_back(spotLight);
+	//	}
+	//}
 
 	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
 	BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
@@ -104,17 +104,17 @@ bool BravoGameInstance::Initialize_Internal()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {
-	float lightDistance = 5.0f;
-	glm::vec3 newLocation = glm::vec3(0.0f, 10.0f, 0.0f);
-	newLocation.x = -glm::sin(LifeTime) * lightDistance;
-	newLocation.z = -glm::cos(LifeTime) * lightDistance;
-	
-	spotLights[0].lock()->SetLocation(newLocation);
-	spotLights[0].lock()->SetDirection(glm::normalize(glm::vec3(0.0f) - newLocation ));
-	
-	spotLights[0].lock()->CutOff = glm::cos(glm::radians(12.0f));
-	spotLights[0].lock()->OuterCutOff = glm::cos(glm::radians(15.0f));
-	spotLights[0].lock()->Constant = 1.0f;
-	spotLights[0].lock()->Linear = 0.09f;
-	spotLights[0].lock()->Quadratic = 0.032f;
+	//float lightDistance = 5.0f;
+	//glm::vec3 newLocation = glm::vec3(0.0f, 10.0f, 0.0f);
+	//newLocation.x = -glm::sin(LifeTime) * lightDistance;
+	//newLocation.z = -glm::cos(LifeTime) * lightDistance;
+	//
+	//spotLights[0].lock()->SetLocation(newLocation);
+	//spotLights[0].lock()->SetDirection(glm::normalize(glm::vec3(0.0f) - newLocation ));
+	//
+	//spotLights[0].lock()->CutOff = glm::cos(glm::radians(12.0f));
+	//spotLights[0].lock()->OuterCutOff = glm::cos(glm::radians(15.0f));
+	//spotLights[0].lock()->Constant = 1.0f;
+	//spotLights[0].lock()->Linear = 0.09f;
+	//spotLights[0].lock()->Quadratic = 0.032f;
 }

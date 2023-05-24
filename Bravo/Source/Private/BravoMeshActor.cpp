@@ -39,15 +39,15 @@ void BravoMeshActor::Render(const glm::vec3& CameraLocation, const glm::mat4& Ca
 	Shader->StopUsage();
 }
 
-void BravoMeshActor::RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const
+void BravoMeshActor::RenderDepthMap(std::shared_ptr<class BravoShader> _Shader, const glm::vec3& LightPosition) const
 {
-	if ( !Mesh || !Shader)
+	if ( !Mesh || !_Shader)
 		return;
 	
 	glm::mat4 model = GetTransformMatrix();
 
-	Shader->Use();
-		Shader->SetMatrix4d("model", model);
+	_Shader->Use();
+		_Shader->SetMatrix4d("model", model);
 		Mesh->Render();
-	Shader->StopUsage();
+	_Shader->StopUsage();
 }
