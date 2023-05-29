@@ -12,13 +12,13 @@ public:
 	int32 GetRenderPriority() const { return RenderPriority; }
 	void Render();
 
-protected:
-	
-	void SetRenderPriority(int32 _RenderPriority);
 	void AddWidget(std::shared_ptr<class BravoWidget> _Widget);
-	
-	virtual bool Initialize_Internal() override;
+	void RemoveWidget(std::shared_ptr<class BravoWidget> _Widget);
+	void SetRenderPriority(int32 _RenderPriority);
 
+protected:
+	virtual bool Initialize_Internal() override;
+	virtual void OnDestroy() override;
 
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
 

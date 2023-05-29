@@ -25,6 +25,9 @@ public:
 		BravoObject(_Engine, _Handle)
 	{}
 
+	void SetOwnerScreen(std::shared_ptr<class BravoScreen> _OwnerScreen);
+	std::shared_ptr<class BravoScreen> GetOwnerScreen() const { return OwnerScreen.expired() ? nullptr : OwnerScreen.lock(); }
+
 	// Position in normalized coords: [0..1]
 	void SetPosition(const glm::vec2& _Position);
 	const glm::vec2& GetPosition() const { return Position; }
@@ -49,7 +52,8 @@ public:
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void Render_Internal() {}
+	virtual void Render_Internal() = 0;
+	virtual void OnDestroy() override;
 
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
 	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
@@ -68,7 +72,7 @@ private:
 	// !! Does not affect text
 	bool bTrueScaling = false;
 
-
+	std::weak_ptr<class BravoScreen> OwnerScreen;
 	std::weak_ptr<class BravoHUD> HUD;
 	std::weak_ptr<class BravoAssetManager> AssetManager;
 };

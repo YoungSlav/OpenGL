@@ -8,13 +8,12 @@
 
 // TODO:
 /*
-* Asset management refactoring
+* 
 * Move geometries to separate component classes
 *
 * !!!!!!!!! Fix shadows !!!!!!!!!
 * refactor lights
 * 
-* HUD widgets management
 * Input refactoring (utilize delegates)
 * Input text widget
 * widgets mouse clicking

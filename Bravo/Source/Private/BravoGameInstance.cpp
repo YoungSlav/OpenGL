@@ -25,7 +25,9 @@ bool BravoGameInstance::Initialize_Internal()
 
 	if ( Engine->GetHUD() )
 	{
-		Engine->GetHUD()->AddScreen(Engine->NewObject<BravoScreen_Debug>());
+		auto screen = Engine->NewObject<BravoScreen_Debug>();
+		Engine->GetHUD()->AddScreen(screen);
+		screen->Destroy();
 	}
 	
 	

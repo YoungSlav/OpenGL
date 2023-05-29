@@ -1,6 +1,7 @@
 #include "BravoWidget.h"
 #include "BravoEngine.h"
 #include "BravoHUD.h"
+#include "BravoScreen.h"
 
 bool BravoWidget::Initialize_Internal()
 {
@@ -36,6 +37,11 @@ void BravoWidget::SetOrigin(const glm::vec2& _Origin)
 	Origin = _Origin;
 }
 
+void BravoWidget::SetOwnerScreen(std::shared_ptr<class BravoScreen> _OwnerScreen)
+{
+	OwnerScreen = _OwnerScreen;
+}
+
 glm::vec2 BravoWidget::GetActualSize() const
 {
 	if ( !GetHUD() )
@@ -51,4 +57,14 @@ glm::vec2 BravoWidget::GetActualSize() const
 void BravoWidget::SetTrueScaling(bool _bTrueScaling)
 {
 	bTrueScaling = _bTrueScaling;
+}
+
+void BravoWidget::OnDestroy()
+{
+	BravoObject::OnDestroy();
+
+	if( OwnerScreen.expired() )
+		return;
+
+	OwnerScreen.lock()->RemoveWidget(Self<BravoWidget>());
 }
