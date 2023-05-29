@@ -10,7 +10,6 @@
 
 namespace GlobalEngine
 {
-
 	std::weak_ptr<BravoEngine> _Engine;
 	std::shared_ptr<BravoEngine> Engine()
 	{
@@ -18,8 +17,7 @@ namespace GlobalEngine
 			return nullptr;
 		return _Engine.lock();
 	}
-
-}
+};
 
 
 
@@ -55,6 +53,10 @@ void BravoEngine::GameLoop()
 		GameTime = newTime;
 
 		Tick(DeltaTime);
+		
+		if ( GetCamera() )
+			GetCamera()->UpdateCamera();
+
 		UpdateViewport();
 		ProcessInput(Window);
 	}

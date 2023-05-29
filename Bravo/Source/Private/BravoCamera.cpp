@@ -14,11 +14,11 @@ void BravoCamera::Detach()
 
 bool BravoCamera::Initialize_Internal()
 {
-	CalcCamera();
+	UpdateCamera();
 	return true;
 }
 
-void BravoCamera::Tick(float DeltaTime)
+void BravoCamera::UpdateCamera()
 {
 	if ( bAttachedToActor )
 	{
@@ -28,10 +28,10 @@ void BravoCamera::Tick(float DeltaTime)
 			SetRotation(O->GetRotation());
 		}
 	}
-	CalcCamera();
+	UpdateCamera_Internal();
 }
 
-void BravoCamera::CalcCamera()
+void BravoCamera::UpdateCamera_Internal()
 {
 	glm::vec3 front;
     front.x = cos(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.z));

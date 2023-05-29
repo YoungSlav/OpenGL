@@ -9,8 +9,8 @@
 class BravoMeshActor : public BravoActor, public BravoTickable
 {
 public:
-	BravoMeshActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoActor(_Engine, _Handle),
+	BravoMeshActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoActor(_Engine, _Handle, _Owner),
 		BravoTickable()
 	{}
 

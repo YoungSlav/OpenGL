@@ -7,8 +7,8 @@
 class BravoLightActor : public BravoActor, public BravoTickable
 {
 public:
-	BravoLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoActor(_Engine, _Handle),
+	BravoLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoActor(_Engine, _Handle, _Owner),
 		BravoTickable()
 	{
 		RenderPriority = INT_MIN;
@@ -38,8 +38,8 @@ protected:
 class BravoDirLightActor : public BravoLightActor
 {
 public:
-	BravoDirLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoLightActor(_Engine, _Handle)
+	BravoDirLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoLightActor(_Engine, _Handle, _Owner)
 	{}
 
 	virtual void Use(BravoShaderPtr OnShader) override;
@@ -53,8 +53,8 @@ protected:
 class BravoPointLightActor : public BravoLightActor
 {
 public:
-	BravoPointLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoLightActor(_Engine, _Handle)
+	BravoPointLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoLightActor(_Engine, _Handle, _Owner)
 	{}
 
 	virtual void Use(BravoShaderPtr OnShader) override;
@@ -70,8 +70,8 @@ protected:
 class BravoSpotLightActor : public BravoLightActor
 {
 public:
-	BravoSpotLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoLightActor(_Engine, _Handle)
+	BravoSpotLightActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoLightActor(_Engine, _Handle, _Owner)
 	{}
 
 	virtual void Use(BravoShaderPtr OnShader) override;

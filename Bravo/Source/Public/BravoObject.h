@@ -26,10 +26,11 @@ protected:
 class BravoObject : public SharedFromThis
 {
 public:
-	BravoObject(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
+	BravoObject(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
 		SharedFromThis(),
 		Engine(_Engine),
-		Handle(_Handle)
+		Handle(_Handle),
+		Owner(_Owner)
 	{}
 	bool Initialize();
 	void Destroy();
@@ -42,6 +43,7 @@ protected:
 
 
 protected:
+	const std::weak_ptr<BravoObject> Owner;
 	const std::shared_ptr<BravoEngine> Engine;
 
 private:

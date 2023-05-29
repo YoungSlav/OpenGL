@@ -10,6 +10,8 @@
 
 void BravoShadowMap::OnDestroy()
 {
+	BravoObject::OnDestroy();
+
 	if ( GetShader() )
 		GetShader()->ReleaseFromGPU();
 }

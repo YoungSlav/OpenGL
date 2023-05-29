@@ -4,12 +4,11 @@
 #include "BravoActor.h"
 
 
-class BravoCamera : public BravoActor, public BravoTickable
+class BravoCamera : public BravoActor
 {
 public:
-	BravoCamera(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoActor(_Engine, _Handle),
-		BravoTickable()
+	BravoCamera(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoActor(_Engine, _Handle, _Owner)
 	{}
 
 	const glm::mat4& GetViewMatrix() const { return ViewMatrix; }
@@ -26,13 +25,13 @@ public:
 	void AttachTo(const std::shared_ptr<BravoActor> InActor);
 	void Detach();
 
+	void UpdateCamera();
+
 	std::shared_ptr<BravoActor> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void CalcCamera();
+	virtual void UpdateCamera_Internal();
 
 private:
 	float FOV = 45.0f;

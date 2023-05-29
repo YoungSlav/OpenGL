@@ -5,8 +5,8 @@
 class BravoScreen : public BravoObject
 {
 public:
-	BravoScreen(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoObject(_Engine, _Handle)
+	BravoScreen(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoObject(_Engine, _Handle, _Owner)
 	{}
 
 	int32 GetRenderPriority() const { return RenderPriority; }

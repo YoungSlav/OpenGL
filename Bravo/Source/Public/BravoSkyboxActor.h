@@ -6,8 +6,8 @@
 class BravoSkyboxActor : public BravoActor
 {
 public:
-	BravoSkyboxActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoActor(_Engine, _Handle)
+	BravoSkyboxActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoActor(_Engine, _Handle, _Owner)
 	{
 		RenderPriority = INT_MAX-1;
 	}

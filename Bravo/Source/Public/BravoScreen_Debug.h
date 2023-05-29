@@ -6,8 +6,8 @@
 class BravoScreen_Debug : public BravoScreen, public BravoTickable
 {
 public:
-	BravoScreen_Debug(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoScreen(_Engine, _Handle),
+	BravoScreen_Debug(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoScreen(_Engine, _Handle, _Owner),
 		BravoTickable()
 	{}
 

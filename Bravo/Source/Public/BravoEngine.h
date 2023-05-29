@@ -9,10 +9,12 @@
 // TODO:
 /*
 * 
+* 2d camera
+* camera refactoring (engine should accept camera rather then spawning)
 * Move geometries to separate component classes
 *
 * !!!!!!!!! Fix shadows !!!!!!!!!
-* refactor lights
+* refactor lights (more parameters?)
 * 
 * Input refactoring (utilize delegates)
 * Input text widget
@@ -20,8 +22,9 @@
 * console commands?
 * 
 * 
-* Collisions?
+* reactphysics3d
 * world editor? (json?)
+* serialization?
 * splines?
 * particle systems?
 * animations?
@@ -47,11 +50,11 @@ public:
 
 	
 	template <typename Class>
-	std::shared_ptr<Class> NewObject()
+	std::shared_ptr<Class> NewObject(std::shared_ptr<BravoObject> Owner = nullptr)
 	{
 		static_assert(std::is_base_of_v<BravoObject, Class>);
-		
-		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(Self<BravoEngine>(), ++LastUsedHandle));
+				
+		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(Self<BravoEngine>(), ++LastUsedHandle, Owner));
 		if ( !newObject->Initialize() )
 			return nullptr;
 
@@ -75,7 +78,6 @@ public:
 private:
 	void CreateOpenGLWindow();
 	void UpdateViewport();
-
 	void Resize(const glm::ivec2& InViewportSize);
 
 	void RegisterObject(std::shared_ptr<BravoObject> Object);

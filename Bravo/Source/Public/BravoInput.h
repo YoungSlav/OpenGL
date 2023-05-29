@@ -16,8 +16,8 @@ class BravoInput : public BravoObject
 	friend class BravoEngine;
 public:
 
-	BravoInput(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle) :
-		BravoObject(_Engine, _Handle)
+	BravoInput(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
+		BravoObject(_Engine, _Handle, _Owner)
 	{}
 
 
