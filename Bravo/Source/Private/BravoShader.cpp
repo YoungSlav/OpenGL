@@ -157,6 +157,11 @@ void BravoShader::SetBool(const std::string& name, const bool val) const
 	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int32)val); 
 }
 
+void BravoShader::SetInt(const std::string& name, const size_t val) const
+{
+	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int32)val);
+}
+
 void BravoShader::SetInt(const std::string& name, const int32 val) const
 {
 	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);

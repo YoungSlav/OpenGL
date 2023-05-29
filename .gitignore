@@ -60,7 +60,7 @@ GLFW/Solution/
 
 Build/
 Intermediate/
-Resources/Shaders/
+
 Bravo/x64/
 Bravo/x86/
 
@@ -71,4 +71,7 @@ Bravo/x86/
 !/ThirdParty/Lib/glfw3.lib
 !/ThirdParty/Lib/assimp.lib
 !/ThirdParty/Lib/assimp-vc140-mt.dll
+!/ThirdParty/Lib/assimp-vc143-mt.dll
 !/Resources/*
+
+Resources/Shaders/

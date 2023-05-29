@@ -83,7 +83,7 @@ void BravoWidget_Plane::Render_Internal()
 			PlaneVertecies.push_back(HUDVertex(glm::vec2(pos1.x, pos1.y), glm::vec2(1.0f, 1.0f)));
 
 			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(HUDVertex) * PlaneVertecies.size(), PlaneVertecies.data());
-			glDrawArrays(GL_TRIANGLES, 0, PlaneVertecies.size());
+			glDrawArrays(GL_TRIANGLES, 0, (int32)PlaneVertecies.size());
 
 			GetShader()->StopUsage();
 			if ( GetTexture() )

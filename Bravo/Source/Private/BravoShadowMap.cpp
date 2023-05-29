@@ -121,7 +121,7 @@ void BravoShadowMap_Directional::Render(std::shared_ptr<class BravoLightActor> O
 		return;
 
 	float NearPlane = 1.0f;
-	float FarPlane = 50.0f;
+	float FarPlane = 100.0f;
 
 	glm::vec3 LightPosition = Owner->GetLocation();
 

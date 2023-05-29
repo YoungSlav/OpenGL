@@ -29,7 +29,7 @@ void BravoInput::UnsubscribeFromKey(std::shared_ptr<BravoInputListener> Subscrib
 
 void BravoInput::UnsubscribeFromMouseMove(std::shared_ptr<BravoInputListener> Subscriber)
 {
-	for ( int32 i = MouseMoveListeners.size()-1; i >= 0; --i )
+	for ( size_t i = MouseMoveListeners.size()-1; i >= 0; --i )
 	{
 		if ( MouseMoveListeners[i].expired() || MouseMoveListeners[i].lock() == Subscriber )
 			MouseMoveListeners.erase(MouseMoveListeners.begin() + i);
@@ -37,7 +37,7 @@ void BravoInput::UnsubscribeFromMouseMove(std::shared_ptr<BravoInputListener> Su
 }
 void BravoInput::UnsubscribeFromMouseScroll(std::shared_ptr<BravoInputListener> Subscriber)
 {
-	for ( int32 i = MouseScrollListeners.size()-1; i >= 0; --i )
+	for ( size_t i = MouseScrollListeners.size()-1; i >= 0; --i )
 	{
 		if ( MouseScrollListeners[i].expired() || MouseScrollListeners[i].lock() == Subscriber )
 			MouseScrollListeners.erase(MouseScrollListeners.begin() + i);

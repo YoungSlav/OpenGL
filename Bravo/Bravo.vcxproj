@@ -174,14 +174,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)\Build\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PublicModuleDirectories>
     </PublicModuleDirectories>
-    <OutDir>$(SolutionDir)\Build\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <LinkIncremental>
+    </LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)\Build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
     <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -192,15 +206,11 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>assimp.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>rmdir ..\Resources\Shaders\ /s /q
-
-xcopy Source\Shaders ..\Resources\Shaders /e /i /h
-
-copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -218,10 +228,14 @@ copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <PostBuildEvent>
-      <Command>./CopyShaders.bat</Command>
+      <Command>rmdir ..\Resources\Shaders\ /s /q
+
+xcopy Source\Shaders ..\Resources\Shaders /e /i /h
+
+copy ..\ThirdParty\Lib\assimp-vc143-mtd.dll ..\Build\Debug\assimp-vc143-mtd.dll  /Y</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>assimp.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -235,14 +249,11 @@ copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp-vc143-mt.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>rmdir ..\Build\Shaders\ /s /q
-
-xcopy Source\Shaders ..\Build\Shaders /e /i /h
-
-copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -256,9 +267,14 @@ copy ..\ThirdParty\Lib\assimp-vc140-mt.dll ..\Build\assimp-vc140-mt.dll  /Y
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp-vc143-mt.lib;opengl32.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>./CopyShaders.bat</Command>
+      <Command>rmdir ..\Resources\Shaders\ /s /q
+
+xcopy Source\Shaders ..\Resources\Shaders /e /i /h
+
+copy ..\ThirdParty\Lib\assimp-vc143-mt.dll ..\Build\Release\assimp-vc143-mt.dll  /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

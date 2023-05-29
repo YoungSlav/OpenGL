@@ -98,7 +98,7 @@ void BravoWidget_Text::Render_Internal()
 			}
 
 			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(HUDVertex) * TextVertecies.size(), TextVertecies.data());
-			glDrawArrays(GL_TRIANGLES, 0, TextVertecies.size());
+			glDrawArrays(GL_TRIANGLES, 0, (int32)TextVertecies.size());
 
 			GetShader()->StopUsage();
 			GetFont()->StopUsage();

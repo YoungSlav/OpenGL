@@ -52,7 +52,7 @@ bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
     stbtt_pack_context pc;
     stbtt_PackBegin(&pc, AtlasBitmap.data(), AtlasSizeX, AtlasSizeY, 0, 1, NULL);   
     stbtt_PackSetOversampling(&pc, 3, 3); // say, choose 3x1 oversampling for subpixel positioning
-    if ( !stbtt_PackFontRanges(&pc, reinterpret_cast<const uint8*>(fontBuffer.data()), 0, ranges.data(), ranges.size()) )
+    if ( !stbtt_PackFontRanges(&pc, reinterpret_cast<const uint8*>(fontBuffer.data()), 0, ranges.data(), (int32)ranges.size()) )
 	{
 		Log::LogMessage("Failed to load font " + Path +". Atlas size is too small", ELog::Error );
 		stbtt_PackEnd(&pc);

@@ -46,5 +46,5 @@ private:
 private:
 	std::map<std::string, std::shared_ptr<class BravoAsset>> LoadedAssets;
 
-	const std::string ResourcesFolderPath = "..\\Resources\\";
+	const std::string ResourcesFolderPath = "..\\..\\Resources\\";
 };
