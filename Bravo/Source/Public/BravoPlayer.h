@@ -7,11 +7,6 @@
 class BravoPlayer : public BravoActor, public BravoTickable, public BravoInputListener
 {
 public:
-	BravoPlayer(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoActor(_Engine, _Handle, _Owner),
-		BravoTickable(),
-		BravoInputListener()
-	{}
 
 protected:
 	virtual bool Initialize_Internal() override;

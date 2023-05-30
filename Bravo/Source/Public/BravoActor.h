@@ -6,9 +6,6 @@
 class BravoActor : public BravoObject
 {
 public:
-	BravoActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoObject(_Engine, _Handle, _Owner)
-	{}
 
 	const glm::vec3& GetLocation() const { return Location; }
 	void SetLocation(const glm::vec3& InLocation) { Location = InLocation; }

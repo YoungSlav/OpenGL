@@ -9,9 +9,6 @@
 class BravoLightManager : public BravoObject
 {
 public:
-	BravoLightManager(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoObject(_Engine, _Handle, _Owner)
-	{}
 
 	void RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor);
 	void RemoveLightActor(std::shared_ptr<BravoLightActor> Actor);

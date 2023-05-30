@@ -9,9 +9,6 @@
 class BravoHUD : public BravoObject
 {
 public:
-	BravoHUD(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoObject(_Engine, _Handle, _Owner)
-	{}
 
 	void Render();
 	glm::vec2 GetTargetScale() const { return Size / TargetSize; };

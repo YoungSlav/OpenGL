@@ -21,9 +21,6 @@ struct HUDVertex
 class BravoWidget : public BravoObject
 {
 public:
-	BravoWidget(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) : 
-		BravoObject(_Engine, _Handle, _Owner)
-	{}
 
 	void SetOwnerScreen(std::shared_ptr<class BravoScreen> _OwnerScreen);
 	std::shared_ptr<class BravoScreen> GetOwnerScreen() const { return OwnerScreen.expired() ? nullptr : OwnerScreen.lock(); }

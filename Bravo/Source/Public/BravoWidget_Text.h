@@ -7,9 +7,6 @@
 class BravoWidget_Text : public BravoWidget
 {
 public:
-	BravoWidget_Text(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) : 
-		BravoWidget(_Engine, _Handle, _Owner)
-	{}
 
 	void SetText(const std::string& _Text);
 	const std::string& GetText() const { return Text; }

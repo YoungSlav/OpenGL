@@ -4,9 +4,6 @@
 class BravoRenderTarget : public BravoObject
 {
 public:
-	BravoRenderTarget(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoObject(_Engine, _Handle, _Owner)
-	{}
 
 	void Setup(const glm::ivec2& Size, std::shared_ptr<class BravoShader> InShader);
 

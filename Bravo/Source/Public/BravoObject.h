@@ -26,26 +26,51 @@ protected:
 class BravoObject : public SharedFromThis
 {
 public:
-	BravoObject(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		SharedFromThis(),
-		Engine(_Engine),
-		Handle(_Handle),
-		Owner(_Owner)
-	{}
-	bool Initialize();
+	BravoObject() = default;
+	bool Initialize(const BravoHandle& _Handle, const std::string& _Name, std::shared_ptr<class BravoEngine> _Engine, std::shared_ptr<BravoObject> _Owner);
+	
 	void Destroy();
 
 	const BravoHandle& GetHandle() const { return Handle; }
+	const std::shared_ptr<BravoObject> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
+	const std::string& GetName() const { return Name; }
 
 protected:
 	virtual bool Initialize_Internal() { return true; }
 	virtual void OnDestroy() {}
 
+	template <typename Class>
+	std::shared_ptr<Class> NewObject(std::shared_ptr<BravoObject> _Owner = nullptr, const std::string& _Name = "")
+	{
+		static_assert(std::is_base_of_v<BravoObject, Class>);
+		
+		if ( !Engine )
+			return nullptr;
 
-protected:
-	const std::weak_ptr<BravoObject> Owner;
-	const std::shared_ptr<BravoEngine> Engine;
+		BravoHandle newHandle = Engine->GenerateNewHandle();
+
+		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class());
+
+		if ( !newObject->Initialize(
+						newHandle,
+						_Name.empty() ? std::to_string(newHandle): _Name,
+						Engine, 
+						_Owner ? _Owner : Self<BravoObject>() )
+			)
+			return nullptr;
+		Engine->RegisterObject(newObject);
+
+		return std::dynamic_pointer_cast<Class>(newObject);
+	}
 
 private:
-	const BravoHandle Handle = 0;
+
+protected:
+	std::shared_ptr<BravoEngine> Engine;
+
+private:
+	std::weak_ptr<BravoObject> Owner;
+	std::string Name = "";
+
+	BravoHandle Handle = 0;
 };

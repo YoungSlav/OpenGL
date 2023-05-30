@@ -1,5 +1,4 @@
 #include "BravoEngine.h"
-
 #include "BravoInput.h"
 #include "BravoCamera.h"
 #include "BravoLightManager.h"
@@ -21,9 +20,12 @@ namespace GlobalEngine
 
 
 
-void BravoEngine::Initialize()
+bool BravoEngine::Initialize_Internal()
 {
 	GlobalEngine::_Engine = Self<BravoEngine>();
+	Engine = Self<BravoEngine>();
+	
+	LastUsedHandle = GetHandle();
 
 	AssetManager = std::shared_ptr<BravoAssetManager>(new BravoAssetManager());
 
@@ -41,6 +43,8 @@ void BravoEngine::Initialize()
 
 	HUD = NewObject<BravoHUD>();
 	GetHUD()->SetSize(ViewportSize);
+
+	return true;
 }
 
 
@@ -149,14 +153,6 @@ void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 	
 	if ( std::shared_ptr<BravoHUD> hud = GetHUD() )
 		hud->SetSize(ViewportSize);
-}
-
-void BravoEngine::SetMouseEnabled(bool bNewMouseEnabled) const
-{
-	if ( bNewMouseEnabled )
-		glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	else
-		glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void BravoEngine::CreateOpenGLWindow()
@@ -287,4 +283,9 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 		TickableObjects.erase(std::remove(TickableObjects.begin(), TickableObjects.end(), asTiackble), TickableObjects.end());
 
 	Objects.erase(std::remove(Objects.begin(), Objects.end(), Object), Objects.end());
+
+	if ( Object.use_count() > 1 )
+	{
+		Log::LogMessage("Memory leak! Object " + Object->GetName() + " being destroyed while still having hard refferences!", ELog::Error);
+	}
 }

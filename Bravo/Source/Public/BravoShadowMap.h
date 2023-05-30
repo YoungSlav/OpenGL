@@ -5,9 +5,6 @@
 class BravoShadowMap : public BravoObject
 {
 public:
-	BravoShadowMap(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoObject(_Engine, _Handle, _Owner)
-	{}
 
 	virtual void Setup(const glm::ivec2& Size) = 0;
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) = 0;
@@ -26,9 +23,6 @@ protected:
 class BravoShadowMap_Texture : public BravoShadowMap
 {
 public:
-	BravoShadowMap_Texture(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoShadowMap(_Engine, _Handle, _Owner)
-	{}
 
 	virtual void Setup(const glm::ivec2& Size) override;
 
@@ -48,9 +42,6 @@ protected:
 class BravoShadowMap_Cube : public BravoShadowMap
 {
 public:
-	BravoShadowMap_Cube(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoShadowMap(_Engine, _Handle, _Owner)
-	{}
 
 	virtual void Setup(const glm::ivec2& Size) override;
 	
@@ -71,9 +62,6 @@ protected:
 class BravoShadowMap_Directional : public BravoShadowMap_Texture
 {
 public:
-	BravoShadowMap_Directional(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoShadowMap_Texture(_Engine, _Handle, _Owner)
-	{}
 
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 };
@@ -81,9 +69,6 @@ public:
 class BravoShadowMap_Spot : public BravoShadowMap_Texture
 {
 public:
-	BravoShadowMap_Spot(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoShadowMap_Texture(_Engine, _Handle, _Owner)
-	{}
 
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 };
@@ -91,9 +76,6 @@ public:
 class BravoShadowMap_Point : public BravoShadowMap_Cube
 {
 public:
-	BravoShadowMap_Point(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoShadowMap_Cube(_Engine, _Handle, _Owner)
-	{}
 
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 };

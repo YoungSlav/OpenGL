@@ -25,33 +25,32 @@ bool BravoGameInstance::Initialize_Internal()
 
 	if ( Engine->GetHUD() )
 	{
-		auto screen = Engine->NewObject<BravoScreen_Debug>();
+		auto screen = NewObject<BravoScreen_Debug>();
 		Engine->GetHUD()->AddScreen(screen);
-		screen->Destroy();
 	}
 	
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
-	if ( std::shared_ptr<BravoPlayer> Player = Engine->NewObject<BravoPlayer>() )
+	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>() )
 	{
 		Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
 		Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
 	}
 	
-	if ( auto skyboxActor = Engine->NewObject<BravoSkyboxActor>() )
+	if ( auto skyboxActor = NewObject<BravoSkyboxActor>() )
 	{
 		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
 
-	auto groundPlane = Engine->NewObject<BravoInfinitePlaneActor>();
+	auto groundPlane = NewObject<BravoInfinitePlaneActor>();
 
 	BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
 	BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
 	planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
 	planeMat->Shininess = 64.0f;
 	planeAsset->SetMaterial(planeMat);
-	if ( auto planeActor = Engine->NewObject<BravoMeshActor>() )
+	if ( auto planeActor = NewObject<BravoMeshActor>() )
 	{
 		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
@@ -59,7 +58,7 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	
 	
-	if ( auto dirLightActor = Engine->NewObject<BravoDirLightActor>() )
+	if ( auto dirLightActor = NewObject<BravoDirLightActor>() )
 	{
 		dirLightActor->SetLocation(glm::vec3(10.0f,  10.0f, 0.0f ));
 		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, -90.0f));
@@ -69,7 +68,7 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	//for ( int32 i = 0; i < 1; ++i )
 	//{
-	//	if ( auto spotLight = Engine->NewObject<BravoSpotLightActor>() )
+	//	if ( auto spotLight = NewObject<BravoSpotLightActor>() )
 	//	{
 	//		spotLight->SetScale(glm::vec3(-0.5f));
 	//		spotLight->SetLightColor(glm::vec3(1.0f));
@@ -93,7 +92,7 @@ bool BravoGameInstance::Initialize_Internal()
 	float angle = 0.0f;
 	for ( uint32 i = 0; i < locations.size(); ++i )
 	{
-		if ( auto cubeActor = Engine->NewObject<BravoMeshActor>() )
+		if ( auto cubeActor = NewObject<BravoMeshActor>() )
 		{
 			cubeActor->SetLocation(locations[i]);
 			cubeActor->SetRotation(glm::vec3(angle, angle, angle));

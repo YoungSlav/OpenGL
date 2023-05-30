@@ -2,6 +2,16 @@
 #include "BravoEngine.h"
 #include "openGL.h"
 
+
+void BravoInput::SetMouseEnabled(bool bNewMouseEnabled) const
+{
+	// TODO
+	//if ( bNewMouseEnabled )
+	//	glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	//else
+	//	glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
 void BravoInput::SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber)
 {
 	KeyListeners.insert( {Key, Subscriber} );

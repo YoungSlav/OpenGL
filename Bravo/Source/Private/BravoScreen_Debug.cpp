@@ -13,7 +13,7 @@ bool BravoScreen_Debug::Initialize_Internal()
 		return false;
 
 	std::shared_ptr<BravoFont> font = Engine->GetAssetManager()->LoadAsset<BravoFont>("Fonts\\arial.ttf", {"50", "25", "12" });
-	std::shared_ptr<BravoWidget_Text> _fps = Engine->NewObject<BravoWidget_Text>();
+	std::shared_ptr<BravoWidget_Text> _fps = NewObject<BravoWidget_Text>();
 	_fps->SetPosition(glm::vec2(1.0f, 0.0f));
 	_fps->SetOrigin(glm::vec2(1.0f, 0.0f));
 	_fps->SetMargin(glm::vec2(2.0f, 2.0f));
@@ -23,7 +23,7 @@ bool BravoScreen_Debug::Initialize_Internal()
 	FPSWidget = _fps;
 	AddWidget(_fps);
 
-	std::shared_ptr<BravoWidget_Text> _fps2 = Engine->NewObject<BravoWidget_Text>();
+	std::shared_ptr<BravoWidget_Text> _fps2 = NewObject<BravoWidget_Text>();
 	_fps2->SetPosition(glm::vec2(0.0f, 0.0f));
 	_fps2->SetOrigin(glm::vec2(0.0f, 0.0f));
 	_fps2->SetMargin(glm::vec2(2.0f, 2.0f));

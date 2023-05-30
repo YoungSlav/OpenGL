@@ -7,9 +7,6 @@
 class BravoCamera : public BravoActor
 {
 public:
-	BravoCamera(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoActor(_Engine, _Handle, _Owner)
-	{}
 
 	const glm::mat4& GetViewMatrix() const { return ViewMatrix; }
 	const glm::mat4 GetProjectionMatrix() const { return ProjectionMatrix; }

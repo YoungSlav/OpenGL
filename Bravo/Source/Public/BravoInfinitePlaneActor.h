@@ -8,8 +8,8 @@
 class BravoInfinitePlaneActor : public BravoActor
 {
 public:
-	BravoInfinitePlaneActor(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoActor(_Engine, _Handle, _Owner)
+	BravoInfinitePlaneActor() :
+		BravoActor()
 	{
 		RenderPriority = INT_MAX;
 	}

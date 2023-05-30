@@ -5,6 +5,7 @@
 #include "BravoObject.h"
 #include "BravoActor.h"
 
+#include "BravoGameInstance.h"
 
 // TODO:
 /*
@@ -21,7 +22,7 @@
 * widgets mouse clicking
 * console commands?
 * 
-* 
+*  
 * reactphysics3d
 * world editor? (json?)
 * serialization?
@@ -32,37 +33,25 @@
 
 class BravoInput;
 
-class BravoEngine : public SharedFromThis
+class BravoEngine : public BravoObject
 {
 public:
-	BravoEngine()
-		: SharedFromThis()
+
+
+	template <typename Class>
+	std::shared_ptr<Class> SpawnGameInstance(const std::string& _Name)
 	{
+		static_assert(std::is_base_of_v<BravoGameInstance, Class>);
+		return NewObject<Class>(Self<BravoEngine>(), _Name);
 	}
 
-	void Initialize();
-
 	void GameLoop();
-	void Tick(float DeltaTime);
 	void StopGame();
 	
 	void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const;
-
 	
-	template <typename Class>
-	std::shared_ptr<Class> NewObject(std::shared_ptr<BravoObject> Owner = nullptr)
-	{
-		static_assert(std::is_base_of_v<BravoObject, Class>);
-				
-		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(Self<BravoEngine>(), ++LastUsedHandle, Owner));
-		if ( !newObject->Initialize() )
-			return nullptr;
-
-		RegisterObject(newObject);
-		return std::dynamic_pointer_cast<Class>(newObject);
-	}
-
-	
+	void RegisterObject(std::shared_ptr<BravoObject> Object);
+	BravoHandle GenerateNewHandle() { return ++LastUsedHandle; }
 	void DestroyObject(std::shared_ptr<BravoObject> Object);
 
 	std::shared_ptr<class BravoInput> GetInput() const { return Input.expired() ? nullptr : Input.lock(); }
@@ -70,17 +59,19 @@ public:
 	std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
 	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager; }
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
-	
 	const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 
-	void SetMouseEnabled(bool bNewMouseEnabled) const;
+protected:
+	bool Initialize_Internal() override;
+
 
 private:
 	void CreateOpenGLWindow();
+
+	void Tick(float DeltaTime);
 	void UpdateViewport();
 	void Resize(const glm::ivec2& InViewportSize);
 
-	void RegisterObject(std::shared_ptr<BravoObject> Object);
 
 	// input
 	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);

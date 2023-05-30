@@ -15,11 +15,7 @@ class BravoInput : public BravoObject
 {
 	friend class BravoEngine;
 public:
-
-	BravoInput(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) :
-		BravoObject(_Engine, _Handle, _Owner)
-	{}
-
+	void SetMouseEnabled(bool bNewMouseEnabled) const;
 
 	void SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber);
 	void SubscribeToMouseMove(std::shared_ptr<BravoInputListener> Subscriber);

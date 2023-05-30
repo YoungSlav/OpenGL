@@ -5,9 +5,6 @@
 class BravoWidget_Plane : public BravoWidget
 {
 public:
-	BravoWidget_Plane(std::shared_ptr<class BravoEngine> _Engine, const BravoHandle& _Handle, std::shared_ptr<BravoObject> _Owner) : 
-		BravoWidget(_Engine, _Handle, _Owner)
-	{}
 
 	void SetColor(const glm::vec4& _Color);
 	const glm::vec4& GetColor() const { return Color; }
