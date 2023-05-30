@@ -40,7 +40,7 @@ protected:
 	virtual void OnDestroy() {}
 
 	template <typename Class>
-	std::shared_ptr<Class> NewObject(std::shared_ptr<BravoObject> _Owner = nullptr, const std::string& _Name = "")
+	std::shared_ptr<Class> NewObject(const std::string& _Name = "", std::shared_ptr<BravoObject> _Owner = nullptr)
 	{
 		static_assert(std::is_base_of_v<BravoObject, Class>);
 		

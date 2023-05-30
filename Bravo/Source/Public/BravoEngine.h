@@ -10,14 +10,14 @@
 // TODO:
 /*
 * 
-* 2d camera
-* camera refactoring (engine should accept camera rather then spawning)
+* Input refactoring (utilize delegates)
 * Move geometries to separate component classes
+* 
+* 2d camera
 *
 * !!!!!!!!! Fix shadows !!!!!!!!!
 * refactor lights (more parameters?)
 * 
-* Input refactoring (utilize delegates)
 * Input text widget
 * widgets mouse clicking
 * console commands?
@@ -42,7 +42,7 @@ public:
 	std::shared_ptr<Class> SpawnGameInstance(const std::string& _Name)
 	{
 		static_assert(std::is_base_of_v<BravoGameInstance, Class>);
-		return NewObject<Class>(Self<BravoEngine>(), _Name);
+		return NewObject<Class>(_Name, Self<BravoEngine>());
 	}
 
 	void GameLoop();
@@ -56,6 +56,7 @@ public:
 
 	std::shared_ptr<class BravoInput> GetInput() const { return Input.expired() ? nullptr : Input.lock(); }
 	std::shared_ptr<class BravoLightManager> GetLightManager() const { return LightManager.expired() ? nullptr : LightManager.lock(); }
+	void SetCamera(std::shared_ptr<class BravoCamera> _Camera);
 	std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
 	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager; }
 	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
@@ -95,6 +96,7 @@ private:
 
 	std::weak_ptr<class BravoLightManager> LightManager;
 	std::weak_ptr<class BravoCamera> Camera;
+	std::weak_ptr<class BravoCamera> DefaultCamera;
 	std::weak_ptr<class BravoRenderTarget> ViewportRenderTarget;
 	std::shared_ptr<class BravoRenderTarget> GetViewportRenderTarget() const { return ViewportRenderTarget.lock(); }
 	std::weak_ptr<class BravoHUD> HUD;

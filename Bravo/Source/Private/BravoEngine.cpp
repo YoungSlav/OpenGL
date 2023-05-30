@@ -18,33 +18,35 @@ namespace GlobalEngine
 	}
 };
 
-
-
 bool BravoEngine::Initialize_Internal()
 {
 	GlobalEngine::_Engine = Self<BravoEngine>();
 	Engine = Self<BravoEngine>();
-	
 	LastUsedHandle = GetHandle();
 
 	AssetManager = std::shared_ptr<BravoAssetManager>(new BravoAssetManager());
 
 	CreateOpenGLWindow();
 
-	Input = NewObject<BravoInput>();
+	Input = NewObject<BravoInput>("Input");
 
-	if ( std::shared_ptr<BravoCamera> camera = NewObject<BravoCamera>() )
-	{
-		camera->SetAspectRatio(float(ViewportSize.x) / float(ViewportSize.y) );
-		Camera = camera;
-	}
+	auto camera = NewObject<BravoCamera>("DefaultCamera");
+	DefaultCamera = camera;	
+	camera->SetAspectRatio(float(ViewportSize.x) / float(ViewportSize.y) );
+	SetCamera(camera);
 
-	LightManager = NewObject<BravoLightManager>();
 
-	HUD = NewObject<BravoHUD>();
+	LightManager = NewObject<BravoLightManager>("LightManager");
+
+	HUD = NewObject<BravoHUD>("HUD");
 	GetHUD()->SetSize(ViewportSize);
 
 	return true;
+}
+
+void BravoEngine::SetCamera(std::shared_ptr<class BravoCamera> _Camera)
+{
+	Camera = _Camera;
 }
 
 
@@ -64,7 +66,6 @@ void BravoEngine::GameLoop()
 		UpdateViewport();
 		ProcessInput(Window);
 	}
-
 
 	glfwTerminate();
 }
