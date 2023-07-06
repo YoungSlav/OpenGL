@@ -1,15 +1,18 @@
 #include "BravoInput.h"
-#include "BravoEngine.h"
 #include "openGL.h"
 
 
+void BravoInput::SetOwnerWindow(GLFWwindow* _Window)
+{
+	Window = _Window;
+}
+
 void BravoInput::SetMouseEnabled(bool bNewMouseEnabled) const
 {
-	// TODO
-	//if ( bNewMouseEnabled )
-	//	glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	//else
-	//	glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if ( bNewMouseEnabled )
+		glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	else
+		glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void BravoInput::SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber)
@@ -56,12 +59,6 @@ void BravoInput::UnsubscribeFromMouseScroll(std::shared_ptr<BravoInputListener> 
 
 void BravoInput::ProcessInput(GLFWwindow *window, float DeltaTime)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		Engine->StopGame();
-		return;
-	}
-
 	for (auto it = KeyListeners.cbegin(); it != KeyListeners.cend(); )
 	{
 		if ( !it->second.expired() )

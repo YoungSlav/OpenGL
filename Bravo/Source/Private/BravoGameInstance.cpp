@@ -22,21 +22,26 @@ bool BravoGameInstance::Initialize_Internal()
 {
 	if ( !Engine )
 		return false;
+	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
+
 
 	if ( Engine->GetHUD() )
 	{
 		auto screen = NewObject<BravoScreen_Debug>();
 		Engine->GetHUD()->AddScreen(screen);
 	}
+
 	
+	std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>();
+	Engine->SetCamera(Camera);
+
 	
-	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-	
-	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>() )
-	{
-		Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
-		Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
-	}
+	std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>();
+	Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
+	Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
+	Camera->AttachTo(Player);
+
+
 	
 	if ( auto skyboxActor = NewObject<BravoSkyboxActor>() )
 	{

@@ -44,5 +44,8 @@ void BravoCamera::UpdateCamera_Internal()
 	
 	ViewMatrix = glm::lookAt(Location, Location + front, up);
 
+	const glm::ivec2 ViewportSize = Engine->GetViewportSize();
+	const float AspectRatio = float(ViewportSize.x) / float(ViewportSize.y);
+
 	ProjectionMatrix = glm::perspective(glm::radians(FOV), AspectRatio, MinDrawingDistance, MaxDrawingDistance);
 }

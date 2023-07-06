@@ -1,14 +1,15 @@
 #pragma once
+
 #include "stdafx.h"
 #include "BravoObject.h"
 #include "BravoMath.h"
 
-class BravoActor : public BravoObject
+
+class BravoComponent : public BravoObject
 {
 public:
-
-	void AddComponent(std::shared_ptr<class BravoComponent> _Component);
-	void RemoveComponent(std::shared_ptr<class BravoComponent> _Component);
+	void AttachToActor(std::shared_ptr<class BravoActor> _Actor);
+	void DetachFromActor();
 
 	const glm::vec3& GetLocation() const { return Location; }
 	void SetLocation(const glm::vec3& InLocation) { Location = InLocation; }
@@ -21,9 +22,6 @@ public:
 
 	const glm::vec3& GetScale() const { return Scale; }
 	void SetScale(const glm::vec3& InScale) { Scale = InScale; }
-
-	void SetRenderPriority(int32 _RenderPriority) { RenderPriority = _RenderPriority; }
-	int32 GetRenderPriority() const { return RenderPriority; }
 
 	glm::mat4 GetTransform() const;
 
@@ -38,7 +36,5 @@ protected:
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	int32 RenderPriority = 0;
-
-	std::vector<std::shared_ptr<class BravoComponent>> Components;
+	std::weak_ptr<class BravoActor> OwnerActor;
 };
