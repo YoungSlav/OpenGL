@@ -15,6 +15,8 @@ class BravoInput : public BravoObject
 {
 	friend class BravoEngine;
 public:
+	void SetOwnerWindow(struct GLFWwindow* _Window);
+
 	void SetMouseEnabled(bool bNewMouseEnabled) const;
 
 	void SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber);
@@ -26,7 +28,7 @@ public:
 	void UnsubscribeFromMouseScroll(std::shared_ptr<BravoInputListener> Subscriber);
 
 protected:
-	void ProcessInput(struct GLFWwindow *window, float DeltaTime);
+	void ProcessInput(struct GLFWwindow* window, float DeltaTime);
 	void OnMouseScroll(struct GLFWwindow* window, float xoffset, float yoffset, float DeltaTime);
 	void OnMouseMove(struct GLFWwindow* window, float xpos, float ypos, float DeltaTime);
 
@@ -37,7 +39,10 @@ private:
 
 	float OldMouseX = 0.0f;
 	float OldMouseY = 0.0f;
-	
+
+
+	struct GLFWwindow* Window = nullptr;
+
 	bool bInitialized = false;
 
 };

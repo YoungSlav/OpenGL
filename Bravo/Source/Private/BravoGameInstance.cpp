@@ -36,6 +36,10 @@ bool BravoGameInstance::Initialize_Internal()
 	{
 		Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
 		Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
+		
+		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>();
+		Engine->SetCamera(Camera);
+		Camera->AttachTo(Player);
 	}
 	
 	if ( auto skyboxActor = NewObject<BravoSkyboxActor>() )

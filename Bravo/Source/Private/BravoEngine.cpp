@@ -29,17 +29,12 @@ bool BravoEngine::Initialize_Internal()
 	CreateOpenGLWindow();
 
 	Input = NewObject<BravoInput>("Input");
-
-	auto camera = NewObject<BravoCamera>("DefaultCamera");
-	DefaultCamera = camera;	
-	camera->SetAspectRatio(float(ViewportSize.x) / float(ViewportSize.y) );
-	SetCamera(camera);
-
+	Input->SetOwnerWindow(Window);
 
 	LightManager = NewObject<BravoLightManager>("LightManager");
 
 	HUD = NewObject<BravoHUD>("HUD");
-	GetHUD()->SetSize(ViewportSize);
+	HUD->SetSize(ViewportSize);
 
 	return true;
 }
@@ -90,7 +85,7 @@ void BravoEngine::UpdateViewport()
 {
 	std::shared_ptr<BravoCamera> camera = GetCamera();
 	std::shared_ptr<BravoLightManager> lightManager = GetLightManager();
-	std::shared_ptr<BravoRenderTarget> viewportRT = GetViewportRenderTarget();
+	std::shared_ptr<BravoRenderTarget> viewportRT = ViewportRenderTarget;
 
 	if ( !lightManager || !viewportRT || !camera )
 	{
@@ -125,8 +120,7 @@ void BravoEngine::UpdateViewport()
 		viewportRT->Render();
 	}
 
-	if ( std::shared_ptr<BravoHUD> hud = GetHUD() )
-		hud->Render();
+	HUD->Render();
 
 	glfwSwapBuffers(Window);
 	glfwPollEvents();
@@ -146,14 +140,9 @@ void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, ViewportSize.x, ViewportSize.y);
 	
-	if ( std::shared_ptr<BravoRenderTarget> viewportRT = GetViewportRenderTarget() )
-		viewportRT->Resize(ViewportSize*2);
-	
-	if ( std::shared_ptr<BravoCamera> camera = GetCamera() )
-		camera->SetAspectRatio( float(ViewportSize.x) / float(ViewportSize.y) );
-	
-	if ( std::shared_ptr<BravoHUD> hud = GetHUD() )
-		hud->SetSize(ViewportSize);
+	ViewportRenderTarget->Resize(ViewportSize*2);
+		
+	HUD->SetSize(ViewportSize);
 }
 
 void BravoEngine::CreateOpenGLWindow()
@@ -190,10 +179,9 @@ void BravoEngine::CreateOpenGLWindow()
     glfwSetFramebufferSizeCallback(Window, BravoEngine::Framebuffer_size_callback);
 
 
-	if ( std::shared_ptr<BravoRenderTarget> viewportRT = NewObject<BravoRenderTarget>() )
+	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>() )
 	{
-		viewportRT->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
-		ViewportRenderTarget = viewportRT;
+		ViewportRenderTarget->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
 	}
 	
 	glEnable(GL_BLEND);

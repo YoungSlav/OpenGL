@@ -23,15 +23,6 @@ bool BravoScreen_Debug::Initialize_Internal()
 	FPSWidget = _fps;
 	AddWidget(_fps);
 
-	std::shared_ptr<BravoWidget_Text> _fps2 = NewObject<BravoWidget_Text>();
-	_fps2->SetPosition(glm::vec2(0.0f, 0.0f));
-	_fps2->SetOrigin(glm::vec2(0.0f, 0.0f));
-	_fps2->SetMargin(glm::vec2(2.0f, 2.0f));
-	_fps2->SetTextSize(20);
-	_fps2->SetText("FPS: ");
-	_fps2->SetFont(font);
-	AddWidget(_fps2);
-
 	return true;
 }
 
