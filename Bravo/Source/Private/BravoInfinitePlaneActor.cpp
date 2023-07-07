@@ -22,7 +22,7 @@ void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm:
 	if ( !Mesh || !Shader )
 		return;
 
-	glm::mat4 model = GetTransform();
+	glm::mat4 model = GetTransformMatrix();
 	Shader->Use();
 		Shader->SetMatrix4d("projection", CameraProjection);
 		Shader->SetMatrix4d("view", CameraView);

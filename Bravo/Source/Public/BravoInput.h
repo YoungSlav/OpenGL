@@ -15,8 +15,6 @@ class BravoInput : public BravoObject
 {
 	friend class BravoEngine;
 public:
-	void SetOwnerWindow(struct GLFWwindow* _Window);
-
 	void SetMouseEnabled(bool bNewMouseEnabled) const;
 
 	void SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber);
@@ -40,9 +38,6 @@ private:
 	float OldMouseX = 0.0f;
 	float OldMouseY = 0.0f;
 	
-
-	struct GLFWwindow* Window = nullptr;
-
 	bool bInitialized = false;
 
 };

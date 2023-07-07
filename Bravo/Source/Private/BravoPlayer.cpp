@@ -21,6 +21,7 @@ bool BravoPlayer::Initialize_Internal()
 		Input->SubscribeToMouseMove(Self<BravoPlayer>());
 		Input->SubscribeToMouseScroll(Self<BravoPlayer>());
 	}
+	Engine->GetCamera()->AttachTo(Self<BravoPlayer>());
 
 	return true;
 }

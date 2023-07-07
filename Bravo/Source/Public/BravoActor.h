@@ -7,9 +7,6 @@ class BravoActor : public BravoObject
 {
 public:
 
-	void AddComponent(std::shared_ptr<class BravoComponent> _Component);
-	void RemoveComponent(std::shared_ptr<class BravoComponent> _Component);
-
 	const glm::vec3& GetLocation() const { return Location; }
 	void SetLocation(const glm::vec3& InLocation) { Location = InLocation; }
 
@@ -25,13 +22,11 @@ public:
 	void SetRenderPriority(int32 _RenderPriority) { RenderPriority = _RenderPriority; }
 	int32 GetRenderPriority() const { return RenderPriority; }
 
-	glm::mat4 GetTransform() const;
-
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const {}
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const {}
 
 protected:
-	virtual void OnDestroy() override;
+	glm::mat4 GetTransformMatrix() const;
 
 protected:
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -40,5 +35,4 @@ protected:
 
 	int32 RenderPriority = 0;
 
-	std::vector<std::shared_ptr<class BravoComponent>> Components;
 };

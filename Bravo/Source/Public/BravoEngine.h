@@ -10,20 +10,17 @@
 // TODO:
 /*
 * 
-* Actor components 3
-* Multiline text 3
-* Widget clicking 3
-* Edit text 8
-* Buttons 1
-* Material refactoring. (to have colors OR textures)
-* Json integration 1
-* Objects serialization deserialization 8
-* Editor game instance 2
-* Input refactoring 4
-* Pixel clicking actor selection 8
-* Outline shader?
-* Gizmo for actor moving 4
-* Physics engine integration 20
+* Input refactoring (utilize delegates)
+* Move geometries to separate component classes
+* 
+* 2d camera
+*
+* !!!!!!!!! Fix shadows !!!!!!!!!
+* refactor lights (more parameters?)
+* 
+* Input text widget
+* widgets mouse clicking
+* console commands?
 * 
 *  
 * reactphysics3d
@@ -39,6 +36,8 @@ class BravoInput;
 class BravoEngine : public BravoObject
 {
 public:
+
+
 	template <typename Class>
 	std::shared_ptr<Class> SpawnGameInstance(const std::string& _Name)
 	{
@@ -55,14 +54,13 @@ public:
 	BravoHandle GenerateNewHandle() { return ++LastUsedHandle; }
 	void DestroyObject(std::shared_ptr<BravoObject> Object);
 
+	std::shared_ptr<class BravoInput> GetInput() const { return Input.expired() ? nullptr : Input.lock(); }
+	std::shared_ptr<class BravoLightManager> GetLightManager() const { return LightManager.expired() ? nullptr : LightManager.lock(); }
 	void SetCamera(std::shared_ptr<class BravoCamera> _Camera);
-
-	inline std::shared_ptr<class BravoInput> GetInput() const { return Input; }
-	inline std::shared_ptr<class BravoLightManager> GetLightManager() const { return LightManager; }
-	inline std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager; }
-	inline std::shared_ptr<class BravoHUD> GetHUD() const { return HUD; }
-	inline std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
-	inline const glm::ivec2& GetViewportSize() const { return ViewportSize; }
+	std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
+	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager; }
+	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
+	const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 
 protected:
 	bool Initialize_Internal() override;
@@ -75,11 +73,14 @@ private:
 	void UpdateViewport();
 	void Resize(const glm::ivec2& InViewportSize);
 
+
 	// input
 	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);
 	static void ProcessInput(GLFWwindow *window);
 	static void Scroll_callback(struct GLFWwindow* window, double xoffset, double yoffset);
 	static void Mouse_callback(struct GLFWwindow* window, double xpos, double ypos);
+
+
 private:
 	glm::ivec2 ViewportSize = glm::vec2(1024.0f, 768.0f);
 
@@ -90,16 +91,17 @@ private:
 	std::vector< std::shared_ptr<BravoTickable> > TickableObjects;
 	std::vector< std::shared_ptr<class BravoActor> > Actors;
 
-	
 	std::shared_ptr<class BravoAssetManager> AssetManager = nullptr;
-	std::shared_ptr<class BravoInput> Input;
-	std::shared_ptr<class BravoLightManager> LightManager;
-	std::shared_ptr<class BravoRenderTarget> ViewportRenderTarget;
-	std::shared_ptr<class BravoHUD> HUD;
+	
 
-
+	std::weak_ptr<class BravoLightManager> LightManager;
 	std::weak_ptr<class BravoCamera> Camera;
+	std::weak_ptr<class BravoCamera> DefaultCamera;
+	std::weak_ptr<class BravoRenderTarget> ViewportRenderTarget;
+	std::shared_ptr<class BravoRenderTarget> GetViewportRenderTarget() const { return ViewportRenderTarget.lock(); }
+	std::weak_ptr<class BravoHUD> HUD;
 
+	std::weak_ptr<class BravoInput> Input;
 
 	BravoHandle LastUsedHandle = 0;
 

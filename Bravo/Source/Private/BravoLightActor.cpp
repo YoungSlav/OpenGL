@@ -9,7 +9,7 @@ void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& C
 	if ( !Mesh || !Shader )
 		return;
 	
-	glm::mat4 model = GetTransform();
+	glm::mat4 model = GetTransformMatrix();
 	Shader->Use();
 		Shader->SetMatrix4d("projection", CameraProjection);
 		Shader->SetMatrix4d("view", CameraView);

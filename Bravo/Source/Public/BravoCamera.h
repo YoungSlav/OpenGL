@@ -12,6 +12,7 @@ public:
 	const glm::mat4 GetProjectionMatrix() const { return ProjectionMatrix; }
 
 	void SetFOV(float InFOV) { FOV = InFOV; }
+	void SetAspectRatio(float InAspectRatio) { AspectRatio = InAspectRatio; }
 	void SetDrawingDistance(float InMin, float InMax) { MinDrawingDistance = InMin; MaxDrawingDistance = InMax; }
 	
 	
@@ -31,6 +32,7 @@ protected:
 
 private:
 	float FOV = 45.0f;
+	float AspectRatio = 1.3f;
 	float MinDrawingDistance = 0.1f;
 	float MaxDrawingDistance = 100.0f;
 
