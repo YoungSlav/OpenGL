@@ -9,6 +9,8 @@
 
 // TODO:
 /*
+*
+* Material refactoring. (to have colors OR textures)
 * FIX LIGHTS AND SHADOWS
 * 
 * Actor components 3
@@ -16,7 +18,6 @@
 * Widget clicking 3
 * Edit text 8
 * Buttons 1
-* Material refactoring. (to have colors OR textures)
 * Json integration 1
 * Objects serialization deserialization 8
 * Editor game instance 2

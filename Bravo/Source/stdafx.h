@@ -6,6 +6,7 @@
 #include <math.h>
 #include <map>
 #include <vector>
+#include <list>
 #include <algorithm>
 #include <type_traits>
 

@@ -27,6 +27,7 @@ class BravoObject : public SharedFromThis
 {
 public:
 	BravoObject() = default;
+
 	bool Initialize(const BravoHandle& _Handle, const std::string& _Name, std::shared_ptr<class BravoEngine> _Engine, std::shared_ptr<BravoObject> _Owner);
 	
 	void Destroy();
@@ -51,13 +52,17 @@ protected:
 
 		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class());
 
+		std::shared_ptr<BravoObject> ActualOwner = _Owner ? _Owner : Self<BravoObject>();
+
 		if ( !newObject->Initialize(
 						newHandle,
 						_Name.empty() ? std::to_string(newHandle): _Name,
 						Engine, 
-						_Owner ? _Owner : Self<BravoObject>() )
+						ActualOwner )
 			)
 			return nullptr;
+
+		ActualOwner->AddOwnedObject(newObject);
 		Engine->RegisterObject(newObject);
 
 		return std::dynamic_pointer_cast<Class>(newObject);
@@ -65,11 +70,14 @@ protected:
 
 private:
 
+	void AddOwnedObject(std::shared_ptr<BravoObject> _OwnedObject);
+
 protected:
 	std::shared_ptr<BravoEngine> Engine;
 
 private:
 	std::weak_ptr<BravoObject> Owner;
+	std::list<std::shared_ptr<BravoObject>> OwnedObjects;
 	std::string Name = "";
 
 	BravoHandle Handle = 0;

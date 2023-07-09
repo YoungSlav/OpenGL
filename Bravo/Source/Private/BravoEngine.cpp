@@ -273,8 +273,8 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 
 	Objects.erase(std::remove(Objects.begin(), Objects.end(), Object), Objects.end());
 
-	if ( Object.use_count() > 1 )
-	{
-		Log::LogMessage("Memory leak! Object " + Object->GetName() + " being destroyed while still having hard refferences!", ELog::Error);
-	}
+	//if ( Object.use_count() > 1 )
+	//{
+	//	Log::LogMessage("Memory leak! Object " + Object->GetName() + " being destroyed while still having hard refferences!", ELog::Error);
+	//}
 }

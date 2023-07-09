@@ -41,14 +41,10 @@ void BravoScreen::RemoveWidget(std::shared_ptr<class BravoWidget> _Widget)
 void BravoScreen::OnDestroy()
 {
 	BravoObject::OnDestroy();
+	Widgets.clear();
 
 	if ( !GetHUD() )
 		return;
-
-	for ( int32 i = (int32)Widgets.size()-1; i >= 0; --i )
-	{
-		Widgets[i]->Destroy();
-	}
 
 	GetHUD()->RemoveScreen(Self<BravoScreen>());
 }
