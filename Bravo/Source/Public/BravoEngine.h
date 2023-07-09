@@ -7,6 +7,8 @@
 
 #include "BravoGameInstance.h"
 
+#define TEST_MEMORY_LEAKS 0
+
 // TODO:
 /*
 *
@@ -68,7 +70,7 @@ public:
 
 protected:
 	bool Initialize_Internal() override;
-
+	virtual void OnDestroy() override;
 
 private:
 	void CreateOpenGLWindow();

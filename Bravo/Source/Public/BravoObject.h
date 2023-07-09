@@ -27,6 +27,7 @@ class BravoObject : public SharedFromThis
 {
 public:
 	BravoObject() = default;
+	~BravoObject();
 
 	bool Initialize(const BravoHandle& _Handle, const std::string& _Name, std::shared_ptr<class BravoEngine> _Engine, std::shared_ptr<BravoObject> _Owner);
 	
@@ -70,14 +71,14 @@ protected:
 
 private:
 
-	void AddOwnedObject(std::shared_ptr<BravoObject> _OwnedObject);
+	void AddOwnedObject(std::weak_ptr<BravoObject> _OwnedObject);
 
 protected:
 	std::shared_ptr<BravoEngine> Engine;
 
 private:
 	std::weak_ptr<BravoObject> Owner;
-	std::list<std::shared_ptr<BravoObject>> OwnedObjects;
+	std::list<std::weak_ptr<BravoObject>> OwnedObjects;
 	std::string Name = "";
 
 	BravoHandle Handle = 0;

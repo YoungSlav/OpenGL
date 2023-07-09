@@ -179,7 +179,7 @@ void BravoEngine::CreateOpenGLWindow()
     glfwSetFramebufferSizeCallback(Window, BravoEngine::Framebuffer_size_callback);
 
 
-	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>() )
+	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget") )
 	{
 		ViewportRenderTarget->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
 	}
@@ -272,9 +272,14 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 		TickableObjects.erase(std::remove(TickableObjects.begin(), TickableObjects.end(), asTiackble), TickableObjects.end());
 
 	Objects.erase(std::remove(Objects.begin(), Objects.end(), Object), Objects.end());
+}
 
-	//if ( Object.use_count() > 1 )
-	//{
-	//	Log::LogMessage("Memory leak! Object " + Object->GetName() + " being destroyed while still having hard refferences!", ELog::Error);
-	//}
+void BravoEngine::OnDestroy()
+{
+	BravoObject::OnDestroy();
+
+	Input.reset();
+	LightManager.reset();
+	ViewportRenderTarget.reset();
+	HUD.reset();
 }
