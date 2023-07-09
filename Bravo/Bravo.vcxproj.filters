@@ -25,18 +25,6 @@
     <Filter Include="Private\Core">
       <UniqueIdentifier>{579a9494-8e37-4fcd-a65c-afd9e858a5cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Public\Core\HUD">
-      <UniqueIdentifier>{cea6cec1-f839-4355-8063-66b17c1876a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Private\Core\HUD">
-      <UniqueIdentifier>{c0f5b9b2-cab5-41f3-9f35-a6b915becf12}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Public\Core\Assets">
-      <UniqueIdentifier>{da71a5f4-7ded-43ff-a16b-30aedf54a301}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Private\Core\Assets">
-      <UniqueIdentifier>{98e01a90-1fa6-4c62-a529-74b14fb10279}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\HUD">
       <UniqueIdentifier>{fb4007a8-c582-45d7-b3ad-c2f0b265ccde}</UniqueIdentifier>
     </Filter>
@@ -45,6 +33,36 @@
     </Filter>
     <Filter Include="Shaders\PostProcess">
       <UniqueIdentifier>{a6aec723-f51b-4be4-986d-707635c855d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Assets">
+      <UniqueIdentifier>{da71a5f4-7ded-43ff-a16b-30aedf54a301}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\HUD">
+      <UniqueIdentifier>{cea6cec1-f839-4355-8063-66b17c1876a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Lights">
+      <UniqueIdentifier>{5a13376e-fe74-4acb-990c-2bf4d1382f6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Lights">
+      <UniqueIdentifier>{c93ca362-9585-4e0f-b6f2-c31feff4e470}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\HUD">
+      <UniqueIdentifier>{c0f5b9b2-cab5-41f3-9f35-a6b915becf12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Assets">
+      <UniqueIdentifier>{98e01a90-1fa6-4c62-a529-74b14fb10279}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Player">
+      <UniqueIdentifier>{da64dd04-2089-40d7-9506-f6d2389be686}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Player">
+      <UniqueIdentifier>{46dddc9f-3a44-4f7b-8cdf-e5a65414f9f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Actors">
+      <UniqueIdentifier>{4d09ba82-a580-41b0-9ebc-ea2317319ecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Actors">
+      <UniqueIdentifier>{8e19b75a-a888-42e4-a6d6-842e684af491}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -56,40 +74,22 @@
       <Filter>ThirdParty</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoAsset.cpp">
-      <Filter>Private\Core\Assets</Filter>
+      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoShader.cpp">
-      <Filter>Private\Core\Assets</Filter>
+      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoTexture.cpp">
-      <Filter>Private\Core\Assets</Filter>
+      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoMesh.cpp">
-      <Filter>Private\Core\Assets</Filter>
+      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\Log.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoActor.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoCamera.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoEngine.cpp">
       <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoInput.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoPlayer.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoMeshActor.cpp">
-      <Filter>Private\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoLightActor.cpp">
-      <Filter>Private\Game</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoGameInstance.cpp">
       <Filter>Private\Game</Filter>
@@ -98,19 +98,7 @@
       <Filter>Private\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoCubemap.cpp">
-      <Filter>Private\Core\Assets</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoSkyboxActor.cpp">
-      <Filter>Private\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoShadowMap.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoLightManager.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoInfinitePlaneActor.cpp">
-      <Filter>Private\Game</Filter>
+      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoMath.cpp">
       <Filter>Private\Core</Filter>
@@ -119,13 +107,13 @@
       <Filter>Private\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoAssetManager.cpp">
-      <Filter>Private\Core\Assets</Filter>
+      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoFont.cpp">
-      <Filter>Private\Core\Assets</Filter>
+      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp">
       <Filter>ThirdParty</Filter>
@@ -134,25 +122,55 @@
       <Filter>ThirdParty</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoHUD.cpp">
-      <Filter>Private\Core\HUD</Filter>
+      <Filter>Private\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoWidget.cpp">
-      <Filter>Private\Core\HUD</Filter>
+      <Filter>Private\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoWidget_Text.cpp">
-      <Filter>Private\Core\HUD</Filter>
+      <Filter>Private\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\Delegates.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoWidget_Plane.cpp">
-      <Filter>Private\Core\HUD</Filter>
+      <Filter>Private\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoScreen.cpp">
-      <Filter>Private\Core\HUD</Filter>
+      <Filter>Private\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp">
-      <Filter>Private\Core\HUD</Filter>
+      <Filter>Private\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoLightManager.cpp">
+      <Filter>Private\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoShadowMap.cpp">
+      <Filter>Private\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoLightActor.cpp">
+      <Filter>Private\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoPlayer.cpp">
+      <Filter>Private\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoCamera.cpp">
+      <Filter>Private\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoInput.cpp">
+      <Filter>Private\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoMeshActor.cpp">
+      <Filter>Private\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoSkyboxActor.cpp">
+      <Filter>Private\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoInfinitePlaneActor.cpp">
+      <Filter>Private\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoActor.cpp">
+      <Filter>Private\Actors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,43 +180,25 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoAsset.h">
-      <Filter>Public\Core\Assets</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoMesh.h">
-      <Filter>Public\Core\Assets</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTexture.h">
-      <Filter>Public\Core\Assets</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoShader.h">
-      <Filter>Public\Core\Assets</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoObject.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoActor.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoInput.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoEngine.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoPlayer.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoCamera.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\Log.h">
       <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoMeshActor.h">
-      <Filter>Public\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoLightActor.h">
-      <Filter>Public\Game</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoGameInstance.h">
       <Filter>Public\Game</Filter>
@@ -207,19 +207,7 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoCubemap.h">
-      <Filter>Public\Core\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoSkyboxActor.h">
-      <Filter>Public\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoShadowMap.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoLightManager.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoInfinitePlaneActor.h">
-      <Filter>Public\Game</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoMath.h">
       <Filter>Public\Core</Filter>
@@ -228,10 +216,10 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoAssetManager.h">
-      <Filter>Public\Core\Assets</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTextureData.h">
-      <Filter>Public\Core\Assets</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h">
       <Filter>Public\Core</Filter>
@@ -243,7 +231,7 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoFont.h">
-      <Filter>Public\Core\Assets</Filter>
+      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\stb_image_write.h">
       <Filter>ThirdParty</Filter>
@@ -252,25 +240,55 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoHUD.h">
-      <Filter>Public\Core\HUD</Filter>
+      <Filter>Public\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoWidget.h">
-      <Filter>Public\Core\HUD</Filter>
+      <Filter>Public\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoWidget_Text.h">
-      <Filter>Public\Core\HUD</Filter>
+      <Filter>Public\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\Delegates.h">
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoWidget_Plane.h">
-      <Filter>Public\Core\HUD</Filter>
+      <Filter>Public\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoScreen.h">
-      <Filter>Public\Core\HUD</Filter>
+      <Filter>Public\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoScreen_Debug.h">
-      <Filter>Public\Core\HUD</Filter>
+      <Filter>Public\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoLightManager.h">
+      <Filter>Public\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoShadowMap.h">
+      <Filter>Public\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoLightActor.h">
+      <Filter>Public\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoInput.h">
+      <Filter>Public\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoCamera.h">
+      <Filter>Public\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoPlayer.h">
+      <Filter>Public\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoSkyboxActor.h">
+      <Filter>Public\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoInfinitePlaneActor.h">
+      <Filter>Public\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMeshActor.h">
+      <Filter>Public\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoActor.h">
+      <Filter>Public\Actors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

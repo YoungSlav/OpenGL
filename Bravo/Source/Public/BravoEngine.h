@@ -9,6 +9,7 @@
 
 // TODO:
 /*
+* FIX LIGHTS AND SHADOWS
 * 
 * Actor components 3
 * Multiline text 3

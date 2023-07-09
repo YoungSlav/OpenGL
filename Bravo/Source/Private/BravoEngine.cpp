@@ -100,7 +100,6 @@ void BravoEngine::UpdateViewport()
 		viewportRT->Use();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
 		for ( auto& it : Actors )
 		{
 			it->Render(camera->GetLocation(), camera->GetProjectionMatrix(), camera->GetViewMatrix());
@@ -108,8 +107,8 @@ void BravoEngine::UpdateViewport()
 		viewportRT->StopUsage();
 	}
 
-	glDisable(GL_DEPTH_TEST);
 
+	glDisable(GL_DEPTH_TEST);
 	// render everything on screen
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -121,6 +120,7 @@ void BravoEngine::UpdateViewport()
 	}
 
 	HUD->Render();
+	glEnable(GL_DEPTH_TEST);
 
 	glfwSwapBuffers(Window);
 	glfwPollEvents();
