@@ -2,16 +2,17 @@
 
 
 #include "BravoActor.h"
+#include "BravoRenderable.h"
 #include "BravoShader.h"
 #include "BravoMesh.h"
 
-class BravoInfinitePlaneActor : public BravoActor
+class BravoInfinitePlaneActor : public BravoActor, public BravoRenderable
 {
 public:
 	BravoInfinitePlaneActor() :
-		BravoActor()
+		BravoActor(),
+		BravoRenderable(INT_MAX)
 	{
-		RenderPriority = INT_MAX;
 	}
 
 protected:

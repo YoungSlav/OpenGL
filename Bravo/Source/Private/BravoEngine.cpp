@@ -6,6 +6,7 @@
 #include "BravoAssetManager.h"
 #include "openGL.h"
 #include "BravoHUD.h"
+#include "BravoRenderable.h"
 
 namespace GlobalEngine
 {
@@ -100,7 +101,7 @@ void BravoEngine::UpdateViewport()
 		viewportRT->Use();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for ( auto& it : Actors )
+		for ( auto& it : RenderableObjects )
 		{
 			it->Render(camera->GetLocation(), camera->GetProjectionMatrix(), camera->GetViewMatrix());
 		}
@@ -128,9 +129,10 @@ void BravoEngine::UpdateViewport()
 
 void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const
 {
-	for ( auto& it : Actors )
+	for ( auto& it : RenderableObjects )
 	{
-		it->RenderDepthMap(Shader, LightPosition);
+		if ( it->GetCastShadows() )
+			it->RenderDepthMap(Shader, LightPosition);
 	}
 }
 
@@ -240,11 +242,6 @@ void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 	if ( std::shared_ptr<BravoActor> asActor = std::dynamic_pointer_cast<BravoActor>(newObject) )
 	{
 		Actors.push_back(asActor);
-		sort(Actors.begin(), Actors.end(), 
-			[](std::shared_ptr<BravoActor> left, std::shared_ptr<BravoActor> right) -> bool
-			{ 
-				return left->GetRenderPriority() < right->GetRenderPriority(); 
-			});
 
 		if ( std::shared_ptr<BravoLightManager> lightManager = GetLightManager() )
 		{
@@ -253,6 +250,15 @@ void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 				lightManager->RegisterLightActor(asLight);
 			}
 		}
+	}
+	if ( std::shared_ptr<BravoRenderable> asRenderable = std::dynamic_pointer_cast<BravoRenderable>(newObject) )
+	{
+		RenderableObjects.push_back(asRenderable);
+		sort(RenderableObjects.begin(), RenderableObjects.end(), 
+			[](std::shared_ptr<BravoRenderable> left, std::shared_ptr<BravoRenderable> right) -> bool
+			{ 
+				return left->GetRenderPriority() < right->GetRenderPriority(); 
+			});
 	}
 }
 
@@ -270,6 +276,9 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 
 	if ( std::shared_ptr<BravoTickable> asTiackble = std::dynamic_pointer_cast<BravoTickable>(Object) )
 		TickableObjects.erase(std::remove(TickableObjects.begin(), TickableObjects.end(), asTiackble), TickableObjects.end());
+
+	if ( std::shared_ptr<BravoRenderable> asRenderable = std::dynamic_pointer_cast<BravoRenderable>(Object) )
+		RenderableObjects.erase(std::remove(RenderableObjects.begin(), RenderableObjects.end(), asRenderable), RenderableObjects.end());
 
 	Objects.erase(std::remove(Objects.begin(), Objects.end(), Object), Objects.end());
 }

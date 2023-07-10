@@ -1,10 +1,10 @@
-#include "BravoMeshActor.h"
-
-#include "BravoEngine.h"
+#include "BravoStaticMeshComponent.h"
+#include "BravoActor.h"
 #include "BravoAssetManager.h"
 #include "BravoLightManager.h"
 
-bool BravoMeshActor::Initialize_Internal()
+
+bool BravoStaticMeshComponent::Initialize_Internal()
 {
 	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Default");
 	if ( !Shader )
@@ -12,20 +12,17 @@ bool BravoMeshActor::Initialize_Internal()
 	return true;
 }
 
-void BravoMeshActor::SetMesh(BravoMeshPtr InMesh)
+void BravoStaticMeshComponent::SetMesh(BravoMeshPtr InMesh)
 {
 	Mesh = InMesh;
 }
 
-void BravoMeshActor::Tick(float DeltaTime)
-{
-}
-
-void BravoMeshActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
+void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
 {
 	if ( !Mesh || !Shader )
 		return;
-	glm::mat4 model = GetTransformMatrix();
+
+	glm::mat4 model = GetTransformMatrix_World();
 
 	Shader->Use();
 		Shader->SetMatrix4d("projection", CameraProjection);
@@ -39,12 +36,12 @@ void BravoMeshActor::Render(const glm::vec3& CameraLocation, const glm::mat4& Ca
 	Shader->StopUsage();
 }
 
-void BravoMeshActor::RenderDepthMap(std::shared_ptr<class BravoShader> _Shader, const glm::vec3& LightPosition) const
+void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader> _Shader, const glm::vec3& LightPosition) const
 {
 	if ( !Mesh || !_Shader)
 		return;
 	
-	glm::mat4 model = GetTransformMatrix();
+	glm::mat4 model = GetTransformMatrix_World();
 
 	_Shader->Use();
 		_Shader->SetMatrix4d("model", model);

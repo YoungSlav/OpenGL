@@ -9,7 +9,8 @@
 #include "BravoCubemap.h"
 
 #include "BravoPlayer.h"
-#include "BravoMeshActor.h"
+#include "BravoActor.h"
+#include "BravoStaticMeshComponent.h"
 #include "BravoLightActor.h"
 #include "BravoSkyboxActor.h"
 #include "BravoInfinitePlaneActor.h"
@@ -54,11 +55,12 @@ bool BravoGameInstance::Initialize_Internal()
 	planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
 	planeMat->Shininess = 64.0f;
 	planeAsset->SetMaterial(planeMat);
-	if ( auto planeActor = NewObject<BravoMeshActor>() )
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
-		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		planeActor->SetScale(glm::vec3(10.0f));
 		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-		planeActor->SetMesh(planeAsset);
+		auto planeMesh = NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh", planeActor);
+		planeMesh->SetMesh(planeAsset);
 	}
 	
 	
@@ -96,12 +98,14 @@ bool BravoGameInstance::Initialize_Internal()
 	float angle = 0.0f;
 	for ( uint32 i = 0; i < locations.size(); ++i )
 	{
-		if ( auto cubeActor = NewObject<BravoMeshActor>() )
+		if ( auto cubeActor = NewObject<BravoActor>("Cube_" + std::to_string(i)) )
 		{
 			cubeActor->SetLocation(locations[i]);
 			cubeActor->SetRotation(glm::vec3(angle, angle, angle));
 			angle += 20.0f;
-			cubeActor->SetMesh(cubeAsset);
+			auto cubeMesh = NewObject<BravoStaticMeshComponent>("Cube_" + std::to_string(i) + "_MeshComponent", cubeActor);
+			cubeMesh->SetMesh(cubeAsset);
+			cubeMesh->SetCastShadows(true);
 		}
 	}
 	return true;

@@ -25,6 +25,7 @@
     <ClCompile Include="Source\Private\BravoAsset.cpp" />
     <ClCompile Include="Source\Private\BravoAssetManager.cpp" />
     <ClCompile Include="Source\Private\BravoCamera.cpp" />
+    <ClCompile Include="Source\Private\BravoComponent.cpp" />
     <ClCompile Include="Source\Private\BravoCubemap.cpp" />
     <ClCompile Include="Source\Private\BravoEngine.cpp" />
     <ClCompile Include="Source\Private\BravoFont.cpp" />
@@ -38,11 +39,11 @@
     <ClCompile Include="Source\Private\BravoObject.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
     <ClCompile Include="Source\Private\BravoMesh.cpp" />
-    <ClCompile Include="Source\Private\BravoMeshActor.cpp" />
     <ClCompile Include="Source\Private\BravoPlayer.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
     <ClCompile Include="Source\Private\BravoShadowMap.cpp" />
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp" />
+    <ClCompile Include="Source\Private\BravoStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
     <ClCompile Include="Source\Private\BravoWidget.cpp" />
     <ClCompile Include="Source\Private\BravoWidget_Plane.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="Source\Public\BravoAsset.h" />
     <ClInclude Include="Source\Public\BravoAssetManager.h" />
     <ClInclude Include="Source\Public\BravoCamera.h" />
+    <ClInclude Include="Source\Public\BravoComponent.h" />
     <ClInclude Include="Source\Public\BravoCubemap.h" />
     <ClInclude Include="Source\Public\BravoEngine.h" />
     <ClInclude Include="Source\Public\BravoFont.h" />
@@ -72,14 +74,15 @@
     <ClInclude Include="Source\Public\BravoLightActor.h" />
     <ClInclude Include="Source\Public\BravoLightManager.h" />
     <ClInclude Include="Source\Public\BravoMath.h" />
+    <ClInclude Include="Source\Public\BravoRenderable.h" />
     <ClInclude Include="Source\Public\BravoRenderTarget.h" />
     <ClInclude Include="Source\Public\BravoMesh.h" />
-    <ClInclude Include="Source\Public\BravoMeshActor.h" />
     <ClInclude Include="Source\Public\BravoObject.h" />
     <ClInclude Include="Source\Public\BravoPlayer.h" />
     <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoShadowMap.h" />
     <ClInclude Include="Source\Public\BravoSkyboxActor.h" />
+    <ClInclude Include="Source\Public\BravoStaticMeshComponent.h" />
     <ClInclude Include="Source\Public\BravoTextureData.h" />
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h" />
     <ClInclude Include="Source\Public\BravoTypes.h" />

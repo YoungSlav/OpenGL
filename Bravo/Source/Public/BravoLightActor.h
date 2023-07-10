@@ -3,15 +3,16 @@
 #include "BravoMesh.h"
 #include "BravoShader.h"
 #include "BravoShadowMap.h"
+#include "BravoRenderable.h"
 
-class BravoLightActor : public BravoActor, public BravoTickable
+class BravoLightActor : public BravoActor, public BravoTickable, public BravoRenderable
 {
 public:
 	BravoLightActor() :
 		BravoActor(),
-		BravoTickable()
+		BravoTickable(),
+		BravoRenderable(INT_MIN)
 	{
-		RenderPriority = INT_MIN;
 	}
 
 	void SetLightColor(const glm::vec3& InLightColor) { LightColor = InLightColor; }

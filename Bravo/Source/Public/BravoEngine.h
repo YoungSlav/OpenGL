@@ -92,6 +92,7 @@ private:
 	// object managing
 	std::vector< std::shared_ptr<BravoObject> > Objects;
 	std::vector< std::shared_ptr<BravoTickable> > TickableObjects;
+	std::vector< std::shared_ptr<class BravoRenderable> > RenderableObjects;
 	std::vector< std::shared_ptr<class BravoActor> > Actors;
 
 	

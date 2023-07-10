@@ -64,6 +64,12 @@
     <Filter Include="Public\Actors">
       <UniqueIdentifier>{8e19b75a-a888-42e4-a6d6-842e684af491}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Private\Actors\Components">
+      <UniqueIdentifier>{30245fef-6f5d-4c5d-98a1-4114931d872c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Actors\Components">
+      <UniqueIdentifier>{a5b64451-f45e-4bd9-aa07-1411b9e840d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -160,9 +166,6 @@
     <ClCompile Include="Source\Private\BravoInput.cpp">
       <Filter>Private\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoMeshActor.cpp">
-      <Filter>Private\Actors</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp">
       <Filter>Private\Actors</Filter>
     </ClCompile>
@@ -171,6 +174,12 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoActor.cpp">
       <Filter>Private\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoComponent.cpp">
+      <Filter>Private\Actors\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoStaticMeshComponent.cpp">
+      <Filter>Private\Actors\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -284,11 +293,17 @@
     <ClInclude Include="Source\Public\BravoInfinitePlaneActor.h">
       <Filter>Public\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoMeshActor.h">
-      <Filter>Public\Actors</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoActor.h">
       <Filter>Public\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoComponent.h">
+      <Filter>Public\Actors\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoStaticMeshComponent.h">
+      <Filter>Public\Actors\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoRenderable.h">
+      <Filter>Public\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,14 +2,15 @@
 #include "BravoActor.h"
 #include "BravoShader.h"
 #include "BravoCubemap.h"
+#include "BravoRenderable.h"
 
-class BravoSkyboxActor : public BravoActor
+class BravoSkyboxActor : public BravoActor, public BravoRenderable
 {
 public:
 	BravoSkyboxActor() :
-		BravoActor()
+		BravoActor(),
+		BravoRenderable(INT_MAX-1)
 	{
-		RenderPriority = INT_MAX-1;
 	}
 
 	void SetCubemap(BravoCubemapPtr InCubemap);

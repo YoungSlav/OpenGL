@@ -3,10 +3,9 @@
 #include "BravoObject.h"
 #include "BravoMath.h"
 
-class BravoActor : public BravoObject
+class BravoComponent : public BravoObject
 {
 public:
-
 	const glm::vec3& GetLocation() const { return Location; }
 	void SetLocation(const glm::vec3& InLocation) { Location = InLocation; }
 
@@ -19,7 +18,13 @@ public:
 	const glm::vec3& GetScale() const { return Scale; }
 	void SetScale(const glm::vec3& InScale) { Scale = InScale; }
 
-	glm::mat4 GetTransformMatrix() const;
+	glm::mat4 GetTransformMatrix_Local() const;
+	glm::mat4 GetTransformMatrix_World() const;
+
+	std::shared_ptr<class BravoActor> GetOwningActor() const;
+
+protected:
+	virtual bool Initialize_Internal() override;
 
 protected:
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
