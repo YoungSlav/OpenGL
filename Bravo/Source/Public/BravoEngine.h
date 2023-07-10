@@ -15,7 +15,6 @@
 * Material refactoring. (to have colors OR textures)
 * FIX LIGHTS AND SHADOWS
 * 
-* Actor components 3
 * Multiline text 3
 * Widget clicking 3
 * Edit text 8
