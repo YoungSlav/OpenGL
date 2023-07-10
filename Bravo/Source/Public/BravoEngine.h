@@ -53,7 +53,7 @@ public:
 	void GameLoop();
 	void StopGame();
 	
-	void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const;
+	void RenderDepthMap(std::shared_ptr<class BravoShader> Shader) const;
 	
 	void RegisterObject(std::shared_ptr<BravoObject> Object);
 	BravoHandle GenerateNewHandle() { return ++LastUsedHandle; }

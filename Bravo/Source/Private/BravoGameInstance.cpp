@@ -26,29 +26,29 @@ bool BravoGameInstance::Initialize_Internal()
 
 	if ( Engine->GetHUD() )
 	{
-		auto screen = NewObject<BravoScreen_Debug>();
+		auto screen = NewObject<BravoScreen_Debug>("DebugScreen");
 		Engine->GetHUD()->AddScreen(screen);
 	}
 	
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
-	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>() )
+	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>("Player") )
 	{
 		Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
 		Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
 		
-		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>();
+		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>("Camera");
 		Engine->SetCamera(Camera);
 		Camera->AttachTo(Player);
 	}
 	
-	if ( auto skyboxActor = NewObject<BravoSkyboxActor>() )
+	if ( auto skyboxActor = NewObject<BravoSkyboxActor>("Skybox") )
 	{
 		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
 
-	auto groundPlane = NewObject<BravoInfinitePlaneActor>();
+	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 
 	BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
 	BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
@@ -57,14 +57,14 @@ bool BravoGameInstance::Initialize_Internal()
 	planeAsset->SetMaterial(planeMat);
 	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
-		planeActor->SetScale(glm::vec3(10.0f));
+		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
 		auto planeMesh = NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh", planeActor);
 		planeMesh->SetMesh(planeAsset);
 	}
 	
 	
-	if ( auto dirLightActor = NewObject<BravoDirLightActor>() )
+	if ( auto dirLightActor = NewObject<BravoDirLightActor>("DirLight") )
 	{
 		dirLightActor->SetLocation(glm::vec3(10.0f,  10.0f, 0.0f ));
 		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, -90.0f));
@@ -74,8 +74,10 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	for ( int32 i = 0; i < 1; ++i )
 	{
-		if ( auto spotLight = NewObject<BravoSpotLightActor>() )
+		if ( auto spotLight = NewObject<BravoSpotLightActor>("SpotLight_" + std::to_string(i)) )
 		{
+			spotLight->SetLocation(glm::vec3(-5.0f,  10.0f, 0.0f ));
+			spotLight->SetDirection(glm::normalize(glm::vec3(0.0f) - spotLight->GetLocation() ));
 			spotLight->SetScale(glm::vec3(-0.5f));
 			spotLight->SetLightColor(glm::vec3(1.0f));
 			spotLights.push_back(spotLight);

@@ -136,7 +136,7 @@ void BravoShadowMap_Directional::Render(std::shared_ptr<class BravoLightActor> O
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		Engine->RenderDepthMap(GetShader(), LightPosition);
+		Engine->RenderDepthMap(GetShader());
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -171,7 +171,7 @@ void BravoShadowMap_Spot::Render(std::shared_ptr<class BravoLightActor> Owner)
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
-		Engine->RenderDepthMap(GetShader(), LightPosition);
+		Engine->RenderDepthMap(GetShader());
 		glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -215,7 +215,7 @@ void BravoShadowMap_Point::Render(std::shared_ptr<class BravoLightActor> Owner)
 		GetShader()->SetVector3d("lightPos", LightPosition);
 		
 		// render scene
-		Engine->RenderDepthMap(GetShader(), LightPosition);
+		Engine->RenderDepthMap(GetShader());
 
 		GetShader()->StopUsage();
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

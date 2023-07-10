@@ -36,7 +36,7 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 	Shader->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader> _Shader, const glm::vec3& LightPosition) const
+void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader> _Shader) const
 {
 	if ( !Mesh || !_Shader)
 		return;

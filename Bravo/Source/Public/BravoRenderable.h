@@ -16,7 +16,7 @@ public:
 
 protected:
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const = 0;
-	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const {}
+	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader) const {}
 	
 private:
 	int32 RenderPriority = 0;

@@ -39,9 +39,12 @@ glm::mat4 BravoComponent::GetTransformMatrix_Local() const
 }
 glm::mat4 BravoComponent::GetTransformMatrix_World() const
 {
-	glm::mat4 transform = GetOwningActor()->GetTransformMatrix();
-	transform = glm::translate(transform, Location);
-	transform = transform * glm::toMat4(BravoMath::EulerToQuat(Rotation));
-	transform = glm::scale(transform, Scale);
+	glm::mat4 transform = GetTransformMatrix_Local();
+	if ( std::shared_ptr<BravoActor> OwnerActor = GetOwningActor() )
+	{
+		transform = glm::translate(transform, OwnerActor->GetLocation());
+		transform = transform * glm::toMat4(BravoMath::EulerToQuat(OwnerActor->GetRotation()));
+		transform = glm::scale(transform, OwnerActor->GetScale());
+	}
 	return transform;
 }

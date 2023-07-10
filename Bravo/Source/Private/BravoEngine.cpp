@@ -127,12 +127,12 @@ void BravoEngine::UpdateViewport()
 	glfwPollEvents();
 }
 
-void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShader> Shader, const glm::vec3& LightPosition) const
+void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShader> Shader) const
 {
 	for ( auto& it : RenderableObjects )
 	{
 		if ( it->GetCastShadows() )
-			it->RenderDepthMap(Shader, LightPosition);
+			it->RenderDepthMap(Shader);
 	}
 }
 
