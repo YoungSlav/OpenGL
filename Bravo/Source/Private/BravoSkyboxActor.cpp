@@ -67,7 +67,7 @@ bool BravoSkyboxActor::Initialize_Internal()
 	return true;
 }
 
-void BravoSkyboxActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
+void BravoSkyboxActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
 {
 	if ( !Shader || !Cubemap || !VAO )
 		return;

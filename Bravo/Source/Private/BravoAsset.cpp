@@ -6,6 +6,14 @@ BravoAsset::BravoAsset(std::shared_ptr<class BravoAssetManager> _AssetManager) :
 {
 }
 
+bool BravoAsset::EnsureReady()
+{
+	if ( !bInitialized )
+		return false;
+	if ( !bLoadedToGPU )
+		return LoadToGPU();
+}
+
 bool BravoAsset::Initialize(const std::string& _Path, const std::vector<std::string>& _Params)
 {
 	if ( bInitialized )

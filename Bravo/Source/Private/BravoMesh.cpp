@@ -25,11 +25,9 @@ bool BravoMesh::Initialize_Internal(const std::vector<std::string>& _Params)
 
 BravoMesh::~BravoMesh()
 {
-	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-
-	VAO = 0;
+	
 	VBO = 0;
 	EBO = 0;
 }
@@ -132,11 +130,9 @@ bool BravoMesh::LoadToGPU_Internal()
 	}
 
 	// create buffers/arrays
-	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 
-	glBindVertexArray(VAO);
 	// load data into vertex buffers
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW);  
@@ -144,63 +140,18 @@ bool BravoMesh::LoadToGPU_Internal()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(uint32), &Indices[0], GL_STATIC_DRAW);
 
-	// vertex Positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(0);	
-	// vertex normals
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Normal));
-	glEnableVertexAttribArray(1);	
-	// vertex texture coords
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::TexCoords));
-	glEnableVertexAttribArray(2);	
-	// vertex tangent
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Tangent));
-	glEnableVertexAttribArray(3);
-	// vertex bitangent
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Bitangent));
-	glEnableVertexAttribArray(4);
-	// vertex colros
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
-	glEnableVertexAttribArray(5);
+	
 
 
 	return true;
 }
 
-void BravoMesh::Render()
-{
-	if ( !VAO )
-		LoadToGPU();
-	
-	if ( VAO )
-	{
-		// draw mesh
-		glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, (int32)Indices.size(), GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-		glActiveTexture(0);
-	}
-	if ( Material )
-		Material->StopUsage();
-}
 
 void BravoMesh::ReleaseFromGPU_Internal()
 {
-	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	VAO = 0;
 	VBO = 0;
 	EBO = 0;
-}
-
-void BravoMesh::SetMaterial(BravoMaterialPtr _Material)
-{
-	Material = _Material;
-}
-
-BravoMaterialPtr BravoMesh::GetMaterial() const
-{
-	return Material;
 }

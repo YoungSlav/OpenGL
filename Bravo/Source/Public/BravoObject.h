@@ -37,10 +37,6 @@ public:
 	const std::shared_ptr<BravoObject> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
 	const std::string& GetName() const { return Name; }
 
-protected:
-	virtual bool Initialize_Internal() { return true; }
-	virtual void OnDestroy() {}
-
 	template <typename Class>
 	std::shared_ptr<Class> NewObject(const std::string& _Name = "", std::shared_ptr<BravoObject> _Owner = nullptr)
 	{
@@ -69,8 +65,11 @@ protected:
 		return std::dynamic_pointer_cast<Class>(newObject);
 	}
 
-private:
+protected:
+	virtual bool Initialize_Internal() { return true; }
+	virtual void OnDestroy() {}
 
+private:
 	void AddOwnedObject(std::weak_ptr<BravoObject> _OwnedObject);
 
 protected:

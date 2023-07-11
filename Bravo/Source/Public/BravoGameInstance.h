@@ -12,4 +12,5 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	std::vector<std::weak_ptr<class BravoSpotLightActor>> spotLights;
+	std::vector<std::weak_ptr<class BravoActor>> Cubes;
 };

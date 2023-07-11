@@ -19,9 +19,9 @@ public:
 
 	inline bool IsInitialized() const { return bInitialized; }
 	inline bool IsLoadedToGPU() const { return bLoadedToGPU; }
+	bool EnsureReady();
 
 	bool LoadToGPU();
-	virtual void Render() {}
 	void ReleaseFromGPU();
 
 protected:

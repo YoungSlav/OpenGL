@@ -2,6 +2,7 @@
 #include "BravoEngine.h"
 #include "BravoCamera.h"
 #include "BravoAssetManager.h"
+#include "BravoMesh.h"
 
 bool BravoInfinitePlaneActor::Initialize_Internal()
 {
@@ -17,9 +18,45 @@ bool BravoInfinitePlaneActor::Initialize_Internal()
 	return false;
 }
 
-void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
+bool BravoInfinitePlaneActor::EnsureReady()
 {
 	if ( !Mesh || !Shader )
+		return false;
+	if ( !Mesh->EnsureReady() )
+		return false;
+
+	if ( VAO == 0 )
+	{
+		glGenVertexArrays(1, &VAO);
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, Mesh->GetVBO());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->GetEBO());
+
+		// vertex Positions
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glEnableVertexAttribArray(0);
+		// vertex normals
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Normal));
+		glEnableVertexAttribArray(1);
+		// vertex texture coords
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::TexCoords));
+		glEnableVertexAttribArray(2);
+		// vertex tangent
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Tangent));
+		glEnableVertexAttribArray(3);
+		// vertex bitangent
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Bitangent));
+		glEnableVertexAttribArray(4);
+		// vertex colors
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
+		glEnableVertexAttribArray(5);
+	}
+	return true;
+}
+
+void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
+{
+	if ( !EnsureReady() )
 		return;
 
 	glm::mat4 model = GetTransformMatrix();
@@ -29,12 +66,18 @@ void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm:
 		Shader->SetVector1d("near", Engine->GetCamera()->GetMinDrawingDistance());
 		Shader->SetVector1d("far", Engine->GetCamera()->GetMaxDrawingDistance());
 
-		Mesh->Render();
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+		glActiveTexture(0);
+
 	Shader->StopUsage();
 }
 
 void BravoInfinitePlaneActor::OnDestroy()
 {
+	glDeleteBuffers(1, &VAO);
+	VAO = 0;
+
 	Shader->ReleaseFromGPU();
 	Mesh->ReleaseFromGPU();
 }

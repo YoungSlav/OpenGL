@@ -30,12 +30,13 @@ public:
 		BravoAsset(_AssetManager)
 	{}
 	~BravoMesh();
- 
-	BravoMaterialPtr GetMaterial() const;
-	void SetMaterial(BravoMaterialPtr _Material);
-	
-	virtual void Render() override;
 
+	const std::vector<Vertex>& GetVerticies() const { return Vertices; }
+	const std::vector<uint32>& GetIndices() const { return Indices; }
+
+	GLuint GetVBO() const { return VBO; }
+	GLuint GetEBO() const { return EBO; }
+ 
 protected:
 	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
 	virtual bool LoadToGPU_Internal() override;
@@ -50,12 +51,8 @@ private:
 	std::vector<Vertex> Vertices;
 	std::vector<uint32> Indices;
 
-	GLuint VAO = 0;	// vertex array buffer (holds both vertex attributes and indices)
 	GLuint VBO = 0;	// vertex attribute buffer
 	GLuint EBO = 0;	// index buffer
-
-
-	BravoMaterialPtr Material;
 };
 
 typedef std::shared_ptr<BravoMesh> BravoMeshPtr;

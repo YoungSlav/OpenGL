@@ -3,7 +3,7 @@
 #include "BravoObject.h"
 #include "BravoActor.h"
 
-
+// TODO: make as component
 class BravoCamera : public BravoActor
 {
 public:

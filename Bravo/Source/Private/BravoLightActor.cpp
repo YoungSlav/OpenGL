@@ -4,7 +4,7 @@
 #include "BravoAsset.h"
 #include "BravoAssetManager.h"
 
-void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const
+void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
 {
 	if ( !Mesh || !Shader )
 		return;
@@ -15,7 +15,8 @@ void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& C
 		Shader->SetMatrix4d("view", CameraView);
 		Shader->SetMatrix4d("model", model);
 		Shader->SetVector3d("lightColor", LightColor);
-		Mesh->Render();
+		// TODO
+		//Mesh->Render();
 	Shader->StopUsage();
 	
 }

@@ -13,7 +13,8 @@
 /*
 *
 * Material refactoring. (to have colors OR textures)
-* FIX LIGHTS AND SHADOWS
+* instanced rendering
+* REFACTOR LIGHTS AND SHADOWS
 * 
 * Multiline text 3
 * Widget clicking 3

@@ -15,8 +15,8 @@ public:
 	bool GetCastShadows() const { return bCastShadows; }
 
 protected:
-	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) const = 0;
-	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader) const {}
+	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) = 0;
+	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader) {}
 	
 private:
 	int32 RenderPriority = 0;
