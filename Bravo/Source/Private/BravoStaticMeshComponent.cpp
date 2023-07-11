@@ -20,7 +20,7 @@ bool BravoStaticMeshComponent::EnsureReady()
 	if ( !Mesh->IsLoadedToGPU() )
 	{
 		if ( VAO != 0 )
-			glDeleteBuffers(1, &VAO);
+			glDeleteVertexArrays(5, &VAO);
 		VAO = 0;
 	}
 
@@ -59,7 +59,7 @@ bool BravoStaticMeshComponent::EnsureReady()
 
 void BravoStaticMeshComponent::OnDestroy()
 {
-	glDeleteBuffers(1, &VAO);
+	glDeleteVertexArrays(5, &VAO);
 	VAO = 0;
 	Shader->ReleaseFromGPU();
 	Mesh->ReleaseFromGPU();

@@ -22,6 +22,12 @@ bool BravoInfinitePlaneActor::EnsureReady()
 {
 	if ( !Mesh || !Shader )
 		return false;
+	if ( !Mesh->IsLoadedToGPU() )
+	{
+		if ( VAO != 0 )
+			glDeleteVertexArrays(5, &VAO);
+		VAO = 0;
+	}
 	if ( !Mesh->EnsureReady() )
 		return false;
 
@@ -75,7 +81,7 @@ void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm:
 
 void BravoInfinitePlaneActor::OnDestroy()
 {
-	glDeleteBuffers(1, &VAO);
+	glDeleteBuffers(5, &VAO);
 	VAO = 0;
 
 	Shader->ReleaseFromGPU();
