@@ -38,3 +38,14 @@ glm::quat BravoMath::EulerToQuat(const glm::vec3& EulerRotation)
 {
 	return glm::quat(glm::radians(EulerRotation));
 }
+
+glm::vec3 BravoMath::RandVector(float MaxDimension)
+{
+	int32 iMaxDimension = (int32)MaxDimension;
+	glm::vec3 Result(
+		((rand() % iMaxDimension*2) - iMaxDimension),
+		((rand() % iMaxDimension*2) - iMaxDimension),
+		((rand() % iMaxDimension*2) - iMaxDimension)
+	);
+	return Result;
+}

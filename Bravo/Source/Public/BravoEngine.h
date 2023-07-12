@@ -13,8 +13,9 @@
 /*
 *
 * Material refactoring. (to have colors OR textures)
-* instanced rendering
 * REFACTOR LIGHTS AND SHADOWS
+* frustrum culling
+* occlusion culling
 * 
 * Multiline text 3
 * Widget clicking 3
@@ -28,13 +29,12 @@
 * Outline shader?
 * Gizmo for actor moving 4
 * Physics engine integration 20
+* reactphysics3d
 * 
 *  
-* reactphysics3d
 * world editor? (json?)
 * serialization?
 * splines?
-* particle systems?
 * animations?
 * */
 
@@ -95,7 +95,6 @@ private:
 	std::vector< std::shared_ptr<class BravoRenderable> > RenderableObjects;
 	std::vector< std::shared_ptr<class BravoActor> > Actors;
 
-	
 	std::shared_ptr<class BravoAssetManager> AssetManager = nullptr;
 	std::shared_ptr<class BravoInput> Input;
 	std::shared_ptr<class BravoLightManager> LightManager;

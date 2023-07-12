@@ -12,6 +12,8 @@ bool BravoAsset::EnsureReady()
 		return false;
 	if ( !bLoadedToGPU )
 		return LoadToGPU();
+	
+	return true;
 }
 
 bool BravoAsset::Initialize(const std::string& _Path, const std::vector<std::string>& _Params)

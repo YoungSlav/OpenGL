@@ -21,8 +21,8 @@ protected:
 private:
 	glm::vec3 Velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	float MinMoveSpeed = 0.10f;
-	float MaxMoveSpeed = 5.00;
-	float MoveSpeed = MaxMoveSpeed;
+	float MaxMoveSpeed = 20.00;
+	float MoveSpeed = MaxMoveSpeed / 2;
 
 	bool bMouseInput = false;
 };

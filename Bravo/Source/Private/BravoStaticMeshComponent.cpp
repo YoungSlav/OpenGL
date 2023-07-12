@@ -9,6 +9,9 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Default");
 	if ( !Shader )
 		return false;
+
+	AddInstance(BravoMeshInstance(), false);
+
 	return true;
 }
 
@@ -20,7 +23,7 @@ bool BravoStaticMeshComponent::EnsureReady()
 	if ( !Mesh->IsLoadedToGPU() )
 	{
 		if ( VAO != 0 )
-			glDeleteVertexArrays(5, &VAO);
+			glDeleteVertexArrays(10, &VAO);
 		VAO = 0;
 	}
 
@@ -52,14 +55,66 @@ bool BravoStaticMeshComponent::EnsureReady()
 		// vertex colors
 		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
 		glEnableVertexAttribArray(5);
+		
+		UpdateInstanceBuffer();
 	}
 
 	return true;
 }
 
+int32 BravoStaticMeshComponent::AddInstance(const BravoMeshInstance& Instance, bool bUpdateInstanceBuffer)
+{
+	int32 index = (int32)Instances.size();
+	Instances.push_back(Instance);
+	if ( bUpdateInstanceBuffer )
+		UpdateInstanceBuffer();
+	return index;
+}
+
+void BravoStaticMeshComponent::RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer)
+{
+	Instances.erase(Instances.begin() + Index, Instances.begin() + Index + Count);
+	if ( bUpdateInstanceBuffer )
+		UpdateInstanceBuffer();
+}
+
+void BravoStaticMeshComponent::UpdateInstanceBuffer()
+{
+	if ( !EnsureReady() || !Instances.size() )
+		return;
+
+	if ( instanceVBO != 0 )
+	{
+		glDeleteBuffers(1, &instanceVBO);
+		instanceVBO = 0;
+	}
+
+	glGenBuffers(1, &instanceVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+	glBufferData(GL_ARRAY_BUFFER, Instances.size() * sizeof(glm::mat4), &Instances[0], GL_STATIC_DRAW);
+
+	glBindVertexArray(VAO);
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)0);
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)(1*sizeof(glm::vec4)));
+	glEnableVertexAttribArray(8);
+	glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)(2*sizeof(glm::vec4)));
+	glEnableVertexAttribArray(9);
+	glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)(3*sizeof(glm::vec4)));
+
+	glVertexAttribDivisor(6, 1);
+	glVertexAttribDivisor(7, 1);
+	glVertexAttribDivisor(8, 1);
+	glVertexAttribDivisor(9, 1);
+
+	glBindVertexArray(0);
+}
+
 void BravoStaticMeshComponent::OnDestroy()
 {
-	glDeleteVertexArrays(5, &VAO);
+	glDeleteBuffers(1, &instanceVBO);
+	glDeleteVertexArrays(10, &VAO);
 	VAO = 0;
 	Shader->ReleaseFromGPU();
 	Mesh->ReleaseFromGPU();
@@ -83,6 +138,9 @@ void BravoStaticMeshComponent::SetMaterial(BravoMaterialPtr _Material)
 
 void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
 {
+	if ( !Instances.size() )
+		return;
+
 	if ( !EnsureReady() )
 		return;
 
@@ -98,7 +156,7 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 		Engine->GetLightManager()->ApplyLights(Shader);
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
 		glBindVertexArray(0);
 		glActiveTexture(0);
 
@@ -119,7 +177,7 @@ void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader>
 		_Shader->SetMatrix4d("model", model);
 		
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
 		glActiveTexture(0);
 
 	_Shader->StopUsage();
