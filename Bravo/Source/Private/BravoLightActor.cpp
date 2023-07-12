@@ -4,66 +4,47 @@
 #include "BravoAsset.h"
 #include "BravoAssetManager.h"
 
-void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
-{
-	if ( !Mesh || !Shader )
-		return;
-	
-	glm::mat4 model = GetTransformMatrix();
-	Shader->Use();
-		Shader->SetMatrix4d("projection", CameraProjection);
-		Shader->SetMatrix4d("view", CameraView);
-		Shader->SetMatrix4d("model", model);
-		Shader->SetVector3d("lightColor", LightColor);
-		// TODO
-		//Mesh->Render();
-	Shader->StopUsage();
-	
-}
 
-bool BravoLightActor::Initialize_Internal()
+
+/************************************************************************/
+/*                       COMMON                                         */
+/************************************************************************/
+
+void BravoDirLightActor::OnDestroy()
 {
-	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\LightSource");
-	if ( Shader->LoadToGPU() )
-		return true;
-	return false;
+	ShadowMap.reset();
+	BravoActor::OnDestroy();
 }
 
 void BravoLightActor::UpdateShadowMap()
 {
-	ShadowMap.lock()->Render(Self<BravoLightActor>());
+	ShadowMap->Render(Self<BravoLightActor>());
 }
 
 void BravoLightActor::Use(BravoShaderPtr OnShader)
 {
-	ShadowMap.lock()->Use(OnShader, Path);
+	ShadowMap->Use(OnShader, Path);
 }
 void BravoLightActor::StopUsage()
 {
-	ShadowMap.lock()->StopUsage();
+	ShadowMap->StopUsage();
 }
 
+
+
+/************************************************************************/
+/*                       DIRECTIONAL LIGHT                              */
+/************************************************************************/
 
 bool BravoDirLightActor::Initialize_Internal()
 {
 	if ( !BravoLightActor::Initialize_Internal() )
 		return false;
 
-	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-	if ( !Mesh || !Mesh->LoadToGPU() )
-		return false;
-
 	ShadowMap = NewObject<BravoShadowMap_Directional>();
-	ShadowMap.lock()->Setup(glm::ivec2(2048));
+	ShadowMap->Setup(glm::ivec2(2048));
 
 	return true;
-}
-void BravoDirLightActor::OnDestroy()
-{
-	if ( Mesh )
-		Mesh->ReleaseFromGPU();
-	if ( Shader )
-		Shader->ReleaseFromGPU();
 }
 
 void BravoDirLightActor::Use(BravoShaderPtr OnShader)
@@ -72,33 +53,22 @@ void BravoDirLightActor::Use(BravoShaderPtr OnShader)
 	OnShader->SetVector3d(Path + "direction", GetDirection());
 	OnShader->SetVector3d(Path + "lightColor", glm::vec3(1.0));
 }
-void BravoDirLightActor::StopUsage()
-{
-	BravoLightActor::StopUsage();
-}
 
+
+
+/************************************************************************/
+/*                           POINT LIGHT                                */
+/************************************************************************/
 
 bool BravoPointLightActor::Initialize_Internal()
 {
 	if ( !BravoLightActor::Initialize_Internal() )
 		return false;
 
-	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
-	if ( !Mesh || !Mesh->LoadToGPU() )
-		return false;
-
 	ShadowMap = NewObject<BravoShadowMap_Point>();
-	ShadowMap.lock()->Setup(glm::ivec2(2048));
+	ShadowMap->Setup(glm::ivec2(2048));
 	
 	return true;
-}
-
-void BravoPointLightActor::OnDestroy()
-{
-	if ( Mesh )
-		Mesh->ReleaseFromGPU();
-	if ( Shader )
-		Shader->ReleaseFromGPU();
 }
 
 void BravoPointLightActor::Use(BravoShaderPtr OnShader)
@@ -106,39 +76,23 @@ void BravoPointLightActor::Use(BravoShaderPtr OnShader)
 	BravoLightActor::Use(OnShader);
 	// TODO
 }
-void BravoPointLightActor::StopUsage()
-{
-	BravoLightActor::StopUsage();
-	// TODO
-}
 
 
 
 
-
+/************************************************************************/
+/*                           SPOT LIGHT                                 */
+/************************************************************************/
 
 bool BravoSpotLightActor::Initialize_Internal()
 {
 	if ( !BravoLightActor::Initialize_Internal() )
 		return false;
 
-	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-	if ( !Mesh || !Mesh->LoadToGPU() )
-		return false;
-
-
 	ShadowMap = NewObject<BravoShadowMap_Spot>();
-	ShadowMap.lock()->Setup(glm::ivec2(2048));
+	ShadowMap->Setup(glm::ivec2(2048));
 
 	return true;
-}
-
-void BravoSpotLightActor::OnDestroy()
-{
-	if ( Mesh )
-		Mesh->ReleaseFromGPU();
-	if ( Shader )
-		Shader->ReleaseFromGPU();
 }
 
 
@@ -153,8 +107,4 @@ void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
 	OnShader->SetVector1d(Path + "constant", Constant);
 	OnShader->SetVector1d(Path + "linear", Linear);
 	OnShader->SetVector1d(Path + "quadratic", Quadratic);
-}
-void BravoSpotLightActor::StopUsage()
-{
-	BravoLightActor::StopUsage();
 }

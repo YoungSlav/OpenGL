@@ -5,35 +5,41 @@
 #include "BravoShadowMap.h"
 #include "BravoRenderable.h"
 
-class BravoLightActor : public BravoActor, public BravoTickable, public BravoRenderable
+struct BravoLightColor
+{
+	BravoLightColor() = default;
+	BravoLightColor(const glm::vec3& SimpleColor) :
+		ambient(SimpleColor*0.05f), diffuse(SimpleColor*0.5f), specular(SimpleColor*0.1f)
+	{}
+	BravoLightColor( const glm::vec3& _ambient, const glm::vec3& _diffuse, const glm::vec3& _specular) :
+		ambient(_ambient), diffuse(_diffuse), specular(_specular)
+	{}
+
+	glm::vec3 ambient = glm::vec3(0.05f);
+	glm::vec3 diffuse = glm::vec3(0.5f);
+	glm::vec3 specular = glm::vec3(0.1f);
+};
+
+class BravoLightActor : public BravoActor
 {
 public:
-	BravoLightActor() :
-		BravoActor(),
-		BravoTickable(),
-		BravoRenderable(INT_MIN)
-	{
-	}
+	BravoLightActor() = default;
 
-	void SetLightColor(const glm::vec3& InLightColor) { LightColor = InLightColor; }
+	void SetLightColor(const BravoLightColor& InLightColor) { LightColor = InLightColor; }
 	virtual void Use(BravoShaderPtr OnShader);
 	virtual void StopUsage();
 
 	void SetShaderPath(const std::string& InPath) { Path = InPath; }
-
 	virtual void UpdateShadowMap();
 
 protected:
-	virtual bool Initialize_Internal() override;
-	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) override;
-	
-	std::weak_ptr<BravoShadowMap> ShadowMap;
-	BravoMeshPtr Mesh;
-	BravoShaderPtr Shader;
+	virtual void OnDestroy() override;
 
-	glm::vec3 LightColor = glm::vec3(1.0f);
-
+protected:
 	std::string Path = "";
+	BravoLightColor LightColor;
+
+	std::shared_ptr<BravoShadowMap> ShadowMap;
 };
 
 class BravoDirLightActor : public BravoLightActor
@@ -41,11 +47,9 @@ class BravoDirLightActor : public BravoLightActor
 public:
 
 	virtual void Use(BravoShaderPtr OnShader) override;
-	virtual void StopUsage() override;
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void OnDestroy() override;
 };
 
 class BravoPointLightActor : public BravoLightActor
@@ -53,13 +57,9 @@ class BravoPointLightActor : public BravoLightActor
 public:
 
 	virtual void Use(BravoShaderPtr OnShader) override;
-	virtual void StopUsage() override;
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void OnDestroy() override;
-
-
 };
 
 class BravoSpotLightActor : public BravoLightActor
@@ -67,7 +67,6 @@ class BravoSpotLightActor : public BravoLightActor
 public:
 
 	virtual void Use(BravoShaderPtr OnShader) override;
-	virtual void StopUsage() override;
 
 	float CutOff;
 	float OuterCutOff;
@@ -77,6 +76,4 @@ public:
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void OnDestroy() override;
-
 };
