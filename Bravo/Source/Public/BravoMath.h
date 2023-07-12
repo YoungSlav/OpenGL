@@ -14,8 +14,9 @@ public:
 	static glm::vec3 QuatToEuler(const glm::quat& QuatRotation);
 	static glm::quat EulerToQuat(const glm::vec3& EulerRotation);
 
+	static glm::vec3 RandVector(float MaxDimension);
+
 	static const glm::vec3 upV;
 	static const glm::vec3 forwardV;
 	static const glm::vec3 rightV;
-
 };

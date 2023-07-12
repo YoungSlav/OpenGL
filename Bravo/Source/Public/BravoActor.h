@@ -2,27 +2,27 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 #include "BravoMath.h"
+#include "BravoTransform.h"
 
 class BravoActor : public BravoObject
 {
 public:
 
-	const glm::vec3& GetLocation() const { return Location; }
-	void SetLocation(const glm::vec3& InLocation) { Location = InLocation; }
+	const glm::vec3& GetLocation() const { return Transform.GetLocation(); }
+	void SetLocation(const glm::vec3& InLocation) { Transform.SetLocation(InLocation); }
 
-	const glm::vec3& GetRotation() const { return Rotation; }
-	void SetRotation(const glm::vec3& InRotation) { Rotation = InRotation; }
+	const glm::vec3& GetRotation() const { return Transform.GetRotation(); }
+	void SetRotation(const glm::vec3& InRotation) { Transform.SetRotation(InRotation); }
 	
-	glm::vec3 GetDirection() const { return BravoMath::RotationToDirection(Rotation); }
-	void SetDirection(const glm::vec3& Direction) { Rotation = BravoMath::DirectionToRotation(Direction); }
+	glm::vec3 GetDirection() const { return Transform.GetDirection(); }
+	void SetDirection(const glm::vec3& Direction) { Transform.SetDirection(Direction); }
 
-	const glm::vec3& GetScale() const { return Scale; }
-	void SetScale(const glm::vec3& InScale) { Scale = InScale; }
+	const glm::vec3& GetScale() const { return Transform.GetScale(); }
+	void SetScale(const glm::vec3& InScale) { Transform.SetScale(InScale); }
 
-	glm::mat4 GetTransformMatrix() const;
+	void SetTransform(const BravoTransform& InTransform) { Transform = InTransform; }
+	const BravoTransform& GetTransform() const { return Transform; }
 
 protected:
-	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	BravoTransform Transform;
 };

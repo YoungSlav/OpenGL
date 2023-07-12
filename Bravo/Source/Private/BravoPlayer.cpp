@@ -39,7 +39,7 @@ void BravoPlayer::OnDestroy()
 
 void BravoPlayer::Tick(float DeltaTime)
 {
-	Location += Velocity * MoveSpeed * DeltaTime;
+	SetLocation(GetLocation() + Velocity * MoveSpeed * DeltaTime);
 	Velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
@@ -47,9 +47,9 @@ void BravoPlayer::InputKey(int32 Key, bool bPressed, float DeltaTime)
 {
 	static const float sensitivity = 2.5f;
 	glm::vec3 front;
-    front.x = cos(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.z));
-    front.y = sin(glm::radians(Rotation.z));
-    front.z = sin(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.z));
+    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front.y = sin(glm::radians(GetRotation().z));
+    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
     front = glm::normalize(front);
 
 	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));
@@ -86,10 +86,11 @@ void BravoPlayer::InputMouseMove(float DeltaX, float DeltaY, float DeltaTime)
 {
 	if ( !bMouseInput ) return;
 	static const float sensitivity = 0.1f;
-	Rotation.y += DeltaX * sensitivity;
-	Rotation.z += DeltaY * sensitivity;
-
-	Rotation.z = glm::clamp(Rotation.z, -89.0f, 89.0f);
+	SetRotation(glm::vec3(
+		GetRotation().x,
+		GetRotation().y + DeltaX * sensitivity,
+		glm::clamp((GetRotation().z + DeltaY * sensitivity), -89.0f, 89.0f))
+	);
 }
 
 void BravoPlayer::InputMouseScroll(float DeltaX, float DeltaY, float DeltaTime)

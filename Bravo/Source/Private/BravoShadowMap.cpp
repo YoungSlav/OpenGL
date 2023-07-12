@@ -123,7 +123,7 @@ void BravoShadowMap_Directional::Render(std::shared_ptr<class BravoLightActor> O
 		return;
 
 	float NearPlane = 1.0f;
-	float FarPlane = 100.0f;
+	float FarPlane = 1000.0f;
 
 	glm::vec3 LightPosition = Owner->GetLocation();
 
@@ -147,7 +147,7 @@ void BravoShadowMap_Spot::Render(std::shared_ptr<class BravoLightActor> Owner)
 		return;
 
 	float NearPlane = 0.1f;
-	float FarPlane = 50.0f;
+	float FarPlane = 1000.0f;
 
 	glm::vec3 LightPosition = Owner->GetLocation();
 	
@@ -184,7 +184,7 @@ void BravoShadowMap_Point::Render(std::shared_ptr<class BravoLightActor> Owner)
 
 	float AspectRatio = (float)(Size.x)/(float)(Size.y);
 	float NearPlane = 1.0f;
-	float FarPlane = 100.0f;
+	float FarPlane = 1000.0f;
 	ShadowProjection = glm::perspective(glm::radians(90.0f), AspectRatio, NearPlane, FarPlane);
 
 	ShadowTransforms.push_back(ShadowProjection * 

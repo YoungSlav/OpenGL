@@ -85,6 +85,7 @@
     <ClInclude Include="Source\Public\BravoStaticMeshComponent.h" />
     <ClInclude Include="Source\Public\BravoTextureData.h" />
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h" />
+    <ClInclude Include="Source\Public\BravoTransform.h" />
     <ClInclude Include="Source\Public\BravoTypes.h" />
     <ClInclude Include="Source\Public\BravoWidget.h" />
     <ClInclude Include="Source\Public\BravoWidget_Plane.h" />
