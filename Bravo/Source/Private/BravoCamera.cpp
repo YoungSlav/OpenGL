@@ -34,15 +34,15 @@ void BravoCamera::UpdateCamera()
 void BravoCamera::UpdateCamera_Internal()
 {
 	glm::vec3 front;
-    front.x = cos(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.z));
-    front.y = sin(glm::radians(Rotation.z));
-    front.z = sin(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.z));
+    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front.y = sin(glm::radians(GetRotation().z));
+    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
     front = glm::normalize(front);
     // Also re-calculate the Right and Up vector
     glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     glm::vec3 up    = glm::normalize(glm::cross(front, right));
 	
-	ViewMatrix = glm::lookAt(Location, Location + front, up);
+	ViewMatrix = glm::lookAt(GetLocation(), GetLocation() + front, up);
 
 	const glm::ivec2 ViewportSize = Engine->GetViewportSize();
 	const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;

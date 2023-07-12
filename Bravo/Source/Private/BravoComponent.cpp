@@ -29,22 +29,27 @@ std::shared_ptr<BravoActor> BravoComponent::GetOwningActor() const
 	return nullptr;
 }
 
-glm::mat4 BravoComponent::GetTransformMatrix_Local() const
+glm::vec3 BravoComponent::GetLocation_World() const
 {
-	glm::mat4 transform;
-	transform = glm::translate(transform, Location);
-	transform = transform * glm::toMat4(BravoMath::EulerToQuat(Rotation));
-	transform = glm::scale(transform, Scale);
-	return transform;
+	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetLocation();
 }
-glm::mat4 BravoComponent::GetTransformMatrix_World() const
+
+glm::vec3 BravoComponent::GetRotation_World() const
 {
-	glm::mat4 transform = GetTransformMatrix_Local();
-	if ( std::shared_ptr<BravoActor> OwnerActor = GetOwningActor() )
-	{
-		transform = glm::translate(transform, OwnerActor->GetLocation());
-		transform = transform * glm::toMat4(BravoMath::EulerToQuat(OwnerActor->GetRotation()));
-		transform = glm::scale(transform, OwnerActor->GetScale());
-	}
-	return transform;
+	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetRotation();
+}
+	
+glm::vec3 BravoComponent::GetDirection_World() const
+{
+	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetDirection();
+}
+
+glm::vec3 BravoComponent::GetScale_World() const
+{
+	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetScale();
+}
+
+const BravoTransform& BravoComponent::GetTransform_World() const
+{
+	return Transform.LocalToWorld(GetOwningActor()->GetTransform());
 }

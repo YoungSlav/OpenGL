@@ -144,7 +144,7 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 	if ( !EnsureReady() )
 		return;
 
-	glm::mat4 model = GetTransformMatrix_World();
+	glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
 	Shader->Use();
 		Material->Use();
@@ -171,7 +171,7 @@ void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader>
 	if ( !EnsureReady() )
 		return;
 	
-	glm::mat4 model = GetTransformMatrix_World();
+	glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
 	_Shader->Use();
 		_Shader->SetMatrix4d("model", model);

@@ -18,6 +18,7 @@
 
 #include "BravoScreen_Debug.h"
 #include "BravoHUD.h"
+#include "BravoTransform.h"
 
 bool BravoGameInstance::Initialize_Internal()
 {
@@ -29,7 +30,6 @@ bool BravoGameInstance::Initialize_Internal()
 		auto screen = NewObject<BravoScreen_Debug>("DebugScreen");
 		Engine->GetHUD()->AddScreen(screen);
 	}
-	
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	

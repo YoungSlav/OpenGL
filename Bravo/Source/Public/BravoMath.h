@@ -19,5 +19,4 @@ public:
 	static const glm::vec3 upV;
 	static const glm::vec3 forwardV;
 	static const glm::vec3 rightV;
-
 };
