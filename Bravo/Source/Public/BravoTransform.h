@@ -29,7 +29,7 @@ public:
 	inline const glm::mat4& GetTransformMatrix() const { return TransformMatrix; }
 
 
-	inline void SetTransform(const glm::mat4& _transform)
+	inline void SetTransformMatrix(const glm::mat4& _transform)
 	{
 		TransformMatrix = _transform;
 		DecomposeTransformMatrix();
