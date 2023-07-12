@@ -50,7 +50,9 @@ void BravoDirLightActor::Use(BravoShaderPtr OnShader)
 {
 	BravoLightActor::Use(OnShader);
 	OnShader->SetVector3d(Path + "direction", GetDirection());
-	OnShader->SetVector3d(Path + "lightColor", glm::vec3(1.0));
+	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
+	OnShader->SetVector3d(Path + "light.diffuse", LightColor.diffuse);
+	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
 }
 
 
@@ -98,7 +100,10 @@ bool BravoSpotLightActor::Initialize_Internal()
 void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
 {
 	BravoLightActor::Use(OnShader);
-	OnShader->SetVector3d(Path + "lightColor", glm::vec3(1.0));
+	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
+	OnShader->SetVector3d(Path + "light.diffuse", LightColor.diffuse);
+	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
+
 	OnShader->SetVector3d(Path + "position", GetLocation());
 	OnShader->SetVector3d(Path + "direction", GetDirection());
 	OnShader->SetVector1d(Path + "cutOff", CutOff);

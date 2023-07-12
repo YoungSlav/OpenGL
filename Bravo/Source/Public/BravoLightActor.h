@@ -9,7 +9,7 @@ struct BravoLightColor
 {
 	BravoLightColor() = default;
 	BravoLightColor(const glm::vec3& SimpleColor) :
-		ambient(SimpleColor*0.05f), diffuse(SimpleColor*0.5f), specular(SimpleColor*0.1f)
+		ambient(SimpleColor*0.2f), diffuse(SimpleColor*0.5f), specular(SimpleColor*0.1f)
 	{}
 	BravoLightColor( const glm::vec3& _ambient, const glm::vec3& _diffuse, const glm::vec3& _specular) :
 		ambient(_ambient), diffuse(_diffuse), specular(_specular)

@@ -49,7 +49,7 @@ glm::vec3 BravoComponent::GetScale_World() const
 	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetScale();
 }
 
-const BravoTransform& BravoComponent::GetTransform_World() const
+BravoTransform BravoComponent::GetTransform_World() const
 {
 	return Transform.LocalToWorld(GetOwningActor()->GetTransform());
 }

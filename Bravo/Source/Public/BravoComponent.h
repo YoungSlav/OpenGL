@@ -23,7 +23,7 @@ public:
 	inline const glm::vec3& GetScale() const { return Transform.GetScale(); }
 	inline void SetScale(const glm::vec3& InScale) { Transform.SetScale(InScale); }
 
-	const BravoTransform& GetTransform_World() const;
+	BravoTransform GetTransform_World() const;
 	inline const BravoTransform& GetTransform() const { return Transform; }
 	inline void SetTransform(const BravoTransform& InTransform) { Transform = InTransform; }
 

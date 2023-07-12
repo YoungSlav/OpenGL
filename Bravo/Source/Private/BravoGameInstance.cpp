@@ -66,7 +66,7 @@ bool BravoGameInstance::Initialize_Internal()
 			spotLight->SetLocation(glm::vec3(-5.0f,  10.0f, 0.0f ));
 			spotLight->SetDirection(glm::normalize(glm::vec3(0.0f) - spotLight->GetLocation() ));
 			spotLight->SetScale(glm::vec3(-0.5f));
-			spotLight->SetLightColor(glm::vec3(1.0f));
+			spotLight->SetLightColor(BravoLightColor(glm::vec3(0.2f), glm::vec3(1.0f), glm::vec3(0.1f)));
 			spotLights.push_back(spotLight);
 		}
 	}
@@ -95,18 +95,18 @@ void BravoGameInstance::SpawnCubes()
 
 	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
 	std::vector<glm::vec3> locations {
-		glm::vec3(2.0, 5.0, 2.0),
-		glm::vec3(3.0, 2.0, 0.0),
+		glm::vec3(2.0,  3.0, 2.0),
+		glm::vec3(3.0,  3.0, 0.0),
 		glm::vec3(-2.0, 3.0, -1.5),
-		glm::vec3(-2.0, 1.5, 2.0),
-		glm::vec3(2.0, 1.0, -3.0),
+		glm::vec3(-2.0, 3.5, 2.0),
+		glm::vec3(2.0,  3.0, -3.0),
 	};
 	float angle = 0.0f;
 	for ( uint32 i = 0; i < locations.size(); ++i )
 	{
 		if ( auto cubeActor = NewObject<BravoActor>("Cube_" + std::to_string(i)) )
 		{
-			cubeActor->SetLocation(locations[i]);
+			cubeActor->SetLocation(locations[i]);// + glm::vec3(0.0f, 5.0f, 0.0f));
 			cubeActor->SetRotation(glm::vec3(angle, angle, angle));
 			angle += 20.0f;
 			auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_" + std::to_string(i) + "_MeshComponent");
@@ -158,7 +158,7 @@ void BravoGameInstance::Tick(float DeltaTime)
 {
 
 	float lightDistance = 5.0f;
-	glm::vec3 newLocation = glm::vec3(0.0f, 10.0f, 0.0f);
+	glm::vec3 newLocation = glm::vec3(0.0f, 5.0f, 0.0f);
 	newLocation.x = glm::sin(LifeTime) * lightDistance;
 	newLocation.z = glm::cos(LifeTime) * lightDistance;
 	

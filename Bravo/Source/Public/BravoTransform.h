@@ -68,19 +68,23 @@ public:
 
 	inline bool IsNearlyEqual(const BravoTransform& Other, float Eps = 0.0001f)
 	{
+		// "Code from hell" material :)
 		return (
 			abs(TransformMatrix[0][0] - Other.TransformMatrix[0][0]) <= Eps &&
 			abs(TransformMatrix[0][1] - Other.TransformMatrix[0][1]) <= Eps &&
 			abs(TransformMatrix[0][2] - Other.TransformMatrix[0][2]) <= Eps &&
 			abs(TransformMatrix[0][3] - Other.TransformMatrix[0][3]) <= Eps &&
+			
 			abs(TransformMatrix[1][0] - Other.TransformMatrix[1][0]) <= Eps &&
 			abs(TransformMatrix[1][1] - Other.TransformMatrix[1][1]) <= Eps &&
 			abs(TransformMatrix[1][2] - Other.TransformMatrix[1][2]) <= Eps &&
 			abs(TransformMatrix[1][3] - Other.TransformMatrix[1][3]) <= Eps &&
+			
 			abs(TransformMatrix[2][0] - Other.TransformMatrix[2][0]) <= Eps &&
 			abs(TransformMatrix[2][1] - Other.TransformMatrix[2][1]) <= Eps &&
 			abs(TransformMatrix[2][2] - Other.TransformMatrix[2][2]) <= Eps &&
 			abs(TransformMatrix[2][3] - Other.TransformMatrix[2][3]) <= Eps &&
+			
 			abs(TransformMatrix[3][0] - Other.TransformMatrix[3][0]) <= Eps &&
 			abs(TransformMatrix[3][1] - Other.TransformMatrix[3][1]) <= Eps &&
 			abs(TransformMatrix[3][2] - Other.TransformMatrix[3][2]) <= Eps &&
