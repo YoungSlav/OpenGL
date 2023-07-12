@@ -4,32 +4,12 @@
 #include "BravoAsset.h"
 #include "BravoAssetManager.h"
 
-<<<<<<< HEAD
-=======
-void BravoLightActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
-{
-	if ( !Mesh || !Shader )
-		return;
-	
-	glm::mat4 model = Transform.GetTransformMatrix();
-	Shader->Use();
-		Shader->SetMatrix4d("projection", CameraProjection);
-		Shader->SetMatrix4d("view", CameraView);
-		Shader->SetMatrix4d("model", model);
-		Shader->SetVector3d("lightColor", LightColor);
-		// TODO
-		//Mesh->Render();
-	Shader->StopUsage();
-	
-}
->>>>>>> main
-
 
 /************************************************************************/
 /*                       COMMON                                         */
 /************************************************************************/
 
-void BravoDirLightActor::OnDestroy()
+void BravoLightActor::OnDestroy()
 {
 	ShadowMap.reset();
 	BravoActor::OnDestroy();
