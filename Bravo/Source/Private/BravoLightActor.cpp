@@ -41,7 +41,7 @@ bool BravoDirLightActor::Initialize_Internal()
 		return false;
 
 	ShadowMap = NewObject<BravoShadowMap_Directional>();
-	ShadowMap->Setup(glm::ivec2(2048));
+	ShadowMap->Setup(glm::ivec2(4096));
 
 	return true;
 }

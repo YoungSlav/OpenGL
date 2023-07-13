@@ -71,6 +71,13 @@ int32 BravoStaticMeshComponent::AddInstance(const BravoMeshInstance& Instance, b
 	return index;
 }
 
+void BravoStaticMeshComponent::RemoveAllInstances(bool bUpdateInstanceBuffer)
+{
+	Instances.clear();
+	if ( bUpdateInstanceBuffer )
+		UpdateInstanceBuffer();
+}
+
 void BravoStaticMeshComponent::RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer)
 {
 	Instances.erase(Instances.begin() + Index, Instances.begin() + Index + Count);

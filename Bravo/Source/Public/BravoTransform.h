@@ -21,7 +21,6 @@ public:
 		DecomposeTransformMatrix();
 	}
 
-
 	inline const glm::vec3& GetLocation() const { return Location; }
 	inline const glm::vec3& GetRotation() const { return Rotation; }
 	inline glm::vec3 GetDirection() const { return BravoMath::RotationToDirection(Rotation); }
@@ -64,7 +63,7 @@ public:
 		return BravoTransform(OwnerTransform.GetTransformMatrix() * TransformMatrix);
 	}
 
-	inline bool IsNearlyEqual(const BravoTransform& Other, float Eps = 0.0001f)
+	inline bool IsNearlyEqual(const BravoTransform& Other, float Eps = FLT_EPS)
 	{
 		// "Code from hell" material :)
 		return (
@@ -123,9 +122,9 @@ private:
 	}
 
 private:
+	glm::mat4 TransformMatrix;
+
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-	glm::mat4 TransformMatrix;
 };

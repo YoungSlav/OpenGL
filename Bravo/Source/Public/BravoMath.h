@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 
+#define FLT_EPS 0.001f
+
 class BravoMath
 {
 public:

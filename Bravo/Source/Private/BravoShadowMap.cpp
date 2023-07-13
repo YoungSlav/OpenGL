@@ -126,10 +126,12 @@ void BravoShadowMap_Directional::Render(std::shared_ptr<class BravoLightActor> O
 	float FarPlane = 1000.0f;
 
 	glm::vec3 LightPosition = Owner->GetLocation();
-
-	glm::mat4 ShadowProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, NearPlane, FarPlane);
-	glm::mat4 LightView = glm::lookAt(LightPosition, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	
+	glm::mat4 ShadowProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, NearPlane, FarPlane);
+	glm::vec3 direction = (Owner->GetLocation() - glm::vec3(0.0f)) + glm::vec3(FLT_EPS, 0.0f, FLT_EPS);
+	glm::mat4 LightView = glm::lookAt(direction, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
 	LightSpaceMatrix = ShadowProjection * LightView;
+
 	GetShader()->Use();
 	GetShader()->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
 	glViewport(0, 0, Size.x, Size.y);

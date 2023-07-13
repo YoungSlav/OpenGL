@@ -30,9 +30,10 @@ bool BravoObject::Initialize(const BravoHandle& _Handle, const std::string& _Nam
 	return Initialize_Internal();
 }
 
-void BravoObject::AddOwnedObject(std::weak_ptr<BravoObject> _OwnedObject)
+void BravoObject::AddChildObject(std::weak_ptr<BravoObject> _OwnedObject)
 {
 	OwnedObjects.push_back(_OwnedObject);
+	OnChildObjectAdded(_OwnedObject);
 }
 
 void BravoObject::Destroy()

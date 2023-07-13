@@ -6,21 +6,21 @@
 #include "BravoRenderable.h"
 #include "BravoShader.h"
 #include "BravoMath.h"
+#include "BravoTransform.h"
 
 class BravoMeshInstance
 {
 public:
 	glm::mat4 TransfromMatrix;
 
-	BravoMeshInstance()
+	BravoMeshInstance() :
+		Transform()
 	{
 		UpdateTransformMatrix();
 	}
 	
-	BravoMeshInstance(const glm::vec3& _Location, const glm::vec3& _Rotation, const glm::vec3& _Scale) :
-		Location(_Location),
-		Rotation(_Rotation),
-		Scale(_Scale)
+	BravoMeshInstance(const BravoTransform& _Transform) :
+		Transform(_Transform)
 	{
 		UpdateTransformMatrix();
 	}
@@ -29,16 +29,10 @@ private:
 
 	void UpdateTransformMatrix()
 	{
-		glm::mat4 transform;
-		transform = glm::translate(transform, Location);
-		transform = transform * glm::toMat4(BravoMath::EulerToQuat(Rotation));
-		transform = glm::scale(transform, Scale);
-		TransfromMatrix = transform;
+		TransfromMatrix = Transform.GetTransformMatrix();
 	}
 
-	glm::vec3 Location = glm::vec3(0.0f);
-	glm::vec3 Rotation = glm::vec3(0.0f);
-	glm::vec3 Scale = glm::vec3(1.0f);
+	BravoTransform Transform;
 };
 
 
@@ -52,6 +46,7 @@ public:
 	bool EnsureReady();
 
 	int32 AddInstance(const BravoMeshInstance& Instance, bool bUpdateInstanceBuffer = true);
+	void RemoveAllInstances(bool bUpdateInstanceBuffer = true);
 	void RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer = true);
 	void UpdateInstanceBuffer();
 

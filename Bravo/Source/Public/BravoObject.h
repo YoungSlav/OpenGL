@@ -59,7 +59,7 @@ public:
 			)
 			return nullptr;
 
-		ActualOwner->AddOwnedObject(newObject);
+		ActualOwner->AddChildObject(newObject);
 		Engine->RegisterObject(newObject);
 
 		return std::dynamic_pointer_cast<Class>(newObject);
@@ -67,10 +67,11 @@ public:
 
 protected:
 	virtual bool Initialize_Internal() { return true; }
+	virtual void OnChildObjectAdded(std::weak_ptr<BravoObject> _OwnedObject) {}
 	virtual void OnDestroy() {}
 
 private:
-	void AddOwnedObject(std::weak_ptr<BravoObject> _OwnedObject);
+	void AddChildObject(std::weak_ptr<BravoObject> _OwnedObject);
 
 protected:
 	std::shared_ptr<BravoEngine> Engine;

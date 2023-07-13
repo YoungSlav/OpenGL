@@ -47,15 +47,14 @@ bool BravoGameInstance::Initialize_Internal()
 	{
 		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
-	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
+	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 	
 	
 	
 	if ( auto dirLightActor = NewObject<BravoDirLightActor>("DirLight") )
 	{
-		dirLightActor->SetLocation(glm::vec3(0.0f,  10.0f, 0.0f ));
+		dirLightActor->SetLocation(glm::vec3(0.0f,  500.0f, 0.0f ));
 		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, -90.0f));
-		dirLightActor->SetScale(glm::vec3(0.1f));
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
 	
@@ -88,46 +87,46 @@ void BravoGameInstance::SpawnCubes()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
-	{
-		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
-		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-		planeMesh->SetMesh(planeAsset);
-		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-		planeMat->Shininess = 64.0f;
-		planeMesh->SetMaterial(planeMat);
-	
-	}
+	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	//{
+	//	BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
+	//	planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+	//	planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+	//	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+	//	planeMesh->SetMesh(planeAsset);
+	//	BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+	//	planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+	//	planeMat->Shininess = 64.0f;
+	//	planeMesh->SetMaterial(planeMat);
+	//
+	//}
 
 	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
 	std::vector<glm::vec3> locations {
-		glm::vec3(2.0,  1.0, 2.0),
-		glm::vec3(3.0,  1.0, 0.0),
-		glm::vec3(-2.0, 1.0, -1.5),
-		glm::vec3(-2.0, 1.5, 2.0),
-		glm::vec3(2.0,  1.0, -3.0),
+		glm::vec3(0.0, 5.0, 0.0),
+		glm::vec3(10.0, 5.0, 0.0),
+		glm::vec3(20.0, 5.0, 0.0),
+		glm::vec3(30.0, 5.5, 0.0),
+		glm::vec3(40.0, 5.0, 0.0),
 	};
-	float angle = 0.0f;
-	for ( uint32 i = 0; i < locations.size(); ++i )
+	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
 	{
-		if ( auto cubeActor = NewObject<BravoActor>("Cube_" + std::to_string(i)) )
+		for ( int32 i = 0; i < 10; ++i )
 		{
-			cubeActor->SetLocation(locations[i]);// + glm::vec3(0.0f, 5.0f, 0.0f));
-			cubeActor->SetRotation(glm::vec3(angle, angle, angle));
-			angle += 20.0f;
-			auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_" + std::to_string(i) + "_MeshComponent");
+			auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent_" + std::to_string(i));
 			cubeMesh->SetMesh(cubeAsset);
 			cubeMesh->SetCastShadows(true);
-	
+			glm::vec3 newLocation = glm::vec3(0.0f);
+			newLocation.x = glm::sin(glm::radians(36.0f*i)) * 5;
+			newLocation.z = glm::cos(glm::radians(36.0f*i)) * 5;
+			cubeMesh->SetLocation(newLocation);
 			BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
 			cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
 			cubeMat->Shininess = 64.0f;
 			cubeMesh->SetMaterial(cubeMat);
-			Cubes.push_back(cubeActor);
 		}
+	
+		Cubes.push_back(cubeActor);
 	}
 }
 
@@ -157,7 +156,7 @@ void BravoGameInstance::SpawnTestInstances()
 			Location = BravoMath::RandVector(50);
 			glm::vec3 Rotation = BravoMath::RandVector(180);
 			glm::vec3 Scale = glm::vec3((rand() % 100) / 100.0f);
-			cubeMesh->AddInstance(BravoMeshInstance(Location, Rotation, Scale), false);
+			cubeMesh->AddInstance(BravoMeshInstance(BravoTransform(Location, Rotation, Scale)), false);
 		}
 		cubeMesh->UpdateInstanceBuffer();
 	}
@@ -165,6 +164,18 @@ void BravoGameInstance::SpawnTestInstances()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {
+	std::shared_ptr<BravoActor> cube = Cubes[0].lock();
+	cube->SetRotation(glm::vec3(0.0f, LifeTime*30.0f, 0.0f));
+	std::vector<std::shared_ptr<BravoComponent>> components = cube->GetComponents();
+	for ( int32 i = 0; i < components.size(); ++i )
+	{
+		components[i]->SetRotation(glm::vec3(0.0f, 0.0f, i*30 + LifeTime*30.0f));
+		glm::vec3 newLocation = glm::vec3(0.0f);
+		newLocation.x = glm::sin(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
+		newLocation.z = glm::cos(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
+		components[i]->SetLocation(newLocation);
+	}
+
 	//float lightDistance = 5.0f;
 	//float h = LifeTime * 0.5;
 	//Log::LogMessage("LightHeight: " + std::to_string(h));
