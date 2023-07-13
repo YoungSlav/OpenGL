@@ -25,7 +25,6 @@ void main()
 	vs_out.FragPos = vec3(model * instanceMatrix * vec4(aPos, 1.0));
 	vs_out.TexCoords = aTexCoords;
 
-	mat3 normalMatrix = mat3(model * instanceMatrix);
 	vec3 T = normalize(vec3(model * instanceMatrix * vec4(aTangent, 0.0)));
 	vec3 N = normalize(vec3(model * instanceMatrix * vec4(aNormal, 0.0)));
 	T = normalize(T - dot(T, N) * N);

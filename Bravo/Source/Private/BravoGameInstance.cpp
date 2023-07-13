@@ -79,7 +79,7 @@ bool BravoGameInstance::Initialize_Internal()
 	//	}
 	//}
 	
-	SpawnCubes();
+	SpawnTestInstances();
 	return true;
 }
 
@@ -133,32 +133,41 @@ void BravoGameInstance::SpawnCubes()
 void BravoGameInstance::SpawnTestInstances()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("test\\rock.obj");
-	if ( auto cubeActor = NewObject<BravoActor>("HeavyTest") )
+
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
-		cubeActor->SetScale(glm::vec3(0.1f));
-		auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("HeavyTest_MeshComponent");
+		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
+		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+		planeMesh->SetMesh(planeAsset);
+		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+		planeMat->Shininess = 64.0f;
+		planeMesh->SetMaterial(planeMat);
+	
+	}
+
+	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
+	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
+	{
+		auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent");
 		cubeMesh->SetMesh(cubeAsset);
 		cubeMesh->SetCastShadows(true);
 		BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("test\\rock.png");
+		cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
 		cubeMat->Shininess = 64.0f;
 		cubeMesh->SetMaterial(cubeMat);
-		Cubes.push_back(cubeActor);
-		Mesh = cubeMesh;
-
-		unsigned int amount = 100000;
-		srand((uint32)glfwGetTime()); // initialize random seed
-
-		for(unsigned int i = 0; i < amount; i++)
+		cubeMesh->RemoveAllInstances();
+		for ( int32 i = 0; i < 10; ++i )
 		{
-			glm::vec3 Location;
-			Location = BravoMath::RandVector(50);
-			glm::vec3 Rotation = BravoMath::RandVector(180);
-			glm::vec3 Scale = glm::vec3((rand() % 100) / 100.0f);
-			cubeMesh->AddInstance(BravoMeshInstance(BravoTransform(Location, Rotation, Scale)), false);
+			glm::vec3 newLocation = glm::vec3(0.0f);
+			newLocation.x = glm::sin(glm::radians(36.0f*i)) * 5;
+			newLocation.z = glm::cos(glm::radians(36.0f*i)) * 5;
+			newLocation.y = 5.0f;
+			cubeMesh->AddInstance(BravoTransform(newLocation, glm::vec3(0.0f), glm::vec3(1.0f)));
 		}
-		cubeMesh->UpdateInstanceBuffer();
+		Cubes.push_back(cubeActor);
 	}
 }
 
@@ -166,15 +175,19 @@ void BravoGameInstance::Tick(float DeltaTime)
 {
 	std::shared_ptr<BravoActor> cube = Cubes[0].lock();
 	cube->SetRotation(glm::vec3(0.0f, LifeTime*30.0f, 0.0f));
-	std::vector<std::shared_ptr<BravoComponent>> components = cube->GetComponents();
-	for ( int32 i = 0; i < components.size(); ++i )
-	{
-		components[i]->SetRotation(glm::vec3(0.0f, 0.0f, i*30 + LifeTime*30.0f));
-		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
-		newLocation.z = glm::cos(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
-		components[i]->SetLocation(newLocation);
-	}
+	//std::vector<std::shared_ptr<BravoComponent>> components = cube->GetComponents();
+	//for ( int32 i = 0; i < components.size(); ++i )
+	//{
+	//	components[i]->SetRotation(glm::vec3(0.0f, 0.0f, i*30 + LifeTime*30.0f));
+	//	glm::vec3 newLocation = glm::vec3(0.0f);
+	//	newLocation.x = glm::sin(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
+	//	newLocation.z = glm::cos(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
+	//	components[i]->SetLocation(newLocation);
+	//
+	//	glm::vec3 newScale = glm::vec3((glm::sin(LifeTime + 0.1f*i) + 1.0f) / 2.0f);
+	//	components[i]->SetScale(newScale);
+	//
+	//}
 
 	//float lightDistance = 5.0f;
 	//float h = LifeTime * 0.5;

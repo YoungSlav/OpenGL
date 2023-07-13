@@ -12,27 +12,11 @@ class BravoMeshInstance
 {
 public:
 	glm::mat4 TransfromMatrix;
-
-	BravoMeshInstance() :
-		Transform()
+		
+	BravoMeshInstance(const BravoTransform& _Transform)
 	{
-		UpdateTransformMatrix();
+		TransfromMatrix = _Transform.GetTransformMatrix();
 	}
-	
-	BravoMeshInstance(const BravoTransform& _Transform) :
-		Transform(_Transform)
-	{
-		UpdateTransformMatrix();
-	}
-
-private:
-
-	void UpdateTransformMatrix()
-	{
-		TransfromMatrix = Transform.GetTransformMatrix();
-	}
-
-	BravoTransform Transform;
 };
 
 

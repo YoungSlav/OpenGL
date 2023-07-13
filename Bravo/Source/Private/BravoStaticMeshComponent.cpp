@@ -10,7 +10,7 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 	if ( !Shader )
 		return false;
 
-	AddInstance(BravoMeshInstance(), false);
+	AddInstance(BravoMeshInstance(BravoTransform()), false);
 
 	return true;
 }
