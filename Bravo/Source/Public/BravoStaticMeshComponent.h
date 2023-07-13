@@ -33,7 +33,7 @@ public:
 	void UpdateInstance(int32 InstanceId, const BravoMeshInstance& NewInstance, bool bUpdateInstanceBuffer = true);
 	void RemoveAllInstances(bool bUpdateInstanceBuffer = true);
 	void RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer = true);
-	int32 InstanceCount() const { return Instances.size(); }
+	int32 InstanceCount() const { return (int32)Instances.size(); }
 	void UpdateInstanceBuffer();
 
 	int32 TotalInstanceCount() const { return (int32)Instances.size(); }

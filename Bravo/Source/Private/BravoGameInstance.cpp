@@ -160,13 +160,9 @@ void BravoGameInstance::SpawnTestInstances()
 		cubeMat->Shininess = 64.0f;
 		cubeMesh->SetMaterial(cubeMat);
 		cubeMesh->RemoveAllInstances();
-		for ( int32 i = 0; i < 10; ++i )
+		for ( int32 i = 0; i < 360; ++i )
 		{
-			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians(36.0f*i)) * 5;
-			newLocation.z = glm::cos(glm::radians(36.0f*i)) * 5;
-			newLocation.y = 5.0f;
-			cubeMesh->AddInstance(BravoTransform(newLocation, glm::vec3(0.0f), glm::vec3(1.0f)), false);
+			cubeMesh->AddInstance(BravoTransform(), false);
 		}
 		cubeMesh->UpdateInstanceBuffer();
 		Cubes.push_back(cubeActor);
@@ -176,23 +172,19 @@ void BravoGameInstance::SpawnTestInstances()
 void BravoGameInstance::Tick(float DeltaTime)
 {
 	std::shared_ptr<BravoActor> cube = Cubes[0].lock();
-	cube->SetRotation(glm::vec3(0.0f, LifeTime*30.0f, 0.0f));
+	cube->SetRotation(glm::vec3(0.0f, LifeTime*10.0f, 0.0f));
 	std::vector<std::shared_ptr<BravoComponent>> components = cube->GetComponents();
 	std::shared_ptr<BravoStaticMeshComponent> mesh = std::dynamic_pointer_cast<BravoStaticMeshComponent>(components[0]);
 	
-	if ( LifeTime >= 10.0f )
-		mesh->RemoveAllInstances(false);
-
 	for ( int32 i = 0; i < mesh->InstanceCount(); ++i )
 	{
 		BravoTransform newTransform;
 		newTransform.SetRotation(glm::vec3(0.0f, 0.0f, i*30 + LifeTime*30.0f));
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
-		newLocation.z = glm::cos(glm::radians(36.0f*i)) * (glm::sin(LifeTime) * 5 + 5);
+		newLocation.x = glm::sin(glm::radians(float(i))) * (glm::sin(LifeTime*0.2f) * 5 + 10);
+		newLocation.z = glm::cos(glm::radians(float(i))) * (glm::sin(LifeTime*0.2f) * 5 + 10);
 		newTransform.SetLocation(newLocation);
-		glm::vec3 newScale = glm::vec3((glm::sin(LifeTime + 0.1f*i) + 1.0f) / 2.0f);
-		newTransform.SetScale(newScale);
+		newTransform.SetScale(glm::vec3(0.1f));
 		mesh->UpdateInstance(i, BravoMeshInstance(newTransform), false);
 	}
 	mesh->UpdateInstanceBuffer();

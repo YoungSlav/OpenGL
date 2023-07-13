@@ -109,4 +109,6 @@ private:
 
 	float GameTime = 0.0f;
 	bool bRequestExit = false;
+
+	float FPSLimit = 100.0f;
 };

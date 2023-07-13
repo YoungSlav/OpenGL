@@ -61,6 +61,8 @@ void BravoEngine::GameLoop()
 
 		UpdateViewport();
 		ProcessInput(Window);
+
+		while ((glfwGetTime()  - newTime) < (1.0 / FPSLimit)) { }
 	}
 
 	glfwTerminate();
