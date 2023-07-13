@@ -30,8 +30,10 @@ public:
 	bool EnsureReady();
 
 	int32 AddInstance(const BravoMeshInstance& Instance, bool bUpdateInstanceBuffer = true);
+	void UpdateInstance(int32 InstanceId, const BravoMeshInstance& NewInstance, bool bUpdateInstanceBuffer = true);
 	void RemoveAllInstances(bool bUpdateInstanceBuffer = true);
 	void RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer = true);
+	int32 InstanceCount() const { return Instances.size(); }
 	void UpdateInstanceBuffer();
 
 	int32 TotalInstanceCount() const { return (int32)Instances.size(); }
@@ -44,6 +46,7 @@ protected:
 
 private:
 	std::vector<BravoMeshInstance> Instances;
+	bool bInstanceStateDirty = true;
 
 	GLuint VAO = 0;
 	GLuint instanceVBO = 0;

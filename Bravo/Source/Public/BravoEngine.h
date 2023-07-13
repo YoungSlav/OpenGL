@@ -12,7 +12,6 @@
 // TODO:
 /*
 *
-* instance transform bug
 * Material refactoring. (to have colors OR textures)
 * REFACTOR LIGHTS AND SHADOWS
 * frustrum culling
