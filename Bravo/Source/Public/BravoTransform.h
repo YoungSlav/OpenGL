@@ -61,9 +61,7 @@ public:
 
 	inline BravoTransform LocalToWorld(const BravoTransform& OwnerTransform) const
 	{
-		glm::mat4 WorldTransformMatrix = TransformMatrix;
-		OwnerTransform.ApplyOnMatrix(WorldTransformMatrix);
-		return BravoTransform(WorldTransformMatrix);
+		return BravoTransform(OwnerTransform.GetTransformMatrix() * TransformMatrix);
 	}
 
 	inline bool IsNearlyEqual(const BravoTransform& Other, float Eps = 0.0001f)
