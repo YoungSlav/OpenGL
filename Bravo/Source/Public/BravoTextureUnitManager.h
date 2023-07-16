@@ -6,7 +6,7 @@ class BravoTextureUnitManager
 public:
 	BravoTextureUnitManager();
 	static int32 BindTexture();
-	static void UnbindTexture(int32 TextureUnit);
+	static void UnbindTexture(int32& TextureUnit);
 
 protected:
 	static BravoTextureUnitManager& Instance()

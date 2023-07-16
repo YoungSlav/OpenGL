@@ -15,15 +15,15 @@ int32 BravoTextureUnitManager::BindTexture()
 	
 	if ( EmptyUnit < 0 || EmptyUnit >= (int32)Instance().TextureUnits.size() )
 		return -1;
-	
 	return EmptyUnit;
 }
 
-void BravoTextureUnitManager::UnbindTexture(int32 TextureUnit)
+void BravoTextureUnitManager::UnbindTexture(int32& TextureUnit)
 {
 	if ( TextureUnit < 0 || TextureUnit >= (int32)Instance().TextureUnits.size() )
 		return;
 	Instance().TextureUnits[TextureUnit] = false;
+	TextureUnit = -1;
 }
 
 int32 BravoTextureUnitManager::FindEmptyTextureUnit()

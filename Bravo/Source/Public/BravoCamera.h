@@ -12,6 +12,7 @@ public:
 	const glm::mat4 GetProjectionMatrix() const { return ProjectionMatrix; }
 
 	void SetFOV(float InFOV) { FOV = InFOV; }
+	float GetFOV() const { return FOV; }
 	void SetDrawingDistance(float InMin, float InMax) { MinDrawingDistance = InMin; MaxDrawingDistance = InMax; }
 	
 	
@@ -32,7 +33,7 @@ protected:
 private:
 	float FOV = 45.0f;
 	float MinDrawingDistance = 0.1f;
-	float MaxDrawingDistance = 10000.0f;
+	float MaxDrawingDistance = 1000.0f;
 
 	bool bAttachedToActor = false;
 	std::weak_ptr<BravoActor> Owner;

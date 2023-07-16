@@ -182,7 +182,6 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 		glBindVertexArray(VAO);
 		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
 		glBindVertexArray(0);
-		glActiveTexture(0);
 
 
 		Engine->GetLightManager()->ResetLightsUsage();
@@ -202,7 +201,6 @@ void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader>
 		
 		glBindVertexArray(VAO);
 		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
-		glActiveTexture(0);
 
 	_Shader->StopUsage();
 }

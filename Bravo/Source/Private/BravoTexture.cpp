@@ -40,7 +40,7 @@ bool BravoTexture::LoadToGPU_Internal()
 		glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-	glBindTexture(GL_TEXTURE_2D,  0);
+	//glBindTexture(GL_TEXTURE_2D,  0);
 
 	return true;
 }
@@ -62,7 +62,7 @@ void BravoTexture::Use()
 
 void BravoTexture::StopUsage()
 {
-	glBindTexture(GL_TEXTURE_2D,  0);
+	//glBindTexture(GL_TEXTURE_2D,  0);
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	TextureUnit = -1;
 }

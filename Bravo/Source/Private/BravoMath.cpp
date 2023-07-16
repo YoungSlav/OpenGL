@@ -49,3 +49,27 @@ glm::vec3 BravoMath::RandVector(float MaxDimension)
 	);
 	return Result;
 }
+
+void BravoMath::GetFrustumCornersWorldSpace(const glm::mat4& frustrum, std::vector<glm::vec4>& OutFrustumCorners)
+{
+	OutFrustumCorners.clear();
+	OutFrustumCorners.reserve(8);
+
+	const auto inv = glm::inverse(frustrum);
+	for (int32 x = 0; x < 2; ++x)
+	{
+		for (int32 y = 0; y < 2; ++y)
+		{
+			for (int32 z = 0; z < 2; ++z)
+			{
+				const glm::vec4 pt = 
+					inv * glm::vec4(
+						2.0f * x - 1.0f,
+						2.0f * y - 1.0f,
+						2.0f * z - 1.0f,
+						1.0f);
+				OutFrustumCorners.push_back(pt / pt.w);
+			}
+		}
+	}
+}

@@ -14,8 +14,9 @@
 *
 * Material refactoring. (to have colors OR textures)
 * REFACTOR LIGHTS AND SHADOWS
+* Input refactoring 4
 * frustrum culling
-* occlusion culling
+* 
 * 
 * Multiline text 3
 * Widget clicking 3
@@ -24,7 +25,6 @@
 * Json integration 1
 * Objects serialization deserialization 8
 * Editor game instance 2
-* Input refactoring 4
 * Pixel clicking actor selection 8
 * Outline shader?
 * Gizmo for actor moving 4

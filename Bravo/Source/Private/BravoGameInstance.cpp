@@ -12,6 +12,8 @@
 #include "BravoActor.h"
 #include "BravoStaticMeshComponent.h"
 #include "BravoLightActor.h"
+#include "BravoDirectionalLightActor.h"
+
 #include "BravoSkyboxActor.h"
 #include "BravoInfinitePlaneActor.h"
 #include "BravoMath.h"
@@ -51,35 +53,14 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	
 	
-	if ( auto dirLightActor = NewObject<BravoDirLightActor>("DirLight") )
+	if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
 	{
-		dirLightActor->SetLocation(glm::vec3(500.0f,  500.0f, 0.0f ));
-		dirLightActor->SetRotation(glm::vec3(0.0f, 0.0f, -90.0f));
+		dirLightActor->SetLocation(glm::vec3(-100.0f,  100.0f, 0.0f ));
+		dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
 	
-	//for ( int32 i = 0; i < 1; ++i )
-	//{
-	//	if ( auto spotLight = NewObject<BravoSpotLightActor>("SpotLight_" + std::to_string(i)) )
-	//	{
-	//		spotLight->SetLocation(glm::vec3(-5.0f,  10.0f, 0.0f ));
-	//		spotLight->SetDirection(glm::normalize(glm::vec3(0.0f) - spotLight->GetLocation() ));
-	//		spotLight->SetScale(glm::vec3(-0.5f));
-	//		spotLight->SetLightColor(BravoLightColor(glm::vec3(0.2f), glm::vec3(1.0f), glm::vec3(0.1f)));
-	//		
-	//		BravoMeshPtr coneAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-	//		auto coneComp = spotLight->NewObject<BravoStaticMeshComponent>("SpotLight_" + std::to_string(i) + "_mesh");
-	//		coneComp->SetMesh(coneAsset);
-	//		BravoMaterialPtr coneMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-	//		coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\white.png");
-	//		coneMat->Shininess = 100.0f;
-	//		coneComp->SetMaterial(coneMat);
-	//		
-	//		spotLights.push_back(spotLight);
-	//	}
-	//}
-	
-	SpawnTestInstances();
+	SpawnCubes();
 	return true;
 }
 
@@ -87,42 +68,40 @@ void BravoGameInstance::SpawnCubes()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
-	//{
-	//	BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
-	//	planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-	//	planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-	//	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-	//	planeMesh->SetMesh(planeAsset);
-	//	BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-	//	planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-	//	planeMat->Shininess = 64.0f;
-	//	planeMesh->SetMaterial(planeMat);
-	//
-	//}
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	{
+		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
+		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+		planeMesh->SetMesh(planeAsset);
+		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+		planeMat->Shininess = 64.0f;
+		planeMesh->SetMaterial(planeMat);
+	
+	}
 
 	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
-	std::vector<glm::vec3> locations {
-		glm::vec3(0.0, 5.0, 0.0),
-		glm::vec3(10.0, 5.0, 0.0),
-		glm::vec3(20.0, 5.0, 0.0),
-		glm::vec3(30.0, 5.5, 0.0),
-		glm::vec3(40.0, 5.0, 0.0),
-	};
+
 	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
 	{
-		for ( int32 i = 0; i < 10; ++i )
+		for ( int32 i = 0; i < 50; ++i )
 		{
 			auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent_" + std::to_string(i));
 			cubeMesh->SetMesh(cubeAsset);
 			cubeMesh->SetCastShadows(true);
-			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians(36.0f*i)) * 5;
-			newLocation.z = glm::cos(glm::radians(36.0f*i)) * 5;
-			cubeMesh->SetLocation(newLocation);
+
 			BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
 			cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
 			cubeMat->Shininess = 64.0f;
+			glm::vec3 newLocation = glm::vec3(0.0f);
+			newLocation.x = glm::sin(glm::radians(360.0f / 50 *i)) * 5;
+			newLocation.z = glm::cos(glm::radians(360.0f / 50 *i)) * 5;
+			cubeMesh->SetLocation(newLocation);
+			cubeMesh->SetScale(glm::vec3(0.1f));
+
 			cubeMesh->SetMaterial(cubeMat);
 		}
 	
@@ -139,7 +118,7 @@ void BravoGameInstance::SpawnTestInstances()
 		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
 		planeActor->SetScale(glm::vec3(100.0f, 100.0f, 1.0f));
 		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+		planeActor->SetLocation(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
 		planeMesh->SetMesh(planeAsset);
 		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
@@ -172,7 +151,7 @@ void BravoGameInstance::SpawnTestInstances()
 void BravoGameInstance::Tick(float DeltaTime)
 {
 	std::shared_ptr<BravoActor> cube = Cubes[0].lock();
-	cube->SetRotation(glm::vec3(0.0f, LifeTime*10.0f, 0.0f));
+	cube->SetRotation(glm::vec3(0.0f, LifeTime*10.0f, 90.0f));
 	std::vector<std::shared_ptr<BravoComponent>> components = cube->GetComponents();
 	std::shared_ptr<BravoStaticMeshComponent> mesh = std::dynamic_pointer_cast<BravoStaticMeshComponent>(components[0]);
 	
@@ -188,21 +167,4 @@ void BravoGameInstance::Tick(float DeltaTime)
 		mesh->UpdateInstance(i, BravoMeshInstance(newTransform), false);
 	}
 	mesh->UpdateInstanceBuffer();
-
-
-	//float lightDistance = 5.0f;
-	//float h = LifeTime * 0.5;
-	//Log::LogMessage("LightHeight: " + std::to_string(h));
-	//glm::vec3 newLocation = glm::vec3(0.1f, h, 0.1f);
-	//newLocation.x = glm::sin(LifeTime) * lightDistance;
-	//newLocation.z = glm::cos(LifeTime) * lightDistance;
-	//
-	//spotLights[0].lock()->SetLocation(newLocation);
-	//spotLights[0].lock()->SetDirection(glm::normalize(glm::vec3(0.0f) - newLocation ));
-	//
-	//spotLights[0].lock()->CutOff = glm::cos(glm::radians(12.0f));
-	//spotLights[0].lock()->OuterCutOff = glm::cos(glm::radians(15.0f));
-	//spotLights[0].lock()->Constant = 1.0f;
-	//spotLights[0].lock()->Linear = 0.045f;
-	//spotLights[0].lock()->Quadratic = 0.0075f;
 }

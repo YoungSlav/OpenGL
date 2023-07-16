@@ -53,6 +53,8 @@ void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class Br
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         Log::LogMessage("Framebuffer is not complete!", ELog::Error);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 void BravoRenderTarget::Resize(const glm::ivec2& InSize)
@@ -104,8 +106,8 @@ void BravoRenderTarget::Render()
     
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	
+		//glBindTexture(GL_TEXTURE_2D, 0);
 		BravoTextureUnitManager::UnbindTexture(TextureUnit);
 		glBindVertexArray(0);
-		glActiveTexture(0);
 	GetShader()->StopUsage();
 }

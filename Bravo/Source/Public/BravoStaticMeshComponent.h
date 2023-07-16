@@ -19,8 +19,6 @@ public:
 	}
 };
 
-
-
 class BravoStaticMeshComponent : public BravoComponent, public BravoRenderable
 {
 public:
@@ -34,9 +32,8 @@ public:
 	void RemoveAllInstances(bool bUpdateInstanceBuffer = true);
 	void RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer = true);
 	int32 InstanceCount() const { return (int32)Instances.size(); }
-	void UpdateInstanceBuffer();
 
-	int32 TotalInstanceCount() const { return (int32)Instances.size(); }
+	void UpdateInstanceBuffer();
 
 protected:
 	virtual bool Initialize_Internal() override;

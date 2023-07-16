@@ -83,7 +83,7 @@ void BravoEngine::Tick(float DeltaTime)
 	for ( auto it : TickableObjects )
 		it->Update(DeltaTime);
 }
-
+#include "BravoDirectionalLightActor.h"
 void BravoEngine::UpdateViewport()
 {
 	std::shared_ptr<BravoCamera> camera = GetCamera();
@@ -107,6 +107,7 @@ void BravoEngine::UpdateViewport()
 		{
 			it->Render(camera->GetLocation(), camera->GetProjectionMatrix(), camera->GetViewMatrix());
 		}
+
 		viewportRT->StopUsage();
 	}
 
@@ -153,8 +154,8 @@ void BravoEngine::CreateOpenGLWindow()
 {
 	// glfw: initialize and configure
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// create window

@@ -27,6 +27,7 @@
     <ClCompile Include="Source\Private\BravoCamera.cpp" />
     <ClCompile Include="Source\Private\BravoComponent.cpp" />
     <ClCompile Include="Source\Private\BravoCubemap.cpp" />
+    <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoEngine.cpp" />
     <ClCompile Include="Source\Private\BravoFont.cpp" />
     <ClCompile Include="Source\Private\BravoGameInstance.cpp" />
@@ -65,6 +66,7 @@
     <ClInclude Include="Source\Public\BravoCamera.h" />
     <ClInclude Include="Source\Public\BravoComponent.h" />
     <ClInclude Include="Source\Public\BravoCubemap.h" />
+    <ClInclude Include="Source\Public\BravoDirectionalLightActor.h" />
     <ClInclude Include="Source\Public\BravoEngine.h" />
     <ClInclude Include="Source\Public\BravoFont.h" />
     <ClInclude Include="Source\Public\BravoGameInstance.h" />
@@ -103,6 +105,8 @@
     <ClInclude Include="Source\ThirdParty\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Shaders\Debug.frag" />
+    <None Include="Source\Shaders\Debug.vert" />
     <None Include="Source\Shaders\Default.frag" />
     <None Include="Source\Shaders\InfinitePlane.frag" />
     <None Include="Source\Shaders\InfinitePlane.vert" />
@@ -112,6 +116,7 @@
     <None Include="Source\Shaders\PostProccess.frag" />
     <None Include="Source\Shaders\PostProccess.vert" />
     <None Include="Source\Shaders\ShadowMapDir.frag" />
+    <None Include="Source\Shaders\ShadowMapDir.geom" />
     <None Include="Source\Shaders\ShadowMapDir.vert" />
     <None Include="Source\Shaders\ShadowMapPoint.frag" />
     <None Include="Source\Shaders\ShadowMapPoint.geom" />

@@ -74,7 +74,6 @@ void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm:
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
-		glActiveTexture(0);
 
 	Shader->StopUsage();
 }

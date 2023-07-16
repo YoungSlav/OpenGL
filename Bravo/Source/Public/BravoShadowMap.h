@@ -6,7 +6,7 @@ class BravoShadowMap : public BravoObject
 {
 public:
 
-	virtual void Setup(const glm::ivec2& Size) = 0;
+	virtual void Setup(const uint32 Size) = 0;
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) = 0;
 
 	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) = 0;
@@ -15,16 +15,15 @@ public:
 protected:
 	virtual void OnDestroy() override;
 
-	glm::ivec2 Size;
-	std::weak_ptr<class BravoShader> Shader;
-	std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
+	uint32 Size;
+	std::shared_ptr<class BravoShader> DepthMapShader;
 };
 
 class BravoShadowMap_Texture : public BravoShadowMap
 {
 public:
 
-	virtual void Setup(const glm::ivec2& Size) override;
+	virtual void Setup(const uint32 Size) override;
 
 	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
 	virtual void StopUsage() override;
@@ -43,7 +42,7 @@ class BravoShadowMap_Cube : public BravoShadowMap
 {
 public:
 
-	virtual void Setup(const glm::ivec2& Size) override;
+	virtual void Setup(const uint32 Size) override;
 	
 
 	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
@@ -59,12 +58,6 @@ protected:
 	uint32 DepthCubemap = 0;
 };
 
-class BravoShadowMap_Directional : public BravoShadowMap_Texture
-{
-public:
-
-	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
-};
 
 class BravoShadowMap_Spot : public BravoShadowMap_Texture
 {

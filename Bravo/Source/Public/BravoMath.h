@@ -18,6 +18,8 @@ public:
 
 	static glm::vec3 RandVector(float MaxDimension);
 
+	static void GetFrustumCornersWorldSpace(const glm::mat4& frustrum, std::vector<glm::vec4>& OutFrustumCorners);
+
 	static const glm::vec3 upV;
 	static const glm::vec3 forwardV;
 	static const glm::vec3 rightV;

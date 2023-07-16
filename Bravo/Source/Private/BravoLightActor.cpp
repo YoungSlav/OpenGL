@@ -29,34 +29,7 @@ void BravoLightActor::StopUsage()
 	ShadowMap->StopUsage();
 }
 
-
-
-/************************************************************************/
-/*                       DIRECTIONAL LIGHT                              */
-/************************************************************************/
-
-bool BravoDirLightActor::Initialize_Internal()
-{
-	if ( !BravoLightActor::Initialize_Internal() )
-		return false;
-
-	ShadowMap = NewObject<BravoShadowMap_Directional>();
-	ShadowMap->Setup(glm::ivec2(4096));
-
-	return true;
-}
-
-void BravoDirLightActor::Use(BravoShaderPtr OnShader)
-{
-	BravoLightActor::Use(OnShader);
-	OnShader->SetVector3d(Path + "direction", GetDirection());
-	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
-	OnShader->SetVector3d(Path + "light.diffuse", LightColor.diffuse);
-	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
-}
-
-
-
+/*
 /************************************************************************/
 /*                           POINT LIGHT                                */
 /************************************************************************/
@@ -67,7 +40,7 @@ bool BravoPointLightActor::Initialize_Internal()
 		return false;
 
 	ShadowMap = NewObject<BravoShadowMap_Point>();
-	ShadowMap->Setup(glm::ivec2(2048));
+	ShadowMap->Setup(2048);
 	
 	return true;
 }
@@ -91,7 +64,7 @@ bool BravoSpotLightActor::Initialize_Internal()
 		return false;
 
 	ShadowMap = NewObject<BravoShadowMap_Spot>();
-	ShadowMap->Setup(glm::ivec2(2048));
+	ShadowMap->Setup(2048);
 
 	return true;
 }

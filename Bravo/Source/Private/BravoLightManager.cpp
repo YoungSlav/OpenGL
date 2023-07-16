@@ -1,5 +1,5 @@
 #include "BravoLightManager.h"
-
+#include "BravoDirectionalLightActor.h"
 
 #include "BravoEngine.h"
 #include "BravoShader.h"
@@ -7,7 +7,7 @@
 
 void BravoLightManager::RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor)
 {
-	if ( std::shared_ptr<BravoDirLightActor> asDir = std::dynamic_pointer_cast<BravoDirLightActor>(LightActor) )
+	if ( std::shared_ptr<BravoDirectionalLightActor> asDir = std::dynamic_pointer_cast<BravoDirectionalLightActor>(LightActor) )
 	{
 		if ( DirectionalLight )
 		{

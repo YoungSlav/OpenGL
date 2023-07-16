@@ -42,15 +42,6 @@ protected:
 	std::shared_ptr<BravoShadowMap> ShadowMap;
 };
 
-class BravoDirLightActor : public BravoLightActor
-{
-public:
-
-	virtual void Use(BravoShaderPtr OnShader) override;
-
-protected:
-	virtual bool Initialize_Internal() override;
-};
 
 class BravoPointLightActor : public BravoLightActor
 {
