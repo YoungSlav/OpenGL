@@ -46,7 +46,7 @@ void BravoShadowMapDirectional::Setup(const uint32 InSize)
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesUBO);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapDir");
+	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapDir", {"CASCADE_LEVELS=" + std::to_string(LightSettings.ShadowCascadeLevels.size())});
 }
 
 void BravoShadowMapDirectional::Use(BravoShaderPtr OnShader, const std::string& Path)

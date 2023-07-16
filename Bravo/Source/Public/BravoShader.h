@@ -93,7 +93,7 @@ public:
 protected:
 	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
 
-	bool LoadShader(GLenum ShaderType, int32& OutShader);
+	bool LoadShader(GLenum ShaderType, int32& OutShader, const std::vector<std::string>& _Params);
 	bool LinkProgramm();
 
 private:

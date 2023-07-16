@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <fstream>
 #include <sstream>
-
+#include <regex>
 
 bool BravoShader::Initialize_Internal(const std::vector<std::string>& _Params)
 {
@@ -15,9 +15,9 @@ bool BravoShader::Initialize_Internal(const std::vector<std::string>& _Params)
 
 	EmptyTexture = GetAssetManager()->LoadAsset<BravoTexture>("Textures\\black.png");
 
-	if ( LoadShader(GL_VERTEX_SHADER, VertShader) &&
-		LoadShader(GL_FRAGMENT_SHADER, FragShader) &&
-		LoadShader(GL_GEOMETRY_SHADER, GeomShader) &&
+	if ( LoadShader(GL_VERTEX_SHADER, VertShader, _Params) &&
+		LoadShader(GL_FRAGMENT_SHADER, FragShader, _Params) &&
+		LoadShader(GL_GEOMETRY_SHADER, GeomShader, _Params) &&
 		LinkProgramm() )
 	{
 		if ( VertShader ) glDeleteShader(VertShader);
@@ -47,7 +47,7 @@ void BravoShader::StopUsage()
 		EmptyTexture->StopUsage();
 }
 
-bool BravoShader::LoadShader(GLenum ShaderType, int32& OutShader)
+bool BravoShader::LoadShader(GLenum ShaderType, int32& OutShader, const std::vector<std::string>& _Params)
 {
 	OutShader = 0;
 	std::string RealShaderName;
@@ -85,6 +85,28 @@ bool BravoShader::LoadShader(GLenum ShaderType, int32& OutShader)
 	buffer << shaderFile.rdbuf();
 	shaderFile.close();
 	std::string ShaderSource = buffer.str();
+
+	for ( auto& param : _Params )
+	{
+		const std::string delim = "=";
+		size_t delimPos = param.find(delim);
+		const std::string paramName = param.substr(0, delimPos);
+		const std::string paramValue = param.substr(delimPos + delim.length(), param.length() - delimPos);
+
+		size_t index = 0;
+		while (true)
+		{
+			/* Locate the substring to replace. */
+			index = ShaderSource.find(paramName, index);
+			if (index == std::string::npos) break;
+
+			/* Make the replacement. */
+			ShaderSource.replace(index, paramName.length(), paramValue);
+
+			/* Advance index forward so the next iteration doesn't pick it up as well. */
+			index += paramValue.length();
+		}
+	}
 
 	int32 Shader = glCreateShader(ShaderType);
 	const int8 *c_str = ShaderSource.c_str();

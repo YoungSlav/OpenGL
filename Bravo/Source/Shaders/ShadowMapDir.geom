@@ -1,6 +1,6 @@
 #version 410 core
 
-layout(triangles, invocations = 5) in;
+layout(triangles, invocations = CASCADE_LEVELS) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 layout (std140) uniform LightSpaceMatrices
