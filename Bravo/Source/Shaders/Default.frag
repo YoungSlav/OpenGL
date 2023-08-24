@@ -221,7 +221,7 @@ vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir)
 	shadow = CalcSpotLightShadow(fragPos_LightSpace, spotLights[index].shadowMap, normal, lightDir, spotLights[index].farPlane);
 
 
-	return (ambient + (1.0 - shadow)*(diffuse + specular));
+	return (1.0 - shadow)*(ambient + diffuse + specular);
 }
 
 float CalcSpotLightShadow(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm, vec3 lightDir, float FarPlane)

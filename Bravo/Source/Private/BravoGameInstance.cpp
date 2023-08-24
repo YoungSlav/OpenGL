@@ -50,7 +50,7 @@ bool BravoGameInstance::Initialize_Internal()
 	{
 		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
-	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
+	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 	
 	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
@@ -168,7 +168,6 @@ void BravoGameInstance::Tick(float DeltaTime)
 {
 	std::shared_ptr<BravoActor> cube = Cubes[0].lock();
 	cube->SetRotation(glm::vec3(0.0f, LifeTime*10.0f, 90.0f));
-	//cube->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
 	std::vector<std::shared_ptr<BravoComponent>> components = cube->GetComponents();
 	std::shared_ptr<BravoStaticMeshComponent> mesh = std::dynamic_pointer_cast<BravoStaticMeshComponent>(components[0]);
 	
