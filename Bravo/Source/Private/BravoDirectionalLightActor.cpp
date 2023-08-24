@@ -81,8 +81,6 @@ void BravoShadowMapDirectional::Use(BravoShaderPtr OnShader, const std::string& 
 void BravoShadowMapDirectional::StopUsage()
 {
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
-	TextureUnit = -1;
-	//glBindTexture(GL_TEXTURE_2D_ARRAY,  0);
 }
 
 void BravoShadowMapDirectional::OnDestroy()

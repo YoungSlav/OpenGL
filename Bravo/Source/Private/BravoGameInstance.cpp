@@ -54,9 +54,9 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
-		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
-		planeActor->SetScale(glm::vec3(100.0f, 100.0f, 1.0f));
-		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
+		planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
 		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
 		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
 		planeMesh->SetMesh(planeAsset);
@@ -75,7 +75,7 @@ bool BravoGameInstance::Initialize_Internal()
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
 	SpawnSpotLights();
-	SpawnCubes();
+	SpawnTestInstances();
 	return true;
 }
 
@@ -89,7 +89,7 @@ void BravoGameInstance::SpawnSpotLights()
 	{
 		spotLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
 		spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
-		spotLightActor->SetLightColor(glm::vec3(1.0f, 0.0f, 0.0f));
+		spotLightActor->SetLightColor(glm::vec3(1.0f));
 		BravoSpotLightSettings SpotSettings;
 		SpotSettings.CutOff			= 10.0f;
 		SpotSettings.OuterCutOff	= 12.0f;
@@ -187,9 +187,9 @@ void BravoGameInstance::Tick(float DeltaTime)
 	for ( int32 i = 0; i < spotLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(LifeTime) * 10.0f;
-		newLocation.z = glm::cos(LifeTime) * 10.0f;
-		newLocation.y = 15.0f;
+		newLocation.x = glm::sin(LifeTime) * 7.0f;
+		newLocation.z = glm::cos(LifeTime) * 7.0f;
+		newLocation.y = 7.0f;
 		
 
 		spotLights[i]->SetLocation(newLocation);

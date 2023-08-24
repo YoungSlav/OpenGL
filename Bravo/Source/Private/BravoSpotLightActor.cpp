@@ -69,7 +69,6 @@ void BravoShadowMapSpot::Use(BravoShaderPtr OnShader, const std::string& Path)
 void BravoShadowMapSpot::StopUsage()
 {
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
-	//glBindTexture(GL_TEXTURE_2D,  0);
 }
 
 
@@ -137,4 +136,5 @@ void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
 	OnShader->SetVector1d(Path + "constant", SpotLightConstants.Constant[Settings.Intencity]);
 	OnShader->SetVector1d(Path + "linear", SpotLightConstants.Linear[Settings.Intencity]);
 	OnShader->SetVector1d(Path + "quadratic", SpotLightConstants.Quadratic[Settings.Intencity]);
+	OnShader->SetVector1d(Path + "farPlane", SpotLightConstants.Distance[Settings.Intencity]);
 }

@@ -12,27 +12,28 @@
 // TODO:
 /*
 *
-* Material refactoring. (to have colors OR textures)
 * REFACTOR LIGHTS AND SHADOWS
+* Material refactoring. (to have colors OR textures)
 * refactor assets, consider making them unique?
-* Input refactoring 4
+* multiple projects in solution: Engine, Game
+* Input refactoring 
 * frustrum culling
 * 
 * 
-* Multiline text 3
-* Widget clicking 3
-* Edit text 8
-* Buttons 1
-* Json integration 1
-* Objects serialization deserialization 8
-* Editor game instance 2
-* Pixel clicking actor selection 8
+* Multiline text 
+* Widget clicking 
+* Edit text 
+* Buttons 
+* Json integration 
+* Objects serialization deserialization 
+* Pixel clicking actor selection 
 * Outline shader?
-* Gizmo for actor moving 4
-* Physics engine integration 20
-* reactphysics3d
+* Gizmo for actor moving 
+* Physics engine integration (reactphysics3d)
+
 * 
 *  
+* Editor game instance 
 * world editor? (json?)
 * serialization?
 * splines?
