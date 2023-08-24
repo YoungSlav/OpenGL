@@ -131,8 +131,8 @@ void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
 	
 	OnShader->SetVector3d(Path + "position", GetLocation());
 	OnShader->SetVector3d(Path + "direction", GetDirection());
-	OnShader->SetVector1d(Path + "cutOff", Settings.CutOff);
-	OnShader->SetVector1d(Path + "outerCutOff", Settings.OuterCutOff);
+	OnShader->SetVector1d(Path + "cutOff", glm::cos(glm::radians(Settings.CutOff)));
+	OnShader->SetVector1d(Path + "outerCutOff", glm::cos(glm::radians(Settings.OuterCutOff)));
 	OnShader->SetVector1d(Path + "constant", SpotLightConstants.Constant[Settings.Intencity]);
 	OnShader->SetVector1d(Path + "linear", SpotLightConstants.Linear[Settings.Intencity]);
 	OnShader->SetVector1d(Path + "quadratic", SpotLightConstants.Quadratic[Settings.Intencity]);

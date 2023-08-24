@@ -141,8 +141,6 @@ vec3 CalcDirLight(vec3 normal, vec3 viewDir)
 	
 	float shadow = CalcDirLightShadow(normal);
 	
-	//return vec3(texture(material.diffuse, fs_in.TexCoords));
-	//return vec3((1.0 - shadow));
 	return (ambient + (1.0 - shadow)*(diffuse + specular));
 }
 

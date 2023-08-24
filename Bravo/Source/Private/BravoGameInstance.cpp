@@ -54,14 +54,14 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	
 	
-	//if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
-	//{
-	//	dirLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
-	//	dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
-	//	dirLightActor->SetLightColor(glm::vec3(1.0f));
-	//}
+	if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
+	{
+		dirLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
+		dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
+		dirLightActor->SetLightColor(glm::vec3(1.0f));
+	}
 	SpawnSpotLights();
-	SpawnTestInstances();
+	SpawnCubes();
 	return true;
 }
 
@@ -77,8 +77,8 @@ void BravoGameInstance::SpawnSpotLights()
 		spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
 		spotLightActor->SetLightColor(glm::vec3(1.0f, 0.0f, 0.0f));
 		BravoSpotLightSettings SpotSettings;
-		SpotSettings.CutOff = 10.0f;
-		SpotSettings.OuterCutOff = 12.0f;
+		SpotSettings.CutOff			= 10.0f;
+		SpotSettings.OuterCutOff	= 12.0f;
 		SpotSettings.Intencity = 6;
 		spotLightActor->SetSettings(SpotSettings);
 
@@ -203,8 +203,8 @@ void BravoGameInstance::Tick(float DeltaTime)
 	for ( int32 i = 0; i < spotLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(LifeTime) * 0.0f;
-		newLocation.z = glm::cos(LifeTime) * 0.0f;
+		newLocation.x = glm::sin(LifeTime) * 10.0f;
+		newLocation.z = glm::cos(LifeTime) * 10.0f;
 		newLocation.y = 15.0f;
 		
 
