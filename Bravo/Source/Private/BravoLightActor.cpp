@@ -51,37 +51,3 @@ void BravoPointLightActor::Use(BravoShaderPtr OnShader)
 	// TODO
 }
 
-
-
-
-/************************************************************************/
-/*                           SPOT LIGHT                                 */
-/************************************************************************/
-
-bool BravoSpotLightActor::Initialize_Internal()
-{
-	if ( !BravoLightActor::Initialize_Internal() )
-		return false;
-
-	ShadowMap = NewObject<BravoShadowMap_Spot>();
-	ShadowMap->Setup(2048);
-
-	return true;
-}
-
-
-void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
-{
-	BravoLightActor::Use(OnShader);
-	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
-	OnShader->SetVector3d(Path + "light.diffuse", LightColor.diffuse);
-	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
-
-	OnShader->SetVector3d(Path + "position", GetLocation());
-	OnShader->SetVector3d(Path + "direction", GetDirection());
-	OnShader->SetVector1d(Path + "cutOff", CutOff);
-	OnShader->SetVector1d(Path + "outerCutOff", OuterCutOff);
-	OnShader->SetVector1d(Path + "constant", Constant);
-	OnShader->SetVector1d(Path + "linear", Linear);
-	OnShader->SetVector1d(Path + "quadratic", Quadratic);
-}

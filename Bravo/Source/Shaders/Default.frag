@@ -118,9 +118,9 @@ void main()
 	//// point lights
 	//for(int i = 0; i < pointLightsNum; i++)
 	//	outColor += CalcPointLight(i, norm, viewDir);
-	//// spot light
-	//for(int i = 0; i < spotLightsNum; i++)
-	//	outColor += CalcSpotLight(i, norm, viewDir);    
+	// spot light
+	for(int i = 0; i < spotLightsNum; i++)
+		outColor += CalcSpotLight(i, norm, viewDir);    
 		
 	FragColor = vec4(outColor, 1.0);
 }
@@ -180,11 +180,9 @@ float CalcDirLightShadow(vec3 norm)
         return 0.0;
     }
 	// calculate bias (based on depth map resolution and slope)
-
 	float bias = max(0.05 * (1.0 - dot(norm, -dirLight.direction)), 0.005);
-	const float biasModifier = 0.5f;
+	const float biasModifier = 1.0f;
 	bias *= 1 / (dirLight.cascadePlaneDistances[layer] * biasModifier);
-
 	// PCF
 	float shadow = 0.0;
 	vec2 texelSize = 1.0 / vec2(textureSize(dirLight.shadowMap, 0));
@@ -193,7 +191,7 @@ float CalcDirLightShadow(vec3 norm)
 		for(int y = -1; y <= 1; ++y)
 		{
 			float pcfDepth = texture(dirLight.shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
-			shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
+			shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
 		}    
 	}
 	shadow /= 9.0;

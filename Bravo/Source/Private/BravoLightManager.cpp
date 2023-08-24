@@ -1,5 +1,6 @@
 #include "BravoLightManager.h"
 #include "BravoDirectionalLightActor.h"
+#include "BravoSpotLightActor.h"
 
 #include "BravoEngine.h"
 #include "BravoShader.h"

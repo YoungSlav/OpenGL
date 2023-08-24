@@ -6,10 +6,25 @@
 #include "BravoAssetManager.h"
 #include "BravoTextureUnitManager.h"
 
+
+bool BravoShadowMapDirectional::Initialize_Internal()
+{
+	if ( !BravoShadowMap::Initialize_Internal() )
+		return false;
+
+	DirLightOwner = std::dynamic_pointer_cast<BravoDirectionalLightActor>(GetOwner());
+	if ( !DirLightOwner )
+	{
+		Log::LogMessage("Owner of directional shadow map can be only directional light actor! " + GetName(), ELog::Error);
+		return false;
+	}
+
+	return true;
+}
+
 void BravoShadowMapDirectional::Setup(const uint32 InSize)
 {
 	Size = InSize;
-	LightActorOwner = std::dynamic_pointer_cast<BravoDirectionalLightActor>(GetOwner());
 
 	// configure light FBO
 	// -----------------------
@@ -19,7 +34,7 @@ void BravoShadowMapDirectional::Setup(const uint32 InSize)
 	
 	glBindTexture(GL_TEXTURE_2D_ARRAY, DepthMapsTextures);
 	glTexImage3D(
-		GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, Size, Size, int32(LightSettings.ShadowCascadeLevels.size()),
+		GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, Size, Size, int32(DirLightOwner->GetSettings().ShadowCascadeLevels.size()),
 		0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -46,15 +61,15 @@ void BravoShadowMapDirectional::Setup(const uint32 InSize)
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesUBO);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapDir", {"CASCADE_LEVELS=" + std::to_string(LightSettings.ShadowCascadeLevels.size())});
+	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapDir", {"CASCADE_LEVELS=" + std::to_string(DirLightOwner->GetSettings().ShadowCascadeLevels.size())});
 }
 
 void BravoShadowMapDirectional::Use(BravoShaderPtr OnShader, const std::string& Path)
 {
-	OnShader->SetInt(Path + "cascadeCount", LightSettings.ShadowCascadeLevels.size());
-    for (size_t i = 0; i < LightSettings.ShadowCascadeLevels.size(); ++i)
+	OnShader->SetInt(Path + "cascadeCount", DirLightOwner->GetSettings().ShadowCascadeLevels.size());
+    for (size_t i = 0; i < DirLightOwner->GetSettings().ShadowCascadeLevels.size(); ++i)
     {
-        OnShader->SetVector1d(Path + "cascadePlaneDistances[" + std::to_string(i) + "]", LightSettings.ShadowCascadeLevels[i] * Engine->GetCamera()->GetMaxDrawingDistance());
+        OnShader->SetVector1d(Path + "cascadePlaneDistances[" + std::to_string(i) + "]", DirLightOwner->GetSettings().ShadowCascadeLevels[i] * Engine->GetCamera()->GetMaxDrawingDistance());
 		OnShader->SetMatrix4d(Path + "lightSpaceMatrices[" + std::to_string(i) + "]", CacheLightMatrices[i]);
     }
 
@@ -72,14 +87,14 @@ void BravoShadowMapDirectional::StopUsage()
 
 void BravoShadowMapDirectional::OnDestroy()
 {
-	LightActorOwner.reset();
+	DirLightOwner.reset();
 	BravoShadowMap::OnDestroy();
 }
 
 void BravoShadowMapDirectional::Render(std::shared_ptr<class BravoLightActor> Owner)
 {
 	// 0. UBO setup
-	CacheLightMatrices = GetLightSpaceMatrices(LightActorOwner->GetDirection());
+	CacheLightMatrices = GetLightSpaceMatrices(DirLightOwner->GetDirection());
 	glBindBuffer(GL_UNIFORM_BUFFER, MatricesUBO);
 	for (size_t i = 0; i < CacheLightMatrices.size(); ++i)
 	{
@@ -102,15 +117,15 @@ std::vector<glm::mat4> BravoShadowMapDirectional::GetLightSpaceMatrices(const gl
 	float Near = Engine->GetCamera()->GetMinDrawingDistance();
 	float Far = Engine->GetCamera()->GetMaxDrawingDistance();
 	std::vector<glm::mat4> ret;
-	for (size_t i = 0; i < LightSettings.ShadowCascadeLevels.size(); ++i)
+	for (size_t i = 0; i < DirLightOwner->GetSettings().ShadowCascadeLevels.size(); ++i)
 	{
 		if (i == 0)
 		{
-			ret.push_back(GetLightSpaceMatrix(Near, LightSettings.ShadowCascadeLevels[i] * Far, LightDirection));
+			ret.push_back(GetLightSpaceMatrix(Near, DirLightOwner->GetSettings().ShadowCascadeLevels[i] * Far, LightDirection));
 		}
-		else if (i < LightSettings.ShadowCascadeLevels.size())
+		else if (i < DirLightOwner->GetSettings().ShadowCascadeLevels.size())
 		{
-			ret.push_back(GetLightSpaceMatrix(LightSettings.ShadowCascadeLevels[i - 1] * Far, LightSettings.ShadowCascadeLevels[i] * Far, LightDirection));
+			ret.push_back(GetLightSpaceMatrix(DirLightOwner->GetSettings().ShadowCascadeLevels[i - 1] * Far, DirLightOwner->GetSettings().ShadowCascadeLevels[i] * Far, LightDirection));
 		}
 	}
 	return ret;
@@ -153,7 +168,7 @@ glm::mat4 BravoShadowMapDirectional::GetLightSpaceMatrix(const float nearPlane, 
 	}
 
 	// Tune this parameter according to the scene
-	constexpr float zMult = 10.0f;
+	const float zMult = DirLightOwner->GetSettings().FrustrumMultiplicator;
 	if (minZ < 0)
 	{
 		minZ *= zMult;

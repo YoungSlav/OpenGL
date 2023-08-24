@@ -96,7 +96,9 @@ void BravoEngine::UpdateViewport()
 		return;
 	}
 	
+	//glCullFace(GL_FRONT);
 	lightManager->UpdateLightsDepthMaps();
+	//glCullFace(GL_BACK);
 	
 	// we want to draw into PP texture first
 	{

@@ -8,6 +8,7 @@
 struct BravoDirectionalLightSettings
 {
 	std::vector<float> ShadowCascadeLevels { 0.02f, 0.1f, 0.25f, 0.5f, 1.0f};
+	float FrustrumMultiplicator = 5.0f;
 };
 
 class BravoShadowMapDirectional : public BravoShadowMap
@@ -19,6 +20,7 @@ public:
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 
 protected:
+	virtual bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
 
 private:
@@ -29,15 +31,11 @@ private:
 	uint32 DepthMapFBO = 0;
 	uint32 DepthMapsTextures = 0;
 	int32 TextureUnit = -1;
-
-
-
 	uint32 MatricesUBO = 0;
+
 	std::vector<glm::mat4> CacheLightMatrices;
 
-	std::shared_ptr<class BravoDirectionalLightActor> LightActorOwner;
-
-	BravoDirectionalLightSettings LightSettings;
+	std::shared_ptr<class BravoDirectionalLightActor> DirLightOwner;
 };
 
 class BravoDirectionalLightActor : public BravoLightActor
@@ -45,8 +43,13 @@ class BravoDirectionalLightActor : public BravoLightActor
 public:
 
 	virtual void Use(BravoShaderPtr OnShader) override;
+
+	void SetSettings(BravoDirectionalLightSettings _Settings);
+	inline const BravoDirectionalLightSettings& GetSettings() const { return Settings; }
+
 protected:
 	virtual bool Initialize_Internal() override;
 
 private:
+	BravoDirectionalLightSettings Settings;
 };

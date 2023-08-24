@@ -14,6 +14,7 @@
 *
 * Material refactoring. (to have colors OR textures)
 * REFACTOR LIGHTS AND SHADOWS
+* refactor assets, consider making them unique?
 * Input refactoring 4
 * frustrum culling
 * 

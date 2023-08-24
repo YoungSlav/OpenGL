@@ -76,6 +76,12 @@
     <Filter Include="Private\Lights\Directional">
       <UniqueIdentifier>{09b071b1-8ad6-4db6-a375-e76dffcb4569}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Public\Lights\Spot">
+      <UniqueIdentifier>{b594462b-b02c-423f-ae5e-04d77104229d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Lights\Spot">
+      <UniqueIdentifier>{e424e128-e43c-4f5f-a383-54e52596308f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -189,6 +195,9 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp">
       <Filter>Private\Lights\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoSpotLightActor.cpp">
+      <Filter>Private\Lights\Spot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -320,6 +329,9 @@
     <ClInclude Include="Source\Public\BravoDirectionalLightActor.h">
       <Filter>Public\Lights\Directional</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoSpotLightActor.h">
+      <Filter>Public\Lights\Spot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\Default.frag">
@@ -382,11 +394,17 @@
     <None Include="Source\Shaders\ShadowMapDir.geom">
       <Filter>Shaders\Lights</Filter>
     </None>
-    <None Include="Source\Shaders\Debug.frag">
+    <None Include="Source\Shaders\DefaultUnlit.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\Debug.vert">
+    <None Include="Source\Shaders\DefaultUnlit.vert">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapSpot.frag">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="Source\Shaders\ShadowMapSpot.vert">
+      <Filter>Shaders\Lights</Filter>
     </None>
   </ItemGroup>
 </Project>

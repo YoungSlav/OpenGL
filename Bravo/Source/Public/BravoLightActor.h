@@ -53,18 +53,3 @@ protected:
 	virtual bool Initialize_Internal() override;
 };
 
-class BravoSpotLightActor : public BravoLightActor
-{
-public:
-
-	virtual void Use(BravoShaderPtr OnShader) override;
-
-	float CutOff;
-	float OuterCutOff;
-	float Constant;
-	float Linear;
-	float Quadratic;
-
-protected:
-	virtual bool Initialize_Internal() override;
-};
