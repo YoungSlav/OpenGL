@@ -52,6 +52,20 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 	
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	{
+		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
+		planeActor->SetScale(glm::vec3(100.0f, 100.0f, 1.0f));
+		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+		planeMesh->SetMesh(planeAsset);
+		planeMesh->SetCastShadows(true);
+		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+		planeMat->Shininess = 64.0f;
+		planeMesh->SetMaterial(planeMat);
+	}
 	
 	
 	if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
@@ -79,7 +93,7 @@ void BravoGameInstance::SpawnSpotLights()
 		BravoSpotLightSettings SpotSettings;
 		SpotSettings.CutOff			= 10.0f;
 		SpotSettings.OuterCutOff	= 12.0f;
-		SpotSettings.Intencity = 6;
+		SpotSettings.Intencity = 10;
 		spotLightActor->SetSettings(SpotSettings);
 
 		auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
@@ -98,22 +112,6 @@ void BravoGameInstance::SpawnSpotLights()
 void BravoGameInstance::SpawnCubes()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-
-	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
-	{
-		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
-		planeActor->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
-		
-		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-		planeMesh->SetMesh(planeAsset);
-		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-		planeMat->Shininess = 64.0f;
-		planeMesh->SetMaterial(planeMat);
-	
-	}
 
 	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
 
@@ -145,20 +143,6 @@ void BravoGameInstance::SpawnTestInstances()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
-	{
-		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\plane.fbx");
-		planeActor->SetScale(glm::vec3(100.0f, 100.0f, 1.0f));
-		planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
-		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-		planeMesh->SetMesh(planeAsset);
-		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-		planeMat->Shininess = 64.0f;
-		planeMesh->SetMaterial(planeMat);
-	
-	}
 
 	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
 	if ( auto cubeActor = NewObject<BravoActor>("Cube") )

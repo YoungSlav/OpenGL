@@ -82,6 +82,7 @@ void BravoShadowMapSpot::Render(std::shared_ptr<class BravoLightActor> Owner)
 	float FarPlane = SpotLightConstants.Distance[SpotLightOwner->GetSettings().Intencity];
 
 	glm::vec3 LightPosition = Owner->GetLocation();
+	glm::vec3 LightDirection = Owner->GetDirection();
 	
 	float FOV = glm::radians(SpotLightOwner->GetSettings().OuterCutOff * 2.0f);
 
@@ -89,7 +90,7 @@ void BravoShadowMapSpot::Render(std::shared_ptr<class BravoLightActor> Owner)
 	
 	
 	glm::mat4 ShadowProjection = glm::perspective(FOV, AspectRatio, NearPlane, FarPlane);
-	glm::mat4 LightView = glm::lookAt(LightPosition, glm::vec3(0.0f), glm::vec3(FLT_EPS, 1.0, FLT_EPS));
+	glm::mat4 LightView = glm::lookAt(LightPosition, LightPosition + LightDirection, glm::vec3(0.0f, 1.0, 0.0f));
 	LightSpaceMatrix = ShadowProjection * LightView;
 	
 
