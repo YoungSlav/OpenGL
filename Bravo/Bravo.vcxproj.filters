@@ -163,7 +163,7 @@
     <ClCompile Include="Source\Private\BravoLightManager.cpp">
       <Filter>Private\Lights</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoShadowMap.cpp">
+    <ClCompile Include="Source\Private\BravoDepthMap.cpp">
       <Filter>Private\Lights</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoLightActor.cpp">
@@ -290,7 +290,7 @@
     <ClInclude Include="Source\Public\BravoLightManager.h">
       <Filter>Public\Lights</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoShadowMap.h">
+    <ClInclude Include="Source\Public\BravoDepthMap.h">
       <Filter>Public\Lights</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoLightActor.h">
@@ -358,19 +358,19 @@
     <None Include="Source\Shaders\wText.vert">
       <Filter>Shaders\HUD</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapDir.frag">
+    <None Include="Source\Shaders\DepthMapDir.frag">
       <Filter>Shaders\Lights</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapDir.vert">
+    <None Include="Source\Shaders\DepthMapDir.vert">
       <Filter>Shaders\Lights</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapPoint.frag">
+    <None Include="Source\Shaders\DepthMapPoint.frag">
       <Filter>Shaders\Lights</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapPoint.geom">
+    <None Include="Source\Shaders\DepthMapPoint.geom">
       <Filter>Shaders\Lights</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapPoint.vert">
+    <None Include="Source\Shaders\DepthMapPoint.vert">
       <Filter>Shaders\Lights</Filter>
     </None>
     <None Include="Source\Shaders\PostProccess.frag">
@@ -391,7 +391,7 @@
     <None Include="Source\Shaders\LightSource.vert">
       <Filter>Shaders\Lights</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapDir.geom">
+    <None Include="Source\Shaders\DepthMapDir.geom">
       <Filter>Shaders\Lights</Filter>
     </None>
     <None Include="Source\Shaders\DefaultUnlit.frag">
@@ -400,10 +400,10 @@
     <None Include="Source\Shaders\DefaultUnlit.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapSpot.frag">
+    <None Include="Source\Shaders\DepthMapSpot.frag">
       <Filter>Shaders\Lights</Filter>
     </None>
-    <None Include="Source\Shaders\ShadowMapSpot.vert">
+    <None Include="Source\Shaders\DepthMapSpot.vert">
       <Filter>Shaders\Lights</Filter>
     </None>
   </ItemGroup>

@@ -2,7 +2,7 @@
 #include "BravoPlayer.h"
 #include "BravoShader.h"
 
-class BravoShadowMap : public BravoObject
+class BravoDepthMap : public BravoObject
 {
 public:
 
@@ -20,7 +20,7 @@ protected:
 };
 
 
-class BravoShadowMap_Cube : public BravoShadowMap
+class BravoDepthMap_Cube : public BravoDepthMap
 {
 public:
 
@@ -41,7 +41,7 @@ protected:
 };
 
 
-class BravoShadowMap_Point : public BravoShadowMap_Cube
+class BravoDepthMap_Point : public BravoDepthMap_Cube
 {
 public:
 

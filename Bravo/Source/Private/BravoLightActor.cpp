@@ -11,36 +11,32 @@
 
 void BravoLightActor::OnDestroy()
 {
-	ShadowMap.reset();
+	DepthMap.reset();
 	BravoActor::OnDestroy();
 }
 
-void BravoLightActor::UpdateShadowMap()
+void BravoLightActor::UpdateDepthMap()
 {
-	ShadowMap->Render(Self<BravoLightActor>());
+	DepthMap->Render(Self<BravoLightActor>());
 }
 
 void BravoLightActor::Use(BravoShaderPtr OnShader)
 {
-	ShadowMap->Use(OnShader, Path);
+	DepthMap->Use(OnShader, Path);
 }
 void BravoLightActor::StopUsage()
 {
-	ShadowMap->StopUsage();
+	DepthMap->StopUsage();
 }
 
-/*
-/************************************************************************/
-/*                           POINT LIGHT                                */
-/************************************************************************/
 
 bool BravoPointLightActor::Initialize_Internal()
 {
 	if ( !BravoLightActor::Initialize_Internal() )
 		return false;
 
-	ShadowMap = NewObject<BravoShadowMap_Point>();
-	ShadowMap->Setup(2048);
+	DepthMap = NewObject<BravoDepthMap_Point>();
+	DepthMap->Setup(2048);
 	
 	return true;
 }

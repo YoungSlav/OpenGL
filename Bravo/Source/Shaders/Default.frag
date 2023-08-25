@@ -24,7 +24,7 @@ struct DirectionalLight
 
 	LightColor light;
 
-	sampler2DArray shadowMap;
+	sampler2DArray depthMap;
 	float cascadePlaneDistances[16];
 	mat4 lightSpaceMatrices[16];
 	int cascadeCount;
@@ -41,7 +41,7 @@ struct PointLight
 	float linear;
 	float quadratic;
 
-	//sampler2D shadowMap;
+	//sampler2D depthMap;
 	//mat4 lightSpaceMatrix;
 };
 
@@ -60,7 +60,7 @@ struct SpotLight
 
 	float farPlane;
 
-	sampler2D shadowMap;
+	sampler2D depthMap;
 	mat4 lightSpaceMatrix;
 };
 
@@ -96,7 +96,7 @@ vec3 CalcDirLight(vec3 normal, vec3 viewDir);
 float CalcDirLightShadow(vec3 norm);
 
 vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir);
-float CalcSpotLightShadow(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm, vec3 lightDir, float FarPlane);
+float CalcSpotLightShadow(vec4 fragPosLightSpace, sampler2D depthMap, vec3 norm, vec3 lightDir, float FarPlane);
 
 void main()
 {    
@@ -176,12 +176,12 @@ float CalcDirLightShadow(vec3 normal)
 	bias *= 1 / (dirLight.cascadePlaneDistances[layer] * biasModifier);
 	// PCF
 	float shadow = 0.0;
-	vec2 texelSize = 1.0 / vec2(textureSize(dirLight.shadowMap, 0));
+	vec2 texelSize = 1.0 / vec2(textureSize(dirLight.depthMap, 0));
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-			float pcfDepth = texture(dirLight.shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+			float pcfDepth = texture(dirLight.depthMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
 			shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
 		}    
 	}
@@ -218,13 +218,13 @@ vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir)
 
 	float shadow = 0.0;
 	vec4 fragPos_LightSpace = spotLights[index].lightSpaceMatrix * vec4(fs_in.FragPos, 1.0);
-	shadow = CalcSpotLightShadow(fragPos_LightSpace, spotLights[index].shadowMap, normal, lightDir, spotLights[index].farPlane);
+	shadow = CalcSpotLightShadow(fragPos_LightSpace, spotLights[index].depthMap, normal, lightDir, spotLights[index].farPlane);
 
 
 	return (1.0 - shadow)*(ambient + diffuse + specular);
 }
 
-float CalcSpotLightShadow(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm, vec3 lightDir, float FarPlane)
+float CalcSpotLightShadow(vec4 fragPosLightSpace, sampler2D depthMap, vec3 norm, vec3 lightDir, float FarPlane)
 {
 	// perform perspective divide
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -234,7 +234,7 @@ float CalcSpotLightShadow(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm
 	if(projCoords.z > 1.0)
 		return 0.0;
 	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-	float closestDepth = texture(shadowMap, projCoords.xy).r; 
+	float closestDepth = texture(depthMap, projCoords.xy).r; 
 	// get depth of current fragment from light's perspective
 	float currentDepth = projCoords.z;
 	// calculate bias (based on depth map resolution and slope)
@@ -243,12 +243,12 @@ float CalcSpotLightShadow(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 norm
 	bias *= 1 / (FarPlane * biasModifier);
 	// PCF
 	float shadow = 0.0;
-	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+			float pcfDepth = texture(depthMap, projCoords.xy + vec2(x, y) * texelSize).r; 
 			shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
 		}    
 	}

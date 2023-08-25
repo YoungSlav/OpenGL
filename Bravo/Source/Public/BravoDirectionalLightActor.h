@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 #include "BravoLightActor.h"
-#include "BravoShadowMap.h"
+#include "BravoDepthMap.h"
 
 struct BravoDirectionalLightSettings
 {
@@ -11,7 +11,7 @@ struct BravoDirectionalLightSettings
 	float FrustrumMultiplicator = 5.0f;
 };
 
-class BravoShadowMapDirectional : public BravoShadowMap
+class BravoDepthMapDirectional : public BravoDepthMap
 {
 public:
 	virtual void Setup(const uint32 Size) override;

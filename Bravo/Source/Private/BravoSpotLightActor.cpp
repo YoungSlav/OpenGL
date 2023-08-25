@@ -6,11 +6,11 @@
 #include "BravoAssetManager.h"
 #include "BravoTextureUnitManager.h"
 
-BravoSpotLightConstants SpotLightConstants;
+BravoLightAttenuationConstants LightAttenuationConstants;
 
-bool BravoShadowMapSpot::Initialize_Internal()
+bool BravoDepthMapSpot::Initialize_Internal()
 {
-	if ( !BravoShadowMap::Initialize_Internal() )
+	if ( !BravoDepthMap::Initialize_Internal() )
 		return false;
 
 	SpotLightOwner = std::dynamic_pointer_cast<BravoSpotLightActor>(GetOwner());
@@ -23,7 +23,7 @@ bool BravoShadowMapSpot::Initialize_Internal()
 	return true;
 }
 
-void BravoShadowMapSpot::Setup(const uint32 InSize)
+void BravoDepthMapSpot::Setup(const uint32 InSize)
 {
 	Size = InSize;
 
@@ -44,41 +44,41 @@ void BravoShadowMapSpot::Setup(const uint32 InSize)
 			glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapSpot");
+	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapSpot");
 }
 
-void BravoShadowMapSpot::OnDestroy()
+void BravoDepthMapSpot::OnDestroy()
 {
 	SpotLightOwner.reset();
-	BravoShadowMap::OnDestroy();
+	BravoDepthMap::OnDestroy();
 	glDeleteFramebuffers(1, &DepthMapFBO);
 	glDeleteTextures(1, &DepthMap);
 }
 
 
-void BravoShadowMapSpot::Use(BravoShaderPtr OnShader, const std::string& Path)
+void BravoDepthMapSpot::Use(BravoShaderPtr OnShader, const std::string& Path)
 {
 	TextureUnit = BravoTextureUnitManager::BindTexture();
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);
 	glBindTexture(GL_TEXTURE_2D,  DepthMap);
-	OnShader->SetInt(Path + "shadowMap", TextureUnit);
+	OnShader->SetInt(Path + "depthMap", TextureUnit);
 
 	OnShader->SetMatrix4d(Path + "lightSpaceMatrix", LightSpaceMatrix);
 }
-void BravoShadowMapSpot::StopUsage()
+void BravoDepthMapSpot::StopUsage()
 {
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 }
 
 
-void BravoShadowMapSpot::Render(std::shared_ptr<class BravoLightActor> Owner)
+void BravoDepthMapSpot::Render(std::shared_ptr<class BravoLightActor> Owner)
 {
 	if ( !DepthMapShader )
 		return;
 
 	float NearPlane = 0.1f;
-	float FarPlane = SpotLightConstants.Distance[SpotLightOwner->GetSettings().Intencity];
+	
+	float FarPlane = LightAttenuationConstants.Distance[SpotLightOwner->GetSettings().Intencity];
 
 	glm::vec3 LightPosition = Owner->GetLocation();
 	glm::vec3 LightDirection = Owner->GetDirection();
@@ -110,8 +110,8 @@ bool BravoSpotLightActor::Initialize_Internal()
 	if ( !BravoLightActor::Initialize_Internal() )
 		return false;
 
-	ShadowMap = NewObject<BravoShadowMapSpot>();
-	ShadowMap->Setup(2048);
+	DepthMap = NewObject<BravoDepthMapSpot>();
+	DepthMap->Setup(2048);
 
 	return true;
 }
@@ -119,7 +119,7 @@ bool BravoSpotLightActor::Initialize_Internal()
 void BravoSpotLightActor::SetSettings(BravoSpotLightSettings _Settings)
 {
 	Settings = _Settings;
-	Settings.Intencity = std::min(Settings.Intencity, (uint32)(SpotLightConstants.Distance.size()-1));
+	Settings.Intencity = std::min(Settings.Intencity, (uint32)(LightAttenuationConstants.Distance.size()-1));
 }
 
 void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
@@ -133,8 +133,8 @@ void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
 	OnShader->SetVector3d(Path + "direction", GetDirection());
 	OnShader->SetVector1d(Path + "cutOff", glm::cos(glm::radians(Settings.CutOff)));
 	OnShader->SetVector1d(Path + "outerCutOff", glm::cos(glm::radians(Settings.OuterCutOff)));
-	OnShader->SetVector1d(Path + "constant", SpotLightConstants.Constant[Settings.Intencity]);
-	OnShader->SetVector1d(Path + "linear", SpotLightConstants.Linear[Settings.Intencity]);
-	OnShader->SetVector1d(Path + "quadratic", SpotLightConstants.Quadratic[Settings.Intencity]);
-	OnShader->SetVector1d(Path + "farPlane", SpotLightConstants.Distance[Settings.Intencity]);
+	OnShader->SetVector1d(Path + "constant", LightAttenuationConstants.Constant[Settings.Intencity]);
+	OnShader->SetVector1d(Path + "linear", LightAttenuationConstants.Linear[Settings.Intencity]);
+	OnShader->SetVector1d(Path + "quadratic", LightAttenuationConstants.Quadratic[Settings.Intencity]);
+	OnShader->SetVector1d(Path + "farPlane", LightAttenuationConstants.Distance[Settings.Intencity]);
 }

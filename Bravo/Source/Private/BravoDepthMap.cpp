@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "openGL.h"
-#include "BravoShadowMap.h"
+#include "BravoDepthMap.h"
 #include "BravoShader.h"
 #include "BravoEngine.h"
 #include "BravoAssetManager.h"
@@ -8,7 +8,7 @@
 #include "BravoTextureUnitManager.h"
 
 
-void BravoShadowMap::OnDestroy()
+void BravoDepthMap::OnDestroy()
 {
 	if ( DepthMapShader )
 		DepthMapShader->ReleaseFromGPU();
@@ -18,7 +18,7 @@ void BravoShadowMap::OnDestroy()
 }
 
 
-void BravoShadowMap_Cube::Setup(const uint32 InSize)
+void BravoDepthMap_Cube::Setup(const uint32 InSize)
 {
 	glGenFramebuffers(1, &DepthMapFBO);
 	glGenTextures(1, &DepthCubemap);
@@ -44,21 +44,21 @@ void BravoShadowMap_Cube::Setup(const uint32 InSize)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\ShadowMapPoint");
+	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapPoint");
 }
 
-void BravoShadowMap_Cube::Use(BravoShaderPtr OnShader, const std::string& Path)
+void BravoDepthMap_Cube::Use(BravoShaderPtr OnShader, const std::string& Path)
 {
 	TextureUnit = BravoTextureUnitManager::BindTexture();
 }
-void BravoShadowMap_Cube::StopUsage()
+void BravoDepthMap_Cube::StopUsage()
 {
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 }
 
-void BravoShadowMap_Cube::OnDestroy()
+void BravoDepthMap_Cube::OnDestroy()
 {
-	BravoShadowMap::OnDestroy();
+	BravoDepthMap::OnDestroy();
 	glDeleteFramebuffers(1, &DepthMapFBO);
 	glDeleteTextures(1, &DepthCubemap);
 }
@@ -66,7 +66,7 @@ void BravoShadowMap_Cube::OnDestroy()
 
 
 
-void BravoShadowMap_Point::Render(std::shared_ptr<class BravoLightActor> Owner)
+void BravoDepthMap_Point::Render(std::shared_ptr<class BravoLightActor> Owner)
 {
 	if ( !DepthMapShader )
 		return;
