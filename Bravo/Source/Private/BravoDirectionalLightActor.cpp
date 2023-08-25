@@ -64,7 +64,7 @@ void BravoDepthMapDirectional::Setup(const uint32 InSize)
 	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapDir", {"CASCADE_LEVELS=" + std::to_string(DirLightOwner->GetSettings().ShadowCascadeLevels.size())});
 }
 
-void BravoDepthMapDirectional::Use(BravoShaderPtr OnShader, const std::string& Path)
+void BravoDepthMapDirectional::Apply(BravoShaderPtr OnShader, const std::string& Path)
 {
 	OnShader->SetInt(Path + "cascadeCount", DirLightOwner->GetSettings().ShadowCascadeLevels.size());
     for (size_t i = 0; i < DirLightOwner->GetSettings().ShadowCascadeLevels.size(); ++i)
@@ -202,9 +202,9 @@ bool BravoDirectionalLightActor::Initialize_Internal()
 	return true;
 }
 
-void BravoDirectionalLightActor::Use(BravoShaderPtr OnShader)
+void BravoDirectionalLightActor::Apply(BravoShaderPtr OnShader)
 {
-	BravoLightActor::Use(OnShader);
+	BravoLightActor::Apply(OnShader);
 	OnShader->SetVector3d(Path + "direction", GetDirection());
 	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
 	OnShader->SetVector3d(Path + "light.diffuse", LightColor.diffuse);

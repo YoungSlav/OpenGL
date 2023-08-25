@@ -22,9 +22,9 @@ void BravoLightActor::UpdateDepthMap()
 	DepthMap->Render(Self<BravoLightActor>());
 }
 
-void BravoLightActor::Use(BravoShaderPtr OnShader)
+void BravoLightActor::Apply(BravoShaderPtr OnShader)
 {
-	DepthMap->Use(OnShader, Path);
+	DepthMap->Apply(OnShader, Path);
 }
 void BravoLightActor::StopUsage()
 {

@@ -76,17 +76,17 @@ void BravoLightManager::UpdateLightsDepthMaps()
 void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 {
 	if ( DirectionalLight )
-		DirectionalLight->Use(Shader);
+		DirectionalLight->Apply(Shader);
 	
 	Shader->SetInt("spotLightsNum", SpotLights.size());
 	for ( auto& it : SpotLights )
-		it->Use(Shader);
+		it->Apply(Shader);
 
 
 	
 	Shader->SetInt("pointLightsNum", PointLights.size());
 	for ( auto& it : PointLights )
-		it->Use(Shader);
+		it->Apply(Shader);
 }
 
 void BravoLightManager::ResetLightsUsage()

@@ -15,7 +15,7 @@ class BravoDepthMapDirectional : public BravoDepthMap
 {
 public:
 	virtual void Setup(const uint32 Size) override;
-	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
+	virtual void Apply(BravoShaderPtr OnShader, const std::string& Path) override;
 	virtual void StopUsage() override;
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 
@@ -42,7 +42,7 @@ class BravoDirectionalLightActor : public BravoLightActor
 {
 public:
 
-	virtual void Use(BravoShaderPtr OnShader) override;
+	virtual void Apply(BravoShaderPtr OnShader) override;
 
 	void SetSettings(BravoDirectionalLightSettings _Settings);
 	inline const BravoDirectionalLightSettings& GetSettings() const { return Settings; }

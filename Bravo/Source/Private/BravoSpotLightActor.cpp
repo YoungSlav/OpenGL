@@ -54,7 +54,7 @@ void BravoDepthMapSpot::OnDestroy()
 }
 
 
-void BravoDepthMapSpot::Use(BravoShaderPtr OnShader, const std::string& Path)
+void BravoDepthMapSpot::Apply(BravoShaderPtr OnShader, const std::string& Path)
 {
 	TextureUnit = BravoTextureUnitManager::BindTexture();
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);
@@ -120,9 +120,9 @@ void BravoSpotLightActor::SetSettings(BravoSpotLightSettings _Settings)
 	Settings.Intencity = std::min(Settings.Intencity, (uint32)(LightAttenuationConstants.Distance.size()-1));
 }
 
-void BravoSpotLightActor::Use(BravoShaderPtr OnShader)
+void BravoSpotLightActor::Apply(BravoShaderPtr OnShader)
 {
-	BravoLightActor::Use(OnShader);
+	BravoLightActor::Apply(OnShader);
 	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
 	OnShader->SetVector3d(Path + "light.diffuse", LightColor.diffuse);
 	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);

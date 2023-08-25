@@ -114,9 +114,7 @@
     <None Include="Source\Shaders\Default.frag" />
     <None Include="Source\Shaders\InfinitePlane.frag" />
     <None Include="Source\Shaders\InfinitePlane.vert" />
-    <None Include="Source\Shaders\LightSource.frag" />
     <None Include="Source\Shaders\Default.vert" />
-    <None Include="Source\Shaders\LightSource.vert" />
     <None Include="Source\Shaders\PostProccess.frag" />
     <None Include="Source\Shaders\PostProccess.vert" />
     <None Include="Source\Shaders\DepthMapDir.frag" />

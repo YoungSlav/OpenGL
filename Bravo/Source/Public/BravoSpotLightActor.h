@@ -18,7 +18,7 @@ class BravoDepthMapSpot : public BravoDepthMap
 {
 public:
 	virtual void Setup(const uint32 Size) override;
-	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
+	virtual void Apply(BravoShaderPtr OnShader, const std::string& Path) override;
 	virtual void StopUsage() override;
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
 
@@ -40,7 +40,7 @@ private:
 class BravoSpotLightActor : public BravoLightActor
 {
 public:
-	virtual void Use(BravoShaderPtr OnShader) override;
+	virtual void Apply(BravoShaderPtr OnShader) override;
 
 	void SetSettings(BravoSpotLightSettings _Settings);
 	inline const BravoSpotLightSettings& GetSettings() const { return Settings; }

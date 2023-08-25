@@ -37,7 +37,7 @@ public:
 	BravoLightActor() = default;
 
 	void SetLightColor(const BravoLightColor& InLightColor) { LightColor = InLightColor; }
-	virtual void Use(BravoShaderPtr OnShader);
+	virtual void Apply(BravoShaderPtr OnShader);
 	virtual void StopUsage();
 
 	void SetShaderPath(const std::string& InPath) { Path = InPath; }

@@ -28,9 +28,6 @@
     <Filter Include="Shaders\HUD">
       <UniqueIdentifier>{fb4007a8-c582-45d7-b3ad-c2f0b265ccde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Lights">
-      <UniqueIdentifier>{434feb13-c1a3-4af2-a5ba-c22a905f17aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\PostProcess">
       <UniqueIdentifier>{a6aec723-f51b-4be4-986d-707635c855d4}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,18 @@
     </Filter>
     <Filter Include="Private\Lights\Point">
       <UniqueIdentifier>{ae9f3e04-1669-4102-92a9-8a80881af78f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\DepthMaps">
+      <UniqueIdentifier>{fcc62cf9-2ca1-450f-a631-938380d8cbff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\DepthMaps\Directional">
+      <UniqueIdentifier>{2f6fe814-1391-47a4-981d-d3e87b6fdc03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\DepthMaps\Point">
+      <UniqueIdentifier>{19115253-8be3-41af-ad87-60e0fb60dc55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\DepthMaps\Spot">
+      <UniqueIdentifier>{ed53f6b8-55d0-41c9-8968-036ebb0a78cf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -370,21 +379,6 @@
     <None Include="Source\Shaders\wText.vert">
       <Filter>Shaders\HUD</Filter>
     </None>
-    <None Include="Source\Shaders\DepthMapDir.frag">
-      <Filter>Shaders\Lights</Filter>
-    </None>
-    <None Include="Source\Shaders\DepthMapDir.vert">
-      <Filter>Shaders\Lights</Filter>
-    </None>
-    <None Include="Source\Shaders\DepthMapPoint.frag">
-      <Filter>Shaders\Lights</Filter>
-    </None>
-    <None Include="Source\Shaders\DepthMapPoint.geom">
-      <Filter>Shaders\Lights</Filter>
-    </None>
-    <None Include="Source\Shaders\DepthMapPoint.vert">
-      <Filter>Shaders\Lights</Filter>
-    </None>
     <None Include="Source\Shaders\PostProccess.frag">
       <Filter>Shaders\PostProcess</Filter>
     </None>
@@ -397,26 +391,35 @@
     <None Include="Source\Shaders\wPlane.frag">
       <Filter>Shaders\HUD</Filter>
     </None>
-    <None Include="Source\Shaders\LightSource.frag">
-      <Filter>Shaders\Lights</Filter>
-    </None>
-    <None Include="Source\Shaders\LightSource.vert">
-      <Filter>Shaders\Lights</Filter>
-    </None>
-    <None Include="Source\Shaders\DepthMapDir.geom">
-      <Filter>Shaders\Lights</Filter>
-    </None>
     <None Include="Source\Shaders\DefaultUnlit.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\DefaultUnlit.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Source\Shaders\DepthMapDir.frag">
+      <Filter>Shaders\DepthMaps\Directional</Filter>
+    </None>
+    <None Include="Source\Shaders\DepthMapDir.geom">
+      <Filter>Shaders\DepthMaps\Directional</Filter>
+    </None>
+    <None Include="Source\Shaders\DepthMapDir.vert">
+      <Filter>Shaders\DepthMaps\Directional</Filter>
+    </None>
     <None Include="Source\Shaders\DepthMapSpot.frag">
-      <Filter>Shaders\Lights</Filter>
+      <Filter>Shaders\DepthMaps\Spot</Filter>
     </None>
     <None Include="Source\Shaders\DepthMapSpot.vert">
-      <Filter>Shaders\Lights</Filter>
+      <Filter>Shaders\DepthMaps\Spot</Filter>
+    </None>
+    <None Include="Source\Shaders\DepthMapPoint.frag">
+      <Filter>Shaders\DepthMaps\Point</Filter>
+    </None>
+    <None Include="Source\Shaders\DepthMapPoint.geom">
+      <Filter>Shaders\DepthMaps\Point</Filter>
+    </None>
+    <None Include="Source\Shaders\DepthMapPoint.vert">
+      <Filter>Shaders\DepthMaps\Point</Filter>
     </None>
   </ItemGroup>
 </Project>
