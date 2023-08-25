@@ -30,7 +30,7 @@ private:
 
 	std::shared_ptr<class BravoSpotLightActor> SpotLightOwner;
 
-	glm::mat4 LightSpaceMatrix;
+	
 	
 	int32 TextureUnit = -1;
 	uint32 DepthMapFBO = 0;
@@ -45,9 +45,14 @@ public:
 	void SetSettings(BravoSpotLightSettings _Settings);
 	inline const BravoSpotLightSettings& GetSettings() const { return Settings; }
 
+	const glm::mat4& GetLightSpaceTransformationMatrix() const;
+
 protected:
 	virtual bool Initialize_Internal() override;
 
 private:
+	mutable glm::mat4 LightSpaceMatrix;
+
+
 	BravoSpotLightSettings Settings;
 };

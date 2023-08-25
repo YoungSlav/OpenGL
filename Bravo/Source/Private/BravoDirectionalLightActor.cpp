@@ -85,6 +85,7 @@ void BravoDepthMapDirectional::StopUsage()
 
 void BravoDepthMapDirectional::OnDestroy()
 {
+	// TODO clear GPU data
 	DirLightOwner.reset();
 	BravoDepthMap::OnDestroy();
 }

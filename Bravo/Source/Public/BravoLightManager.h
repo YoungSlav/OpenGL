@@ -20,9 +20,11 @@ public:
 
 	std::shared_ptr<class BravoDirectionalLightActor> GetDirectionalLight() const { return DirectionalLight; }
 
+	int32 GetSpotDepthMapLayersCount() const { return (int32)SpotLights.size(); }
+
 private:
 
-
+	std::shared_ptr<class BravoSpotDepthMap> SpotDepthMap;	// TODO: initialize and re-init on new spot light
 
 	void UpdateShaderPaths();
 

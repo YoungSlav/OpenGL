@@ -46,15 +46,16 @@ void BravoLightManager::UpdateShaderPaths()
 	if ( DirectionalLight )
 		DirectionalLight->SetShaderPath("dirLight.");
 
-	for ( uint32 i = 0; i < SpotLights.size(); ++i )
+	for ( int32 i = 0; i < (int32)SpotLights.size(); ++i )
 	{
 		if ( SpotLights[i] )
 		{
 			SpotLights[i]->SetShaderPath("spotLights[" + std::to_string(i) + "].");
+			SpotLights[i]->SetDepthMapLayer(i);
 		}
 	}
 
-	for ( uint32 i = 0; i < PointLights.size(); ++i )
+	for ( int32 i = 0; i < (int32)PointLights.size(); ++i )
 	{
 		if ( PointLights[i] )
 		{

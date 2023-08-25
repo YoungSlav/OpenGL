@@ -67,24 +67,6 @@
     <Filter Include="Public\Actors\Components">
       <UniqueIdentifier>{a5b64451-f45e-4bd9-aa07-1411b9e840d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Public\Lights\Directional">
-      <UniqueIdentifier>{870b8dc7-672b-4383-a268-00ba2648b6cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Private\Lights\Directional">
-      <UniqueIdentifier>{09b071b1-8ad6-4db6-a375-e76dffcb4569}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Public\Lights\Spot">
-      <UniqueIdentifier>{b594462b-b02c-423f-ae5e-04d77104229d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Private\Lights\Spot">
-      <UniqueIdentifier>{e424e128-e43c-4f5f-a383-54e52596308f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Public\Lights\Point">
-      <UniqueIdentifier>{b8b99b50-d2e7-4990-8edb-2c1ee30df48f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Private\Lights\Point">
-      <UniqueIdentifier>{ae9f3e04-1669-4102-92a9-8a80881af78f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\DepthMaps">
       <UniqueIdentifier>{fcc62cf9-2ca1-450f-a631-938380d8cbff}</UniqueIdentifier>
     </Filter>
@@ -96,6 +78,18 @@
     </Filter>
     <Filter Include="Shaders\DepthMaps\Spot">
       <UniqueIdentifier>{ed53f6b8-55d0-41c9-8968-036ebb0a78cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Lights\DepthMaps">
+      <UniqueIdentifier>{f54710a9-29e0-4ef3-9b59-c57852c7be37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Lights\LightCasters">
+      <UniqueIdentifier>{8c0e5aee-75ee-400f-804a-c9d6fca4e83d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Lights\LightCasters">
+      <UniqueIdentifier>{38873873-1a41-4fda-849b-48ee1be7aeb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Lights\DepthMaps">
+      <UniqueIdentifier>{e424e128-e43c-4f5f-a383-54e52596308f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -178,9 +172,6 @@
     <ClCompile Include="Source\Private\BravoLightManager.cpp">
       <Filter>Private\Lights</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoDepthMap.cpp">
-      <Filter>Private\Lights</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoLightActor.cpp">
       <Filter>Private\Lights</Filter>
     </ClCompile>
@@ -208,14 +199,20 @@
     <ClCompile Include="Source\Private\BravoStaticMeshComponent.cpp">
       <Filter>Private\Actors\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp">
-      <Filter>Private\Lights\Directional</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoSpotLightActor.cpp">
-      <Filter>Private\Lights\Spot</Filter>
+      <Filter>Private\Lights\LightCasters</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoPointLightActor.cpp">
-      <Filter>Private\Lights\Point</Filter>
+      <Filter>Private\Lights\LightCasters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp">
+      <Filter>Private\Lights\LightCasters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoDepthMap.cpp">
+      <Filter>Private\Lights\DepthMaps</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoSpotDepthMap.cpp">
+      <Filter>Private\Lights\DepthMaps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,12 +305,6 @@
     <ClInclude Include="Source\Public\BravoLightManager.h">
       <Filter>Public\Lights</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoDepthMap.h">
-      <Filter>Public\Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoLightActor.h">
-      <Filter>Public\Lights</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoInput.h">
       <Filter>Public\Player</Filter>
     </ClInclude>
@@ -345,13 +336,22 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoDirectionalLightActor.h">
-      <Filter>Public\Lights\Directional</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoSpotLightActor.h">
-      <Filter>Public\Lights\Spot</Filter>
+      <Filter>Public\Lights\LightCasters</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoPointLightActor.h">
-      <Filter>Public\Lights\Point</Filter>
+      <Filter>Public\Lights\LightCasters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoSpotLightActor.h">
+      <Filter>Public\Lights\LightCasters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoDepthMap.h">
+      <Filter>Public\Lights\DepthMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoLightActor.h">
+      <Filter>Public\Lights\LightCasters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoSpotDepthMap.h">
+      <Filter>Public\Lights\DepthMaps</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -61,7 +61,7 @@ void BravoDepthMapSpot::Apply(BravoShaderPtr OnShader, const std::string& Path)
 	glBindTexture(GL_TEXTURE_2D,  DepthMap);
 	OnShader->SetInt(Path + "depthMap", TextureUnit);
 
-	OnShader->SetMatrix4d(Path + "lightSpaceMatrix", LightSpaceMatrix);
+	//OnShader->SetMatrix4d(Path + "lightSpaceMatrix", LightSpaceMatrix);
 }
 void BravoDepthMapSpot::StopUsage()
 {
@@ -74,25 +74,11 @@ void BravoDepthMapSpot::Render(std::shared_ptr<class BravoLightActor> Owner)
 	if ( !DepthMapShader )
 		return;
 
-	float NearPlane = 0.1f;
 	
-	float FarPlane = SpotLightOwner->LightAttenuationConstants.Distance[SpotLightOwner->GetSettings().Intencity];
-
-	glm::vec3 LightPosition = Owner->GetLocation();
-	glm::vec3 LightDirection = Owner->GetDirection();
-	
-	float FOV = glm::radians(SpotLightOwner->GetSettings().OuterCutOff * 2.0f);
-
-	float AspectRatio = 1.0f;
-	
-	
-	glm::mat4 ShadowProjection = glm::perspective(FOV, AspectRatio, NearPlane, FarPlane);
-	glm::mat4 LightView = glm::lookAt(LightPosition, LightPosition + LightDirection, glm::vec3(0.0f, 1.0, 0.0f));
-	LightSpaceMatrix = ShadowProjection * LightView;
 	
 
 	DepthMapShader->Use();
-	DepthMapShader->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
+	//DepthMapShader->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
 	glViewport(0, 0, Size, Size);
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -118,6 +104,22 @@ void BravoSpotLightActor::SetSettings(BravoSpotLightSettings _Settings)
 {
 	Settings = _Settings;
 	Settings.Intencity = std::min(Settings.Intencity, (uint32)(LightAttenuationConstants.Distance.size()-1));
+}
+
+const glm::mat4& BravoSpotLightActor::GetLightSpaceTransformationMatrix() const
+{
+	const float NearPlane = 0.1f;	
+	const float FarPlane = LightAttenuationConstants.Distance[Settings.Intencity];
+
+	const float FOV = glm::radians(Settings.OuterCutOff * 2.0f);
+	const float AspectRatio = 1.0f;
+	
+	const glm::mat4 ShadowProjection = glm::perspective(FOV, AspectRatio, NearPlane, FarPlane);
+	const glm::mat4 LightView = glm::lookAt(GetLocation(), GetLocation() + GetDirection(), glm::vec3(0.0f, 1.0, 0.0f));
+
+	LightSpaceMatrix = ShadowProjection * LightView;
+	
+	return LightSpaceMatrix;
 }
 
 void BravoSpotLightActor::Apply(BravoShaderPtr OnShader)
