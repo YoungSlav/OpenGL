@@ -75,7 +75,7 @@ bool BravoGameInstance::Initialize_Internal()
 		dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
-	SpawnPointLights();
+	SpawnSpotLights();
 	SpawnCubes();
 	return true;
 }
@@ -104,7 +104,6 @@ void BravoGameInstance::SpawnPointLights()
 
 		pointLights.push_back(pointLightActor);
 	}
-	return;
 	if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight2") )
 	{
 		pointLightActor->SetLocation(glm::vec3(0.0f,  0.0f, 0.0f ));

@@ -88,6 +88,7 @@ void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 	for ( auto& it : PointLights )
 		it->Use(Shader);
 }
+
 void BravoLightManager::ResetLightsUsage()
 {
 	if ( DirectionalLight )
