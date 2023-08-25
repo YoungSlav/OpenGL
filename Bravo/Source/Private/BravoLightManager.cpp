@@ -1,6 +1,7 @@
 #include "BravoLightManager.h"
 #include "BravoDirectionalLightActor.h"
 #include "BravoSpotLightActor.h"
+#include "BravoPointLightActor.h"
 
 #include "BravoEngine.h"
 #include "BravoShader.h"
@@ -77,15 +78,15 @@ void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 	if ( DirectionalLight )
 		DirectionalLight->Use(Shader);
 	
+	Shader->SetInt("spotLightsNum", SpotLights.size());
 	for ( auto& it : SpotLights )
 		it->Use(Shader);
 
-	Shader->SetInt("spotLightsNum", SpotLights.size());
 
-	for ( auto& it : PointLights )
-		it->Use(Shader);
 	
 	Shader->SetInt("pointLightsNum", PointLights.size());
+	for ( auto& it : PointLights )
+		it->Use(Shader);
 }
 void BravoLightManager::ResetLightsUsage()
 {

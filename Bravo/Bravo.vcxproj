@@ -38,6 +38,7 @@
     <ClCompile Include="Source\Private\BravoLightManager.cpp" />
     <ClCompile Include="Source\Private\BravoMath.cpp" />
     <ClCompile Include="Source\Private\BravoObject.cpp" />
+    <ClCompile Include="Source\Private\BravoPointLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
     <ClCompile Include="Source\Private\BravoMesh.cpp" />
     <ClCompile Include="Source\Private\BravoPlayer.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Source\Public\BravoLightActor.h" />
     <ClInclude Include="Source\Public\BravoLightManager.h" />
     <ClInclude Include="Source\Public\BravoMath.h" />
+    <ClInclude Include="Source\Public\BravoPointLightActor.h" />
     <ClInclude Include="Source\Public\BravoRenderable.h" />
     <ClInclude Include="Source\Public\BravoRenderTarget.h" />
     <ClInclude Include="Source\Public\BravoMesh.h" />

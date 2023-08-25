@@ -177,6 +177,7 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 		Shader->SetMatrix4d("model", model);
 		Shader->SetMaterial("material", Material);
 		Shader->SetVector3d("viewPos", CameraLocation);
+		Shader->SetVector1d("drawDistance", Engine->GetCamera()->GetMaxDrawingDistance());
 		Engine->GetLightManager()->ApplyLights(Shader);
 
 		glBindVertexArray(VAO);

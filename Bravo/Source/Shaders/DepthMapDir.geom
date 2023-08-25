@@ -7,9 +7,6 @@ layout (std140) uniform LightSpaceMatrices
 {
     mat4 lightSpaceMatrices[16];
 };
-/*
-uniform mat4 lightSpaceMatrices[16];
-*/
 
 void main()
 {          

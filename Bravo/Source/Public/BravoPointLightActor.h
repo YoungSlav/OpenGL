@@ -6,15 +6,14 @@
 #include "BravoDepthMap.h"
 
 
-struct BravoSpotLightSettings
+struct BravoPointLightSettings
 {
-	float CutOff = 15.0f;
-	float OuterCutOff = 20.0f;
+	
 
 	uint32 Intencity = 6;
 };
 
-class BravoDepthMapSpot : public BravoDepthMap
+class BravoDepthMapPoint : public BravoDepthMap
 {
 public:
 	virtual void Setup(const uint32 Size) override;
@@ -28,26 +27,26 @@ protected:
 
 private:
 
-	std::shared_ptr<class BravoSpotLightActor> SpotLightOwner;
+	std::shared_ptr<class BravoPointLightActor> PointLightOwner;
 
-	glm::mat4 LightSpaceMatrix;
+	std::vector<glm::mat4> LightSpaceMatricies;
 	
 	int32 TextureUnit = -1;
 	uint32 DepthMapFBO = 0;
-	uint32 DepthMap = 0;
+	uint32 DepthCubemap = 0;
 };
 
-class BravoSpotLightActor : public BravoLightActor
+class BravoPointLightActor : public BravoLightActor
 {
 public:
 	virtual void Use(BravoShaderPtr OnShader) override;
 
-	void SetSettings(BravoSpotLightSettings _Settings);
-	inline const BravoSpotLightSettings& GetSettings() const { return Settings; }
+	void SetSettings(BravoPointLightSettings _Settings);
+	inline const BravoPointLightSettings& GetSettings() const { return Settings; }
 
 protected:
 	virtual bool Initialize_Internal() override;
 
 private:
-	BravoSpotLightSettings Settings;
+	BravoPointLightSettings Settings;
 };

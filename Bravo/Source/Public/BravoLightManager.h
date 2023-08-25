@@ -27,6 +27,6 @@ private:
 	void UpdateShaderPaths();
 
 	std::shared_ptr<class BravoDirectionalLightActor> DirectionalLight;
-	std::vector< std::shared_ptr<BravoSpotLightActor>> SpotLights;
-	std::vector< std::shared_ptr<BravoPointLightActor>> PointLights;
+	std::vector< std::shared_ptr<class BravoSpotLightActor>> SpotLights;
+	std::vector< std::shared_ptr<class BravoPointLightActor>> PointLights;
 };

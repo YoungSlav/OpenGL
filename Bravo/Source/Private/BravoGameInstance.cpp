@@ -14,6 +14,7 @@
 #include "BravoLightActor.h"
 #include "BravoDirectionalLightActor.h"
 #include "BravoSpotLightActor.h"
+#include "BravoPointLightActor.h"
 
 #include "BravoSkyboxActor.h"
 #include "BravoInfinitePlaneActor.h"
@@ -74,11 +75,56 @@ bool BravoGameInstance::Initialize_Internal()
 		dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
 		dirLightActor->SetLightColor(glm::vec3(1.0f));
 	}
-	SpawnSpotLights();
-	SpawnTestInstances();
+	SpawnPointLights();
+	SpawnCubes();
 	return true;
 }
 
+void BravoGameInstance::SpawnPointLights()
+{
+	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
+
+	BravoMeshPtr sphereAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
+	if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
+	{
+		pointLightActor->SetLocation(glm::vec3(0.0f,  0.0f, 0.0f ));
+		pointLightActor->SetLightColor(glm::vec3(0.7f, 0.5f, 0.3f ));
+		BravoPointLightSettings PointSettings;
+		PointSettings.Intencity = 10;
+		pointLightActor->SetSettings(PointSettings);
+
+		auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh");
+		sphereMesh->SetMesh(sphereAsset);
+		sphereMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
+		sphereMesh->SetScale(glm::vec3(0.25f));
+		BravoMaterialPtr sphereMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+		sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+		sphereMat->Shininess = 64.0f;
+		sphereMesh->SetMaterial(sphereMat);
+
+		pointLights.push_back(pointLightActor);
+	}
+	return;
+	if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight2") )
+	{
+		pointLightActor->SetLocation(glm::vec3(0.0f,  0.0f, 0.0f ));
+		pointLightActor->SetLightColor(glm::vec3(0.7f, 0.5f, 0.3f ));
+		BravoPointLightSettings PointSettings;
+		PointSettings.Intencity = 10;
+		pointLightActor->SetSettings(PointSettings);
+
+		auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh2");
+		sphereMesh->SetMesh(sphereAsset);
+		sphereMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
+		sphereMesh->SetScale(glm::vec3(0.25f));
+		BravoMaterialPtr sphereMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+		sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+		sphereMat->Shininess = 64.0f;
+		sphereMesh->SetMaterial(sphereMat);
+
+		pointLights.push_back(pointLightActor);
+	}
+}
 void BravoGameInstance::SpawnSpotLights()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
@@ -89,7 +135,7 @@ void BravoGameInstance::SpawnSpotLights()
 	{
 		spotLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
 		spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
-		spotLightActor->SetLightColor(glm::vec3(1.0f));
+		spotLightActor->SetLightColor(glm::vec3(0.3f, 0.5f, 0.7f ));
 		BravoSpotLightSettings SpotSettings;
 		SpotSettings.CutOff			= 10.0f;
 		SpotSettings.OuterCutOff	= 12.0f;
@@ -99,7 +145,7 @@ void BravoGameInstance::SpawnSpotLights()
 		auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
 		coneMesh->SetMesh(coneAsset);
 		coneMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
-		coneMesh->SetScale(glm::vec3(1.0f, 0.5f, 0.5f));
+		coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
 		BravoMaterialPtr coneMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
 		coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
 		coneMat->Shininess = 64.0f;
@@ -193,5 +239,20 @@ void BravoGameInstance::Tick(float DeltaTime)
 
 		spotLights[i]->SetLocation(newLocation);
 		spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
+	}
+
+	for ( int32 i = 0; i < pointLights.size(); ++i )
+	{
+		glm::vec3 newLocation = glm::vec3(0.0f);
+		float x = glm::sin(LifeTime) * 7.0f;
+		float z = glm::cos(LifeTime) * 7.0f;
+
+		newLocation.x = i % 2 == 0 ? x : z;
+		newLocation.z = i % 2 == 0 ? z : x;
+		newLocation.y = 10.0f;
+		
+	
+		pointLights[i]->SetLocation(newLocation);
+		pointLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
 	}
 }

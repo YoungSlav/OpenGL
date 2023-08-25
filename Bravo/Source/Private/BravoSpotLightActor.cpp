@@ -6,8 +6,6 @@
 #include "BravoAssetManager.h"
 #include "BravoTextureUnitManager.h"
 
-BravoLightAttenuationConstants LightAttenuationConstants;
-
 bool BravoDepthMapSpot::Initialize_Internal()
 {
 	if ( !BravoDepthMap::Initialize_Internal() )
@@ -16,7 +14,7 @@ bool BravoDepthMapSpot::Initialize_Internal()
 	SpotLightOwner = std::dynamic_pointer_cast<BravoSpotLightActor>(GetOwner());
 	if ( !SpotLightOwner )
 	{
-		Log::LogMessage("Owner of spot shadow map can be only spot light actor! " + GetName(), ELog::Error);
+		Log::LogMessage("Owner of spot depth map can be only spot light actor! " + GetName(), ELog::Error);
 		return false;
 	}
 
@@ -78,7 +76,7 @@ void BravoDepthMapSpot::Render(std::shared_ptr<class BravoLightActor> Owner)
 
 	float NearPlane = 0.1f;
 	
-	float FarPlane = LightAttenuationConstants.Distance[SpotLightOwner->GetSettings().Intencity];
+	float FarPlane = SpotLightOwner->LightAttenuationConstants.Distance[SpotLightOwner->GetSettings().Intencity];
 
 	glm::vec3 LightPosition = Owner->GetLocation();
 	glm::vec3 LightDirection = Owner->GetDirection();

@@ -9,6 +9,8 @@
 /*                       COMMON                                         */
 /************************************************************************/
 
+BravoLightAttenuationConstants BravoLightActor::LightAttenuationConstants;
+
 void BravoLightActor::OnDestroy()
 {
 	DepthMap.reset();
@@ -28,22 +30,3 @@ void BravoLightActor::StopUsage()
 {
 	DepthMap->StopUsage();
 }
-
-
-bool BravoPointLightActor::Initialize_Internal()
-{
-	if ( !BravoLightActor::Initialize_Internal() )
-		return false;
-
-	DepthMap = NewObject<BravoDepthMap_Point>();
-	DepthMap->Setup(2048);
-	
-	return true;
-}
-
-void BravoPointLightActor::Use(BravoShaderPtr OnShader)
-{
-	BravoLightActor::Use(OnShader);
-	// TODO
-}
-

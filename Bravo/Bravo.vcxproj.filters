@@ -82,6 +82,12 @@
     <Filter Include="Private\Lights\Spot">
       <UniqueIdentifier>{e424e128-e43c-4f5f-a383-54e52596308f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Public\Lights\Point">
+      <UniqueIdentifier>{b8b99b50-d2e7-4990-8edb-2c1ee30df48f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Lights\Point">
+      <UniqueIdentifier>{ae9f3e04-1669-4102-92a9-8a80881af78f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -198,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoSpotLightActor.cpp">
       <Filter>Private\Lights\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoPointLightActor.cpp">
+      <Filter>Private\Lights\Point</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -331,6 +340,9 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoSpotLightActor.h">
       <Filter>Public\Lights\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoPointLightActor.h">
+      <Filter>Public\Lights\Point</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
