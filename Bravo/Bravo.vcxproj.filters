@@ -421,5 +421,8 @@
     <None Include="Source\Shaders\DepthMapPoint.vert">
       <Filter>Shaders\DepthMaps\Point</Filter>
     </None>
+    <None Include="Source\Shaders\DepthMapSpot.geom">
+      <Filter>Shaders\DepthMaps\Spot</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -47,10 +47,15 @@ public:
 
 	const glm::mat4& GetLightSpaceTransformationMatrix() const;
 
+	void SetDepthMapLayer(int32 _DepthMapLayer) { DepthMapLayer = _DepthMapLayer; }
+	inline int32 GetDepthMapLayer() const { return DepthMapLayer; }
+
 protected:
 	virtual bool Initialize_Internal() override;
 
 private:
+	
+	int32 DepthMapLayer = -1;
 	mutable glm::mat4 LightSpaceMatrix;
 
 

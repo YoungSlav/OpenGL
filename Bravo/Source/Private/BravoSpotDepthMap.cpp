@@ -14,10 +14,10 @@ bool BravoSpotDepthMap::Initialize_Internal()
 	glGenFramebuffers(1, &DepthMapFBO);
 
 		glGenTextures(1, &DepthMapsTextures);
-	
+		int32 Layers = Engine->GetLightManager()->GetSpotDepthMapLayersCount();
 		glBindTexture(GL_TEXTURE_2D_ARRAY, DepthMapsTextures);
 		glTexImage3D(
-			GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, Size, Size, Engine->GetLightManager()->GetSpotDepthMapLayersCount(),
+			GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, Size, Size, Layers,
 			0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -70,15 +70,18 @@ void BravoSpotDepthMap::Render(std::shared_ptr<class BravoLightActor> Caster)
 
 	const glm::mat4 LightSpaceMatrix = SpotCaster->GetLightSpaceTransformationMatrix();
 	
-	DepthMapShader->Use();
-		DepthMapShader->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
-		DepthMapShader->SetInt("depthMapLayer", DepthMapLayer);
-		glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
+		DepthMapShader->Use();
+			
+			DepthMapShader->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
+			DepthMapShader->SetInt("depthMapLayer", DepthMapLayer);
+	
 			glViewport(0, 0, Size, Size);
 			glClear(GL_DEPTH_BUFFER_BIT);
 			Engine->RenderDepthMap(DepthMapShader);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	DepthMapShader->StopUsage();
+			
+		DepthMapShader->StopUsage();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void BravoSpotDepthMap::Use(BravoShaderPtr OnShader)

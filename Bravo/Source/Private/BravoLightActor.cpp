@@ -19,14 +19,14 @@ void BravoLightActor::OnDestroy()
 
 void BravoLightActor::UpdateDepthMap()
 {
-	DepthMap->Render(Self<BravoLightActor>());
+	//DepthMap->Render(Self<BravoLightActor>());
 }
 
 void BravoLightActor::Apply(BravoShaderPtr OnShader)
 {
-	DepthMap->Apply(OnShader, Path);
+	//DepthMap->Apply(OnShader, Path);
 }
 void BravoLightActor::StopUsage()
 {
-	DepthMap->StopUsage();
+	//DepthMap->StopUsage();
 }

@@ -94,9 +94,6 @@ bool BravoSpotLightActor::Initialize_Internal()
 	if ( !BravoLightActor::Initialize_Internal() )
 		return false;
 
-	DepthMap = NewObject<BravoDepthMapSpot>();
-	DepthMap->Setup(2048);
-
 	return true;
 }
 
@@ -125,6 +122,7 @@ const glm::mat4& BravoSpotLightActor::GetLightSpaceTransformationMatrix() const
 void BravoSpotLightActor::Apply(BravoShaderPtr OnShader)
 {
 	BravoLightActor::Apply(OnShader);
+	OnShader->SetInt(Path + "depthMapLayer", DepthMapLayer);
 	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);
 	OnShader->SetVector3d(Path + "light.diffuse", LightColor.diffuse);
 	OnShader->SetVector3d(Path + "light.ambient", LightColor.ambient);

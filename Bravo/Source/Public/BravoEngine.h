@@ -12,9 +12,9 @@
 // TODO:
 /*
 *
-* REFACTOR LIGHTS AND SHADOWS (dir - done, spot - done, point - )
-* refactor assets, consider making them unique?
+* REFACTOR LIGHTS AND SHADOWS
 * Material refactoring. (to have colors OR textures)
+* refactor assets, consider making them unique?
 * Input refactoring 
 * frustrum culling
 * multiple projects in solution: Engine, Game

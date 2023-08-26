@@ -23,8 +23,11 @@ public:
 	int32 GetSpotDepthMapLayersCount() const { return (int32)SpotLights.size(); }
 
 private:
+	void SpawnSpotDepthMap();
 
-	std::shared_ptr<class BravoSpotDepthMap> SpotDepthMap;	// TODO: initialize and re-init on new spot light
+private:
+
+	std::shared_ptr<class BravoSpotDepthMap> SpotDepthMap = nullptr;	// TODO: initialize and re-init on new spot light
 
 	void UpdateShaderPaths();
 

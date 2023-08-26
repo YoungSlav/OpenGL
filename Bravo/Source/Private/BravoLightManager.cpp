@@ -2,6 +2,7 @@
 #include "BravoDirectionalLightActor.h"
 #include "BravoSpotLightActor.h"
 #include "BravoPointLightActor.h"
+#include "BravoSpotDepthMap.h"
 
 #include "BravoEngine.h"
 #include "BravoShader.h"
@@ -21,11 +22,12 @@ void BravoLightManager::RegisterLightActor(std::shared_ptr<BravoLightActor> Ligh
 	if ( std::shared_ptr<BravoSpotLightActor> asSpot = std::dynamic_pointer_cast<BravoSpotLightActor>(LightActor) )
 	{
 		SpotLights.push_back(asSpot);
+		SpawnSpotDepthMap();
 	}
 
-	if ( std::shared_ptr<BravoPointLightActor> asSpot = std::dynamic_pointer_cast<BravoPointLightActor>(LightActor) )
+	if ( std::shared_ptr<BravoPointLightActor> asPoint = std::dynamic_pointer_cast<BravoPointLightActor>(LightActor) )
 	{
-		PointLights.push_back(asSpot);
+		PointLights.push_back(asPoint);
 	}
 
 	UpdateShaderPaths();
@@ -38,7 +40,29 @@ void BravoLightManager::RemoveLightActor(std::shared_ptr<BravoLightActor> lightA
 	if ( DirectionalLight == lightActor )
 		DirectionalLight.reset();
 
+
+	if ( std::shared_ptr<BravoDirectionalLightActor> asDir = std::dynamic_pointer_cast<BravoDirectionalLightActor>(lightActor) )
+	{
+	}
+
+	if ( std::shared_ptr<BravoSpotLightActor> asSpot = std::dynamic_pointer_cast<BravoSpotLightActor>(lightActor) )
+	{
+		SpawnSpotDepthMap();
+	}
+
+	if ( std::shared_ptr<BravoPointLightActor> asPoint = std::dynamic_pointer_cast<BravoPointLightActor>(lightActor) )
+	{
+	}
+
 	UpdateShaderPaths();
+}
+
+void BravoLightManager::SpawnSpotDepthMap()
+{
+	if ( SpotDepthMap )
+		SpotDepthMap->Destroy();
+
+	SpotDepthMap = NewObject<BravoSpotDepthMap>("SpotDepthMaps");
 }
 
 void BravoLightManager::UpdateShaderPaths()
@@ -68,8 +92,15 @@ void BravoLightManager::UpdateLightsDepthMaps()
 {
 	if ( DirectionalLight )
 		DirectionalLight->UpdateDepthMap();
-	for ( auto& it : SpotLights )
-		it->UpdateDepthMap();
+	
+	if ( SpotDepthMap )
+	{
+		for ( auto& it : SpotLights )
+		{
+			SpotDepthMap->Render(it);
+		}
+	}
+
 	for ( auto& it : PointLights )
 		it->UpdateDepthMap();
 }
@@ -82,6 +113,9 @@ void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 	Shader->SetInt("spotLightsNum", SpotLights.size());
 	for ( auto& it : SpotLights )
 		it->Apply(Shader);
+	
+	if ( SpotDepthMap )
+		SpotDepthMap->Use(Shader);
 
 
 	
@@ -92,6 +126,8 @@ void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 
 void BravoLightManager::ResetLightsUsage()
 {
+	if ( SpotDepthMap )
+		SpotDepthMap->StopUsage();
 	if ( DirectionalLight )
 		DirectionalLight->StopUsage();
 	for ( auto& it : SpotLights )

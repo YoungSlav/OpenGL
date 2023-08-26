@@ -40,8 +40,7 @@ public:
 	virtual void Apply(BravoShaderPtr OnShader);
 	virtual void StopUsage();
 
-	void SetDepthMapLayer(int32 _DepthMapLayer) { DepthMapLayer = _DepthMapLayer; }
-	inline int32 GetDepthMapLayer() const { return DepthMapLayer; }
+	
 
 	void SetShaderPath(const std::string& InPath) { Path = InPath; }
 	virtual void UpdateDepthMap();
@@ -53,7 +52,7 @@ public:
 	static BravoLightAttenuationConstants LightAttenuationConstants;
 
 protected:
-	int32 DepthMapLayer = -1;
+	
 	std::string Path = "";
 	BravoLightColor LightColor;
 
