@@ -190,7 +190,7 @@ float CalcDirLightShadow(int index, vec3 normal)
 	{
 		layer = index + dirLights[index].cascadeCount-1;
 	}
-	layer = 0;
+	layer = 1;
 
 	vec4 fragPosLightSpace = dirLights[layer].lightSpaceMatrix * vec4(fs_in.FragPos, 1.0);
 	// perform perspective divide

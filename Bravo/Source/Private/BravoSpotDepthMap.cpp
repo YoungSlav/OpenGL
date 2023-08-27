@@ -60,19 +60,20 @@ void BravoSpotDepthMap::OnDestroy()
 	BravoDepthMapNew::OnDestroy();
 }
 
-void BravoSpotDepthMap::Render(int32 Layer, const struct BravoSpotLightShaderData& CasterData)
+void BravoSpotDepthMap::Render(uint32 ShaderDataSSBO, int32 Count)
 {
 	if ( !DepthMapShader )
 		return;
 		
 	DepthMapShader->Use();
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, Layer);
+		//glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, Layer);
 
 		glViewport(0, 0, Size, Size);
 		glClear(GL_DEPTH_BUFFER_BIT);
-			
-		DepthMapShader->SetMatrix4d("lightSpaceMatrix", CasterData.LightSpaceMatrix);
+		
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ShaderDataSSBO);
+		DepthMapShader->SetInt("spotLightCount", Count);
 	
 		Engine->RenderDepthMap(DepthMapShader);
 			

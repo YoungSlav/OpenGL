@@ -1,6 +1,6 @@
 #version 430 core
 layout (triangles) in;
-layout (triangle_strip, max_vertices=18) out;
+layout (triangle_strip, max_vertices=3) out;
 
 uniform mat4 lightSpaceMatricies[6];
 
