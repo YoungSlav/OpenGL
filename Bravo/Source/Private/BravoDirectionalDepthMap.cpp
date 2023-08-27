@@ -1,25 +1,24 @@
-#include "BravoSpotDepthMap.h"
+#include "BravoDirectionalDepthMap.h"
 #include "BravoEngine.h"
+#include "BravoShader.h"
 #include "BravoTextureUnitManager.h"
 #include "BravoAssetManager.h"
-#include "BravoShader.h"
-#include "BravoSpotLightActor.h"
+#include "BravoDirectionalLightActor.h"
 
-bool BravoSpotDepthMap::Initialize_Internal()
+
+bool BravoDirectionalDepthMap::Initialize_Internal()
 {
 	if ( !BravoDepthMapNew::Initialize_Internal() )
 		return false;
 
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapSpot");
-
+	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapDir");
 	return true;
 }
-
-void BravoSpotDepthMap::Setup(int32 CastersCount)
+void BravoDirectionalDepthMap::Setup(int32 LayersCount)
 {
 	ClearGPUData();
-	
-	Layers = std::max(CastersCount, 1);
+
+	Layers = std::max(LayersCount, 1);
 
 	glGenFramebuffers(1, &DepthMapFBO);
 
@@ -45,22 +44,7 @@ void BravoSpotDepthMap::Setup(int32 CastersCount)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void BravoSpotDepthMap::ClearGPUData()
-{
-	BravoTextureUnitManager::UnbindTexture(TextureUnit);
-	glDeleteFramebuffers(1, &DepthMapFBO);
-	DepthMapFBO = 0;
-	glDeleteTextures(1, &DepthMapsTextures);
-	DepthMapsTextures = 0;
-}
-
-void BravoSpotDepthMap::OnDestroy()
-{
-	ClearGPUData();
-	BravoDepthMapNew::OnDestroy();
-}
-
-void BravoSpotDepthMap::Render(int32 Layer, const struct BravoSpotLightShaderData& CasterData)
+void BravoDirectionalDepthMap::Render(int32 Layer, const BravoDirectionalLightShaderData& CasterData)
 {
 	if ( !DepthMapShader )
 		return;
@@ -80,15 +64,29 @@ void BravoSpotDepthMap::Render(int32 Layer, const struct BravoSpotLightShaderDat
 	DepthMapShader->StopUsage();
 }
 
-void BravoSpotDepthMap::Use(BravoShaderPtr OnShader)
+void BravoDirectionalDepthMap::OnDestroy()
+{
+	ClearGPUData();
+	BravoDepthMapNew::OnDestroy();
+}
+	
+void BravoDirectionalDepthMap::Use(BravoShaderPtr OnShader)
 {
 	TextureUnit = BravoTextureUnitManager::BindTexture();
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);
     glBindTexture(GL_TEXTURE_2D_ARRAY, DepthMapsTextures);
-	OnShader->SetInt("spotDepthMaps", TextureUnit);
+	OnShader->SetInt("dirDepthMaps", TextureUnit);
 }
-void BravoSpotDepthMap::StopUsage()
+void BravoDirectionalDepthMap::StopUsage()
 {
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 }
 
+void BravoDirectionalDepthMap::ClearGPUData()
+{
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
+	glDeleteFramebuffers(1, &DepthMapFBO);
+	DepthMapFBO = 0;
+	glDeleteTextures(1, &DepthMapsTextures);
+	DepthMapsTextures = 0;
+}

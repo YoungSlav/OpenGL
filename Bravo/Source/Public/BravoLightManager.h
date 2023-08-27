@@ -18,8 +18,6 @@ public:
 	void ApplyLights(std::shared_ptr<class BravoShader> Shader);
 	void ResetLightsUsage();
 
-	std::shared_ptr<class BravoDirectionalLightActor> GetDirectionalLight() const { return DirectionalLight; }
-
 	int32 GetSpotDepthMapLayersCount() const { return (int32)SpotLights.size(); }
 
 protected:
@@ -28,10 +26,11 @@ protected:
 private:
 
 private:
+	std::vector<std::shared_ptr<class BravoDirectionalLightActor>> DirectionalLights;
+	std::shared_ptr<class BravoDirectionalLightShaderDataCollection> DirectionalLightsDataCollection = nullptr;
 
 	std::vector< std::shared_ptr<class BravoSpotLightActor>> SpotLights;
 	std::shared_ptr<class BravoSpotLightShaderDataCollection> SpotLightsDataCollection = nullptr;
 
-	std::shared_ptr<class BravoDirectionalLightActor> DirectionalLight;
 	std::vector< std::shared_ptr<class BravoPointLightActor>> PointLights;
 };

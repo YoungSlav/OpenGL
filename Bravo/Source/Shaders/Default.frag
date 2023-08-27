@@ -20,21 +20,28 @@ struct LightColor
 
 struct DirectionalLight
 {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+
 	vec3 direction;
 
-	LightColor light;
-
-	sampler2DArray depthMap;
-	float cascadePlaneDistances[16];
-	mat4 lightSpaceMatrices[16];
+	int layerOffset;
 	int cascadeCount;
+	float cascadePlaneDistance;
 
+	mat4 lightSpaceMatrix;
 };
-
-uniform DirectionalLight dirLight;
+layout(std430, binding = 2) buffer DirectionalLightBuffer
+{
+	DirectionalLight dirLights[];
+};
+uniform int directionalLightCount = 0;
+uniform sampler2DArray dirDepthMaps;
 
 struct SpotLight
 {
+	mat4 lightSpaceMatrix;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -50,9 +57,8 @@ struct SpotLight
 	float quadratic;
 	float farPlane;
 
-	mat4 lightSpaceMatrix;
 };
-layout(std430, binding = 3) buffer SpotLightBuffer
+layout(std430, binding = 1) buffer SpotLightBuffer
 {
 	SpotLight spotLights[];
 };
@@ -101,8 +107,8 @@ out vec4 FragColor;
 
 
 // function prototypes
-vec3 CalcDirLight(vec3 normal, vec3 viewDir);
-float CalcDirLightShadow(vec3 norm);
+vec3 CalcDirLight(int index, vec3 normal, vec3 viewDir);
+float CalcDirLightShadow(int index, vec3 norm);
 
 vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir);
 float CalcSpotLightShadow(vec4 fragPosLightSpace, int depthMapLayer, vec3 norm, vec3 lightDir, float FarPlane);
@@ -127,7 +133,15 @@ void main()
 
 	vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     
-	vec3 outColor = vec3(0);//CalcDirLight(norm, viewDir);
+	vec3 outColor = vec3(0);
+
+	for ( int i = 0; i < directionalLightCount; i += dirLights[i].cascadeCount )
+	{
+		outColor += CalcDirLight(i, norm, viewDir);
+	}
+
+	for(int i = 0; i < directionalLightCount; i++)
+		outColor += CalcDirLight(i, norm, viewDir);
 
 	for(int i = 0; i < spotLightCount; i++)
 		outColor += CalcSpotLight(i, norm, viewDir);
@@ -138,34 +152,35 @@ void main()
 	FragColor = vec4(outColor, 1.0);
 }
 
-vec3 CalcDirLight(vec3 normal, vec3 viewDir)
+vec3 CalcDirLight(int index, vec3 normal, vec3 viewDir)
 {
-	vec3 lightDir = normalize(-dirLight.direction);
+	vec3 lightDir = normalize(-dirLights[index].direction);
+	
 	// diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, normal);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-	vec3 ambient = dirLight.light.ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
-	vec3 diffuse = dirLight.light.diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
-	vec3 specular = dirLight.light.specular * spec * vec3(texture(material.specular, fs_in.TexCoords));
+	vec3 ambient = dirLights[index].ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
+	vec3 diffuse = dirLights[index].diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
+	vec3 specular = dirLights[index].specular * spec * vec3(texture(material.specular, fs_in.TexCoords));
 	
-	float shadow = CalcDirLightShadow(normal);
+	float shadow = CalcDirLightShadow(index, normal);
 	
 	return (ambient + (1.0 - shadow)*(diffuse + specular));
 }
 
-float CalcDirLightShadow(vec3 normal)
+float CalcDirLightShadow(int index, vec3 normal)
 {
 	// select cascade layer
 	vec4 fragPosViewSpace = view * vec4(fs_in.FragPos, 1.0);
 	float depthValue = abs(fragPosViewSpace.z);
 
 	int layer = -1;
-	for (int i = 0; i < dirLight.cascadeCount; ++i)
+	for (int i = index; i < index + dirLights[index].cascadeCount; ++i)
 	{
-		if (depthValue < dirLight.cascadePlaneDistances[i])
+		if (depthValue < dirLights[i].cascadePlaneDistance)
 		{
 			layer = i;
 			break;
@@ -173,10 +188,11 @@ float CalcDirLightShadow(vec3 normal)
 	}
 	if (layer == -1)
 	{
-		layer = dirLight.cascadeCount-1;
+		layer = index + dirLights[index].cascadeCount-1;
 	}
+	layer = 0;
 
-	vec4 fragPosLightSpace = dirLight.lightSpaceMatrices[layer] * vec4(fs_in.FragPos, 1.0);
+	vec4 fragPosLightSpace = dirLights[layer].lightSpaceMatrix * vec4(fs_in.FragPos, 1.0);
 	// perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	// transform to [0,1] range
@@ -187,17 +203,17 @@ float CalcDirLightShadow(vec3 normal)
     if(projCoords.z > 1.0)
 		return 0.0;
 	// calculate bias (based on depth map resolution and slope)
-	float bias = max(0.05 * (1.0 - dot(normal, -dirLight.direction)), 0.005);
+	float bias = max(0.05 * (1.0 - dot(normal, -dirLights[layer].direction)), 0.005);
 	const float biasModifier = 0.5f;
-	bias *= 1 / (dirLight.cascadePlaneDistances[layer] * biasModifier);
+	bias *= 1 / (dirLights[layer].cascadePlaneDistance * biasModifier);
 	// PCF
 	float shadow = 0.0;
-	vec2 texelSize = 1.0 / vec2(textureSize(dirLight.depthMap, 0));
+	vec2 texelSize = 1.0 / vec2(textureSize(dirDepthMaps, 0));
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-			float pcfDepth = texture(dirLight.depthMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+			float pcfDepth = texture(dirDepthMaps, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
 			shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
 		}    
 	}

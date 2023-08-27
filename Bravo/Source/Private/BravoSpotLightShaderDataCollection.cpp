@@ -9,10 +9,13 @@ bool BravoSpotLightShaderDataCollection::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
+
 	glGenBuffers(1, &ShaderDataSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ShaderDataSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	Resize(0);
 
 	return true;
 }
@@ -49,15 +52,22 @@ void BravoSpotLightShaderDataCollection::Update(const std::vector<std::shared_pt
 }
 void BravoSpotLightShaderDataCollection::UseOn(std::shared_ptr<BravoShader> Shader)
 {
-	SpotDepthMap->Use(Shader);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ShaderDataSSBO);
+	if ( SpotDepthMap )
+	{
+		SpotDepthMap->Use(Shader);
+	}
+	
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ShaderDataSSBO);
 
 	Shader->SetInt("spotLightCount", ShaderData.size());
 }
 
 void BravoSpotLightShaderDataCollection::ResetUsage()
 {
-	SpotDepthMap->StopUsage();
+	if ( SpotDepthMap )
+	{
+		SpotDepthMap->StopUsage();
+	}
 }
 
 void BravoSpotLightShaderDataCollection::Resize(int32 CollectionSize)

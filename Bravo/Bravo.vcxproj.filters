@@ -97,6 +97,12 @@
     <Filter Include="Private\Lights\SpotLight">
       <UniqueIdentifier>{ef2f935f-dcea-4956-9832-ad6fd071036e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Public\Lights\DirectionalLight">
+      <UniqueIdentifier>{fe4d3459-e30e-4f2f-a647-fd0ab2496dc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Lights\DirectionalLight">
+      <UniqueIdentifier>{c13269ef-1a92-45c0-8ed9-862e6741fd81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -208,9 +214,6 @@
     <ClCompile Include="Source\Private\BravoPointLightActor.cpp">
       <Filter>Private\Lights\LightCasters</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp">
-      <Filter>Private\Lights\LightCasters</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoDepthMap.cpp">
       <Filter>Private\Lights\DepthMaps</Filter>
     </ClCompile>
@@ -222,6 +225,15 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoSpotLightShaderDataCollection.cpp">
       <Filter>Private\Lights\SpotLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp">
+      <Filter>Private\Lights\DirectionalLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoDirectionalDepthMap.cpp">
+      <Filter>Private\Lights\DirectionalLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoDirectionalLightShaderDataCollection.cpp">
+      <Filter>Private\Lights\DirectionalLight</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -344,9 +356,6 @@
     <ClInclude Include="Source\Public\BravoTransform.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoDirectionalLightActor.h">
-      <Filter>Public\Lights\LightCasters</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoPointLightActor.h">
       <Filter>Public\Lights\LightCasters</Filter>
     </ClInclude>
@@ -364,6 +373,15 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoSpotLightShaderDataCollection.h">
       <Filter>Public\Lights\SpotLight</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoDirectionalLightActor.h">
+      <Filter>Public\Lights\DirectionalLight</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoDirectionalDepthMap.h">
+      <Filter>Public\Lights\DirectionalLight</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoDirectionalLightShaderDataCollection.h">
+      <Filter>Public\Lights\DirectionalLight</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -410,9 +428,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\DepthMapDir.frag">
-      <Filter>Shaders\DepthMaps\Directional</Filter>
-    </None>
-    <None Include="Source\Shaders\DepthMapDir.geom">
       <Filter>Shaders\DepthMaps\Directional</Filter>
     </None>
     <None Include="Source\Shaders\DepthMapDir.vert">

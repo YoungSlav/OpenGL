@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "BravoObject.h"
+#include "BravoSpotDepthMap.h"
 #include "BravoSpotLightActor.h"
 
 class BravoSpotLightShaderDataCollection : public BravoObject

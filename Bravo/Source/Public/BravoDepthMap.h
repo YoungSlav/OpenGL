@@ -18,3 +18,15 @@ protected:
 	uint32 Size;
 	std::shared_ptr<class BravoShader> DepthMapShader;
 };
+
+class BravoDepthMapNew : public BravoObject
+{
+public:
+	virtual void Use(BravoShaderPtr OnShader) = 0;
+	virtual void StopUsage() = 0;
+
+protected:
+
+	const uint32 Size = 2048;
+	std::shared_ptr<class BravoShader> DepthMapShader;
+};

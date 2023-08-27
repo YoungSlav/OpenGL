@@ -4,6 +4,7 @@
 
 #include "BravoSpotLightActor.h"
 #include "BravoSpotLightShaderDataCollection.h"
+#include "BravoDirectionalLightShaderDataCollection.h"
 
 #include "BravoEngine.h"
 #include "BravoShader.h"
@@ -14,6 +15,7 @@ bool BravoLightManager::Initialize_Internal()
 		return false;
 
 	SpotLightsDataCollection = NewObject<BravoSpotLightShaderDataCollection>("SpotLightShaderDataCollection");
+	DirectionalLightsDataCollection = NewObject<BravoDirectionalLightShaderDataCollection>("DirectionalLightsDataCollection");
 
 	return true;
 }
@@ -22,11 +24,7 @@ void BravoLightManager::RegisterLightActor(std::shared_ptr<BravoLightActor> Ligh
 {
 	if ( std::shared_ptr<BravoDirectionalLightActor> asDir = std::dynamic_pointer_cast<BravoDirectionalLightActor>(LightActor) )
 	{
-		if ( DirectionalLight )
-		{
-			Log::LogMessage("Directional light override!", ELog::Warning);
-		}
-		DirectionalLight = asDir;
+		DirectionalLights.push_back(asDir);
 	}
 
 	if ( std::shared_ptr<BravoSpotLightActor> asSpot = std::dynamic_pointer_cast<BravoSpotLightActor>(LightActor) )
@@ -43,17 +41,12 @@ void BravoLightManager::RemoveLightActor(std::shared_ptr<BravoLightActor> lightA
 {
 	SpotLights.erase(std::remove(SpotLights.begin(), SpotLights.end(), lightActor), SpotLights.end());
 	PointLights.erase(std::remove(PointLights.begin(), PointLights.end(), lightActor), PointLights.end());
-	
-	if ( DirectionalLight == lightActor )
-		DirectionalLight.reset();
+	DirectionalLights.erase(std::remove(DirectionalLights.begin(), DirectionalLights.end(), lightActor), DirectionalLights.end());
 }
 
 void BravoLightManager::UpdateLightsShaderData()
-{
-	if ( DirectionalLight )
-		DirectionalLight->UpdateDepthMap();
-	
-
+{	
+	DirectionalLightsDataCollection->Update(DirectionalLights);
 	SpotLightsDataCollection->Update(SpotLights);
 
 	for ( auto& it : PointLights )
@@ -62,8 +55,7 @@ void BravoLightManager::UpdateLightsShaderData()
 
 void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 {
-	if ( DirectionalLight )
-		DirectionalLight->Apply(Shader);
+	DirectionalLightsDataCollection->UseOn(Shader);
 	
 	SpotLightsDataCollection->UseOn(Shader);
 	
@@ -74,8 +66,7 @@ void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 
 void BravoLightManager::ResetLightsUsage()
 {
-	if ( DirectionalLight )
-		DirectionalLight->StopUsage();
+	DirectionalLightsDataCollection->ResetUsage();
 
 	SpotLightsDataCollection->ResetUsage();
 	

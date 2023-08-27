@@ -1,21 +1,18 @@
 #pragma once
 
+
 #include "stdafx.h"
 #include "BravoObject.h"
 #include "BravoShader.h"
 #include "BravoDepthMap.h"
 
 
-// delete me and move to BravoDepthMap.h
-
-
-
-class BravoSpotDepthMap : public BravoDepthMapNew
+class BravoDirectionalDepthMap : public BravoDepthMapNew
 {
 public:
-	void Setup(int32 CastersCount);
-	void Render(int32 Layer, const struct BravoSpotLightShaderData& CasterData);
-
+	void Setup(int32 LayersCount);
+	void Render(int32 Layer, const struct BravoDirectionalLightShaderData& CasterData);
+	
 	virtual void Use(BravoShaderPtr OnShader);
 	virtual void StopUsage();
 
@@ -25,9 +22,9 @@ protected:
 
 private:
 	void ClearGPUData();
+	
 
 private:
-
 	int32 TextureUnit = -1;
 	uint32 DepthMapFBO = 0;
 	uint32 DepthMapsTextures = 0;
