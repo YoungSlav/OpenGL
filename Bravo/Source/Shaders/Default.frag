@@ -123,11 +123,11 @@ void main()
     
 	vec3 outColor = CalcDirLight(norm, viewDir);
 
-	for(int i = 0; i < spotLightsNum; i++)
-		outColor += CalcSpotLight(i, norm, viewDir);
-
-	for(int i = 0; i < pointLightsNum; i++)
-		outColor += CalcPointLight(i, norm, viewDir);
+	//for(int i = 0; i < spotLightsNum; i++)
+	//	outColor += CalcSpotLight(i, norm, viewDir);
+	//
+	//for(int i = 0; i < pointLightsNum; i++)
+	//	outColor += CalcPointLight(i, norm, viewDir);
 		
 	FragColor = vec4(outColor, 1.0);
 }
