@@ -129,52 +129,31 @@ void BravoGameInstance::SpawnSpotLights()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
 	BravoMeshPtr coneAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-
-	if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
+	for ( int32 i = 0 ; i < 2; ++i )
 	{
-		spotLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
-		spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
-		spotLightActor->SetLightColor(glm::vec3(0.3f, 0.5f, 0.7f ));
-		BravoSpotLightSettings SpotSettings;
-		SpotSettings.CutOff			= 10.0f;
-		SpotSettings.OuterCutOff	= 12.0f;
-		SpotSettings.Intencity = 10;
-		spotLightActor->SetSettings(SpotSettings);
+		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
+		{
+			spotLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
+			spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
+			spotLightActor->SetLightColor(glm::vec3(1.0f));
+			BravoSpotLightSettings SpotSettings;
+			SpotSettings.CutOff			= 10.0f;
+			SpotSettings.OuterCutOff	= 12.0f;
+			SpotSettings.Intencity = 10;
+			spotLightActor->SetSettings(SpotSettings);
 
-		auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("SpotLightStaticMesh");
-		coneMesh->SetMesh(coneAsset);
-		coneMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
-		coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
-		BravoMaterialPtr coneMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-		coneMat->Shininess = 64.0f;
-		coneMesh->SetMaterial(coneMat);
+			auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("SpotLightStaticMesh");
+			coneMesh->SetMesh(coneAsset);
+			coneMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
+			coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
+			BravoMaterialPtr coneMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+			coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+			coneMat->Shininess = 64.0f;
+			coneMesh->SetMaterial(coneMat);
 
-		spotLights.push_back(spotLightActor);
+			spotLights.push_back(spotLightActor);
+		}
 	}
-
-	//if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight2") )
-	//{
-	//	spotLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
-	//	spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
-	//	spotLightActor->SetLightColor(glm::vec3(0.7f, 0.5f, 0.3f ));
-	//	BravoSpotLightSettings SpotSettings;
-	//	SpotSettings.CutOff			= 10.0f;
-	//	SpotSettings.OuterCutOff	= 12.0f;
-	//	SpotSettings.Intencity = 10;
-	//	spotLightActor->SetSettings(SpotSettings);
-	//
-	//	auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("SpotLightStaticMesh2");
-	//	coneMesh->SetMesh(coneAsset);
-	//	coneMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
-	//	coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
-	//	BravoMaterialPtr coneMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-	//	coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-	//	coneMat->Shininess = 64.0f;
-	//	coneMesh->SetMaterial(coneMat);
-	//
-	//	spotLights.push_back(spotLightActor);
-	//}
 }
 
 void BravoGameInstance::SpawnCubes()

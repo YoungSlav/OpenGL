@@ -135,4 +135,6 @@ void BravoSpotLightActor::Apply(BravoShaderPtr OnShader)
 	OnShader->SetVector1d(Path + "linear", LightAttenuationConstants.Linear[Settings.Intencity]);
 	OnShader->SetVector1d(Path + "quadratic", LightAttenuationConstants.Quadratic[Settings.Intencity]);
 	OnShader->SetVector1d(Path + "farPlane", LightAttenuationConstants.Distance[Settings.Intencity]);
+
+	OnShader->SetMatrix4d(Path + "lightSpaceMatrix", LightSpaceMatrix);
 }

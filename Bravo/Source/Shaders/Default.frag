@@ -200,6 +200,17 @@ float CalcDirLightShadow(vec3 normal)
 	return shadow;
 }
 
+float LinearizeDepth(float depth)
+{
+	float minD = 0.95;
+	float maxD = 1.0;
+
+	float newDepth = (depth - minD) / (maxD-minD);
+	
+	return newDepth;
+    
+}
+
 vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir)
 {
 	vec3 lightDir = normalize(spotLights[index].position - fs_in.FragPos);
@@ -226,12 +237,11 @@ vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir)
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
 
-
 	float shadow = 0.0;
 	vec4 fragPos_LightSpace = spotLights[index].lightSpaceMatrix * vec4(fs_in.FragPos, 1.0);
 	shadow = CalcSpotLightShadow(fragPos_LightSpace, spotLights[index].depthMapLayer, normal, lightDir, spotLights[index].farPlane);
 
-
+	
 	return (1.0 - shadow)*(ambient + diffuse + specular);
 }
 
@@ -242,25 +252,24 @@ float CalcSpotLightShadow(vec4 fragPosLightSpace, int depthMapLayer, vec3 norm, 
 	// transform to [0,1] range
 	projCoords = projCoords * 0.5 + 0.5;
 	// keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-	//if(projCoords.z > 1.0)
-//		return 0.0;
-	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-	float closestDepth = texture(spotDepthMaps, vec3(projCoords.x, projCoords.y, depthMapLayer)).r; 
+	if(projCoords.z > 1.0)
+		return 0.0;
+
 	// get depth of current fragment from light's perspective
-	float currentDepth = projCoords.z;
+	float currentDepth = projCoords.z;      
+
 	// calculate bias (based on depth map resolution and slope)
 	float bias = max(0.05 * (1.0 - dot(norm, -lightDir)), 0.005);
 	const float biasModifier = 0.5f;
 	bias *= 1 / (FarPlane * biasModifier);
 	// PCF
 	float shadow = 0.0;
-	vec2 texelSize = 1.0 / textureSize(spotDepthMaps, 0).xy;
+	vec2 texelSize = 1.0 / vec2(textureSize(spotDepthMaps, 0));
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-			vec2 sampleCoords = vec2(projCoords.xy + vec2(x, y) * texelSize);
-			float pcfDepth = texture(spotDepthMaps, vec3(sampleCoords.x, sampleCoords.y, depthMapLayer)).r; 
+			float pcfDepth = texture(spotDepthMaps, vec3(projCoords.xy + vec2(x, y) * texelSize, depthMapLayer)).r;
 			shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
 		}    
 	}

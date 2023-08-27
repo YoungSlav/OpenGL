@@ -114,7 +114,6 @@
     <None Include="Source\Shaders\DefaultUnlit.frag" />
     <None Include="Source\Shaders\DefaultUnlit.vert" />
     <None Include="Source\Shaders\Default.frag" />
-    <None Include="Source\Shaders\DepthMapSpot.geom" />
     <None Include="Source\Shaders\InfinitePlane.frag" />
     <None Include="Source\Shaders\InfinitePlane.vert" />
     <None Include="Source\Shaders\Default.vert" />

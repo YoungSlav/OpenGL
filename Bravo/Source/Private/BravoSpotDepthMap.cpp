@@ -70,18 +70,19 @@ void BravoSpotDepthMap::Render(std::shared_ptr<class BravoLightActor> Caster)
 
 	const glm::mat4 LightSpaceMatrix = SpotCaster->GetLightSpaceTransformationMatrix();
 	
+	DepthMapShader->Use();
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
-		DepthMapShader->Use();
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, DepthMapLayer);
+
+		glViewport(0, 0, Size, Size);
+		glClear(GL_DEPTH_BUFFER_BIT);
 			
-			DepthMapShader->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
-			DepthMapShader->SetInt("depthMapLayer", DepthMapLayer);
+		DepthMapShader->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
 	
-			glViewport(0, 0, Size, Size);
-			glClear(GL_DEPTH_BUFFER_BIT);
-			Engine->RenderDepthMap(DepthMapShader);
+		Engine->RenderDepthMap(DepthMapShader);
 			
-		DepthMapShader->StopUsage();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	DepthMapShader->StopUsage();
 }
 
 void BravoSpotDepthMap::Use(BravoShaderPtr OnShader)
