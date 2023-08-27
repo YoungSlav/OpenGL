@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 in VS_OUT {
 	vec4 FragPos;

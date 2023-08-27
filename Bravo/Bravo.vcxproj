@@ -47,6 +47,7 @@
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp" />
     <ClCompile Include="Source\Private\BravoSpotDepthMap.cpp" />
     <ClCompile Include="Source\Private\BravoSpotLightActor.cpp" />
+    <ClCompile Include="Source\Private\BravoSpotLightShaderDataCollection.cpp" />
     <ClCompile Include="Source\Private\BravoStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
     <ClCompile Include="Source\Private\BravoWidget.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="Source\Public\BravoDepthMap.h" />
     <ClInclude Include="Source\Public\BravoSkyboxActor.h" />
     <ClInclude Include="Source\Public\BravoSpotLightActor.h" />
+    <ClInclude Include="Source\Public\BravoSpotLightShaderDataCollection.h" />
     <ClInclude Include="Source\Public\BravoStaticMeshComponent.h" />
     <ClInclude Include="Source\Public\BravoTextureData.h" />
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h" />

@@ -13,7 +13,7 @@ public:
 	void RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor);
 	void RemoveLightActor(std::shared_ptr<BravoLightActor> Actor);
 
-	void UpdateLightsDepthMaps();
+	void UpdateLightsShaderData();
 
 	void ApplyLights(std::shared_ptr<class BravoShader> Shader);
 	void ResetLightsUsage();
@@ -22,16 +22,16 @@ public:
 
 	int32 GetSpotDepthMapLayersCount() const { return (int32)SpotLights.size(); }
 
-private:
-	void SpawnSpotDepthMap();
+protected:
+	virtual bool Initialize_Internal() override;
 
 private:
 
-	std::shared_ptr<class BravoSpotDepthMap> SpotDepthMap = nullptr;	// TODO: initialize and re-init on new spot light
+private:
 
-	void UpdateShaderPaths();
+	std::vector< std::shared_ptr<class BravoSpotLightActor>> SpotLights;
+	std::shared_ptr<class BravoSpotLightShaderDataCollection> SpotLightsDataCollection = nullptr;
 
 	std::shared_ptr<class BravoDirectionalLightActor> DirectionalLight;
-	std::vector< std::shared_ptr<class BravoSpotLightActor>> SpotLights;
 	std::vector< std::shared_ptr<class BravoPointLightActor>> PointLights;
 };

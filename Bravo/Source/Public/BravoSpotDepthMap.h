@@ -10,7 +10,7 @@
 class BravoDepthMap2 : public BravoObject
 {
 public:
-	virtual void Render(std::shared_ptr<class BravoLightActor> Caster) = 0;
+
 
 	virtual void Use(BravoShaderPtr OnShader) = 0;
 	virtual void StopUsage() = 0;
@@ -30,7 +30,8 @@ protected:
 class BravoSpotDepthMap : public BravoDepthMap2
 {
 public:
-	virtual void Render(std::shared_ptr<class BravoLightActor> Caster);
+	void Setup(int32 CastersCount);
+	void Render(int32 Layer, const struct BravoSpotLightShaderData& CasterData);
 
 	virtual void Use(BravoShaderPtr OnShader);
 	virtual void StopUsage();
@@ -38,6 +39,9 @@ public:
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
+
+private:
+	void ClearGPUData();
 
 private:
 

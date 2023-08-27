@@ -11,10 +11,20 @@ bool BravoSpotDepthMap::Initialize_Internal()
 	if ( !BravoDepthMap2::Initialize_Internal() )
 		return false;
 
+	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapSpot");
+
+	return true;
+}
+
+void BravoSpotDepthMap::Setup(int32 CastersCount)
+{
+	ClearGPUData();
+	
+	Layers = CastersCount;
+
 	glGenFramebuffers(1, &DepthMapFBO);
 
 		glGenTextures(1, &DepthMapsTextures);
-		int32 Layers = Engine->GetLightManager()->GetSpotDepthMapLayersCount();
 		glBindTexture(GL_TEXTURE_2D_ARRAY, DepthMapsTextures);
 		glTexImage3D(
 			GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, Size, Size, Layers,
@@ -34,50 +44,36 @@ bool BravoSpotDepthMap::Initialize_Internal()
 		glReadBuffer(GL_NONE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
-
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapSpot");
-
-	return true;
+void BravoSpotDepthMap::ClearGPUData()
+{
+	BravoTextureUnitManager::UnbindTexture(TextureUnit);
+	glDeleteFramebuffers(1, &DepthMapFBO);
+	DepthMapFBO = 0;
+	glDeleteTextures(1, &DepthMapsTextures);
+	DepthMapsTextures = 0;
 }
 
 void BravoSpotDepthMap::OnDestroy()
 {
-	BravoTextureUnitManager::UnbindTexture(TextureUnit);
-	glDeleteFramebuffers(1, &DepthMapFBO);
-	glDeleteTextures(1, &DepthMapsTextures);
-
+	ClearGPUData();
 	BravoDepthMap2::OnDestroy();
 }
 
-void BravoSpotDepthMap::Render(std::shared_ptr<class BravoLightActor> Caster)
+void BravoSpotDepthMap::Render(int32 Layer, const struct BravoSpotLightShaderData& CasterData)
 {
 	if ( !DepthMapShader )
 		return;
-	
-	std::shared_ptr<BravoSpotLightActor> SpotCaster = std::dynamic_pointer_cast<BravoSpotLightActor>(Caster);
-	if ( !SpotCaster )
-	{
-		Log::LogMessage("Invalid caster for spot depth map rendering!", ELog::Error);
-		return;
-	}
-	int32 DepthMapLayer = SpotCaster->GetDepthMapLayer();
-	if ( DepthMapLayer < 0 || DepthMapLayer >= Engine->GetLightManager()->GetSpotDepthMapLayersCount() )
-	{
-		Log::LogMessage("Invalid depthMap layer specified for " + Caster->GetName(), ELog::Error);
-		return;
-	}
-
-	const glm::mat4 LightSpaceMatrix = SpotCaster->GetLightSpaceTransformationMatrix();
-	
+		
 	DepthMapShader->Use();
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, DepthMapLayer);
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, Layer);
 
 		glViewport(0, 0, Size, Size);
 		glClear(GL_DEPTH_BUFFER_BIT);
 			
-		DepthMapShader->SetMatrix4d("lightSpaceMatrix", LightSpaceMatrix);
+		DepthMapShader->SetMatrix4d("lightSpaceMatrix", CasterData.LightSpaceMatrix);
 	
 		Engine->RenderDepthMap(DepthMapShader);
 			

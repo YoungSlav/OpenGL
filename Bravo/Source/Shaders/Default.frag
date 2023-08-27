@@ -1,4 +1,4 @@
-#version 410 core
+#version 430 core
 
 struct Material
 {
@@ -31,6 +31,37 @@ struct DirectionalLight
 
 };
 
+uniform DirectionalLight dirLight;
+
+struct SpotLight
+{
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+
+	vec3 position;
+	vec3 direction;
+
+	float cutOff;
+	float outerCutOff;
+  
+	float constant;
+	float linear;
+	float quadratic;
+	float farPlane;
+
+	mat4 lightSpaceMatrix;
+};
+layout(std430, binding = 3) buffer SpotLightBuffer
+{
+	SpotLight spotLights[];
+};
+uniform int spotLightCount = 0;
+uniform sampler2DArray spotDepthMaps;
+
+
+
+
 struct PointLight
 {
 	LightColor light;
@@ -46,36 +77,10 @@ struct PointLight
 	samplerCube depthMap;
 };
 
-struct SpotLight
-{
-	LightColor light;
-
-	vec3 position;
-	vec3 direction;
-	float cutOff;
-	float outerCutOff;
-  
-	float constant;
-	float linear;
-	float quadratic;
-
-	float farPlane;
-
-	int depthMapLayer;
-	mat4 lightSpaceMatrix;
-};
-
 #define MAX_POINT_LIGHTS 20
-#define MAX_SPOT_LIGHTS 20
-
-uniform DirectionalLight dirLight;
-
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int pointLightsNum;
-uniform sampler2DArray spotDepthMaps;
 
-uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
-uniform int spotLightsNum;
 
 in VS_OUT {
 	vec3 FragPos;
@@ -124,7 +129,7 @@ void main()
     
 	vec3 outColor = vec3(0);//CalcDirLight(norm, viewDir);
 
-	for(int i = 0; i < spotLightsNum; i++)
+	for(int i = 0; i < spotLightCount; i++)
 		outColor += CalcSpotLight(i, norm, viewDir);
 
 	//for(int i = 0; i < pointLightsNum; i++)
@@ -219,28 +224,28 @@ vec3 CalcSpotLight(int index, vec3 normal, vec3 viewDir)
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, normal);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-
+	
 	// attenuation
     float distance = length(spotLights[index].position - fs_in.FragPos);
     float attenuation = 1.0 / (spotLights[index].constant + spotLights[index].linear * distance + spotLights[index].quadratic * (distance * distance));
-
+	
 	// spotlight intensity
     float theta = dot(lightDir, normalize(-spotLights[index].direction)); 
     float epsilon = spotLights[index].cutOff - spotLights[index].outerCutOff;
     float intensity = clamp((theta - spotLights[index].outerCutOff) / epsilon, 0.0, 1.0);
-
+	
 	// combine results
-    vec3 ambient = spotLights[index].light.ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
-    vec3 diffuse = spotLights[index].light.diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
-    vec3 specular = spotLights[index].light.specular * spec * vec3(texture(material.specular, fs_in.TexCoords));
+    vec3 ambient = spotLights[index].ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
+    vec3 diffuse = spotLights[index].diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
+    vec3 specular = spotLights[index].specular * spec * vec3(texture(material.specular, fs_in.TexCoords));
     ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
-
+	
 	float shadow = 0.0;
 	vec4 fragPos_LightSpace = spotLights[index].lightSpaceMatrix * vec4(fs_in.FragPos, 1.0);
-	shadow = CalcSpotLightShadow(fragPos_LightSpace, spotLights[index].depthMapLayer, normal, lightDir, spotLights[index].farPlane);
-
+	shadow = CalcSpotLightShadow(fragPos_LightSpace, index, normal, lightDir, spotLights[index].farPlane);
+	
 	
 	return (1.0 - shadow)*(ambient + diffuse + specular);
 }
@@ -254,10 +259,10 @@ float CalcSpotLightShadow(vec4 fragPosLightSpace, int depthMapLayer, vec3 norm, 
 	// keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
 	if(projCoords.z > 1.0)
 		return 0.0;
-
+	
 	// get depth of current fragment from light's perspective
 	float currentDepth = projCoords.z;      
-
+	
 	// calculate bias (based on depth map resolution and slope)
 	float bias = max(0.05 * (1.0 - dot(norm, -lightDir)), 0.005);
 	const float biasModifier = 0.5f;

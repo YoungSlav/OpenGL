@@ -1,4 +1,4 @@
-#version 410 core
+#version 430 core
 
 layout(triangles, invocations = CASCADE_LEVELS) in;
 layout(triangle_strip, max_vertices = 3) out;

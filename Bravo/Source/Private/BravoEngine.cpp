@@ -97,7 +97,7 @@ void BravoEngine::UpdateViewport()
 	}
 	
 	//glCullFace(GL_FRONT);
-	lightManager->UpdateLightsDepthMaps();
+	lightManager->UpdateLightsShaderData();
 	//glCullFace(GL_BACK);
 	
 	// we want to draw into PP texture first
@@ -157,7 +157,7 @@ void BravoEngine::CreateOpenGLWindow()
 	// glfw: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// create window

@@ -133,7 +133,7 @@ void BravoGameInstance::SpawnSpotLights()
 	{
 		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
 		{
-			spotLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
+			spotLightActor->SetLocation(glm::vec3(10.0f,  7.0f, 0.0f ));
 			spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
 			spotLightActor->SetLightColor(glm::vec3(1.0f));
 			BravoSpotLightSettings SpotSettings;
@@ -236,12 +236,12 @@ void BravoGameInstance::Tick(float DeltaTime)
 		glm::vec3 newLocation = glm::vec3(0.0f);
 		float x = glm::sin(LifeTime) * 7.0f;
 		float z = glm::cos(LifeTime) * 7.0f;
-
+	
 		newLocation.x = i % 2 == 0 ? x : z;
 		newLocation.z = i % 2 == 0 ? z : x;
 		newLocation.y = 7;
 		
-
+	
 		spotLights[i]->SetLocation(newLocation);
 		spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
 	}
