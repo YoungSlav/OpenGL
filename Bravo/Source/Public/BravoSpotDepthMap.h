@@ -14,7 +14,7 @@ class BravoSpotDepthMap : public BravoDepthMapNew
 {
 public:
 	void Setup(int32 CastersCount);
-	void Render(uint32 ShaderDataSSBO, int32 Count);
+	void Render(int32 Layer, const struct BravoSpotLightShaderData& CasterData);
 
 	virtual void Use(BravoShaderPtr OnShader);
 	virtual void StopUsage();
