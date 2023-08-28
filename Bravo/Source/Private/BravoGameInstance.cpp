@@ -7,6 +7,7 @@
 #include "BravoShaderAsset.h"
 #include "BravoTextureAsset.h"
 #include "BravoCubemapAsset.h"
+#include "BravoMaterialAsset.h"
 
 #include "BravoPlayer.h"
 #include "BravoActor.h"
@@ -69,9 +70,12 @@ bool BravoGameInstance::Initialize_Internal()
 		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
 		planeMesh->SetMesh(planeAsset);
 		planeMesh->SetCastShadows(true);
-		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
-		planeMat->Shininess = 64.0f;
+		
+		BravoMaterialLoadingParams materailLoadingParams;
+		materailLoadingParams.DiffuseTexture = "Textures\\noise.png";
+		materailLoadingParams.Shininess = 64.0f;
+		std::shared_ptr<BravoMaterialAsset> planeMat = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
+
 		planeMesh->SetMaterial(planeMat);
 	}
 	
@@ -89,9 +93,10 @@ void BravoGameInstance::SpawnPointLightTest()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
 
-	BravoMaterialPtr wallMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-	wallMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
-	wallMat->Shininess = 64.0f;
+	BravoMaterialLoadingParams materailLoadingParams;
+	materailLoadingParams.DiffuseTexture = "Textures\\noise.png";
+	materailLoadingParams.Shininess = 64.0f;
+	std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
 
 	std::vector<glm::vec3> scales = {
 		glm::vec3(0.1f, 10.0f, 10.0f),
@@ -114,7 +119,7 @@ void BravoGameInstance::SpawnPointLightTest()
 			auto wallMesh = wallActor->NewObject<BravoStaticMeshComponent>("WallMeshStaticMesh1");
 			wallMesh->SetMesh(cubeAsset);
 			wallMesh->SetCastShadows(true);
-			wallMesh->SetMaterial(wallMat);
+			wallMesh->SetMaterial(material);
 		}
 	}
 }
@@ -159,10 +164,11 @@ void BravoGameInstance::SpawnPointLights()
 			auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh");
 			sphereMesh->SetMesh(sphereAsset);
 			sphereMesh->SetScale(glm::vec3(0.25f));
-			BravoMaterialPtr sphereMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-			sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
-			sphereMat->Shininess = 64.0f;
-			sphereMesh->SetMaterial(sphereMat);
+			BravoMaterialLoadingParams materailLoadingParams;
+			materailLoadingParams.DiffuseTexture = "Textures\\noise.png";
+			materailLoadingParams.Shininess = 64.0f;
+			std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
+			sphereMesh->SetMaterial(material);
 
 			pointLights.push_back(pointLightActor);
 		}
@@ -196,10 +202,11 @@ void BravoGameInstance::SpawnSpotLights()
 			coneMesh->SetMesh(coneAsset);
 			coneMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
 			coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
-			BravoMaterialPtr coneMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-			coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
-			coneMat->Shininess = 64.0f;
-			coneMesh->SetMaterial(coneMat);
+			BravoMaterialLoadingParams materailLoadingParams;
+			materailLoadingParams.DiffuseTexture = "Textures\\noise.png";
+			materailLoadingParams.Shininess = 64.0f;
+			std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
+			coneMesh->SetMaterial(material);
 
 			spotLights.push_back(spotLightActor);
 		}
@@ -220,9 +227,10 @@ void BravoGameInstance::SpawnCubes()
 			cubeMesh->SetMesh(cubeAsset);
 			cubeMesh->SetCastShadows(true);
 
-			BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-			cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
-			cubeMat->Shininess = 64.0f;
+			BravoMaterialLoadingParams materailLoadingParams;
+			materailLoadingParams.DiffuseTexture = "Textures\\noise.png";
+			materailLoadingParams.Shininess = 64.0f;
+			std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
 			glm::vec3 newLocation = glm::vec3(0.0f);
 			newLocation.x = glm::sin(glm::radians(360.0f / 50 *i)) * 5;
 			newLocation.z = glm::cos(glm::radians(360.0f / 50 *i)) * 5;
@@ -231,7 +239,7 @@ void BravoGameInstance::SpawnCubes()
 			cubeMesh->SetLocation(newLocation);
 			cubeMesh->SetScale(glm::vec3(0.1f));
 
-			cubeMesh->SetMaterial(cubeMat);
+			cubeMesh->SetMaterial(material);
 		}
 	
 		Cubes.push_back(cubeActor);
@@ -250,10 +258,11 @@ void BravoGameInstance::SpawnTestInstances()
 		cubeActor->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
 		cubeMesh->SetMesh(cubeAsset);
 		cubeMesh->SetCastShadows(true);
-		BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
-		cubeMat->Shininess = 64.0f;
-		cubeMesh->SetMaterial(cubeMat);
+		BravoMaterialLoadingParams materailLoadingParams;
+		materailLoadingParams.DiffuseTexture = "Textures\\noise.png";
+		materailLoadingParams.Shininess = 64.0f;
+		std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
+		cubeMesh->SetMaterial(material);
 		cubeMesh->RemoveAllInstances();
 		for ( int32 i = 0; i < 50; ++i )
 		{

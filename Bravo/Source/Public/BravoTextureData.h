@@ -19,15 +19,10 @@ public:
 			else
 			{
 				stbi_image_free(TextureData);
-				Log::LogMessage("Failed to load texture \"" + _Path + "\": unknown texture format", ELog::Error);
 				return;
 			}
 
 			bInitialized = true;
-		}
-		else
-		{
-			Log::LogMessage("Failed to load texture \"" + _Path + "\"", ELog::Error);
 		}
 	}
 	~BravoTextureData()

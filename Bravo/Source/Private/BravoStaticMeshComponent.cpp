@@ -2,6 +2,7 @@
 #include "BravoActor.h"
 #include "BravoAssetManager.h"
 #include "BravoLightManager.h"
+#include "BravoMaterialAsset.h"
 
 
 bool BravoStaticMeshComponent::Initialize_Internal()
@@ -149,11 +150,11 @@ void BravoStaticMeshComponent::SetMesh(std::shared_ptr<BravoStaticMeshAsset> InM
 	Mesh = InMesh;
 }
 
-BravoMaterialPtr BravoStaticMeshComponent::GetMaterial() const
+std::shared_ptr<BravoMaterialAsset> BravoStaticMeshComponent::GetMaterial() const
 {
 	return Material;
 }
-void BravoStaticMeshComponent::SetMaterial(BravoMaterialPtr _Material)
+void BravoStaticMeshComponent::SetMaterial(std::shared_ptr<BravoMaterialAsset> _Material)
 {
 	if ( Material )
 		Material->StopUsage();

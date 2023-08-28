@@ -12,46 +12,6 @@ namespace ShaderProgrammConstancts
 	const std::string GeometryShaderExtension = ".geom";
 }
 
-
-enum EBravoTextureType : int32
-{
-	diffuse,
-	specular,
-	height,
-	ambient,
-	normal,
-
-	NUM
-};
-
-struct BravoMaterial
-{
-	void Use()
-	{
-		for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
-		{
-			if ( Textures[i] )
-				Textures[i]->Use();
-		}
-	}
-
-	void StopUsage()
-	{
-		for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
-		{
-			if ( Textures[i] )
-				Textures[i]->StopUsage();
-		}
-	}
-
-	std::shared_ptr<BravoTextureAsset> Textures[NUM];
-	
-	float Shininess;
-};
-
-typedef std::shared_ptr<BravoMaterial> BravoMaterialPtr;
-
-
 struct BravoShaderLoadingParams
 {
 	BravoShaderLoadingParams(const std::string& _Path) :
@@ -100,7 +60,7 @@ public:
 	void SetMatrix3d(const std::string& name, const glm::mat3& val) const;
 	void SetMatrix4d(const std::string& name, const glm::mat4& val) const;
 
-	void SetMaterial(const std::string& name, const BravoMaterialPtr& val) const;
+	void SetMaterial(const std::string& name, std::shared_ptr<class BravoMaterialAsset> val) const;
 
 protected:
 	bool LoadShader(GLenum ShaderType, int32& OutShader, const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
@@ -111,5 +71,4 @@ private:
 	std::shared_ptr<BravoTextureAsset> EmptyTexture = nullptr;
 
 	GLuint ShaderID = 0;
-
 };

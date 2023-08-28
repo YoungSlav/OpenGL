@@ -115,15 +115,6 @@
     <ClCompile Include="Source\Private\BravoAsset.cpp">
       <Filter>Private\Assets</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoShader.cpp">
-      <Filter>Private\Assets</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoTexture.cpp">
-      <Filter>Private\Assets</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoMesh.cpp">
-      <Filter>Private\Assets</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\Log.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
@@ -136,9 +127,6 @@
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoCubemap.cpp">
-      <Filter>Private\Assets</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoMath.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
@@ -150,9 +138,6 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp">
       <Filter>Private\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoFont.cpp">
-      <Filter>Private\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp">
       <Filter>ThirdParty</Filter>
@@ -235,6 +220,16 @@
     <ClCompile Include="Source\Private\BravoDirectionalLightShaderDataCollection.cpp">
       <Filter>Private\Lights\DirectionalLight</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoCubemapAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoFontAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoPointDepthMap.cpp" />
+    <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
+    <ClCompile Include="Source\Private\BravoStaticMeshAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoShaderAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoTextureAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoMaterialAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -243,15 +238,6 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoAsset.h">
-      <Filter>Public\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoMesh.h">
-      <Filter>Public\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoTexture.h">
-      <Filter>Public\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoShader.h">
       <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoObject.h">
@@ -268,9 +254,6 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoRenderTarget.h">
       <Filter>Public\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoCubemap.h">
-      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoMath.h">
       <Filter>Public\Core</Filter>
@@ -292,9 +275,6 @@
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\stb_rect_pack.h">
       <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoFont.h">
-      <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\stb_image_write.h">
       <Filter>ThirdParty</Filter>
@@ -383,6 +363,14 @@
     <ClInclude Include="Source\Public\BravoDirectionalLightShaderDataCollection.h">
       <Filter>Public\Lights\DirectionalLight</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoCubemapAsset.h" />
+    <ClInclude Include="Source\Public\BravoFontAsset.h" />
+    <ClInclude Include="Source\Public\BravoMaterialAsset.h" />
+    <ClInclude Include="Source\Public\BravoPointDepthMap.h" />
+    <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
+    <ClInclude Include="Source\Public\BravoStaticMeshAsset.h" />
+    <ClInclude Include="Source\Public\BravoShaderAsset.h" />
+    <ClInclude Include="Source\Public\BravoTextureAsset.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\Default.frag">

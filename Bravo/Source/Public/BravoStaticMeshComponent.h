@@ -23,8 +23,8 @@ class BravoStaticMeshComponent : public BravoComponent, public BravoRenderable
 {
 public:
 	void SetMesh(std::shared_ptr<BravoStaticMeshAsset> InMesh);
-	BravoMaterialPtr GetMaterial() const;
-	void SetMaterial(BravoMaterialPtr _Material);
+	std::shared_ptr<BravoMaterialAsset> GetMaterial() const;
+	void SetMaterial(std::shared_ptr<BravoMaterialAsset> _Material);
 	bool EnsureReady();
 
 	int32 AddInstance(const BravoMeshInstance& Instance, bool bUpdateInstanceBuffer = true);
@@ -49,5 +49,5 @@ private:
 	GLuint instanceVBO = 0;
 	std::shared_ptr<BravoStaticMeshAsset> Mesh;
 	std::shared_ptr<BravoShaderAsset> Shader;
-	BravoMaterialPtr Material;
+	std::shared_ptr<BravoMaterialAsset> Material;
 };

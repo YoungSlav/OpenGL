@@ -60,7 +60,6 @@ void BravoCubemapAsset::Use()
 
 void BravoCubemapAsset::StopUsage()
 {
-	//glBindTexture(GL_TEXTURE_CUBE_MAP,  0);
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	TextureUnit = -1;
 }

@@ -1,4 +1,4 @@
-#pragma once
+\#pragma once
 #include "stdafx.h"
 #include "SharedFromThis.h"
 
@@ -11,8 +11,7 @@
 
 // TODO:
 /*
-* Material refactoring. (to have colors OR textures)
-* refactor assets, consider making them unique?
+* PBR
 * Input refactoring 
 * frustrum culling
 * multiple projects in solution: Engine, Game

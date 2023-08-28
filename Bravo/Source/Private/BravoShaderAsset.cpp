@@ -1,6 +1,7 @@
 #include "BravoShaderAsset.h"
 #include "BravoEngine.h"
 #include "BravoAssetManager.h"
+#include "BravoMaterialAsset.h"
 
 #include <windows.h>
 #include <fstream>
@@ -147,7 +148,7 @@ void BravoShaderAsset::SetTexture(const std::string& name, std::shared_ptr<Bravo
 	}
 	else
 	{
-		Log::LogMessage("BravoShader::SetMaterial() value is none!");
+		Log::LogMessage("BravoShader::SetTexture() value is none!");
 	}
 }
 
@@ -160,7 +161,7 @@ void BravoShaderAsset::SetCubemap(const std::string& name, std::shared_ptr<Bravo
 	}
 	else
 	{
-		Log::LogMessage("BravoShader::SetMaterial() value is none!");
+		Log::LogMessage("BravoShader::SetCubemap() value is none!");
 	}
 }
 
@@ -214,42 +215,23 @@ void BravoShaderAsset::SetMatrix4d(const std::string& name, const glm::mat4& val
 	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
-void BravoShaderAsset::SetMaterial(const std::string& name, const BravoMaterialPtr& val) const
+void BravoShaderAsset::SetMaterial(const std::string& name, std::shared_ptr<class BravoMaterialAsset> val) const
 {
 	if ( !val )
 	{
 		Log::LogMessage("BravoShader::SetMaterial() value is none!");
 		return;
 	}
+	
+	val->Use();
 
+	BravoMaterialShaderData data = val->GetShadeData();
 
-	for ( int32 i = 0; i < EBravoTextureType::NUM; ++i )
-	{
-		EBravoTextureType type = (EBravoTextureType)i;
-		std::string textureName;
-		switch(type)
-		{
-		case EBravoTextureType::diffuse:
-			textureName = "diffuse";
-			break;
-		case EBravoTextureType::specular:
-			textureName = "specular";
-			break;
-		case EBravoTextureType::height:
-			textureName = "height";
-			break;
-		case EBravoTextureType::ambient:
-			textureName = "ambient";
-			break;
-		case EBravoTextureType::normal:
-			textureName = "normal";
-			break;
-		}
-		if ( val->Textures[i] )
-			SetTexture(name + "." + textureName, val->Textures[i]);
-		else
-			SetTexture(name + "." + textureName, EmptyTexture);
-	}
-	SetVector1d(name + ".shininess", val->Shininess);
-
+	SetInt(name + ".textureArray", val->GetTextureUnit());
+	SetInt(name + ".diffuseTexture", data.DiffuseTextureLayer);
+	SetInt(name + ".specularTexture", data.SpecularTextureLayer);
+	SetInt(name + ".normalTexture", data.NormalTextureLayer);
+	SetVector3d(name + ".diffuseColor", data.DiffuseColor);
+	SetVector3d(name + ".specularColor", data.SpecularColor);
+	SetVector1d(name + ".shininess", data.Shininess);
 }
