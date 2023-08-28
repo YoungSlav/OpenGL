@@ -15,7 +15,6 @@ struct BravoSpotLightSettings
 
 struct BravoSpotLightShaderData
 {
-	alignas(16) glm::mat4 LightSpaceMatrix;
 	alignas(16) glm::vec3 AmbientLight;
 	alignas(16) glm::vec3 DiffuseLight;
 	alignas(16) glm::vec3 SpecularLight;
@@ -32,6 +31,7 @@ struct BravoSpotLightShaderData
 	float Quadric = 0.0f;
 	float FarPlane = 0.0f;
 
+	alignas(16) glm::mat4 LightSpaceMatrix;
 };
 
 

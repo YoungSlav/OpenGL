@@ -13,7 +13,6 @@ struct BravoDirectionalLightSettings
 
 struct BravoDirectionalLightShaderData
 {
-
 	alignas(16) glm::vec3 AmbientLight;
 	alignas(16) glm::vec3 DiffuseLight;
 	alignas(16) glm::vec3 SpecularLight;

@@ -56,7 +56,7 @@ void BravoDirectionalLightShaderDataCollection::UseOn(std::shared_ptr<BravoShade
 		DirectionalDepthMap->Use(Shader);
 	}
 	
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ShaderDataSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ShaderDataSSBO);
 
 	Shader->SetInt("directionalLightCount", ShaderData.size());
 }

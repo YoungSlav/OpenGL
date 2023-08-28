@@ -32,7 +32,7 @@ struct DirectionalLight
 
 	mat4 lightSpaceMatrix;
 };
-layout(std430, binding = 2) buffer DirectionalLightBuffer
+layout(std430, binding = 0) buffer DirectionalLightBuffer
 {
 	DirectionalLight dirLights[];
 };
@@ -41,7 +41,6 @@ uniform sampler2DArray dirDepthMaps;
 
 struct SpotLight
 {
-	mat4 lightSpaceMatrix;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -57,6 +56,7 @@ struct SpotLight
 	float quadratic;
 	float farPlane;
 
+	mat4 lightSpaceMatrix;
 };
 layout(std430, binding = 1) buffer SpotLightBuffer
 {
