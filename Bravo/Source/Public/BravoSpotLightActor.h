@@ -25,7 +25,6 @@ struct BravoSpotLightShaderData
 	float CutOff = 0.0f;
 	float OuterCutOff = 0.0f;
 
-	// TODO: replace with IntencityIndex
 	float Constant = 0.0f;
 	float Linear = 0.0f;
 	float Quadric = 0.0f;
