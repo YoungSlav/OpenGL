@@ -39,8 +39,9 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>("Player") )
 	{
-		Player->SetLocation(glm::vec3(-10.0, 10.0f, 0.0));
-		Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
+		Player->SetLocation(glm::vec3(-15.0792866, 17.3910675, 0.121996939));
+		Player->SetRotation(glm::vec3(0.00000000, 0.800000012, -59.5000076));
+		//Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
 		
 		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>("Camera");
 		Engine->SetCamera(Camera);
@@ -129,13 +130,14 @@ void BravoGameInstance::SpawnSpotLights()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
 	BravoMeshPtr coneAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-	for ( int32 i = 0 ; i < 10; ++i )
+	int32 count = 2;
+	for ( int32 i = 0 ; i < count; ++i )
 	{
 		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
 		{
 			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians(360.0f / 10 *i)) * 20;
-			newLocation.z = glm::cos(glm::radians(360.0f / 10 *i)) * 20;
+			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 20;
+			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 20;
 			newLocation.y = 10.0f;
 			spotLightActor->SetLocation(newLocation);
 
@@ -181,6 +183,8 @@ void BravoGameInstance::SpawnCubes()
 			glm::vec3 newLocation = glm::vec3(0.0f);
 			newLocation.x = glm::sin(glm::radians(360.0f / 50 *i)) * 5;
 			newLocation.z = glm::cos(glm::radians(360.0f / 50 *i)) * 5;
+
+			
 			cubeMesh->SetLocation(newLocation);
 			cubeMesh->SetScale(glm::vec3(0.1f));
 
@@ -236,20 +240,19 @@ void BravoGameInstance::Tick(float DeltaTime)
 	}
 	mesh->UpdateInstanceBuffer();
 
-	//for ( int32 i = 0; i < spotLights.size(); ++i )
-	//{
-	//	glm::vec3 newLocation = glm::vec3(0.0f);
-	//	float x = glm::sin(LifeTime) * 7.0f;
-	//	float z = glm::cos(LifeTime) * 7.0f;
-	//
-	//	newLocation.x = i % 2 == 0 ? x : z;
-	//	newLocation.z = i % 2 == 0 ? z : x;
-	//	newLocation.y = 7;
-	//	
-	//
-	//	spotLights[i]->SetLocation(newLocation);
-	//	spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
-	//}
+	for ( int32 i = 0; i < spotLights.size(); ++i )
+	{
+		glm::vec3 newLocation = glm::vec3(0.0f);
+		newLocation.x = glm::sin(glm::radians(360.0f / spotLights.size() *i)) * 5;
+		newLocation.z = glm::cos(glm::radians(360.0f / spotLights.size() *i)) * 5;
+	
+		newLocation.y = 7;
+		
+		newLocation = glm::normalize(newLocation) * std::abs(glm::sin(LifeTime * 0.2f)) * 50.0f;
+
+		spotLights[i]->SetLocation(newLocation);
+		spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
+	}
 
 	for ( int32 i = 0; i < pointLights.size(); ++i )
 	{
