@@ -12,9 +12,10 @@
 // TODO:
 /*
 *
-* REFACTOR LIGHTS AND SHADOWS (dir - done, spot - done, point - )
-* refactor assets, consider making them unique?
+* REFACTOR LIGHTS AND SHADOWS
+* refactor rendering to use invocations?
 * Material refactoring. (to have colors OR textures)
+* refactor assets, consider making them unique?
 * Input refactoring 
 * frustrum culling
 * multiple projects in solution: Engine, Game
@@ -112,5 +113,5 @@ private:
 	float GameTime = 0.0f;
 	bool bRequestExit = false;
 
-	float FPSLimit = 100.0f;
+	float FPSLimit = 60.0f;
 };

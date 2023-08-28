@@ -9,7 +9,7 @@ public:
 	virtual void Setup(const uint32 Size) = 0;
 	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) = 0;
 
-	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) = 0;
+	virtual void Apply(BravoShaderPtr OnShader, const std::string& Path) = 0;
 	virtual void StopUsage() = 0;
 
 protected:
@@ -19,31 +19,16 @@ protected:
 	std::shared_ptr<class BravoShader> DepthMapShader;
 };
 
-
-class BravoDepthMap_Cube : public BravoDepthMap
+class BravoDepthMapNew : public BravoObject
 {
 public:
-
-	virtual void Setup(const uint32 Size) override;
-	
-
-	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
-	virtual void StopUsage() override;
+	virtual void Setup(const int32 LayersCount, const uint32 TextureSize) = 0;
+	virtual void Use(BravoShaderPtr OnShader) = 0;
+	virtual void StopUsage() = 0;
 
 protected:
-	virtual void OnDestroy() override;
 
-	std::vector<glm::mat4> ShadowTransforms;
-
-	int32 TextureUnit = 0;
-	uint32 DepthMapFBO = 0;
-	uint32 DepthCubemap = 0;
-};
-
-
-class BravoDepthMap_Point : public BravoDepthMap_Cube
-{
-public:
-
-	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
+	int32 Layers = 0;
+	uint32 Size = 2048;
+	std::shared_ptr<class BravoShader> DepthMapShader;
 };

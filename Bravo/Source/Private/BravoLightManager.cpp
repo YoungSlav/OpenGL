@@ -1,100 +1,68 @@
 #include "BravoLightManager.h"
+
 #include "BravoDirectionalLightActor.h"
-#include "BravoSpotLightActor.h"
 #include "BravoPointLightActor.h"
+#include "BravoSpotLightActor.h"
+
+#include "BravoDirectionalLightShaderDataCollection.h"
+#include "BravoSpotLightShaderDataCollection.h"
+#include "BravoPointLightShaderDataCollection.h"
 
 #include "BravoEngine.h"
 #include "BravoShader.h"
 
+bool BravoLightManager::Initialize_Internal()
+{
+	if ( !BravoObject::Initialize_Internal() )
+		return false;
+
+	SpotLightsDataCollection = NewObject<BravoSpotLightShaderDataCollection>("SpotLightShaderDataCollection");
+	DirectionalLightsDataCollection = NewObject<BravoDirectionalLightShaderDataCollection>("DirectionalLightsDataCollection");
+	PointLightsDataCollection = NewObject<BravoPointLightShaderDataCollection>("PointLightShaderDataCollection");
+
+	return true;
+}
 
 void BravoLightManager::RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor)
 {
 	if ( std::shared_ptr<BravoDirectionalLightActor> asDir = std::dynamic_pointer_cast<BravoDirectionalLightActor>(LightActor) )
-	{
-		if ( DirectionalLight )
-		{
-			Log::LogMessage("Directional light override!", ELog::Warning);
-		}
-		DirectionalLight = asDir;
-	}
+		DirectionalLights.push_back(asDir);
 
 	if ( std::shared_ptr<BravoSpotLightActor> asSpot = std::dynamic_pointer_cast<BravoSpotLightActor>(LightActor) )
-	{
 		SpotLights.push_back(asSpot);
-	}
 
-	if ( std::shared_ptr<BravoPointLightActor> asSpot = std::dynamic_pointer_cast<BravoPointLightActor>(LightActor) )
-	{
-		PointLights.push_back(asSpot);
-	}
-
-	UpdateShaderPaths();
+	if ( std::shared_ptr<BravoPointLightActor> asPoint = std::dynamic_pointer_cast<BravoPointLightActor>(LightActor) )
+		PointLights.push_back(asPoint);
 }
+
 void BravoLightManager::RemoveLightActor(std::shared_ptr<BravoLightActor> lightActor)
 {
 	SpotLights.erase(std::remove(SpotLights.begin(), SpotLights.end(), lightActor), SpotLights.end());
 	PointLights.erase(std::remove(PointLights.begin(), PointLights.end(), lightActor), PointLights.end());
-	
-	if ( DirectionalLight == lightActor )
-		DirectionalLight.reset();
-
-	UpdateShaderPaths();
+	DirectionalLights.erase(std::remove(DirectionalLights.begin(), DirectionalLights.end(), lightActor), DirectionalLights.end());
 }
 
-void BravoLightManager::UpdateShaderPaths()
-{
-	if ( DirectionalLight )
-		DirectionalLight->SetShaderPath("dirLight.");
-
-	for ( uint32 i = 0; i < SpotLights.size(); ++i )
-	{
-		if ( SpotLights[i] )
-		{
-			SpotLights[i]->SetShaderPath("spotLights[" + std::to_string(i) + "].");
-		}
-	}
-
-	for ( uint32 i = 0; i < PointLights.size(); ++i )
-	{
-		if ( PointLights[i] )
-		{
-			PointLights[i]->SetShaderPath("pointLights[" + std::to_string(i) + "].");
-		}
-	}
-}
-
-void BravoLightManager::UpdateLightsDepthMaps()
-{
-	if ( DirectionalLight )
-		DirectionalLight->UpdateDepthMap();
-	for ( auto& it : SpotLights )
-		it->UpdateDepthMap();
-	for ( auto& it : PointLights )
-		it->UpdateDepthMap();
+void BravoLightManager::UpdateLightsShaderData()
+{	
+	DirectionalLightsDataCollection->Update(DirectionalLights);
+	SpotLightsDataCollection->Update(SpotLights);
+	PointLightsDataCollection->Update(PointLights);
 }
 
 void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
 {
-	if ( DirectionalLight )
-		DirectionalLight->Use(Shader);
+	DirectionalLightsDataCollection->UseOn(Shader);
 	
-	Shader->SetInt("spotLightsNum", SpotLights.size());
-	for ( auto& it : SpotLights )
-		it->Use(Shader);
+	SpotLightsDataCollection->UseOn(Shader);
 
-
-	
-	Shader->SetInt("pointLightsNum", PointLights.size());
-	for ( auto& it : PointLights )
-		it->Use(Shader);
+	PointLightsDataCollection->UseOn(Shader);
 }
 
 void BravoLightManager::ResetLightsUsage()
 {
-	if ( DirectionalLight )
-		DirectionalLight->StopUsage();
-	for ( auto& it : SpotLights )
-		it->StopUsage();
-	for ( auto& it : PointLights )
-		it->StopUsage();
+	DirectionalLightsDataCollection->ResetUsage();
+
+	SpotLightsDataCollection->ResetUsage();
+	
+	PointLightsDataCollection->ResetUsage();
 }

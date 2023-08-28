@@ -3,7 +3,6 @@
 #include "stdafx.h"
 
 #include "BravoLightActor.h"
-#include "BravoDepthMap.h"
 
 struct BravoDirectionalLightSettings
 {
@@ -11,44 +10,35 @@ struct BravoDirectionalLightSettings
 	float FrustrumMultiplicator = 5.0f;
 };
 
-class BravoDepthMapDirectional : public BravoDepthMap
+struct BravoDirectionalLightShaderData
 {
-public:
-	virtual void Setup(const uint32 Size) override;
-	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
-	virtual void StopUsage() override;
-	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
+	alignas(16) glm::vec3 AmbientLight;
+	alignas(16) glm::vec3 DiffuseLight;
+	alignas(16) glm::vec3 SpecularLight;
 
-protected:
-	virtual bool Initialize_Internal() override;
-	virtual void OnDestroy() override;
+	alignas(16) glm::vec3 Direction;
 
-private:
-	std::vector<glm::mat4> GetLightSpaceMatrices(const glm::vec3& LightDirection) const;
-	glm::mat4 GetLightSpaceMatrix(const float nearPlane, const float farPlane, const glm::vec3& LightDirection) const;
+	int32 LayerOffset;
+	int32 CascadeCount;
+	float cascadePlaneDistance;
 
-private:
-	uint32 DepthMapFBO = 0;
-	uint32 DepthMapsTextures = 0;
-	int32 TextureUnit = -1;
-	uint32 MatricesUBO = 0;
-
-	std::vector<glm::mat4> CacheLightMatrices;
-
-	std::shared_ptr<class BravoDirectionalLightActor> DirLightOwner;
+	alignas(16) glm::mat4 LightSpaceMatrix;
 };
 
 class BravoDirectionalLightActor : public BravoLightActor
 {
 public:
 
-	virtual void Use(BravoShaderPtr OnShader) override;
+	void GetShaderData(std::vector<BravoDirectionalLightShaderData>& OutShaderData) const;
 
-	void SetSettings(BravoDirectionalLightSettings _Settings);
-	inline const BravoDirectionalLightSettings& GetSettings() const { return Settings; }
+	void SetSettings(BravoDirectionalLightSettings _Settings) { Settings = _Settings; }
+	const BravoDirectionalLightSettings& GetSettings() const { return Settings; }
 
 protected:
 	virtual bool Initialize_Internal() override;
+
+private:
+	glm::mat4 GetLightSpaceMatrix(const float nearPlane, const float farPlane) const;
 
 private:
 	BravoDirectionalLightSettings Settings;

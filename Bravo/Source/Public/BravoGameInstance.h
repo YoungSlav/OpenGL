@@ -11,6 +11,8 @@ protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 
+	void SpawnPointLightTest();
+	void SpawnDirLights();
 	void SpawnSpotLights();
 	void SpawnPointLights();
 	void SpawnCubes();

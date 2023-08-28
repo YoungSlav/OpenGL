@@ -3,7 +3,6 @@
 #include "stdafx.h"
 
 #include "BravoLightActor.h"
-#include "BravoDepthMap.h"
 
 
 struct BravoSpotLightSettings
@@ -14,40 +13,43 @@ struct BravoSpotLightSettings
 	uint32 Intencity = 6;
 };
 
-class BravoDepthMapSpot : public BravoDepthMap
+struct BravoSpotLightShaderData
 {
-public:
-	virtual void Setup(const uint32 Size) override;
-	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
-	virtual void StopUsage() override;
-	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
+	alignas(16) glm::vec3 AmbientLight;
+	alignas(16) glm::vec3 DiffuseLight;
+	alignas(16) glm::vec3 SpecularLight;
 
-protected:
-	virtual bool Initialize_Internal() override;
-	virtual void OnDestroy() override;
+	alignas(16) glm::vec3 Position;
+	alignas(16) glm::vec3 Direction;
 
-private:
+	float CutOff = 0.0f;
+	float OuterCutOff = 0.0f;
 
-	std::shared_ptr<class BravoSpotLightActor> SpotLightOwner;
+	float Constant = 0.0f;
+	float Linear = 0.0f;
+	float Quadric = 0.0f;
+	float FarPlane = 0.0f;
 
-	glm::mat4 LightSpaceMatrix;
-	
-	int32 TextureUnit = -1;
-	uint32 DepthMapFBO = 0;
-	uint32 DepthMap = 0;
+	alignas(16) glm::mat4 LightSpaceMatrix;
 };
+
 
 class BravoSpotLightActor : public BravoLightActor
 {
 public:
-	virtual void Use(BravoShaderPtr OnShader) override;
-
 	void SetSettings(BravoSpotLightSettings _Settings);
 	inline const BravoSpotLightSettings& GetSettings() const { return Settings; }
+
+	
+
+	void GetShaderData(BravoSpotLightShaderData& OutShaderData) const;
 
 protected:
 	virtual bool Initialize_Internal() override;
 
+	void GetLightSpaceTransformationMatrix(glm::mat4& OutTransformationMatrix) const;
+
 private:
+
 	BravoSpotLightSettings Settings;
 };

@@ -1,49 +1,36 @@
 #pragma once
 
 #include "stdafx.h"
-
 #include "BravoLightActor.h"
-#include "BravoDepthMap.h"
 
 
 struct BravoPointLightSettings
 {
-	
-
 	uint32 Intencity = 6;
 };
 
-class BravoDepthMapPoint : public BravoDepthMap
+struct BravoPointLightShaderData
 {
-public:
-	virtual void Setup(const uint32 Size) override;
-	virtual void Use(BravoShaderPtr OnShader, const std::string& Path) override;
-	virtual void StopUsage() override;
-	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) override;
+	alignas(16) glm::vec3 AmbientLight;
+	alignas(16) glm::vec3 DiffuseLight;
+	alignas(16) glm::vec3 SpecularLight;
 
-protected:
-	virtual bool Initialize_Internal() override;
-	virtual void OnDestroy() override;
+	alignas(16) glm::vec3 Position;
 
-private:
-
-	std::shared_ptr<class BravoPointLightActor> PointLightOwner;
-
-	std::vector<glm::mat4> LightSpaceMatricies;
+	float Constant = 0.0f;
+	float Linear = 0.0f;
+	float Quadric = 0.0f;
 	
-	int32 TextureUnit = -1;
-	uint32 DepthMapFBO = 0;
-	uint32 DepthCubemap = 0;
+	float FarPlane = 0.0f;
 };
 
 class BravoPointLightActor : public BravoLightActor
 {
 public:
-	virtual void Use(BravoShaderPtr OnShader) override;
-
 	void SetSettings(BravoPointLightSettings _Settings);
 	inline const BravoPointLightSettings& GetSettings() const { return Settings; }
 
+	void GetShaderData(BravoPointLightShaderData& OutShaderData) const;
 protected:
 	virtual bool Initialize_Internal() override;
 
