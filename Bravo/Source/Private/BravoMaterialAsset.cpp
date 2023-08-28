@@ -54,7 +54,7 @@ bool BravoMaterialAsset::LoadToGPU_Internal()
 
 		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA,
 			SizeX, SizeY,
-			Textures.size(), 0,
+			(GLsizei)Textures.size(), 0,
 			Format, GL_UNSIGNED_BYTE, nullptr);
 
 		for (size_t i = 0; i < Textures.size(); i++)
