@@ -12,8 +12,6 @@
 // TODO:
 /*
 *
-* REFACTOR LIGHTS AND SHADOWS
-* refactor rendering to use invocations?
 * Material refactoring. (to have colors OR textures)
 * refactor assets, consider making them unique?
 * Input refactoring 
