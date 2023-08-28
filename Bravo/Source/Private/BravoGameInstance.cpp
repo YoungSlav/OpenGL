@@ -70,10 +70,47 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	
 	
-	SpawnDirLights();
-	SpawnSpotLights();
+	//SpawnDirLights();
+	//SpawnPointLightTest();
+	SpawnPointLights();
+	//SpawnSpotLights();
 	SpawnTestInstances();
 	return true;
+}
+
+void BravoGameInstance::SpawnPointLightTest()
+{
+	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
+	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
+
+	BravoMaterialPtr wallMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+	wallMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+	wallMat->Shininess = 64.0f;
+
+	std::vector<glm::vec3> scales = {
+		glm::vec3(0.1f, 10.0f, 10.0f),
+		glm::vec3(0.1f, 10.0f, 10.0f),
+		glm::vec3(10.0f, 10.0f, 0.1f),
+		glm::vec3(10.0f, 10.0f, 0.1f)
+	};
+	std::vector<glm::vec3> locations = {
+		glm::vec3(10.0f, 10.0f, 0.0f),
+		glm::vec3(-10.0f, 10.0f, 0.0f),
+		glm::vec3(0.0f, 10.0f, 10.0f),
+		glm::vec3(0.0f, 10.0f, -10.0f)
+	};
+	for ( int32 i = 0; i < 4; ++i )
+	{
+		if ( auto wallActor = NewObject<BravoActor>("Wall" + std::to_string(i)) )
+		{
+			wallActor->SetScale(scales[i]);
+			wallActor->SetLocation(locations[i]);
+			auto wallMesh = wallActor->NewObject<BravoStaticMeshComponent>("WallMeshStaticMesh1");
+			wallMesh->SetMesh(cubeAsset);
+			wallMesh->SetCastShadows(true);
+			wallMesh->SetMaterial(wallMat);
+		}
+	}
 }
 
 void BravoGameInstance::SpawnDirLights()
@@ -97,45 +134,32 @@ void BravoGameInstance::SpawnDirLights()
 void BravoGameInstance::SpawnPointLights()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-
 	BravoMeshPtr sphereAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
-	if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
+	
+	std::vector<glm::vec3> locations = {
+		glm::vec3(0.0f, 10.0f, 0.0f),
+		glm::vec3(0.0f, 20.0f, 0.0f)
+	};
+	for ( int32 i = 0 ; i < locations.size(); ++i )
 	{
-		pointLightActor->SetLocation(glm::vec3(0.0f,  0.0f, 0.0f ));
-		pointLightActor->SetLightColor(glm::vec3(0.7f, 0.5f, 0.3f ));
-		BravoPointLightSettings PointSettings;
-		PointSettings.Intencity = 10;
-		pointLightActor->SetSettings(PointSettings);
+		if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
+		{
+			pointLightActor->SetLocation(locations[i]);
+			pointLightActor->SetLightColor(glm::vec3(1.0f));
+			BravoPointLightSettings PointSettings;
+			PointSettings.Intencity = 10;
+			pointLightActor->SetSettings(PointSettings);
 
-		auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh");
-		sphereMesh->SetMesh(sphereAsset);
-		sphereMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
-		sphereMesh->SetScale(glm::vec3(0.25f));
-		BravoMaterialPtr sphereMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-		sphereMat->Shininess = 64.0f;
-		sphereMesh->SetMaterial(sphereMat);
+			auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh");
+			sphereMesh->SetMesh(sphereAsset);
+			sphereMesh->SetScale(glm::vec3(0.25f));
+			BravoMaterialPtr sphereMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
+			sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+			sphereMat->Shininess = 64.0f;
+			sphereMesh->SetMaterial(sphereMat);
 
-		pointLights.push_back(pointLightActor);
-	}
-	if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight2") )
-	{
-		pointLightActor->SetLocation(glm::vec3(0.0f,  0.0f, 0.0f ));
-		pointLightActor->SetLightColor(glm::vec3(0.7f, 0.5f, 0.3f ));
-		BravoPointLightSettings PointSettings;
-		PointSettings.Intencity = 10;
-		pointLightActor->SetSettings(PointSettings);
-
-		auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh2");
-		sphereMesh->SetMesh(sphereAsset);
-		sphereMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
-		sphereMesh->SetScale(glm::vec3(0.25f));
-		BravoMaterialPtr sphereMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
-		sphereMat->Shininess = 64.0f;
-		sphereMesh->SetMaterial(sphereMat);
-
-		pointLights.push_back(pointLightActor);
+			pointLights.push_back(pointLightActor);
+		}
 	}
 }
 void BravoGameInstance::SpawnSpotLights()
@@ -217,7 +241,7 @@ void BravoGameInstance::SpawnTestInstances()
 	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
 	{
 		auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent");
-		cubeActor->SetLocation(glm::vec3(0.0f, 2.0f, 0.0f));
+		cubeActor->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
 		cubeMesh->SetMesh(cubeAsset);
 		cubeMesh->SetCastShadows(true);
 		BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
@@ -259,24 +283,9 @@ void BravoGameInstance::Tick(float DeltaTime)
 		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 5;
 		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 5;
 	
-		newLocation.y = 7;
+		newLocation.y = 20.0f;
 
 		spotLights[i]->SetLocation(newLocation);
 		spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
-	}
-
-	for ( int32 i = 0; i < pointLights.size(); ++i )
-	{
-		glm::vec3 newLocation = glm::vec3(0.0f);
-		float x = glm::sin(LifeTime) * 7.0f;
-		float z = glm::cos(LifeTime) * 7.0f;
-
-		newLocation.x = i % 2 == 0 ? x : z;
-		newLocation.z = i % 2 == 0 ? z : x;
-		newLocation.y = 10.0f;
-		
-	
-		pointLights[i]->SetLocation(newLocation);
-		pointLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
 	}
 }

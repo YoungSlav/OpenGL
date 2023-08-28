@@ -36,18 +36,17 @@ void BravoDirectionalLightShaderDataCollection::Update(const std::vector<std::sh
 
 	ShaderData.clear();
 	ShaderData.reserve(CollectionSize);
-	for ( int32 i = 0; i < Casters.size(); ++i )
+	for ( size_t i = 0; i < Casters.size(); ++i )
 	{
-		int32 StartingLayer = (int32)ShaderData.size();
 		Casters[i]->GetShaderData(ShaderData);
-		for ( int32 layer = StartingLayer; layer < ShaderData.size(); ++layer)
-			DirectionalDepthMap->Render(layer, ShaderData[layer]);
 	}
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ShaderDataSSBO);
 		BravoDirectionalLightShaderData* bufferData = (BravoDirectionalLightShaderData*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
 		std::memcpy(bufferData, ShaderData.data(), ShaderData.size() * sizeof(BravoDirectionalLightShaderData));
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	DirectionalDepthMap->Render(ShaderData);
 
 }
 

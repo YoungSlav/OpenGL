@@ -33,4 +33,5 @@ private:
 	std::shared_ptr<class BravoSpotLightShaderDataCollection> SpotLightsDataCollection = nullptr;
 
 	std::vector< std::shared_ptr<class BravoPointLightActor>> PointLights;
+	std::shared_ptr<class BravoPointLightShaderDataCollection> PointLightsDataCollection = nullptr;
 };

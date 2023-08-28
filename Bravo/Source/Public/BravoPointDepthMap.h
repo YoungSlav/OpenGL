@@ -4,13 +4,13 @@
 #include "BravoObject.h"
 #include "BravoShader.h"
 #include "BravoDepthMap.h"
-#include "BravoSpotLightActor.h"
+#include "BravoPointLightActor.h"
 
-class BravoSpotDepthMap : public BravoDepthMapNew
+class BravoPointDepthMap : public BravoDepthMapNew
 {
 public:
 	virtual void Setup(const int32 LayersCount, const uint32 TextureSize) override;
-	void Render(const std::vector<BravoSpotLightShaderData>& CastersData);
+	void Render(const std::vector<BravoPointLightShaderData>& CastersData);
 
 	virtual void Use(BravoShaderPtr OnShader);
 	virtual void StopUsage();

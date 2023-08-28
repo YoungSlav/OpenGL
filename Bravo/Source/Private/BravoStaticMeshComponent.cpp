@@ -197,11 +197,9 @@ void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader>
 	
 	glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
-	_Shader->Use();
-		_Shader->SetMatrix4d("model", model);
+	_Shader->SetMatrix4d("model", model);
 		
-		glBindVertexArray(VAO);
-		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
+	glBindVertexArray(VAO);
+	glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
 
-	_Shader->StopUsage();
 }

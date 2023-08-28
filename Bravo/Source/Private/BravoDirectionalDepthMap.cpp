@@ -48,21 +48,24 @@ void BravoDirectionalDepthMap::Setup(const int32 LayersCount, const uint32 Textu
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void BravoDirectionalDepthMap::Render(int32 Layer, const BravoDirectionalLightShaderData& CasterData)
+void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightShaderData>& CastersData)
 {
 	if ( !DepthMapShader )
 		return;
 		
 	DepthMapShader->Use();
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, Layer);
+		for ( size_t layer = 0; layer < CastersData.size(); ++layer )
+		{
+			glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, (int32)layer);
+			glViewport(0, 0, Size, Size);
+			glClear(GL_DEPTH_BUFFER_BIT);
 
-		glViewport(0, 0, Size, Size);
-		glClear(GL_DEPTH_BUFFER_BIT);
 			
-		DepthMapShader->SetMatrix4d("lightSpaceMatrix", CasterData.LightSpaceMatrix);
+			DepthMapShader->SetMatrix4d("lightSpaceMatrix", CastersData[layer].LightSpaceMatrix);
 	
-		Engine->RenderDepthMap(DepthMapShader);
+			Engine->RenderDepthMap(DepthMapShader);
+		}
 			
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DepthMapShader->StopUsage();

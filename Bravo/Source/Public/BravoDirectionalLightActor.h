@@ -3,7 +3,6 @@
 #include "stdafx.h"
 
 #include "BravoLightActor.h"
-#include "BravoDepthMap.h"
 
 struct BravoDirectionalLightSettings
 {

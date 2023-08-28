@@ -5,13 +5,13 @@
 #include "BravoObject.h"
 #include "BravoShader.h"
 #include "BravoDepthMap.h"
-
+#include "BravoDirectionalLightActor.h"
 
 class BravoDirectionalDepthMap : public BravoDepthMapNew
 {
 public:
 	void Setup(const int32 LayersCount, const uint32 TextureSize);
-	void Render(int32 Layer, const struct BravoDirectionalLightShaderData& CasterData);
+	void Render(const std::vector<BravoDirectionalLightShaderData>& CastersData);
 	
 	virtual void Use(BravoShaderPtr OnShader);
 	virtual void StopUsage();

@@ -27,8 +27,8 @@ void BravoSpotDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize)
 
 	glGenFramebuffers(1, &DepthMapFBO);
 
-		glGenTextures(1, &DepthMapsTextures);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, DepthMapsTextures);
+	glGenTextures(1, &DepthMapsTextures);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, DepthMapsTextures);
 		glTexImage3D(
 			GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, Size, Size, Layers,
 			0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -41,11 +41,11 @@ void BravoSpotDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize)
 		constexpr float bordercolor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0);
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -64,21 +64,24 @@ void BravoSpotDepthMap::OnDestroy()
 	BravoDepthMapNew::OnDestroy();
 }
 
-void BravoSpotDepthMap::Render(int32 Layer, const struct BravoSpotLightShaderData& CasterData)
+void BravoSpotDepthMap::Render(const std::vector<BravoSpotLightShaderData>& CastersData)
 {
 	if ( !DepthMapShader )
 		return;
 		
 	DepthMapShader->Use();
 	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, Layer);
+		for (size_t layer = 0; layer < CastersData.size(); ++layer )
+		{
+			glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, (int32)layer);
 
-		glViewport(0, 0, Size, Size);
-		glClear(GL_DEPTH_BUFFER_BIT);
-			
-		DepthMapShader->SetMatrix4d("lightSpaceMatrix", CasterData.LightSpaceMatrix);
+			glViewport(0, 0, Size, Size);
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+			DepthMapShader->SetMatrix4d("lightSpaceMatrix", CastersData[layer].LightSpaceMatrix);
 	
-		Engine->RenderDepthMap(DepthMapShader);
+			Engine->RenderDepthMap(DepthMapShader);
+		}
 			
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DepthMapShader->StopUsage();

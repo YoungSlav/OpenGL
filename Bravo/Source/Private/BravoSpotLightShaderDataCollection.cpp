@@ -36,13 +36,10 @@ void BravoSpotLightShaderDataCollection::Update(const std::vector<std::shared_pt
 
 	ShaderData.clear();
 	ShaderData.reserve(Casters.size());
-	for ( int32 i = 0; i < Casters.size(); ++i )
+	for ( size_t i = 0; i < Casters.size(); ++i )
 	{
 		BravoSpotLightShaderData newData;
 		Casters[i]->GetShaderData(newData);
-		
-		SpotDepthMap->Render(i, newData);
-
 		ShaderData.push_back(newData);
 	}
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ShaderDataSSBO);
@@ -51,6 +48,7 @@ void BravoSpotLightShaderDataCollection::Update(const std::vector<std::shared_pt
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+	SpotDepthMap->Render(ShaderData);
 }
 void BravoSpotLightShaderDataCollection::UseOn(std::shared_ptr<BravoShader> Shader)
 {
