@@ -14,10 +14,14 @@ bool BravoDirectionalDepthMap::Initialize_Internal()
 	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapDir");
 	return true;
 }
-void BravoDirectionalDepthMap::Setup(int32 LayersCount)
+void BravoDirectionalDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize)
 {
+	if ( LayersCount == Layers && TextureSize == Size )
+		return;
+
 	ClearGPUData();
 
+	Size = TextureSize;
 	Layers = std::max(LayersCount, 1);
 
 	glGenFramebuffers(1, &DepthMapFBO);

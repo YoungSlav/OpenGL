@@ -52,7 +52,7 @@ bool BravoGameInstance::Initialize_Internal()
 	{
 		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
 	}
-	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
+	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 	
 	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
@@ -149,8 +149,8 @@ void BravoGameInstance::SpawnSpotLights()
 		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
 		{
 			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 20;
-			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 20;
+			newLocation.x = glm::sin(glm::radians((360.0f / count *i) + 3.14f / 2.0f)) * 20;
+			newLocation.z = glm::cos(glm::radians((360.0f / count *i) + 3.14f / 2.0f)) * 20;
 			newLocation.y = 10.0f;
 			spotLightActor->SetLocation(newLocation);
 
@@ -256,12 +256,10 @@ void BravoGameInstance::Tick(float DeltaTime)
 	for ( int32 i = 0; i < spotLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(glm::radians(360.0f / spotLights.size() *i)) * 5;
-		newLocation.z = glm::cos(glm::radians(360.0f / spotLights.size() *i)) * 5;
+		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 5;
+		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 5;
 	
 		newLocation.y = 7;
-		
-		newLocation = glm::normalize(newLocation) * std::abs(glm::sin(LifeTime * 0.2f)) * 50.0f;
 
 		spotLights[i]->SetLocation(newLocation);
 		spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);

@@ -6,12 +6,14 @@ bool BravoDirectionalLightShaderDataCollection::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
+	DirectionalDepthMap = NewObject<BravoDirectionalDepthMap>("DirectionalDepthMaps");
+	DirectionalDepthMap->Setup(1, 4096);
+
 	glGenBuffers(1, &ShaderDataSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ShaderDataSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	Resize(0);
 	return true;
 }
 
@@ -71,11 +73,7 @@ void BravoDirectionalLightShaderDataCollection::ResetUsage()
 
 void BravoDirectionalLightShaderDataCollection::Resize(int32 CollectionSize)
 {
-	if ( DirectionalDepthMap )
-		DirectionalDepthMap->Destroy();
-
-	DirectionalDepthMap = NewObject<BravoDirectionalDepthMap>("DirectionalDepthMaps");
-	DirectionalDepthMap->Setup(CollectionSize);
+	DirectionalDepthMap->Setup(CollectionSize, 4096);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ShaderDataSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, CollectionSize * sizeof(BravoDirectionalLightShaderData), nullptr, GL_DYNAMIC_DRAW);

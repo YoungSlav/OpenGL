@@ -9,6 +9,8 @@ bool BravoSpotLightShaderDataCollection::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
+	SpotDepthMap = NewObject<BravoSpotDepthMap>("SpotDepthMaps");
+	SpotDepthMap->Setup(1, 2048);
 
 	glGenBuffers(1, &ShaderDataSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ShaderDataSSBO);
@@ -71,12 +73,8 @@ void BravoSpotLightShaderDataCollection::ResetUsage()
 }
 
 void BravoSpotLightShaderDataCollection::Resize(int32 CollectionSize)
-{
-	if ( SpotDepthMap )
-		SpotDepthMap->Destroy();
-
-	SpotDepthMap = NewObject<BravoSpotDepthMap>("SpotDepthMaps");
-	SpotDepthMap->Setup(CollectionSize);
+{	
+	SpotDepthMap->Setup(CollectionSize, 2048);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ShaderDataSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, CollectionSize * sizeof(BravoSpotLightShaderData), nullptr, GL_DYNAMIC_DRAW);

@@ -22,11 +22,13 @@ protected:
 class BravoDepthMapNew : public BravoObject
 {
 public:
+	virtual void Setup(const int32 LayersCount, const uint32 TextureSize) = 0;
 	virtual void Use(BravoShaderPtr OnShader) = 0;
 	virtual void StopUsage() = 0;
 
 protected:
 
-	const uint32 Size = 2048;
+	int32 Layers = 0;
+	uint32 Size = 2048;
 	std::shared_ptr<class BravoShader> DepthMapShader;
 };

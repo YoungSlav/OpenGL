@@ -277,7 +277,7 @@ float CalcSpotLightShadow(vec4 fragPosLightSpace, int depthMapLayer, vec3 norm, 
 	
 	// calculate bias (based on depth map resolution and slope)
 	float bias = max(0.05 * (1.0 - dot(norm, -lightDir)), 0.005);
-	const float biasModifier = 0.5f;
+	const float biasModifier = 1.0f;
 	bias *= 1 / (FarPlane * biasModifier);
 	// PCF
 	float shadow = 0.0;

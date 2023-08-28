@@ -15,11 +15,15 @@ bool BravoSpotDepthMap::Initialize_Internal()
 	return true;
 }
 
-void BravoSpotDepthMap::Setup(int32 CastersCount)
+void BravoSpotDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize)
 {
+	if ( LayersCount == Layers && TextureSize == Size )
+		return;
+
 	ClearGPUData();
 	
-	Layers = std::max(CastersCount, 1);
+	Layers = std::max(LayersCount, 1);
+	Size = TextureSize;
 
 	glGenFramebuffers(1, &DepthMapFBO);
 

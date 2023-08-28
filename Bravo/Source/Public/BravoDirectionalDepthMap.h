@@ -10,7 +10,7 @@
 class BravoDirectionalDepthMap : public BravoDepthMapNew
 {
 public:
-	void Setup(int32 LayersCount);
+	void Setup(const int32 LayersCount, const uint32 TextureSize);
 	void Render(int32 Layer, const struct BravoDirectionalLightShaderData& CasterData);
 	
 	virtual void Use(BravoShaderPtr OnShader);
@@ -29,5 +29,5 @@ private:
 	uint32 DepthMapFBO = 0;
 	uint32 DepthMapsTextures = 0;
 
-	int32 Layers = 0;
+	
 };
