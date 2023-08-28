@@ -1,10 +1,10 @@
 #pragma once
 
-#include "BravoMesh.h"
+#include "BravoStaticMeshAsset.h"
 #include "BravoEngine.h"
 #include "BravoComponent.h"
 #include "BravoRenderable.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoMath.h"
 #include "BravoTransform.h"
 
@@ -22,7 +22,7 @@ public:
 class BravoStaticMeshComponent : public BravoComponent, public BravoRenderable
 {
 public:
-	void SetMesh(BravoMeshPtr InMesh);
+	void SetMesh(std::shared_ptr<BravoStaticMeshAsset> InMesh);
 	BravoMaterialPtr GetMaterial() const;
 	void SetMaterial(BravoMaterialPtr _Material);
 	bool EnsureReady();
@@ -38,7 +38,7 @@ public:
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) override;
-	virtual void RenderDepthMap(std::shared_ptr<class BravoShader> Shader) override;
+	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) override;
 	virtual void OnDestroy() override;
 
 private:
@@ -47,7 +47,7 @@ private:
 
 	GLuint VAO = 0;
 	GLuint instanceVBO = 0;
-	BravoMeshPtr Mesh;
-	BravoShaderPtr Shader;
+	std::shared_ptr<BravoStaticMeshAsset> Mesh;
+	std::shared_ptr<BravoShaderAsset> Shader;
 	BravoMaterialPtr Material;
 };

@@ -15,7 +15,7 @@ public:
 
 	void UpdateLightsShaderData();
 
-	void ApplyLights(std::shared_ptr<class BravoShader> Shader);
+	void ApplyLights(std::shared_ptr<class BravoShaderAsset> Shader);
 	void ResetLightsUsage();
 
 	int32 GetSpotDepthMapLayersCount() const { return (int32)SpotLights.size(); }

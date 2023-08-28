@@ -1,15 +1,15 @@
-#include "BravoMesh.h"
+#include "BravoStaticMeshAsset.h"
 
 
-#include "BravoTexture.h"
+#include "BravoTextureAsset.h"
 
 #include "BravoEngine.h"
 
-bool BravoMesh::Initialize_Internal(const std::vector<std::string>& _Params)
+bool BravoStaticMeshAsset::Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params)
 {
 	// read file via ASSIMP
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(Path, aiProcess_Triangulate | aiProcess_FlipUVs  | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile(ResourcesPath+params.MeshPath, aiProcess_Triangulate | aiProcess_FlipUVs  | aiProcess_CalcTangentSpace);
 	// check for errors
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
@@ -23,17 +23,7 @@ bool BravoMesh::Initialize_Internal(const std::vector<std::string>& _Params)
 	return true;
 }
 
-BravoMesh::~BravoMesh()
-{
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	
-	VBO = 0;
-	EBO = 0;
-}
-
-
-void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
+void BravoStaticMeshAsset::ProcessNode(aiNode *node, const aiScene *scene)
 {
 	//Log::LogMessage("LoadingNode: " + std::string(node->mName.C_Str()));
 	// process each mesh located at the current node
@@ -121,11 +111,11 @@ void BravoMesh::ProcessNode(aiNode *node, const aiScene *scene)
 }
 
 
-bool BravoMesh::LoadToGPU_Internal()
+bool BravoStaticMeshAsset::LoadToGPU_Internal()
 {
 	if ( !(Vertices.size() && Indices.size() && Indices.size() % 3 == 0) )
 	{
-		Log::LogMessage("Vertex data is corrupt for mesh: " +  Path, ELog::Warning);
+		Log::LogMessage("Vertex data is corrupt for mesh: " +  GetName(), ELog::Warning);
 		return false;
 	}
 
@@ -147,7 +137,7 @@ bool BravoMesh::LoadToGPU_Internal()
 }
 
 
-void BravoMesh::ReleaseFromGPU_Internal()
+void BravoStaticMeshAsset::ReleaseFromGPU_Internal()
 {
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);

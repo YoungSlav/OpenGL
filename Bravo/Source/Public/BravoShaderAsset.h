@@ -2,8 +2,8 @@
 #include "stdafx.h"
 #include "openGL.h"
 #include "BravoAsset.h"
-#include "BravoTexture.h"
-#include "BravoCubemap.h"
+#include "BravoTextureAsset.h"
+#include "BravoCubemapAsset.h"
 
 namespace ShaderProgrammConstancts
 {
@@ -44,7 +44,7 @@ struct BravoMaterial
 		}
 	}
 
-	BravoTexturePtr Textures[NUM];
+	std::shared_ptr<BravoTextureAsset> Textures[NUM];
 	
 	float Shininess;
 };
@@ -52,13 +52,25 @@ struct BravoMaterial
 typedef std::shared_ptr<BravoMaterial> BravoMaterialPtr;
 
 
-class BravoShader : public BravoAsset
+struct BravoShaderLoadingParams
+{
+	BravoShaderLoadingParams(const std::string& _Path) :
+		ShaderPath(_Path),
+		ShaderDefines()
+	{}
+	BravoShaderLoadingParams(const std::string& _Path, const std::map<std::string, std::string>& _ShaderDefines) :
+		ShaderPath(_Path),
+		ShaderDefines(_ShaderDefines)
+	{}
+
+	std::string ShaderPath;
+	std::map<std::string, std::string> ShaderDefines;
+};
+
+class BravoShaderAsset : public BravoAsset
 {
 public:
-	BravoShader(std::shared_ptr<class BravoAssetManager> _AssetManager) : 
-		BravoAsset(_AssetManager)
-	{}
-	~BravoShader();
+	bool Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
 
 	struct Light
 	{
@@ -74,8 +86,8 @@ public:
 	virtual void Use() override;
 	virtual void StopUsage() override;
 
-	void SetTexture(const std::string& name, BravoTexturePtr val) const;
-	void SetCubemap(const std::string& name, BravoCubemapPtr val) const;
+	void SetTexture(const std::string& name, std::shared_ptr<BravoTextureAsset> val) const;
+	void SetCubemap(const std::string& name, std::shared_ptr<BravoCubemapAsset> val) const;
 	void SetBool(const std::string& name, const bool val) const;
 	void SetInt(const std::string& name, const int32 val) const;
 	void SetInt(const std::string& name, const size_t val) const;
@@ -91,17 +103,13 @@ public:
 	void SetMaterial(const std::string& name, const BravoMaterialPtr& val) const;
 
 protected:
-	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
-
-	bool LoadShader(GLenum ShaderType, int32& OutShader, const std::vector<std::string>& _Params);
+	bool LoadShader(GLenum ShaderType, int32& OutShader, const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
 	bool LinkProgramm();
 
 private:
 
-	BravoTexturePtr EmptyTexture = nullptr;
+	std::shared_ptr<BravoTextureAsset> EmptyTexture = nullptr;
 
 	GLuint ShaderID = 0;
 
 };
-
-typedef std::shared_ptr<BravoShader> BravoShaderPtr;

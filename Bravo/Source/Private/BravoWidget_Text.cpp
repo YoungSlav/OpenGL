@@ -1,17 +1,17 @@
 #include "BravoWidget_Text.h"
 #include "stb_truetype.h"
 #include "openGL.h"
-#include "BravoFont.h"
+#include "BravoFontAsset.h"
 #include "BravoHUD.h"
 #include "BravoAssetManager.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 
 bool BravoWidget_Text::Initialize_Internal()
 {
 	if ( !BravoWidget::Initialize_Internal() )
 		return false;
 
-	Shader = GetAssetManager()->LoadAsset<BravoShader>("Shaders\\wText");
+	Shader = GetAssetManager()->FindOrLoad<BravoShaderAsset>("wTextShader", BravoShaderLoadingParams("Shaders\\wText"));
 	return true;
 }
 
@@ -25,7 +25,7 @@ void BravoWidget_Text::SetTextSize(uint32 _TextSize)
 	TextSize = _TextSize;
 }
 
-void BravoWidget_Text::SetFont(std::shared_ptr<BravoFont> _Font)
+void BravoWidget_Text::SetFont(std::shared_ptr<BravoFontAsset> _Font)
 {
 	Font = _Font;
 }
@@ -40,7 +40,7 @@ void BravoWidget_Text::SetMargin(const glm::vec2& _Margin)
 	Margin = _Margin;
 }
 
-void BravoWidget_Text::SetShader(std::shared_ptr<class BravoShader> _Shader)
+void BravoWidget_Text::SetShader(std::shared_ptr<class BravoShaderAsset> _Shader)
 {
 	Shader = _Shader;
 }

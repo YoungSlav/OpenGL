@@ -1,6 +1,6 @@
 #include "BravoDirectionalDepthMap.h"
 #include "BravoEngine.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoTextureUnitManager.h"
 #include "BravoAssetManager.h"
 #include "BravoDirectionalLightActor.h"
@@ -11,7 +11,7 @@ bool BravoDirectionalDepthMap::Initialize_Internal()
 	if ( !BravoDepthMapNew::Initialize_Internal() )
 		return false;
 
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapDir");
+	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DirectionalDepthMapShader", BravoShaderLoadingParams("Shaders\\DepthMapDir"));
 	return true;
 }
 void BravoDirectionalDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize)
@@ -77,7 +77,7 @@ void BravoDirectionalDepthMap::OnDestroy()
 	BravoDepthMapNew::OnDestroy();
 }
 	
-void BravoDirectionalDepthMap::Use(BravoShaderPtr OnShader)
+void BravoDirectionalDepthMap::Use(std::shared_ptr<BravoShaderAsset> OnShader)
 {
 	TextureUnit = BravoTextureUnitManager::BindTexture();
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);

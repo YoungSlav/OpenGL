@@ -1,40 +1,53 @@
 #pragma once
 #include "stdafx.h"
-#include "SharedFromThis.h"
+#include "openGL.h"
+#include "BravoObject.h"
 #include "BravoAsset.h"
 
-class BravoAssetManager : public SharedFromThis
+class BravoAssetManager : public BravoObject
 {
 public:
-	BravoAssetManager() = default;
-	BravoAssetManager(const BravoAssetManager&) = default;
-
-	template<typename ClassName>
-	std::shared_ptr<ClassName> LoadAsset(const std::string& _Path, const std::vector<std::string>& _Params = std::vector<std::string>())
+	template<typename ClassName, typename... Args>
+	std::shared_ptr<ClassName> FindOrLoad(const std::string& Name, Args&&... args)
 	{
 		static_assert(std::is_base_of_v<BravoAsset, ClassName>);
 		
-		const std::string Path = GetRunningDir() + ResourcesFolderPath + _Path;
-
-		auto it = LoadedAssets.find(Path);
+		auto it = LoadedAssets.find(Name);
 		if ( it != LoadedAssets.end() )
 		{
 			return std::dynamic_pointer_cast<ClassName>(it->second);
 		}
 
-		if ( std::shared_ptr<BravoAsset> asset = std::shared_ptr<ClassName>(new ClassName(Self<BravoAssetManager>())) )
+		if ( std::shared_ptr<ClassName> asset = NewObject<ClassName>(Name) )
 		{
-			if ( asset->Initialize(Path, _Params) && asset->LoadToGPU() )
+			if ( asset->Load(ResourcesFolderPath, std::forward<Args>(args)...) && asset->LoadToGPU() )
 			{
-				LoadedAssets.insert( {Path, asset} );
-				return std::dynamic_pointer_cast<ClassName>(asset);
+				LoadedAssets.insert({Name, asset});
+				return asset;
 			}
 		}
+
 		return nullptr;
+	}
+	
+	const std::string& GetResourceFolder()
+	{
+		return ResourcesFolderPath;
+	}
+
+
+
+protected:
+	virtual bool Initialize_Internal() override
+	{
+		if ( !BravoObject::Initialize_Internal() )
+			return false;
+
+		ResourcesFolderPath = GetRunningDir() + ResourcesFolderRelativePath;
+		return true;
 	}
 
 private:
-
 	inline static std::string GetRunningDir()
 	{
 		int8 buffer[MAX_PATH];
@@ -46,5 +59,6 @@ private:
 private:
 	std::map<std::string, std::shared_ptr<class BravoAsset>> LoadedAssets;
 
-	const std::string ResourcesFolderPath = "..\\..\\Resources\\";
+	const std::string ResourcesFolderRelativePath = "..\\..\\Resources\\";
+	std::string ResourcesFolderPath;
 };

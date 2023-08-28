@@ -21,9 +21,9 @@ public:
 	void SetMargin(const glm::vec2& _Margin);
 	const glm::vec2& GetMargin() const { return Margin; }
 
-	void SetFont(std::shared_ptr<class BravoFont> _Font);
+	void SetFont(std::shared_ptr<class BravoFontAsset> _Font);
 
-	void SetShader(std::shared_ptr<class BravoShader> _Shader);
+	void SetShader(std::shared_ptr<class BravoShaderAsset> _Shader);
 
 	virtual glm::vec2 GetActualSize() const override;
 
@@ -31,8 +31,8 @@ protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Render_Internal() override;
 	
-	const std::shared_ptr<class BravoFont> GetFont() const { return Font.expired() ? nullptr : Font.lock(); }
-	const std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
+	const std::shared_ptr<class BravoFontAsset> GetFont() const { return Font.expired() ? nullptr : Font.lock(); }
+	const std::shared_ptr<class BravoShaderAsset> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 
 
 private:
@@ -43,6 +43,6 @@ private:
 	glm::vec2 Margin = glm::vec2(0.0f, 0.0f);
 	
 
-	std::weak_ptr<class BravoFont> Font;
-	std::weak_ptr<class BravoShader> Shader;
+	std::weak_ptr<class BravoFontAsset> Font;
+	std::weak_ptr<class BravoShaderAsset> Shader;
 };

@@ -2,7 +2,7 @@
 #include "BravoEngine.h"
 #include "BravoTextureUnitManager.h"
 #include "BravoAssetManager.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoPointLightActor.h"
 
 bool BravoPointDepthMap::Initialize_Internal()
@@ -10,7 +10,7 @@ bool BravoPointDepthMap::Initialize_Internal()
 	if ( !BravoDepthMapNew::Initialize_Internal() )
 		return false;
 
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapPoint");
+	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("PointDepthMapShader", BravoShaderLoadingParams("Shaders\\DepthMapPoint"));
 
 	return true;
 }
@@ -45,8 +45,6 @@ void BravoPointDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapPoint");
 }
 
 void BravoPointDepthMap::ClearGPUData()
@@ -112,7 +110,7 @@ void BravoPointDepthMap::Render(const std::vector<BravoPointLightShaderData>& Ca
 	DepthMapShader->StopUsage();
 }
 
-void BravoPointDepthMap::Use(BravoShaderPtr OnShader)
+void BravoPointDepthMap::Use(std::shared_ptr<BravoShaderAsset> OnShader)
 {
 	TextureUnit = BravoTextureUnitManager::BindTexture();
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);

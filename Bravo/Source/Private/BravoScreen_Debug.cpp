@@ -1,7 +1,7 @@
 #include "BravoScreen_Debug.h"
 #include "BravoEngine.h"
 #include "BravoAssetManager.h"
-#include "BravoFont.h"
+#include "BravoFontAsset.h"
 #include "BravoWidget_Text.h"
 
 bool BravoScreen_Debug::Initialize_Internal()
@@ -12,7 +12,7 @@ bool BravoScreen_Debug::Initialize_Internal()
 	if ( !Engine )
 		return false;
 
-	std::shared_ptr<BravoFont> font = Engine->GetAssetManager()->LoadAsset<BravoFont>("Fonts\\arial.ttf", {"50", "25", "12" });
+	std::shared_ptr<BravoFontAsset> font = Engine->GetAssetManager()->FindOrLoad<BravoFontAsset>("ArialFontAsset", BravoFontLoadingParams("Fonts\\arial.ttf", {50, 25, 12 }));
 	std::shared_ptr<BravoWidget_Text> _fps = NewObject<BravoWidget_Text>();
 	_fps->SetPosition(glm::vec2(1.0f, 0.0f));
 	_fps->SetOrigin(glm::vec2(1.0f, 0.0f));

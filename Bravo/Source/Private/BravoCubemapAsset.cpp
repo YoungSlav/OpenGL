@@ -1,27 +1,21 @@
-#include "BravoCubemap.h"
+#include "BravoCubemapAsset.h"
 #include "BravoTextureUnitManager.h"
 #include "BravoTextureData.h"
 #include "openGL.h"
 #include "stdafx.h"
 
-BravoCubemap::~BravoCubemap()
-{
-	BravoTextureUnitManager::UnbindTexture(TextureUnit);
-	glDeleteTextures(1, &TextureID);
-	TextureID = 0;
-}
 
-bool BravoCubemap::Initialize_Internal(const std::vector<std::string>& _Params)
+bool BravoCubemapAsset::Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params)
 {
-	if ( _Params.size() != 6 )
+	if ( params.TexturesPaths.size() != 6 )
 	{
-		Log::LogMessage("Invalid number of textures to initialize cubemap: " + Path, ELog::Error);
+		Log::LogMessage("Invalid number of textures to initialize cubemap: " + GetName(), ELog::Error);
 		return false;
 	}
 	bool success = true;
 	for (uint32 i = 0; i < 6; i++)
 	{
-		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(Path + _Params[i]));
+		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturesPaths[i]));
 
 		success = success && Textures[i] != nullptr && Textures[i]->bInitialized;
 	}
@@ -29,7 +23,7 @@ bool BravoCubemap::Initialize_Internal(const std::vector<std::string>& _Params)
 	return success;
 }
 
-bool BravoCubemap::LoadToGPU_Internal()
+bool BravoCubemapAsset::LoadToGPU_Internal()
 {
 	glGenTextures(1, &TextureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, TextureID);
@@ -48,14 +42,14 @@ bool BravoCubemap::LoadToGPU_Internal()
 
 	return true;
 }
-void BravoCubemap::ReleaseFromGPU_Internal()
+void BravoCubemapAsset::ReleaseFromGPU_Internal()
 {
 	StopUsage();
 	glDeleteTextures(1, &TextureID);
 }
 
 
-void BravoCubemap::Use()
+void BravoCubemapAsset::Use()
 {
 	if ( TextureUnit < 0 )
 		TextureUnit = BravoTextureUnitManager::BindTexture();
@@ -64,7 +58,7 @@ void BravoCubemap::Use()
 	glBindTexture(GL_TEXTURE_CUBE_MAP,  TextureID);
 }
 
-void BravoCubemap::StopUsage()
+void BravoCubemapAsset::StopUsage()
 {
 	//glBindTexture(GL_TEXTURE_CUBE_MAP,  0);
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);

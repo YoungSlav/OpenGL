@@ -4,15 +4,19 @@
 #include "BravoAsset.h"
 
 
+struct BravoTextureLoadingParams
+{
+	BravoTextureLoadingParams(const std::string& _Path) :
+		TexturePath(_Path)
+	{}
 
-class BravoTexture : public BravoAsset
+	std::string TexturePath;
+};
+
+class BravoTextureAsset : public BravoAsset
 {
 public:
-	BravoTexture(std::shared_ptr<class BravoAssetManager> _AssetManager) : 
-		BravoAsset(_AssetManager)
-	{}
-	~BravoTexture();
-	
+	bool Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params);
 
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -21,7 +25,6 @@ public:
 	inline std::shared_ptr<class BravoTextureData> GetTextureData() const { return TextureData; }
 
 protected:
-	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
 
@@ -32,8 +35,6 @@ private:
 	GLuint TextureID = 0;
 	int32 TextureUnit = -1;
 };
-
-typedef std::shared_ptr<BravoTexture> BravoTexturePtr;
 
 
 

@@ -1,31 +1,20 @@
-#include "BravoTexture.h"
+#include "BravoTextureAsset.h"
 #include "BravoTextureData.h"
 #include "BravoTextureUnitManager.h"
 #include "openGL.h"
 #include "stdafx.h"
 
-BravoTexture::~BravoTexture()
+bool BravoTextureAsset::Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
 {
-	if ( TextureID )
-	{
-		glDeleteTextures(1, &TextureID);
-		TextureID = 0;
-	}
-
-	BravoTextureUnitManager::UnbindTexture(TextureUnit);
-}
-
-bool BravoTexture::Initialize_Internal(const std::vector<std::string>& _Params)
-{
-	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(Path));
+	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturePath));
 	return TextureData != nullptr && TextureData->bInitialized;
 }
 
-bool BravoTexture::LoadToGPU_Internal()
+bool BravoTextureAsset::LoadToGPU_Internal()
 {
 	if ( !TextureData->TextureData )
 	{
-		Log::LogMessage("Failed to load texture \"" + Path + "\" to GPU", ELog::Error);
+		Log::LogMessage("Failed to load texture \"" + GetName() + "\" to GPU", ELog::Error);
 		return false;
 	}
 
@@ -44,14 +33,14 @@ bool BravoTexture::LoadToGPU_Internal()
 
 	return true;
 }
-void BravoTexture::ReleaseFromGPU_Internal()
+void BravoTextureAsset::ReleaseFromGPU_Internal()
 {
 	StopUsage();
 	glDeleteTextures(1, &TextureID);
 	TextureID = 0;
 }
 
-void BravoTexture::Use()
+void BravoTextureAsset::Use()
 {
 	if ( TextureUnit < 0 )
 		TextureUnit = BravoTextureUnitManager::BindTexture();
@@ -60,7 +49,7 @@ void BravoTexture::Use()
 	glBindTexture(GL_TEXTURE_2D,  TextureID);
 }
 
-void BravoTexture::StopUsage()
+void BravoTextureAsset::StopUsage()
 {
 	//glBindTexture(GL_TEXTURE_2D,  0);
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);

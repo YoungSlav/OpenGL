@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "BravoDepthMap.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 
 
 void BravoDepthMap::OnDestroy()

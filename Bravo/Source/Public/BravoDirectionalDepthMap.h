@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "BravoObject.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoDepthMap.h"
 #include "BravoDirectionalLightActor.h"
 
@@ -13,7 +13,7 @@ public:
 	void Setup(const int32 LayersCount, const uint32 TextureSize);
 	void Render(const std::vector<BravoDirectionalLightShaderData>& CastersData);
 	
-	virtual void Use(BravoShaderPtr OnShader);
+	virtual void Use(std::shared_ptr<BravoShaderAsset> OnShader);
 	virtual void StopUsage();
 
 protected:

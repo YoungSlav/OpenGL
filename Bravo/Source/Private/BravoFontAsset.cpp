@@ -1,4 +1,4 @@
-#include "BravoFont.h"
+#include "BravoFontAsset.h"
 #include "openGL.h"
 #include <fstream>
 #include "stb_rect_pack.h"
@@ -7,17 +7,15 @@
 
 #define POINT_TO_PIXEL 1.333f
 
-bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
+bool BravoFontAsset::Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params)
 {
-	if ( !_Params.size() )
+	if ( !params.FontSizes.size() )
 	{
-		Log::LogMessage("Failed to load font " + Path +". Expecting sizes array in params.", ELog::Error );
+		Log::LogMessage("Failed to load font " + GetName() +". Expecting sizes array in params.", ELog::Error );
 		return false;
 	}
-	std::vector<uint32> FontSizes;
-	FontSizes.reserve(_Params.size());
-	for ( auto it : _Params )
-		FontSizes.push_back(std::stoi(it));
+
+	std::string Path = ResourcesPath + params.FontPath;
 
 	std::ifstream file(&*Path.begin(), std::ios::binary | std::ios::ate);
 	std::streamsize size = file.tellg();
@@ -32,14 +30,14 @@ bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
 	stbtt_fontinfo fontInfo;
     stbtt_InitFont(&fontInfo, reinterpret_cast<const uint8*>(fontBuffer.data()), stbtt_GetFontOffsetForIndex(reinterpret_cast<const uint8*>(fontBuffer.data()),0));
 
-	for ( uint32 fSize : FontSizes )
+	for ( uint32 fSize : params.FontSizes )
 	{
 		Fonts.insert({fSize, BravoFontInfo(GlyphsNum, fSize)});
 	}
 
 	std::vector<stbtt_pack_range> ranges;
-	ranges.reserve(FontSizes.size());
-	for ( uint32 fSize : FontSizes )
+	ranges.reserve(params.FontSizes.size());
+	for ( uint32 fSize : params.FontSizes )
 	{
 		float fontSize = (float)fSize * POINT_TO_PIXEL;
 		stbtt_pack_range newRange { fontSize, FirstGlyph, NULL, GlyphsNum, Fonts[fSize].Glyphs.data(), 0, 0 };
@@ -74,11 +72,11 @@ bool BravoFont::Initialize_Internal(const std::vector<std::string>& _Params)
 	return true;
 }
 
-bool BravoFont::LoadToGPU_Internal()
+bool BravoFontAsset::LoadToGPU_Internal()
 {
 	if ( AtlasBitmap.size() != AtlasSizeX*AtlasSizeY )
 	{
-		Log::LogMessage("Failed to load font " + Path +" to GPU. Atlas is invalid.", ELog::Error );
+		Log::LogMessage("Failed to load font " + GetName() +" to GPU. Atlas is invalid.", ELog::Error );
 		return false;
 	}
 	glGenTextures(1, &TextureID);
@@ -94,7 +92,7 @@ bool BravoFont::LoadToGPU_Internal()
 	return true;
 }
 
-void BravoFont::ReleaseFromGPU_Internal()
+void BravoFontAsset::ReleaseFromGPU_Internal()
 {
 	StopUsage();
 	glDeleteTextures(1, &TextureID);
@@ -102,7 +100,7 @@ void BravoFont::ReleaseFromGPU_Internal()
 }
 
 
-void BravoFont::Use()
+void BravoFontAsset::Use()
 {
 	if ( TextureUnit < 0 )
 		TextureUnit = BravoTextureUnitManager::BindTexture();
@@ -112,19 +110,19 @@ void BravoFont::Use()
 }
 
 
-void BravoFont::StopUsage()
+void BravoFontAsset::StopUsage()
 {
 	//glBindTexture(GL_TEXTURE_2D,  0);
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	TextureUnit = -1;
 }
 
-const BravoFontInfo* BravoFont::GetFontInfo( uint32 TextSize, float TargetScale ) const
+const BravoFontInfo* BravoFontAsset::GetFontInfo( uint32 TextSize, float TargetScale ) const
 {
 	return FindBestFont((uint32)((float)(TextSize)*TargetScale));
 }
 
-float BravoFont::GetCharacterQuad(char symbol, uint32 TextSize, float TargetScale, float xpos, float ypos, bool bAlignToInteger, stbtt_aligned_quad* OutQuad) const
+float BravoFontAsset::GetCharacterQuad(char symbol, uint32 TextSize, float TargetScale, float xpos, float ypos, bool bAlignToInteger, stbtt_aligned_quad* OutQuad) const
 {
 	const BravoFontInfo* BestFont = FindBestFont((uint32)((float)(TextSize)*TargetScale));
 	if ( BestFont == nullptr )
@@ -171,7 +169,7 @@ float BravoFont::GetCharacterQuad(char symbol, uint32 TextSize, float TargetScal
 	return b->xadvance*Scale;
 }
 
-const BravoFontInfo* BravoFont::FindBestFont(uint32 TextSize) const
+const BravoFontInfo* BravoFontAsset::FindBestFont(uint32 TextSize) const
 {
 	if ( Fonts.empty() )
 		return nullptr;

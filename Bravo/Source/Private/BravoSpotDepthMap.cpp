@@ -2,7 +2,7 @@
 #include "BravoEngine.h"
 #include "BravoTextureUnitManager.h"
 #include "BravoAssetManager.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoSpotLightActor.h"
 
 bool BravoSpotDepthMap::Initialize_Internal()
@@ -10,7 +10,7 @@ bool BravoSpotDepthMap::Initialize_Internal()
 	if ( !BravoDepthMapNew::Initialize_Internal() )
 		return false;
 
-	DepthMapShader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\DepthMapSpot");
+	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("SpotDepthMapShader", BravoShaderLoadingParams("Shaders\\DepthMapSpot"));
 
 	return true;
 }
@@ -87,7 +87,7 @@ void BravoSpotDepthMap::Render(const std::vector<BravoSpotLightShaderData>& Cast
 	DepthMapShader->StopUsage();
 }
 
-void BravoSpotDepthMap::Use(BravoShaderPtr OnShader)
+void BravoSpotDepthMap::Use(std::shared_ptr<BravoShaderAsset> OnShader)
 {
 	TextureUnit = BravoTextureUnitManager::BindTexture();
 	glActiveTexture(GL_TEXTURE0 + TextureUnit);

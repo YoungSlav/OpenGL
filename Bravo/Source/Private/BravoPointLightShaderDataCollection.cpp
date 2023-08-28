@@ -1,7 +1,7 @@
 #include "BravoPointLightShaderDataCollection.h"
 #include "BravoPointLightActor.h"
 #include "BravoPointDepthMap.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoEngine.h"
 
 bool BravoPointLightShaderDataCollection::Initialize_Internal()
@@ -54,7 +54,7 @@ void BravoPointLightShaderDataCollection::Update(const std::vector<std::shared_p
 	PointDepthMap->Render(ShaderData);
 }
 
-void BravoPointLightShaderDataCollection::UseOn(std::shared_ptr<BravoShader> Shader)
+void BravoPointLightShaderDataCollection::UseOn(std::shared_ptr<BravoShaderAsset> Shader)
 {
 	if ( PointDepthMap )
 	{

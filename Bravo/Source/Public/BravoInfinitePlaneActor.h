@@ -3,8 +3,8 @@
 
 #include "BravoActor.h"
 #include "BravoRenderable.h"
-#include "BravoShader.h"
-#include "BravoMesh.h"
+#include "BravoShaderAsset.h"
+#include "BravoStaticMeshAsset.h"
 
 class BravoInfinitePlaneActor : public BravoActor, public BravoRenderable
 {
@@ -23,8 +23,8 @@ protected:
 	virtual void OnDestroy() override;
 
 private:
-	BravoShaderPtr Shader;
-	BravoMeshPtr Mesh;
+	std::shared_ptr<BravoShaderAsset> Shader;
+	std::shared_ptr<BravoStaticMeshAsset> Mesh;
 
 	GLuint VAO = 0;
 };

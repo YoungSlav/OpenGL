@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "BravoPointLightActor.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoEngine.h"
 #include "BravoMath.h"
 #include "BravoAssetManager.h"

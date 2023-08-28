@@ -1,47 +1,33 @@
 #pragma once
 
 #include "stdafx.h"
+#include "BravoObject.h"
 #include "openGL.h"
 
 
-
-
-class BravoAsset
+class BravoAsset : public BravoObject
 {
 public:
-	BravoAsset(std::shared_ptr<class BravoAssetManager> _AssetManager);
-	virtual ~BravoAsset() = default;
-
-	bool Initialize(const std::string& _Path, const std::vector<std::string>& _Params = std::vector<std::string>());
+	bool Load(const std::string& ResourcesPath) { return false; }
 
 	virtual void Use() {};
 	virtual void StopUsage() {};
 
-	inline bool IsInitialized() const { return bInitialized; }
-	inline bool IsLoadedToGPU() const { return bLoadedToGPU; }
 	bool EnsureReady();
+	inline bool IsLoadedToGPU() const { return bLoadedToGPU; }
 
 	bool LoadToGPU();
 	void ReleaseFromGPU();
 
 protected:
-	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) {return true;}
+
+	virtual void OnDestroy() override;
 
 	virtual bool LoadToGPU_Internal() {return true;}
 	virtual void ReleaseFromGPU_Internal() {}
 
 
-	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
-	
-	std::string Path;
 
 private:
-
-	bool bInitialized = false;
 	bool bLoadedToGPU = false;
-
-	std::weak_ptr<class BravoAssetManager> AssetManager;
-
-	BravoAsset(const BravoAsset&) = delete;
-	BravoAsset& operator=(const BravoAsset& ) = delete;
 };

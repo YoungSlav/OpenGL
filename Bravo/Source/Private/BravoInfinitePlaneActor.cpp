@@ -2,12 +2,12 @@
 #include "BravoEngine.h"
 #include "BravoCamera.h"
 #include "BravoAssetManager.h"
-#include "BravoMesh.h"
+#include "BravoStaticMeshAsset.h"
 
 bool BravoInfinitePlaneActor::Initialize_Internal()
 {
-	Mesh = Engine->GetAssetManager()->LoadAsset<BravoMesh>("primitives\\plane.fbx");
-	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\InfinitePlane");
+	Mesh = Engine->GetAssetManager()->FindOrLoad<BravoStaticMeshAsset>("PlaneMeshAsset", BravoStaticMeshLoadingParams("primitives\\plane.fbx"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("InfinitePlaneShader", BravoShaderLoadingParams("Shaders\\InfinitePlane"));
 
 	if ( Mesh && Shader )
 	{

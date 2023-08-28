@@ -1,7 +1,7 @@
 #pragma once
 #include "BravoActor.h"
-#include "BravoShader.h"
-#include "BravoCubemap.h"
+#include "BravoShaderAsset.h"
+#include "BravoCubemapAsset.h"
 #include "BravoRenderable.h"
 
 class BravoSkyboxActor : public BravoActor, public BravoRenderable
@@ -13,7 +13,7 @@ public:
 	{
 	}
 
-	void SetCubemap(BravoCubemapPtr InCubemap);
+	void SetCubemap(std::shared_ptr<BravoCubemapAsset> InCubemap);
 
 protected:
 	virtual bool Initialize_Internal() override;
@@ -21,8 +21,8 @@ protected:
 	virtual void OnDestroy() override;
 
 private:
-	BravoShaderPtr Shader;
-	BravoCubemapPtr Cubemap;
+	std::shared_ptr<BravoShaderAsset> Shader;
+	std::shared_ptr<BravoCubemapAsset> Cubemap;
 
 	uint32 VAO = 0, VBO = 0;
 };

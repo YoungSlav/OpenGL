@@ -3,10 +3,10 @@
 #include "BravoAssetManager.h"
 
 #include "BravoAsset.h"
-#include "BravoMesh.h"
-#include "BravoShader.h"
-#include "BravoTexture.h"
-#include "BravoCubemap.h"
+#include "BravoStaticMeshAsset.h"
+#include "BravoShaderAsset.h"
+#include "BravoTextureAsset.h"
+#include "BravoCubemapAsset.h"
 
 #include "BravoPlayer.h"
 #include "BravoActor.h"
@@ -50,13 +50,19 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	if ( auto skyboxActor = NewObject<BravoSkyboxActor>("Skybox") )
 	{
-		skyboxActor->SetCubemap(AssetManager->LoadAsset<BravoCubemap>("Cubemaps\\skybox\\", { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg", }));
+		skyboxActor->SetCubemap(AssetManager->FindOrLoad<BravoCubemapAsset>("SkyboxAsset", BravoCubemapLoadingParams({
+			"Cubemaps\\skybox\\right.jpg",
+			"Cubemaps\\skybox\\left.jpg",
+			"Cubemaps\\skybox\\top.jpg",
+			"Cubemaps\\skybox\\bottom.jpg",
+			"Cubemaps\\skybox\\front.jpg",
+			"Cubemaps\\skybox\\back.jpg", })));
 	}
 	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 	
 	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
-		BravoMeshPtr planeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
+		std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
 		planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
 		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
 		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
@@ -64,15 +70,15 @@ bool BravoGameInstance::Initialize_Internal()
 		planeMesh->SetMesh(planeAsset);
 		planeMesh->SetCastShadows(true);
 		BravoMaterialPtr planeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+		planeMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
 		planeMat->Shininess = 64.0f;
 		planeMesh->SetMaterial(planeMat);
 	}
 	
 	
-	//SpawnDirLights();
+	SpawnDirLights();
 	//SpawnPointLightTest();
-	SpawnPointLights();
+	//SpawnPointLights();
 	//SpawnSpotLights();
 	SpawnTestInstances();
 	return true;
@@ -81,10 +87,10 @@ bool BravoGameInstance::Initialize_Internal()
 void BravoGameInstance::SpawnPointLightTest()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
+	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
 
 	BravoMaterialPtr wallMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-	wallMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+	wallMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
 	wallMat->Shininess = 64.0f;
 
 	std::vector<glm::vec3> scales = {
@@ -134,7 +140,7 @@ void BravoGameInstance::SpawnDirLights()
 void BravoGameInstance::SpawnPointLights()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-	BravoMeshPtr sphereAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\sphere.fbx");
+	std::shared_ptr<BravoStaticMeshAsset> sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereMeshAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
 	
 	std::vector<glm::vec3> locations = {
 		glm::vec3(0.0f, 10.0f, 0.0f),
@@ -154,7 +160,7 @@ void BravoGameInstance::SpawnPointLights()
 			sphereMesh->SetMesh(sphereAsset);
 			sphereMesh->SetScale(glm::vec3(0.25f));
 			BravoMaterialPtr sphereMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-			sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+			sphereMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
 			sphereMat->Shininess = 64.0f;
 			sphereMesh->SetMaterial(sphereMat);
 
@@ -166,8 +172,8 @@ void BravoGameInstance::SpawnSpotLights()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
-	BravoMeshPtr coneAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cone.fbx");
-	int32 count = 2;
+	std::shared_ptr<BravoStaticMeshAsset> coneAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("ConeMeshAsset", BravoStaticMeshLoadingParams("primitives\\cone.fbx"));
+	int32 count = 1;
 	for ( int32 i = 0 ; i < count; ++i )
 	{
 		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
@@ -191,7 +197,7 @@ void BravoGameInstance::SpawnSpotLights()
 			coneMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
 			coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
 			BravoMaterialPtr coneMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-			coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+			coneMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
 			coneMat->Shininess = 64.0f;
 			coneMesh->SetMaterial(coneMat);
 
@@ -204,7 +210,7 @@ void BravoGameInstance::SpawnCubes()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
+	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
 
 	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
 	{
@@ -215,7 +221,7 @@ void BravoGameInstance::SpawnCubes()
 			cubeMesh->SetCastShadows(true);
 
 			BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-			cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+			cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
 			cubeMat->Shininess = 64.0f;
 			glm::vec3 newLocation = glm::vec3(0.0f);
 			newLocation.x = glm::sin(glm::radians(360.0f / 50 *i)) * 5;
@@ -237,7 +243,7 @@ void BravoGameInstance::SpawnTestInstances()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
 
-	BravoMeshPtr cubeAsset = AssetManager->LoadAsset<BravoMesh>("primitives\\cube.fbx");
+	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
 	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
 	{
 		auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent");
@@ -245,7 +251,7 @@ void BravoGameInstance::SpawnTestInstances()
 		cubeMesh->SetMesh(cubeAsset);
 		cubeMesh->SetCastShadows(true);
 		BravoMaterialPtr cubeMat = std::shared_ptr<BravoMaterial>(new BravoMaterial());
-		cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->LoadAsset<BravoTexture>("Textures\\grey.png");
+		cubeMat->Textures[EBravoTextureType::diffuse] = AssetManager->FindOrLoad<BravoTextureAsset>("GreyTexture", BravoTextureLoadingParams("Textures\\grey.png"));
 		cubeMat->Shininess = 64.0f;
 		cubeMesh->SetMaterial(cubeMat);
 		cubeMesh->RemoveAllInstances();

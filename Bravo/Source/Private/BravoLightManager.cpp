@@ -9,7 +9,7 @@
 #include "BravoPointLightShaderDataCollection.h"
 
 #include "BravoEngine.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 
 bool BravoLightManager::Initialize_Internal()
 {
@@ -49,7 +49,7 @@ void BravoLightManager::UpdateLightsShaderData()
 	PointLightsDataCollection->Update(PointLights);
 }
 
-void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShader> Shader)
+void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShaderAsset> Shader)
 {
 	DirectionalLightsDataCollection->UseOn(Shader);
 	

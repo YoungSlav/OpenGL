@@ -6,7 +6,7 @@
 
 bool BravoStaticMeshComponent::Initialize_Internal()
 {
-	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Default");
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DefaultShaderAsset", BravoShaderLoadingParams("Shaders\\Default"));
 	if ( !Shader )
 		return false;
 
@@ -144,7 +144,7 @@ void BravoStaticMeshComponent::OnDestroy()
 	Mesh->ReleaseFromGPU();
 }
 
-void BravoStaticMeshComponent::SetMesh(BravoMeshPtr InMesh)
+void BravoStaticMeshComponent::SetMesh(std::shared_ptr<BravoStaticMeshAsset> InMesh)
 {
 	Mesh = InMesh;
 }
@@ -190,7 +190,7 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 	Shader->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShader> _Shader)
+void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> _Shader)
 {
 	if ( !EnsureReady() )
 		return;

@@ -21,13 +21,21 @@ struct BravoFontInfo
 	float Linegap = 0.0f;
 };
 
-class BravoFont : public BravoAsset
+struct BravoFontLoadingParams
+{
+	BravoFontLoadingParams(const std::string& _Path, const std::vector<uint32>& _Sizes) :
+		FontPath(_Path),
+		FontSizes(_Sizes)
+	{}
+
+	std::string FontPath;
+	std::vector<uint32> FontSizes;
+};
+
+class BravoFontAsset : public BravoAsset
 {
 public:
-	BravoFont(std::shared_ptr<class BravoAssetManager> _AssetManager) : 
-		BravoAsset(_AssetManager)
-	{}
-	~BravoFont() {}
+	bool Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params);
 	
 
 	virtual void Use() override;
@@ -38,7 +46,6 @@ public:
 	const BravoFontInfo* GetFontInfo( uint32 TextSize, float TargetScale ) const;
 
 protected:
-	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
 
@@ -59,5 +66,3 @@ private:
 	const int32 FirstGlyph = 32;
 	const int32 GlyphsNum = 96;
 };
-
-typedef std::shared_ptr<BravoFont> BravoFontPtr;

@@ -1,8 +1,8 @@
 #include "BravoWidget_Plane.h"
 #include "BravoAssetManager.h"
 #include "BravoHUD.h"
-#include "BravoShader.h"
-#include "BravoTexture.h"
+#include "BravoShaderAsset.h"
+#include "BravoTextureAsset.h"
 
 #include "openGL.h"
 
@@ -11,7 +11,7 @@ bool BravoWidget_Plane::Initialize_Internal()
 	if ( !BravoWidget::Initialize_Internal() )
 		return false;
 
-	Shader = GetAssetManager()->LoadAsset<BravoShader>("Shaders\\wPlane");
+	Shader = GetAssetManager()->FindOrLoad<BravoShaderAsset>("wPlaneShader", BravoShaderLoadingParams("Shaders\\wPlane"));
 	return true;
 }
 
@@ -20,12 +20,12 @@ void BravoWidget_Plane::SetColor(const glm::vec4& _Color)
 	Color = _Color;
 }
 
-void BravoWidget_Plane::SetTexture(std::shared_ptr<class BravoTexture> _Texture)
+void BravoWidget_Plane::SetTexture(std::shared_ptr<class BravoTextureAsset> _Texture)
 {
 	Texture = _Texture;
 }
 
-void BravoWidget_Plane::SetShader(std::shared_ptr<class BravoShader> _Shader)
+void BravoWidget_Plane::SetShader(std::shared_ptr<class BravoShaderAsset> _Shader)
 {
 	Shader = _Shader;
 }

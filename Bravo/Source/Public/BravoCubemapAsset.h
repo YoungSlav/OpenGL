@@ -1,14 +1,20 @@
 #pragma once
 #include "BravoAsset.h"
 
-class BravoCubemap : public BravoAsset
+
+struct BravoCubemapLoadingParams
 {
-public:
-	BravoCubemap(std::shared_ptr<class BravoAssetManager> _AssetManager) : 
-		BravoAsset(_AssetManager)
+	BravoCubemapLoadingParams(const std::vector<std::string>& _Textures) :
+		TexturesPaths(_Textures)
 	{}
 
-	~BravoCubemap();
+	std::vector<std::string> TexturesPaths;
+};
+
+class BravoCubemapAsset : public BravoAsset
+{
+public:
+	bool Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params);
 
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -16,7 +22,6 @@ public:
 	inline const int32 GetTextureUnit() const { return TextureUnit; }
 
 protected:
-	virtual bool Initialize_Internal(const std::vector<std::string>& _Params = std::vector<std::string>()) override;
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
 
@@ -27,5 +32,3 @@ private:
 	GLuint TextureID = 0;
 	int32 TextureUnit = -1;
 };
-
-typedef std::shared_ptr<BravoCubemap> BravoCubemapPtr;

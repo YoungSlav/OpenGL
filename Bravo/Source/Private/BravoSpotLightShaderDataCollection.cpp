@@ -1,7 +1,7 @@
 #include "BravoSpotLightShaderDataCollection.h"
 #include "BravoSpotLightActor.h"
 #include "BravoSpotDepthMap.h"
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
 #include "BravoEngine.h"
 
 bool BravoSpotLightShaderDataCollection::Initialize_Internal()
@@ -50,7 +50,7 @@ void BravoSpotLightShaderDataCollection::Update(const std::vector<std::shared_pt
 
 	SpotDepthMap->Render(ShaderData);
 }
-void BravoSpotLightShaderDataCollection::UseOn(std::shared_ptr<BravoShader> Shader)
+void BravoSpotLightShaderDataCollection::UseOn(std::shared_ptr<BravoShaderAsset> Shader)
 {
 	if ( SpotDepthMap )
 	{

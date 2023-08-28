@@ -1,11 +1,11 @@
 #include "BravoRenderTarget.h"
 #include "stdafx.h"
 #include "openGL.h"
-#include "BravoShader.h"
-#include "BravoTexture.h"
+#include "BravoShaderAsset.h"
+#include "BravoTextureAsset.h"
 #include "BravoTextureUnitManager.h"
 
-void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class BravoShader> InShader)
+void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class BravoShaderAsset> InShader)
 {
 	Size = InSize;
 	Shader = InShader;

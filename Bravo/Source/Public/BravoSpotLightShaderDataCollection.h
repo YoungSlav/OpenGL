@@ -9,7 +9,7 @@ class BravoSpotLightShaderDataCollection : public BravoObject
 {
 public:
 	void Update(const std::vector<std::shared_ptr<class BravoSpotLightActor>>& Casters);
-	void UseOn(std::shared_ptr<class BravoShader> Shader);
+	void UseOn(std::shared_ptr<class BravoShaderAsset> Shader);
 	void ResetUsage();
 
 protected:

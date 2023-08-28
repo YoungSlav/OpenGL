@@ -1,4 +1,5 @@
-#include "BravoShader.h"
+#include "BravoShaderAsset.h"
+#include "BravoEngine.h"
 #include "BravoAssetManager.h"
 
 #include <windows.h>
@@ -6,18 +7,19 @@
 #include <sstream>
 #include <regex>
 
-bool BravoShader::Initialize_Internal(const std::vector<std::string>& _Params)
+bool BravoShaderAsset::Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params)
 {
 	ShaderID = glCreateProgram();
 	int32 VertShader = 0;
 	int32 GeomShader = 0;
 	int32 FragShader = 0;
+	
 
-	EmptyTexture = GetAssetManager()->LoadAsset<BravoTexture>("Textures\\black.png");
+	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
 
-	if ( LoadShader(GL_VERTEX_SHADER, VertShader, _Params) &&
-		LoadShader(GL_FRAGMENT_SHADER, FragShader, _Params) &&
-		LoadShader(GL_GEOMETRY_SHADER, GeomShader, _Params) &&
+	if ( LoadShader(GL_VERTEX_SHADER, VertShader, ResourcesPath, params) &&
+		LoadShader(GL_FRAGMENT_SHADER, FragShader, ResourcesPath, params) &&
+		LoadShader(GL_GEOMETRY_SHADER, GeomShader, ResourcesPath, params) &&
 		LinkProgramm() )
 	{
 		if ( VertShader ) glDeleteShader(VertShader);
@@ -28,41 +30,34 @@ bool BravoShader::Initialize_Internal(const std::vector<std::string>& _Params)
 	}
 	return false;
 }
-
-BravoShader::~BravoShader()
-{
-	glUseProgram(0);
-	glDeleteProgram(ShaderID);
-}
-
-void BravoShader::Use()
+void BravoShaderAsset::Use()
 {
 	glUseProgram(ShaderID);
 }
 
-void BravoShader::StopUsage()
+void BravoShaderAsset::StopUsage()
 {
 	glUseProgram(0);
 	if( EmptyTexture )
 		EmptyTexture->StopUsage();
 }
 
-bool BravoShader::LoadShader(GLenum ShaderType, int32& OutShader, const std::vector<std::string>& _Params)
+bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const std::string& ResourcesPath, const BravoShaderLoadingParams& params)
 {
 	OutShader = 0;
 	std::string RealShaderName;
 
 	if ( ShaderType == GL_VERTEX_SHADER )
 	{
-		RealShaderName = Path + ShaderProgrammConstancts::VertexShaderExtension;
+		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::VertexShaderExtension;
 	}
 	else if ( ShaderType == GL_FRAGMENT_SHADER )
 	{
-		RealShaderName = Path + ShaderProgrammConstancts::FragmentShaderExtension;
+		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::FragmentShaderExtension;
 	}
 	else if ( ShaderType == GL_GEOMETRY_SHADER )
 	{
-		RealShaderName = Path + ShaderProgrammConstancts::GeometryShaderExtension;
+		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::GeometryShaderExtension;
 	}
 	
 	
@@ -86,25 +81,20 @@ bool BravoShader::LoadShader(GLenum ShaderType, int32& OutShader, const std::vec
 	shaderFile.close();
 	std::string ShaderSource = buffer.str();
 
-	for ( auto& param : _Params )
+	for ( auto& define : params.ShaderDefines )
 	{
-		const std::string delim = "=";
-		size_t delimPos = param.find(delim);
-		const std::string paramName = param.substr(0, delimPos);
-		const std::string paramValue = param.substr(delimPos + delim.length(), param.length() - delimPos);
-
 		size_t index = 0;
 		while (true)
 		{
 			/* Locate the substring to replace. */
-			index = ShaderSource.find(paramName, index);
+			index = ShaderSource.find(define.first, index);
 			if (index == std::string::npos) break;
 
 			/* Make the replacement. */
-			ShaderSource.replace(index, paramName.length(), paramValue);
+			ShaderSource.replace(index, define.first.length(), define.second);
 
 			/* Advance index forward so the next iteration doesn't pick it up as well. */
-			index += paramValue.length();
+			index += define.second.length();
 		}
 	}
 
@@ -131,7 +121,7 @@ bool BravoShader::LoadShader(GLenum ShaderType, int32& OutShader, const std::vec
 	return true;
 }
 
-bool BravoShader::LinkProgramm()
+bool BravoShaderAsset::LinkProgramm()
 {
 	int32 success;
 	int8 infoLog[512];
@@ -148,7 +138,7 @@ bool BravoShader::LinkProgramm()
 }
 
 
-void BravoShader::SetTexture(const std::string& name, BravoTexturePtr val) const
+void BravoShaderAsset::SetTexture(const std::string& name, std::shared_ptr<BravoTextureAsset> val) const
 {
 	if ( val )
 	{
@@ -161,7 +151,7 @@ void BravoShader::SetTexture(const std::string& name, BravoTexturePtr val) const
 	}
 }
 
-void BravoShader::SetCubemap(const std::string& name, BravoCubemapPtr val) const
+void BravoShaderAsset::SetCubemap(const std::string& name, std::shared_ptr<BravoCubemapAsset> val) const
 {
 	if ( val )
 	{
@@ -174,57 +164,57 @@ void BravoShader::SetCubemap(const std::string& name, BravoCubemapPtr val) const
 	}
 }
 
-void BravoShader::SetBool(const std::string& name, const bool val) const
+void BravoShaderAsset::SetBool(const std::string& name, const bool val) const
 {
 	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int32)val); 
 }
 
-void BravoShader::SetInt(const std::string& name, const size_t val) const
+void BravoShaderAsset::SetInt(const std::string& name, const size_t val) const
 {
 	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int32)val);
 }
 
-void BravoShader::SetInt(const std::string& name, const int32 val) const
+void BravoShaderAsset::SetInt(const std::string& name, const int32 val) const
 {
 	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);
 }
 
-void BravoShader::SetVector1d(const std::string& name, const float val) const
+void BravoShaderAsset::SetVector1d(const std::string& name, const float val) const
 {
 	glUniform1f(glGetUniformLocation(ShaderID, name.c_str()), val);
 }
 
-void BravoShader::SetVector2d(const std::string& name, const glm::vec2& val) const
+void BravoShaderAsset::SetVector2d(const std::string& name, const glm::vec2& val) const
 {
 	glUniform2f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y);
 }
 
-void BravoShader::SetVector3d(const std::string& name, const glm::vec3& val) const
+void BravoShaderAsset::SetVector3d(const std::string& name, const glm::vec3& val) const
 {
 	glUniform3f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y, val.z);
 }
 
-void BravoShader::SetVector4d(const std::string& name, const glm::vec4& val) const
+void BravoShaderAsset::SetVector4d(const std::string& name, const glm::vec4& val) const
 {
 	glUniform4f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y, val.z, val.w);
 }
 
-void BravoShader::SetMatrix2d(const std::string& name, const glm::mat2& val) const
+void BravoShaderAsset::SetMatrix2d(const std::string& name, const glm::mat2& val) const
 {
 	glUniformMatrix2fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
-void BravoShader::SetMatrix3d(const std::string& name, const glm::mat3& val) const
+void BravoShaderAsset::SetMatrix3d(const std::string& name, const glm::mat3& val) const
 {
 	glUniformMatrix3fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
-void BravoShader::SetMatrix4d(const std::string& name, const glm::mat4& val) const
+void BravoShaderAsset::SetMatrix4d(const std::string& name, const glm::mat4& val) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
-void BravoShader::SetMaterial(const std::string& name, const BravoMaterialPtr& val) const
+void BravoShaderAsset::SetMaterial(const std::string& name, const BravoMaterialPtr& val) const
 {
 	if ( !val )
 	{

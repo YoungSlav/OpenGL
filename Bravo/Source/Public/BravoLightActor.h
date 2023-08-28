@@ -1,7 +1,7 @@
 #pragma once
 #include "BravoActor.h"
-#include "BravoMesh.h"
-#include "BravoShader.h"
+#include "BravoStaticMeshAsset.h"
+#include "BravoShaderAsset.h"
 #include "BravoDepthMap.h"
 #include "BravoRenderable.h"
 
@@ -37,7 +37,7 @@ public:
 	BravoLightActor() = default;
 
 	void SetLightColor(const BravoLightColor& InLightColor) { LightColor = InLightColor; }
-	virtual void Apply(BravoShaderPtr OnShader);
+	virtual void Apply(std::shared_ptr<BravoShaderAsset> OnShader);
 	virtual void StopUsage();
 
 	

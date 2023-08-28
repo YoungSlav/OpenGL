@@ -50,7 +50,7 @@ void BravoDirectionalLightShaderDataCollection::Update(const std::vector<std::sh
 
 }
 
-void BravoDirectionalLightShaderDataCollection::UseOn(std::shared_ptr<BravoShader> Shader)
+void BravoDirectionalLightShaderDataCollection::UseOn(std::shared_ptr<BravoShaderAsset> Shader)
 {
 	if ( DirectionalDepthMap )
 	{

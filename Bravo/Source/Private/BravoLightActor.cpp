@@ -22,7 +22,7 @@ void BravoLightActor::UpdateDepthMap()
 	//DepthMap->Render(Self<BravoLightActor>());
 }
 
-void BravoLightActor::Apply(BravoShaderPtr OnShader)
+void BravoLightActor::Apply(std::shared_ptr<BravoShaderAsset> OnShader)
 {
 	//DepthMap->Apply(OnShader, Path);
 }

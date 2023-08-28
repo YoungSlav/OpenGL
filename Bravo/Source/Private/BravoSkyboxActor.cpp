@@ -2,7 +2,7 @@
 #include "BravoAssetManager.h"
 #include "BravoEngine.h"
 
-void BravoSkyboxActor::SetCubemap(BravoCubemapPtr InCubemap)
+void BravoSkyboxActor::SetCubemap(std::shared_ptr<BravoCubemapAsset> InCubemap)
 {
 	Cubemap = InCubemap;
 }
@@ -54,7 +54,7 @@ bool BravoSkyboxActor::Initialize_Internal()
 		-1.0f, -1.0f,  1.0f,
 		+1.0f, -1.0f,  1.0f
 	};
-	Shader = Engine->GetAssetManager()->LoadAsset<BravoShader>("Shaders\\Skybox");
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("SkyboxShader", BravoShaderLoadingParams("Shaders\\Skybox"));
 
 	glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);

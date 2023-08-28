@@ -5,7 +5,7 @@ class BravoRenderTarget : public BravoObject
 {
 public:
 
-	void Setup(const glm::ivec2& Size, std::shared_ptr<class BravoShader> InShader);
+	void Setup(const glm::ivec2& Size, std::shared_ptr<class BravoShaderAsset> InShader);
 
 	void Resize(const glm::ivec2& Size);
 	void Clean();
@@ -18,7 +18,7 @@ public:
 protected:
 
 	virtual void OnDestroy() override;
-	std::shared_ptr<class BravoShader> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
+	std::shared_ptr<class BravoShaderAsset> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 
 private:
 
@@ -27,7 +27,7 @@ private:
 
 	uint32 TextureColorBuffer = 0;
 
-	std::weak_ptr<class BravoShader> Shader;
+	std::weak_ptr<class BravoShaderAsset> Shader;
 
 	glm::ivec2 Size;
 };

@@ -11,7 +11,6 @@
 
 // TODO:
 /*
-*
 * Material refactoring. (to have colors OR textures)
 * refactor assets, consider making them unique?
 * Input refactoring 
@@ -54,7 +53,7 @@ public:
 	void GameLoop();
 	void StopGame();
 	
-	void RenderDepthMap(std::shared_ptr<class BravoShader> Shader) const;
+	void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const;
 	
 	void RegisterObject(std::shared_ptr<BravoObject> Object);
 	BravoHandle GenerateNewHandle() { return ++LastUsedHandle; }

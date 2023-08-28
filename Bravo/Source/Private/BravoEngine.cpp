@@ -25,7 +25,7 @@ bool BravoEngine::Initialize_Internal()
 	Engine = Self<BravoEngine>();
 	LastUsedHandle = GetHandle();
 
-	AssetManager = std::shared_ptr<BravoAssetManager>(new BravoAssetManager());
+	AssetManager = NewObject<BravoAssetManager>("AssetManager");
 
 	CreateOpenGLWindow();
 
@@ -132,7 +132,7 @@ void BravoEngine::UpdateViewport()
 	glfwPollEvents();
 }
 
-void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShader> Shader) const
+void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const
 {
 	for ( auto& it : RenderableObjects )
 	{
@@ -188,7 +188,7 @@ void BravoEngine::CreateOpenGLWindow()
 
 	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget") )
 	{
-		ViewportRenderTarget->Setup(ViewportSize*2, AssetManager->LoadAsset<BravoShader>("Shaders\\PostProccess"));
+		ViewportRenderTarget->Setup(ViewportSize*2, AssetManager->FindOrLoad<BravoShaderAsset>("PostProccesShaderAsset", BravoShaderLoadingParams("Shaders\\PostProccess")));
 	}
 	
 	glEnable(GL_BLEND);
