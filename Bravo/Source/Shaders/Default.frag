@@ -140,9 +140,6 @@ void main()
 		outColor += CalcDirLight(i, norm, viewDir);
 	}
 
-	for(int i = 0; i < directionalLightCount; i++)
-		outColor += CalcDirLight(i, norm, viewDir);
-
 	for(int i = 0; i < spotLightCount; i++)
 		outColor += CalcSpotLight(i, norm, viewDir);
 
@@ -190,7 +187,6 @@ float CalcDirLightShadow(int index, vec3 normal)
 	{
 		layer = index + dirLights[index].cascadeCount-1;
 	}
-	layer = 0;
 
 	vec4 fragPosLightSpace = dirLights[layer].lightSpaceMatrix * vec4(fs_in.FragPos, 1.0);
 	// perform perspective divide

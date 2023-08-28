@@ -70,15 +70,28 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	
 	
-	if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
-	{
-		dirLightActor->SetLocation(glm::vec3(100.0f,  100.0f, 0.0f ));
-		dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
-		dirLightActor->SetLightColor(glm::vec3(1.0f));
-	}
-	//SpawnSpotLights();
+	SpawnDirLights();
+	SpawnSpotLights();
 	SpawnTestInstances();
 	return true;
+}
+
+void BravoGameInstance::SpawnDirLights()
+{
+	int32 count = 2;
+	for ( int32 i = 0 ; i < count; ++i )
+	{
+		if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
+		{
+			glm::vec3 newLocation = glm::vec3(0.0f);
+			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 100;
+			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 100;
+			newLocation.y = 100.0f;
+			dirLightActor->SetLocation(newLocation);
+			dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
+			dirLightActor->SetLightColor(glm::vec3(1.0f));
+		}
+	}
 }
 
 void BravoGameInstance::SpawnPointLights()
