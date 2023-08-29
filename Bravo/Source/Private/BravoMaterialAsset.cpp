@@ -6,88 +6,113 @@
 
 bool BravoMaterialAsset::Load(const std::string& ResourcesPath, const BravoMaterialLoadingParams& params)
 {
-	int32 Layer = 0;
-	Textures.reserve(3);
-	{
-	auto diffuseTexture = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.DiffuseTexture));
-	if ( diffuseTexture->bInitialized && diffuseTexture->TextureData )
-	{
-		Textures.push_back(diffuseTexture);
-		ShaderData.DiffuseTextureLayer = Layer;
-		Layer++;
-	}
-	ShaderData.DiffuseColor = params.DiffuseColor;
-	}
-	{
-	auto specularTexture = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.SpecularTexture));
-	if ( specularTexture->bInitialized && specularTexture->TextureData )
-	{
-		Textures.push_back(specularTexture);
-		ShaderData.SpecularTextureLayer = Layer;
-		Layer++;
-	}
-	ShaderData.SpecularColor = params.SpecularColor;
-	}
-	{
-	auto normalTexture = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.NormalTexture));
-	if ( normalTexture->bInitialized && normalTexture->TextureData  )
-	{
-		Textures.push_back(normalTexture);
-		ShaderData.NormalTextureLayer = Layer;
-		Layer++;
-	}
-	}
+	albedoTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.AlbedoTexture));
+	metallicTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.MetallicTexture));
+	roughnessTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.RoughnessTexture));
+	aoTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.AoTexture));
+	normalTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.NormalTexture));
 
-	ShaderData.Shininess = params.Shininess;
+	ShaderData.useAlbedoTexture = albedoTextureData != nullptr && albedoTextureData->bInitialized;
+	ShaderData.useMetallicTexture = metallicTextureData != nullptr && metallicTextureData->bInitialized;
+	ShaderData.useRoughnessTexture = roughnessTextureData != nullptr && roughnessTextureData->bInitialized;
+	ShaderData.useAoTexture = aoTextureData != nullptr && aoTextureData->bInitialized;
+	ShaderData.useNormalTexture = normalTextureData != nullptr && normalTextureData->bInitialized;
+
+	ShaderData.albedoColor = params.AlbedoColor;
+	ShaderData.metallicColor = params.MetallicColor;
+	ShaderData.roughnessColor = params.RoughnessColor;
+	ShaderData.aoColor = params.AoColor;
 
 	return true;
 }
 
 bool BravoMaterialAsset::LoadToGPU_Internal()
 {
-	int32 SizeX = Textures.size() ? Textures[0]->SizeX : 0;
-	int32 SizeY = Textures.size() ? Textures[0]->SizeY : 0;
-	GLenum Format = Textures.size() ? Textures[0]->TextureFormat : GL_RED;
-
-	glGenTextures(1, &TextureID);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, TextureID);
-
-		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA,
-			SizeX, SizeY,
-			(GLsizei)Textures.size(), 0,
-			Format, GL_UNSIGNED_BYTE, nullptr);
-
-		for (size_t i = 0; i < Textures.size(); i++)
-		{
-			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SizeX, SizeY, 1, Format, GL_UNSIGNED_BYTE, Textures[i]->TextureData);
-		}
-
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	ShaderData.albedoTexture = LoadTextureToGPU(albedoTextureData);
+	ShaderData.metallicTexture = LoadTextureToGPU(metallicTextureData);
+	ShaderData.roughnessTexture = LoadTextureToGPU(roughnessTextureData);
+	ShaderData.aoTexture = LoadTextureToGPU(aoTextureData);
+	ShaderData.normalTexture = LoadTextureToGPU(normalTextureData);
 
 	return true;
+}
+
+GLuint BravoMaterialAsset::LoadTextureToGPU(std::shared_ptr<BravoTextureData> TextureData)
+{
+	GLuint TextureID;
+	if ( !TextureData->bInitialized || !TextureData->TextureData )
+	{
+		return 0;
+	}
+
+	glGenTextures(1, &TextureID);
+	glBindTexture(GL_TEXTURE_2D,  TextureID);
+		// set the texture wrapping/filtering options (on the currently bound texture object)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+	return TextureID;
 }
 
 void BravoMaterialAsset::ReleaseFromGPU_Internal()
 {
 	StopUsage();
-	glDeleteTextures(1, &TextureID);
+	glDeleteTextures(1, &(ShaderData.albedoTexture));
+	glDeleteTextures(1, &(ShaderData.metallicTexture));
+	glDeleteTextures(1, &(ShaderData.roughnessTexture));
+	glDeleteTextures(1, &(ShaderData.aoTexture));
+	glDeleteTextures(1, &(ShaderData.normalTexture));
 }
 
 void BravoMaterialAsset::Use()
 {
-	if ( TextureUnit < 0 )
-		TextureUnit = BravoTextureUnitManager::BindTexture();
+	if ( ShaderData.useAlbedoTexture && ShaderData.albedoTextureUnit != 0 )
+	{
+		ShaderData.albedoTextureUnit = BravoTextureUnitManager::BindTexture();
+		glActiveTexture(GL_TEXTURE0 + ShaderData.albedoTextureUnit);
+		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.albedoTexture);
+	}
+	
+	if ( ShaderData.useMetallicTexture && ShaderData.metallicTextureUnit != 0 )
+	{
+		ShaderData.metallicTextureUnit = BravoTextureUnitManager::BindTexture();
+		glActiveTexture(GL_TEXTURE0 + ShaderData.metallicTextureUnit);
+		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.metallicTexture);
+	}
+	
+	if ( ShaderData.useRoughnessTexture && ShaderData.roughnessTextureUnit != 0 )
+	{
+		ShaderData.roughnessTextureUnit = BravoTextureUnitManager::BindTexture();
+		glActiveTexture(GL_TEXTURE0 + ShaderData.roughnessTextureUnit);
+		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.roughnessTexture);
+	}
+	
+	if ( ShaderData.useAoTexture && ShaderData.aoTextureUnit != 0 )
+	{
+		ShaderData.aoTextureUnit = BravoTextureUnitManager::BindTexture();
+		glActiveTexture(GL_TEXTURE0 + ShaderData.useAoTexture);
+		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.aoTexture);
+	}
+	
+	if ( ShaderData.useNormalTexture && ShaderData.normalTextureUnit != 0 )
+	{
+		ShaderData.normalTextureUnit = BravoTextureUnitManager::BindTexture();
+		glActiveTexture(GL_TEXTURE0 + ShaderData.useNormalTexture);
+		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.normalTexture);
+	}
 
-	glActiveTexture(GL_TEXTURE0 + TextureUnit);
-	glBindTexture(GL_TEXTURE_2D_ARRAY,  TextureID);
 }
 
 void BravoMaterialAsset::StopUsage()
 {
-	BravoTextureUnitManager::UnbindTexture(TextureUnit);
-	TextureUnit = -1;
+	BravoTextureUnitManager::UnbindTexture(ShaderData.albedoTextureUnit);
+	BravoTextureUnitManager::UnbindTexture(ShaderData.metallicTextureUnit);
+	BravoTextureUnitManager::UnbindTexture(ShaderData.roughnessTextureUnit);
+	BravoTextureUnitManager::UnbindTexture(ShaderData.aoTextureUnit);
+	BravoTextureUnitManager::UnbindTexture(ShaderData.normalTextureUnit);
 }

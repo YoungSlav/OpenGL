@@ -180,6 +180,11 @@ void BravoShaderAsset::SetInt(const std::string& name, const int32 val) const
 	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);
 }
 
+void BravoShaderAsset::SetInt(const std::string& name, const GLuint val) const
+{
+	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);
+}
+
 void BravoShaderAsset::SetVector1d(const std::string& name, const float val) const
 {
 	glUniform1f(glGetUniformLocation(ShaderID, name.c_str()), val);
@@ -227,11 +232,46 @@ void BravoShaderAsset::SetMaterial(const std::string& name, std::shared_ptr<clas
 
 	BravoMaterialShaderData data = val->GetShadeData();
 
-	SetInt(name + ".textureArray", val->GetTextureUnit());
-	SetInt(name + ".diffuseTexture", data.DiffuseTextureLayer);
-	SetInt(name + ".specularTexture", data.SpecularTextureLayer);
-	SetInt(name + ".normalTexture", data.NormalTextureLayer);
-	SetVector3d(name + ".diffuseColor", data.DiffuseColor);
-	SetVector3d(name + ".specularColor", data.SpecularColor);
-	SetVector1d(name + ".shininess", data.Shininess);
+	
+	bool albedoTexture = data.albedoTexture != 0 && data.useAlbedoTexture;
+	bool metallicTexture = data.metallicTexture != 0 && data.useMetallicTexture;
+	bool roughnessTexture = data.roughnessTexture != 0 && data.useRoughnessTexture;
+	bool aoTexture = data.aoTexture != 0 && data.useAoTexture;
+	bool normalTexture = data.normalTexture != 0 && data.useNormalTexture;
+
+	SetVector3d(name + ".albedoColor", data.albedoColor);
+	SetVector1d(name + ".metallicColor", data.metallicColor);
+	SetVector1d(name + ".roughnessColor", data.roughnessColor);
+	SetVector1d(name + ".aoColor", data.aoColor);
+	
+	SetBool(name + ".useAlbedoTexture", albedoTexture);
+	SetBool(name + ".useMetallicTexture", metallicTexture);
+	SetBool(name + ".useRoughnessTexture", roughnessTexture);
+	SetBool(name + ".useAoTexture", aoTexture);
+	SetBool(name + ".useNormalTexture", normalTexture);
+
+	if ( albedoTexture )
+		SetInt(name + ".albedoTexture", data.albedoTexture);
+	else
+		SetTexture(name + ".albedoTexture", EmptyTexture);
+	
+	if ( metallicTexture )
+		SetInt(name + ".metallicTexture", data.metallicTexture);
+	else
+		SetTexture(name + ".albedoTexture", EmptyTexture);
+	
+	if ( roughnessTexture )
+		SetInt(name + ".roughnessTexture", data.roughnessTexture);
+	else
+		SetTexture(name + ".albedoTexture", EmptyTexture);
+	
+	if ( aoTexture )
+		SetInt(name + ".aoTexture", data.aoTexture);
+	else
+		SetTexture(name + ".albedoTexture", EmptyTexture);
+
+	if ( normalTexture )
+		SetInt(name + ".normalTexture", data.normalTexture);
+	else
+		SetTexture(name + ".albedoTexture", EmptyTexture);
 }

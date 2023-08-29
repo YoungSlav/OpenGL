@@ -125,10 +125,12 @@
   <ItemGroup>
     <None Include="Source\Shaders\DefaultUnlit.frag" />
     <None Include="Source\Shaders\DefaultUnlit.vert" />
-    <None Include="Source\Shaders\Default.frag" />
+    <None Include="Source\Shaders\PBRModel.frag" />
+    <None Include="Source\Shaders\PBRModel.vert" />
+    <None Include="Source\Shaders\PhongModel.frag" />
     <None Include="Source\Shaders\InfinitePlane.frag" />
     <None Include="Source\Shaders\InfinitePlane.vert" />
-    <None Include="Source\Shaders\Default.vert" />
+    <None Include="Source\Shaders\PhongModel.vert" />
     <None Include="Source\Shaders\PostProccess.frag" />
     <None Include="Source\Shaders\PostProccess.vert" />
     <None Include="Source\Shaders\DepthMapDir.frag" />

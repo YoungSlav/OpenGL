@@ -3,33 +3,49 @@
 #include "openGL.h"
 #include "BravoAsset.h"
 
-// TODO: replace atlas with individual textures and remake for PBR
-
 
 struct BravoMaterialLoadingParams
 {
-	std::string DiffuseTexture = "";
-	glm::vec3 DiffuseColor = glm::vec3(0);
+	std::string AlbedoTexture = "";
+	glm::vec3 AlbedoColor = glm::vec3(0.0f);
 	
-	std::string SpecularTexture = "";
-	glm::vec3 SpecularColor = glm::vec3(0);
-	
-	std::string NormalTexture = "";
+	std::string MetallicTexture = "";
+	float MetallicColor = 0.0f;
 
-	float Shininess = 0.0f;
+	std::string RoughnessTexture = "";
+	float RoughnessColor = 0.0f;
+
+	std::string AoTexture = "";
+	float AoColor = 0.0f;
+
+	std::string NormalTexture = "";
 };
 
 struct BravoMaterialShaderData
 {
-	int32 DiffuseTextureLayer = -1;
-	glm::vec3 DiffuseColor = glm::vec3(0);
+	GLuint albedoTexture = 0;
+	int32 albedoTextureUnit = -1;
+	bool useAlbedoTexture = false;
+	glm::vec3 albedoColor = glm::vec3(0.0f);
 	
-	int32 SpecularTextureLayer = -1;
-	glm::vec3 SpecularColor = glm::vec3(0);
-	
-	int32 NormalTextureLayer = -1;
+	GLuint metallicTexture = 0;
+	int32 metallicTextureUnit = -1;
+	bool useMetallicTexture = false;
+	float metallicColor = 0.0f;
 
-	float Shininess = 0.0f;
+	GLuint roughnessTexture = 0;
+	int32 roughnessTextureUnit = -1;
+	bool useRoughnessTexture = false;
+	float roughnessColor = 0.0f;
+
+	GLuint aoTexture = 0;
+	int32 aoTextureUnit = -1;
+	bool useAoTexture = false;
+	float aoColor = 0.0f;
+
+	GLuint normalTexture = 0;
+	int32 normalTextureUnit = -1;
+	bool useNormalTexture = false;
 };
 
 class BravoMaterialAsset : public BravoAsset
@@ -40,7 +56,6 @@ public:
 	virtual void Use() override;
 	virtual void StopUsage() override;
 
-	inline const int32 GetTextureUnit() const { return TextureUnit; }
 	inline const BravoMaterialShaderData& GetShadeData() const { return ShaderData; }
 
 protected:
@@ -48,11 +63,18 @@ protected:
 	virtual void ReleaseFromGPU_Internal() override;
 
 
+private:
+	GLuint LoadTextureToGPU(std::shared_ptr<class BravoTextureData> TextureData);
+
 protected:
+
+
 
 	BravoMaterialShaderData ShaderData;
 
-	std::vector<std::shared_ptr<class BravoTextureData>> Textures;
-	GLuint TextureID = 0;
-	int32 TextureUnit = -1;
+	std::shared_ptr<class BravoTextureData> albedoTextureData = nullptr;
+	std::shared_ptr<class BravoTextureData> metallicTextureData = nullptr;
+	std::shared_ptr<class BravoTextureData> roughnessTextureData = nullptr;
+	std::shared_ptr<class BravoTextureData> aoTextureData = nullptr;
+	std::shared_ptr<class BravoTextureData> normalTextureData = nullptr;
 };

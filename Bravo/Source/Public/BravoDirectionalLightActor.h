@@ -12,10 +12,9 @@ struct BravoDirectionalLightSettings
 
 struct BravoDirectionalLightShaderData
 {
-	alignas(16) glm::vec3 AmbientLight;
-	alignas(16) glm::vec3 DiffuseLight;
-	alignas(16) glm::vec3 SpecularLight;
-
+	alignas(16) glm::vec3 Ambient;
+	alignas(16) glm::vec3 Color;
+	
 	alignas(16) glm::vec3 Direction;
 
 	int32 LayerOffset;
@@ -34,6 +33,9 @@ public:
 	void SetSettings(BravoDirectionalLightSettings _Settings) { Settings = _Settings; }
 	const BravoDirectionalLightSettings& GetSettings() const { return Settings; }
 
+	void SetAmbientLightColor(const glm::vec3& _Color) { AmbientColor = _Color; }
+	const glm::vec3& GetAmbientLightColor() const { return AmbientColor; }
+
 protected:
 	virtual bool Initialize_Internal() override;
 
@@ -41,5 +43,8 @@ private:
 	glm::mat4 GetLightSpaceMatrix(const float nearPlane, const float farPlane) const;
 
 private:
+
+	glm::vec3 AmbientColor;
+
 	BravoDirectionalLightSettings Settings;
 };

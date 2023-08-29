@@ -10,14 +10,12 @@ struct BravoSpotLightSettings
 	float CutOff = 15.0f;
 	float OuterCutOff = 20.0f;
 
-	uint32 Intencity = 6;
+	float MaxDistance = 100.0f;
 };
 
 struct BravoSpotLightShaderData
 {
-	alignas(16) glm::vec3 AmbientLight;
-	alignas(16) glm::vec3 DiffuseLight;
-	alignas(16) glm::vec3 SpecularLight;
+	alignas(16) glm::vec3 Color;
 
 	alignas(16) glm::vec3 Position;
 	alignas(16) glm::vec3 Direction;
@@ -25,9 +23,6 @@ struct BravoSpotLightShaderData
 	float CutOff = 0.0f;
 	float OuterCutOff = 0.0f;
 
-	float Constant = 0.0f;
-	float Linear = 0.0f;
-	float Quadric = 0.0f;
 	float FarPlane = 0.0f;
 
 	alignas(16) glm::mat4 LightSpaceMatrix;

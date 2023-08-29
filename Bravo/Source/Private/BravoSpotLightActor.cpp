@@ -17,13 +17,12 @@ bool BravoSpotLightActor::Initialize_Internal()
 void BravoSpotLightActor::SetSettings(BravoSpotLightSettings _Settings)
 {
 	Settings = _Settings;
-	Settings.Intencity = std::min(Settings.Intencity, (uint32)(LightAttenuationConstants.Distance.size()-1));
 }
 
 void BravoSpotLightActor::GetLightSpaceTransformationMatrix(glm::mat4& OutTransformationMatrix) const
 {
 	const float NearPlane = 0.1f;	
-	const float FarPlane = LightAttenuationConstants.Distance[Settings.Intencity];
+	const float FarPlane = Settings.MaxDistance;
 
 	const float FOV = glm::radians(Settings.OuterCutOff * 2.0f);
 	const float AspectRatio = 1.0f;
@@ -36,9 +35,7 @@ void BravoSpotLightActor::GetLightSpaceTransformationMatrix(glm::mat4& OutTransf
 
 void BravoSpotLightActor::GetShaderData(BravoSpotLightShaderData& OutShaderData) const
 {
-	OutShaderData.AmbientLight = LightColor.ambient;
-	OutShaderData.DiffuseLight = LightColor.diffuse;
-	OutShaderData.SpecularLight = LightColor.specular;
+	OutShaderData.Color = GetLightColor();
 
 	OutShaderData.Position = GetLocation();
 	OutShaderData.Direction = GetDirection();
@@ -46,9 +43,7 @@ void BravoSpotLightActor::GetShaderData(BravoSpotLightShaderData& OutShaderData)
 	OutShaderData.CutOff = glm::cos(glm::radians(Settings.CutOff));
 	OutShaderData.OuterCutOff = glm::cos(glm::radians(Settings.OuterCutOff));
 
-	OutShaderData.Constant = LightAttenuationConstants.Constant[Settings.Intencity];
-	OutShaderData.Linear = LightAttenuationConstants.Linear[Settings.Intencity];
-	OutShaderData.Quadric = LightAttenuationConstants.Quadratic[Settings.Intencity];
-	OutShaderData.FarPlane = LightAttenuationConstants.Distance[Settings.Intencity];
+	OutShaderData.FarPlane = Settings.MaxDistance;
+
 	GetLightSpaceTransformationMatrix(OutShaderData.LightSpaceMatrix);
 }

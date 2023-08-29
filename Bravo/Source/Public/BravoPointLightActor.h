@@ -6,22 +6,16 @@
 
 struct BravoPointLightSettings
 {
-	uint32 Intencity = 6;
+	float MaxDistance;
 };
 
 struct BravoPointLightShaderData
 {
-	alignas(16) glm::vec3 AmbientLight;
-	alignas(16) glm::vec3 DiffuseLight;
-	alignas(16) glm::vec3 SpecularLight;
+	alignas(16) glm::vec3 Color;
 
 	alignas(16) glm::vec3 Position;
 
-	float Constant = 0.0f;
-	float Linear = 0.0f;
-	float Quadric = 0.0f;
-	
-	float FarPlane = 0.0f;
+	float FarPlane = 100.0f;
 };
 
 class BravoPointLightActor : public BravoLightActor

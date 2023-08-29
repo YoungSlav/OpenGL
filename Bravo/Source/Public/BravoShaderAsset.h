@@ -51,6 +51,7 @@ public:
 	void SetBool(const std::string& name, const bool val) const;
 	void SetInt(const std::string& name, const int32 val) const;
 	void SetInt(const std::string& name, const size_t val) const;
+	void SetInt(const std::string& name, const GLuint val) const;
 	void SetVector1d(const std::string& name, const float val) const;
 	void SetVector2d(const std::string& name, const glm::vec2& val) const;
 	void SetVector3d(const std::string& name, const glm::vec3& val) const;

@@ -34,9 +34,9 @@ public:
 
 	bool bInitialized = false;
 
-	int32 SizeX = -1;
-	int32 SizeY = -1;
-	GLenum TextureFormat = 0;
+	int32 SizeX = 0;
+	int32 SizeY = 0;
+	GLenum TextureFormat = GL_RED;
 	uint8* TextureData = nullptr;
 };
 

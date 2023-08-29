@@ -7,7 +7,7 @@
 
 bool BravoStaticMeshComponent::Initialize_Internal()
 {
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DefaultShaderAsset", BravoShaderLoadingParams("Shaders\\Default"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("PBRShaderModel", BravoShaderLoadingParams("Shaders\\PBRModel"));
 	if ( !Shader )
 		return false;
 

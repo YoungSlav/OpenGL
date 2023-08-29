@@ -82,12 +82,6 @@
     <Filter Include="Public\Lights\DepthMaps">
       <UniqueIdentifier>{f54710a9-29e0-4ef3-9b59-c57852c7be37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Public\Lights\LightCasters">
-      <UniqueIdentifier>{8c0e5aee-75ee-400f-804a-c9d6fca4e83d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Private\Lights\LightCasters">
-      <UniqueIdentifier>{38873873-1a41-4fda-849b-48ee1be7aeb9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Private\Lights\DepthMaps">
       <UniqueIdentifier>{e424e128-e43c-4f5f-a383-54e52596308f}</UniqueIdentifier>
     </Filter>
@@ -102,6 +96,12 @@
     </Filter>
     <Filter Include="Private\Lights\DirectionalLight">
       <UniqueIdentifier>{c13269ef-1a92-45c0-8ed9-862e6741fd81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Lights\PointLight">
+      <UniqueIdentifier>{38873873-1a41-4fda-849b-48ee1be7aeb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Lights\PointLight">
+      <UniqueIdentifier>{8c0e5aee-75ee-400f-804a-c9d6fca4e83d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -197,7 +197,7 @@
       <Filter>Private\Actors\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoPointLightActor.cpp">
-      <Filter>Private\Lights\LightCasters</Filter>
+      <Filter>Private\Lights\PointLight</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoDepthMap.cpp">
       <Filter>Private\Lights\DepthMaps</Filter>
@@ -220,15 +220,29 @@
     <ClCompile Include="Source\Private\BravoDirectionalLightShaderDataCollection.cpp">
       <Filter>Private\Lights\DirectionalLight</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoCubemapAsset.cpp" />
-    <ClCompile Include="Source\Private\BravoFontAsset.cpp" />
-    <ClCompile Include="Source\Private\BravoPointDepthMap.cpp" />
-    <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
-    <ClCompile Include="Source\Private\BravoStaticMeshAsset.cpp" />
-    <ClCompile Include="Source\Private\BravoShaderAsset.cpp" />
-    <ClCompile Include="Source\Private\BravoTextureAsset.cpp" />
     <ClCompile Include="Source\Private\BravoMaterialAsset.cpp">
       <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoFontAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoCubemapAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoShaderAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoStaticMeshAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoTextureAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoPointDepthMap.cpp">
+      <Filter>Private\Lights\PointLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp">
+      <Filter>Private\Lights\PointLight</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -337,13 +351,10 @@
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoPointLightActor.h">
-      <Filter>Public\Lights\LightCasters</Filter>
+      <Filter>Public\Lights\PointLight</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoDepthMap.h">
       <Filter>Public\Lights\DepthMaps</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoLightActor.h">
-      <Filter>Public\Lights\LightCasters</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoSpotLightActor.h">
       <Filter>Public\Lights\SpotLight</Filter>
@@ -363,20 +374,39 @@
     <ClInclude Include="Source\Public\BravoDirectionalLightShaderDataCollection.h">
       <Filter>Public\Lights\DirectionalLight</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoCubemapAsset.h" />
-    <ClInclude Include="Source\Public\BravoFontAsset.h" />
-    <ClInclude Include="Source\Public\BravoMaterialAsset.h" />
-    <ClInclude Include="Source\Public\BravoPointDepthMap.h" />
-    <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
-    <ClInclude Include="Source\Public\BravoStaticMeshAsset.h" />
-    <ClInclude Include="Source\Public\BravoShaderAsset.h" />
-    <ClInclude Include="Source\Public\BravoTextureAsset.h" />
+    <ClInclude Include="Source\Public\BravoLightActor.h">
+      <Filter>Public\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h">
+      <Filter>Public\Lights\PointLight</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoPointDepthMap.h">
+      <Filter>Public\Lights\PointLight</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoTextureAsset.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoCubemapAsset.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoFontAsset.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMaterialAsset.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoShaderAsset.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoStaticMeshAsset.h">
+      <Filter>Public\Assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Shaders\Default.frag">
+    <None Include="Source\Shaders\PhongModel.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\Default.vert">
+    <None Include="Source\Shaders\PhongModel.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\Skybox.frag">
@@ -435,6 +465,12 @@
     </None>
     <None Include="Source\Shaders\DepthMapPoint.vert">
       <Filter>Shaders\DepthMaps\Point</Filter>
+    </None>
+    <None Include="Source\Shaders\PBRModel.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\PBRModel.vert">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
