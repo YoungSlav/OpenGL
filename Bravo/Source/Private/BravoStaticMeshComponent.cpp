@@ -172,7 +172,6 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 	glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
 	Shader->Use();
-		Material->Use();
 		Shader->SetMatrix4d("projection", CameraProjection);
 		Shader->SetMatrix4d("view", CameraView);
 		Shader->SetMatrix4d("model", model);

@@ -71,35 +71,35 @@ void BravoMaterialAsset::ReleaseFromGPU_Internal()
 
 void BravoMaterialAsset::Use()
 {
-	if ( ShaderData.useAlbedoTexture && ShaderData.albedoTextureUnit != 0 )
+	if ( ShaderData.useAlbedoTexture && ShaderData.albedoTexture != 0 )
 	{
 		ShaderData.albedoTextureUnit = BravoTextureUnitManager::BindTexture();
 		glActiveTexture(GL_TEXTURE0 + ShaderData.albedoTextureUnit);
 		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.albedoTexture);
 	}
 	
-	if ( ShaderData.useMetallicTexture && ShaderData.metallicTextureUnit != 0 )
+	if ( ShaderData.useMetallicTexture && ShaderData.metallicTexture != 0 )
 	{
 		ShaderData.metallicTextureUnit = BravoTextureUnitManager::BindTexture();
 		glActiveTexture(GL_TEXTURE0 + ShaderData.metallicTextureUnit);
 		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.metallicTexture);
 	}
 	
-	if ( ShaderData.useRoughnessTexture && ShaderData.roughnessTextureUnit != 0 )
+	if ( ShaderData.useRoughnessTexture && ShaderData.roughnessTexture != 0 )
 	{
 		ShaderData.roughnessTextureUnit = BravoTextureUnitManager::BindTexture();
 		glActiveTexture(GL_TEXTURE0 + ShaderData.roughnessTextureUnit);
 		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.roughnessTexture);
 	}
 	
-	if ( ShaderData.useAoTexture && ShaderData.aoTextureUnit != 0 )
+	if ( ShaderData.useAoTexture && ShaderData.aoTexture != 0 )
 	{
 		ShaderData.aoTextureUnit = BravoTextureUnitManager::BindTexture();
 		glActiveTexture(GL_TEXTURE0 + ShaderData.useAoTexture);
 		glBindTexture(GL_TEXTURE_2D_ARRAY,  ShaderData.aoTexture);
 	}
 	
-	if ( ShaderData.useNormalTexture && ShaderData.normalTextureUnit != 0 )
+	if ( ShaderData.useNormalTexture && ShaderData.normalTexture != 0 )
 	{
 		ShaderData.normalTextureUnit = BravoTextureUnitManager::BindTexture();
 		glActiveTexture(GL_TEXTURE0 + ShaderData.useNormalTexture);

@@ -242,8 +242,8 @@ void BravoGameInstance::SpawnTestPBR()
 	if ( auto cubeActor = NewObject<BravoActor>("Sphere") )
 	{
 		cubeActor->SetLocation(glm::vec3(0.0f, 10.0f, 15.0f ));
-		int32 nrRows    = 7;
-		int32 nrColumns = 7;
+		int32 nrRows    = 1;
+		int32 nrColumns = 1;
 		float spacing = 2.0f;
 
 		for (int32 row = 0; row < nrRows; ++row)
@@ -254,11 +254,15 @@ void BravoGameInstance::SpawnTestPBR()
 					cubeMesh->SetMesh(sphereAsset);
 					BravoMaterialLoadingParams materailLoadingParams;
 					materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
-					materailLoadingParams.MetallicColor = (float)row / (float)nrRows;
-					materailLoadingParams.RoughnessColor = glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f);
+					//materailLoadingParams.MetallicColor = (float)row / (float)nrRows;
+					//materailLoadingParams.RoughnessColor = glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f);
+					materailLoadingParams.AlbedoTexture = "Textures\\rustedIron\\albedo.png";
+					materailLoadingParams.MetallicTexture = "Textures\\rustedIron\\metallic.png";
+					materailLoadingParams.RoughnessTexture = "Textures\\rustedIron\\roughness.png";
+					materailLoadingParams.NormalTexture = "Textures\\rustedIron\\normal.png";
 					materailLoadingParams.AoColor = 0.0f;
 					
-					std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial" + std::to_string(row) + std::to_string(col), materailLoadingParams);
+					std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
 					cubeMesh->SetMaterial(material);
 					glm::mat4 model = glm::mat4(1.0f);
 					model = glm::translate(model, glm::vec3(
