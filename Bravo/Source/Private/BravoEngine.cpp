@@ -83,7 +83,7 @@ void BravoEngine::Tick(float DeltaTime)
 	for ( auto it : TickableObjects )
 		it->Update(DeltaTime);
 }
-#include "BravoDirectionalLightActor.h"
+
 void BravoEngine::UpdateViewport()
 {
 	std::shared_ptr<BravoCamera> camera = GetCamera();
@@ -188,7 +188,7 @@ void BravoEngine::CreateOpenGLWindow()
 
 	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget") )
 	{
-		ViewportRenderTarget->Setup(ViewportSize*2, AssetManager->FindOrLoad<BravoShaderAsset>("PostProccesShaderAsset", BravoShaderLoadingParams("Shaders\\PostProccess")));
+		ViewportRenderTarget->Setup(ViewportSize*2, true, AssetManager->FindOrLoad<BravoShaderAsset>("PostProccesShaderAsset", BravoShaderLoadingParams("Shaders\\PostProccess")));
 	}
 	
 	glEnable(GL_BLEND);

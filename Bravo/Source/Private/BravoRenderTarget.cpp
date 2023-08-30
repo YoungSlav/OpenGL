@@ -5,8 +5,9 @@
 #include "BravoTextureAsset.h"
 #include "BravoTextureUnitManager.h"
 
-void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class BravoShaderAsset> InShader)
+void BravoRenderTarget::Setup(const glm::ivec2& InSize, bool _HDR, std::shared_ptr<class BravoShaderAsset> InShader)
 {
+	HDR = _HDR;
 	Size = InSize;
 	Shader = InShader;
 
@@ -39,7 +40,7 @@ void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class Br
 	// create a color attachment texture
 	glGenTextures(1, &TextureColorBuffer);
     glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Size.x, Size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, HDR ? GL_RGB16F : GL_RGB, Size.x, Size.y, 0, GL_RGB, HDR ? GL_FLOAT : GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureColorBuffer, 0);
@@ -60,7 +61,7 @@ void BravoRenderTarget::Setup(const glm::ivec2& InSize, std::shared_ptr<class Br
 void BravoRenderTarget::Resize(const glm::ivec2& InSize)
 {
 	Clean();
-	Setup(InSize, GetShader());
+	Setup(InSize, HDR, GetShader());
 }
 
 void BravoRenderTarget::Clean()

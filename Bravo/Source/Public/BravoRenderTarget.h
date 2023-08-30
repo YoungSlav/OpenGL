@@ -5,7 +5,7 @@ class BravoRenderTarget : public BravoObject
 {
 public:
 
-	void Setup(const glm::ivec2& Size, std::shared_ptr<class BravoShaderAsset> InShader);
+	void Setup(const glm::ivec2& Size, bool HDR, std::shared_ptr<class BravoShaderAsset> InShader);
 
 	void Resize(const glm::ivec2& Size);
 	void Clean();
@@ -30,4 +30,6 @@ private:
 	std::weak_ptr<class BravoShaderAsset> Shader;
 
 	glm::ivec2 Size;
+
+	bool HDR = false;
 };
