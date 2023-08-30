@@ -8,6 +8,7 @@ public:
 	BravoTextureData(const std::string& _Path)
 	{
 		int32 nrChannels;
+
 		if ( TextureData = stbi_load(_Path.c_str(), &SizeX, &SizeY, &nrChannels, 0) )
 		{
 			if (nrChannels == 1)

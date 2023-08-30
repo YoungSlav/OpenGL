@@ -251,27 +251,27 @@ void BravoShaderAsset::SetMaterial(const std::string& name, std::shared_ptr<clas
 	SetBool(name + ".useNormalTexture", normalTexture);
 
 	if ( albedoTexture )
-		SetInt(name + ".albedoTexture", data.albedoTexture);
+		SetInt(name + ".albedoTexture", data.albedoTextureUnit);
 	else
 		SetTexture(name + ".albedoTexture", EmptyTexture);
 	
 	if ( metallicTexture )
-		SetInt(name + ".metallicTexture", data.metallicTexture);
+		SetInt(name + ".metallicTexture", data.metallicTextureUnit);
 	else
-		SetTexture(name + ".albedoTexture", EmptyTexture);
+		SetTexture(name + ".metallicTexture", EmptyTexture);
 	
 	if ( roughnessTexture )
-		SetInt(name + ".roughnessTexture", data.roughnessTexture);
+		SetInt(name + ".roughnessTexture", data.roughnessTextureUnit);
 	else
-		SetTexture(name + ".albedoTexture", EmptyTexture);
+		SetTexture(name + ".roughnessTexture", EmptyTexture);
 	
 	if ( aoTexture )
-		SetInt(name + ".aoTexture", data.aoTexture);
+		SetInt(name + ".aoTexture", data.aoTextureUnit);
 	else
-		SetTexture(name + ".albedoTexture", EmptyTexture);
+		SetTexture(name + ".aoTexture", EmptyTexture);
 
 	if ( normalTexture )
-		SetInt(name + ".normalTexture", data.normalTexture);
+		SetInt(name + ".normalTexture", data.normalTextureUnit);
 	else
-		SetTexture(name + ".albedoTexture", EmptyTexture);
+		SetTexture(name + ".normalTexture", EmptyTexture);
 }

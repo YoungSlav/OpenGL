@@ -217,12 +217,12 @@ void BravoGameInstance::SpawnTestPBR()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	std::shared_ptr<BravoStaticMeshAsset> sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereMeshAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
-	for ( int32 i = 0; i < 4; ++i )
+	for ( int32 i = 0; i < 1; ++i )
 	{
 		if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
 		{
 			pointLightActor->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
-			pointLightActor->SetLightColor(glm::vec3(1500.0f));
+			pointLightActor->SetLightColor(glm::vec3(300.0f));
 			BravoPointLightSettings PointSettings;
 			PointSettings.MaxDistance = 100.0f;
 			pointLightActor->SetSettings(PointSettings);
@@ -259,8 +259,8 @@ void BravoGameInstance::SpawnTestPBR()
 					materailLoadingParams.AlbedoTexture = "Textures\\rustedIron\\albedo.png";
 					materailLoadingParams.MetallicTexture = "Textures\\rustedIron\\metallic.png";
 					materailLoadingParams.RoughnessTexture = "Textures\\rustedIron\\roughness.png";
-					materailLoadingParams.NormalTexture = "Textures\\rustedIron\\normal.png";
-					materailLoadingParams.AoColor = 0.0f;
+					//materailLoadingParams.NormalTexture = "Textures\\rustedIron\\normal.png";
+					materailLoadingParams.AoColor = 1.0f;
 					
 					std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
 					cubeMesh->SetMaterial(material);
@@ -341,19 +341,20 @@ void BravoGameInstance::SpawnTestInstances()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {
-	int32 lIdx = 0;
-	float lightDist = 10.0f;
-	for ( int32 i = 0; i < 2; ++i )
-	{
-		for ( int32 j = 0; j < 2; ++j )
-		{
-			glm::vec3 loc = glm::vec3(0.0f);
-			loc.y = i == 0 ? -lightDist : lightDist;
-			loc.x = j == 0 ? -lightDist : lightDist;
-			pointLights[lIdx]->SetLocation(loc + Engine->GetCamera()->GetLocation());
-			lIdx++;
-		}
-	}
+	//int32 lIdx = 0;
+	//float lightDist = 10.0f;
+	//for ( int32 i = 0; i < 2; ++i )
+	//{
+	//	for ( int32 j = 0; j < 2; ++j )
+	//	{
+	//		glm::vec3 loc = glm::vec3(0.0f);
+	//		loc.y = i == 0 ? -lightDist : lightDist;
+	//		loc.x = j == 0 ? -lightDist : lightDist;
+	//		pointLights[lIdx]->SetLocation(loc + Engine->GetCamera()->GetLocation());
+	//		lIdx++;
+	//	}
+	//}
+	pointLights[0]->SetLocation(Engine->GetCamera()->GetLocation());
 	return;
 
 	std::shared_ptr<BravoActor> cube = Cubes[0].lock();
