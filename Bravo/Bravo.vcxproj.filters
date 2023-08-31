@@ -439,10 +439,10 @@
     <None Include="Source\Shaders\wPlane.frag">
       <Filter>Shaders\HUD</Filter>
     </None>
-    <None Include="Source\Shaders\DefaultUnlit.frag">
+    <None Include="Source\Shaders\Unlit.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\DefaultUnlit.vert">
+    <None Include="Source\Shaders\Unlit.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\DepthMapDir.frag">

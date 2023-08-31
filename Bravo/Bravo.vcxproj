@@ -123,8 +123,8 @@
     <ClInclude Include="Source\ThirdParty\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Shaders\DefaultUnlit.frag" />
-    <None Include="Source\Shaders\DefaultUnlit.vert" />
+    <None Include="Source\Shaders\Unlit.frag" />
+    <None Include="Source\Shaders\Unlit.vert" />
     <None Include="Source\Shaders\PBRModel.frag" />
     <None Include="Source\Shaders\PBRModel.vert" />
     <None Include="Source\Shaders\PhongModel.frag" />

@@ -11,8 +11,9 @@
 
 // TODO:
 /*
-* Input refactoring 
+* fix point shadows?
 * async content loading
+* Input refactoring 
 * frustrum culling
 * multiple projects in solution: Engine, Game
 * 

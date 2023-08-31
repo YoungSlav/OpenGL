@@ -379,10 +379,9 @@ float CalcPointLightShadow(int index)
 	for(int i = 0; i < samples; ++i)
 	{
 		vec3 sampleCoord = fragToLight + gridSamplingDisk[i] * diskRadius;
-		float closestDepth = texture(pointDepthMaps, vec4(sampleCoord, index)).r;
-		closestDepth *= drawDistance;   // undo mapping [0;1]
-		if(currentDepth - bias > closestDepth)
-			shadow += 1.0;
+		float pcfDepth = texture(pointDepthMaps, vec4(sampleCoord, index)).r;
+		pcfDepth *= drawDistance;   // undo mapping [0;1]
+		shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
 	}
 	shadow /= float(samples);
 
