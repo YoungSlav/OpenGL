@@ -26,7 +26,7 @@ bool BravoTextureAsset::LoadToGPU_Internal()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
+		glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureInnerFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 	//glBindTexture(GL_TEXTURE_2D,  0);

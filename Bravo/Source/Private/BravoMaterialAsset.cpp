@@ -6,7 +6,7 @@
 
 bool BravoMaterialAsset::Load(const std::string& ResourcesPath, const BravoMaterialLoadingParams& params)
 {
-	albedoTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.AlbedoTexture));
+	albedoTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.AlbedoTexture, true));
 	metallicTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.MetallicTexture));
 	roughnessTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.RoughnessTexture));
 	aoTextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.AoTexture));
@@ -53,7 +53,7 @@ GLuint BravoMaterialAsset::LoadTextureToGPU(std::shared_ptr<BravoTextureData> Te
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
+		glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureInnerFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 	return TextureID;

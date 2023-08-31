@@ -272,6 +272,7 @@ void BravoGameInstance::SpawnTestPBR()
 					));
 					cubeMesh->SetTransform(model);
 					cubeMesh->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+					cubeMesh->SetScale(glm::vec3(5.0f));
 					
 			}
 		}
