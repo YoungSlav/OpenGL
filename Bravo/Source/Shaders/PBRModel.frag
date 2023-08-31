@@ -209,7 +209,7 @@ void main()
 		vec3 L = -dirLights[i].direction;
 		vec3 H = normalize(V + L);
 
-		float diff = max(dot(N, -dirLights[i].direction), 0.0);
+		float diff = max(dot(N, L), 0.0);
 
 		vec3 radiance = dirLights[i].color * diff;
 		Lo += (1.0 - shadow) * calcLight(V, N, L, H, F0, albedo, roughness, metallic, radiance);

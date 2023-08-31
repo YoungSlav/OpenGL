@@ -80,9 +80,9 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	
 	
-	//SpawnDirLights();
-	SpawnPointLights();
-	//SpawnSpotLights();
+	SpawnDirLights();
+	//SpawnPointLights();
+	SpawnSpotLights();
 	
 	SpawnTestInstances();
 	//SpawnCubes();
@@ -260,8 +260,7 @@ void BravoGameInstance::SpawnTestInstances()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-
-	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("asdasd", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	std::shared_ptr<BravoStaticMeshAsset> sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("asdasd", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
 
 	BravoMaterialLoadingParams materailLoadingParams;
 	materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
@@ -271,20 +270,24 @@ void BravoGameInstance::SpawnTestInstances()
 	materailLoadingParams.AoColor = 1.0f;
 	std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("RustedIron", materailLoadingParams);
 
-	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
+	if ( auto sphereActor = NewObject<BravoActor>("Cube") )
 	{
-		auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent");
-		cubeActor->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
-		cubeMesh->SetMesh(cubeAsset);
-		cubeMesh->SetCastShadows(true);
-		cubeMesh->SetMaterial(material);
-		cubeMesh->RemoveAllInstances();
-		for ( int32 i = 0; i < 50; ++i )
+		auto sphereMesh = sphereActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent");
+		sphereActor->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
+		sphereMesh->SetMesh(sphereAsset);
+		sphereMesh->SetCastShadows(true);
+		sphereMesh->SetMaterial(material);
+		sphereMesh->RemoveAllInstances();
+		int32 count = 50.0;
+		for ( int32 i = 0; i < count; ++i )
 		{
-			cubeMesh->AddInstance(BravoTransform(), false);
+			glm::vec3 newLocation = glm::vec3(0.0f);
+			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 5;
+			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 5;
+			sphereMesh->AddInstance(BravoTransform(newLocation, glm::vec3(BravoMath::RandVector(360.0f)), glm::vec3(0.3f)), false);
 		}
-		cubeMesh->UpdateInstanceBuffer();
-		Cubes.push_back(cubeActor);
+		sphereMesh->UpdateInstanceBuffer();
+		Cubes.push_back(sphereActor);
 	}
 }
 
@@ -303,8 +306,8 @@ void BravoGameInstance::Tick(float DeltaTime)
 	for ( int32 i = 0; i < spotLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 10;
-		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 10;
+		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 30;
+		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 30;
 	
 		newLocation.y = 30.0f;
 
