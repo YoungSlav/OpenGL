@@ -61,31 +61,31 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 	
-	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
-	//{
-	//	std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
-	//	planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
-	//	//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-	//	planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
-	//	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-	//	planeMesh->SetMesh(planeAsset);
-	//	planeMesh->SetCastShadows(true);
-	//	
-	//	BravoMaterialLoadingParams materailLoadingParams;
-	//	materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
-	//	materailLoadingParams.AoColor = 1.0f;
-	//	std::shared_ptr<BravoMaterialAsset> planeMat = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
-	//
-	//	planeMesh->SetMaterial(planeMat);
-	//}
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	{
+		std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+		planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+		planeMesh->SetMesh(planeAsset);
+		planeMesh->SetCastShadows(true);
+		
+		BravoMaterialLoadingParams materailLoadingParams;
+		materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
+		materailLoadingParams.AoColor = 1.0f;
+		std::shared_ptr<BravoMaterialAsset> planeMat = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
+	
+		planeMesh->SetMaterial(planeMat);
+	}
 	
 	
-	//SpawnDirLights();
-	//SpawnPointLightTest();
-	//SpawnPointLights();
-	//SpawnSpotLights();
+	SpawnDirLights();
+	SpawnPointLights();
+	SpawnSpotLights();
 	//SpawnTestInstances();
-	SpawnTestPBR();
+
+	SpawnCubes();
 	return true;
 }
 
@@ -127,7 +127,7 @@ void BravoGameInstance::SpawnPointLightTest()
 
 void BravoGameInstance::SpawnDirLights()
 {
-	int32 count = 2;
+	int32 count = 1;
 	for ( int32 i = 0 ; i < count; ++i )
 	{
 		if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
@@ -149,16 +149,16 @@ void BravoGameInstance::SpawnPointLights()
 	std::shared_ptr<BravoStaticMeshAsset> sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereMeshAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
 	
 	std::vector<glm::vec3> locations = {
-		glm::vec3(0.0f, 10.0f, 0.0f),
+		glm::vec3(0.0f, 20.0f, 0.0f),
 	};
 	for ( int32 i = 0 ; i < locations.size(); ++i )
 	{
 		if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
 		{
 			pointLightActor->SetLocation(locations[i]);
-			pointLightActor->SetLightColor(glm::vec3(300.0f, 300.0f, 300.0f));
+			pointLightActor->SetLightColor(glm::vec3(1.0f));
 			BravoPointLightSettings PointSettings;
-			PointSettings.MaxDistance = 100.0f;
+			PointSettings.Intencity = 700.0f;
 			pointLightActor->SetSettings(PointSettings);
 
 			auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh");
@@ -193,9 +193,9 @@ void BravoGameInstance::SpawnSpotLights()
 			spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
 			spotLightActor->SetLightColor(glm::vec3(1.0f));
 			BravoSpotLightSettings SpotSettings;
-			SpotSettings.CutOff			= 10.0f;
-			SpotSettings.OuterCutOff	= 12.0f;
-			SpotSettings.MaxDistance = 10;
+			SpotSettings.CutOff			= 5.0f;
+			SpotSettings.OuterCutOff	= 15.0f;
+			SpotSettings.Intencity = 700;
 			spotLightActor->SetSettings(SpotSettings);
 
 			auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("SpotLightStaticMesh");
@@ -213,81 +213,24 @@ void BravoGameInstance::SpawnSpotLights()
 	}
 }
 
-void BravoGameInstance::SpawnTestPBR()
-{
-	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
-	std::shared_ptr<BravoStaticMeshAsset> sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereMeshAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
-	for ( int32 i = 0; i < 1; ++i )
-	{
-		if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
-		{
-			pointLightActor->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
-			pointLightActor->SetLightColor(glm::vec3(300.0f));
-			BravoPointLightSettings PointSettings;
-			PointSettings.MaxDistance = 100.0f;
-			pointLightActor->SetSettings(PointSettings);
-			pointLights.push_back(pointLightActor);
-
-			//auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh");
-			//sphereMesh->SetMesh(sphereAsset);
-			//sphereMesh->SetScale(glm::vec3(0.25f));
-			//BravoMaterialLoadingParams materailLoadingParams;
-			//materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0f, 0.0f);
-			//materailLoadingParams.AoColor = 1.0f;
-			//std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("lightMaterial", materailLoadingParams);
-			//sphereMesh->SetMaterial(material);
-		}
-	}
-
-	if ( auto cubeActor = NewObject<BravoActor>("Sphere") )
-	{
-		cubeActor->SetLocation(glm::vec3(0.0f, 10.0f, 15.0f ));
-		int32 nrRows    = 1;
-		int32 nrColumns = 1;
-		float spacing = 2.0f;
-
-		for (int32 row = 0; row < nrRows; ++row)
-		{
-			for (int32 col = nrColumns-1; col >= 0; --col) 
-			{
-					auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent_" + std::to_string(row) + std::to_string(col));
-					cubeMesh->SetMesh(sphereAsset);
-					BravoMaterialLoadingParams materailLoadingParams;
-					materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
-					//materailLoadingParams.MetallicColor = (float)row / (float)nrRows;
-					//materailLoadingParams.RoughnessColor = glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f);
-					materailLoadingParams.AlbedoTexture = "Textures\\rustedIron\\albedo.png";
-					materailLoadingParams.MetallicTexture = "Textures\\rustedIron\\metallic.png";
-					materailLoadingParams.RoughnessTexture = "Textures\\rustedIron\\roughness.png";
-					//materailLoadingParams.NormalTexture = "Textures\\rustedIron\\normal.png";
-					materailLoadingParams.AoColor = 1.0f;
-					
-					std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
-					cubeMesh->SetMaterial(material);
-					glm::mat4 model = glm::mat4(1.0f);
-					model = glm::translate(model, glm::vec3(
-						(col - (nrColumns / 2)) * spacing, 
-						(row - (nrRows / 2)) * spacing, 
-						0.0f
-					));
-					cubeMesh->SetTransform(model);
-					cubeMesh->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
-					cubeMesh->SetScale(glm::vec3(5.0f));
-					
-			}
-		}
-	}
-}
-
 void BravoGameInstance::SpawnCubes()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
+	BravoMaterialLoadingParams materailLoadingParams;
+	materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
+	materailLoadingParams.AlbedoTexture = "Textures\\rustedIron\\albedo.png";
+	materailLoadingParams.MetallicTexture = "Textures\\rustedIron\\metallic.png";
+	materailLoadingParams.RoughnessTexture = "Textures\\rustedIron\\roughness.png";
+	materailLoadingParams.AoColor = 1.0f;
+	std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("RustedIron", materailLoadingParams);
+
 
 	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
 	{
-		for ( int32 i = 0; i < 50; ++i )
+		int32 count = 30;
+		for ( int32 i = 0; i < count; ++i )
 		{
 			auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent_" + std::to_string(i));
 			cubeMesh->SetMesh(cubeAsset);
@@ -296,14 +239,15 @@ void BravoGameInstance::SpawnCubes()
 			BravoMaterialLoadingParams materailLoadingParams;
 			materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
 			materailLoadingParams.AoColor = 1.0f;
-			std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("GreyMaterial", materailLoadingParams);
+			
 			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians(360.0f / 50 *i)) * 5;
-			newLocation.z = glm::cos(glm::radians(360.0f / 50 *i)) * 5;
+			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 3;
+			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 3;
+			newLocation.y = 10.0f;
 
 			
 			cubeMesh->SetLocation(newLocation);
-			cubeMesh->SetScale(glm::vec3(0.1f));
+			cubeMesh->SetScale(glm::vec3(0.3f));
 
 			cubeMesh->SetMaterial(material);
 		}
@@ -317,18 +261,22 @@ void BravoGameInstance::SpawnTestInstances()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
 
-	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("asdasd", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
+	std::shared_ptr<BravoStaticMeshAsset> cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("asdasd", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+
+	BravoMaterialLoadingParams materailLoadingParams;
+	materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
+	materailLoadingParams.AlbedoTexture = "Textures\\rustedIron\\albedo.png";
+	materailLoadingParams.MetallicTexture = "Textures\\rustedIron\\metallic.png";
+	materailLoadingParams.RoughnessTexture = "Textures\\rustedIron\\roughness.png";
+	materailLoadingParams.AoColor = 1.0f;
+	std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("RustedIron", materailLoadingParams);
+
 	if ( auto cubeActor = NewObject<BravoActor>("Cube") )
 	{
 		auto cubeMesh = cubeActor->NewObject<BravoStaticMeshComponent>("Cube_MeshComponent");
 		cubeActor->SetLocation(glm::vec3(0.0f, 10.0f, 0.0f));
 		cubeMesh->SetMesh(cubeAsset);
 		cubeMesh->SetCastShadows(true);
-		BravoMaterialLoadingParams materailLoadingParams;
-		materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
-		materailLoadingParams.MetallicColor = 0.0f;
-		materailLoadingParams.AoColor = 1.0f;
-		std::shared_ptr<BravoMaterialAsset> material = AssetManager->FindOrLoad<BravoMaterialAsset>("asdasdMaterial", materailLoadingParams);
 		cubeMesh->SetMaterial(material);
 		cubeMesh->RemoveAllInstances();
 		for ( int32 i = 0; i < 50; ++i )
@@ -342,46 +290,23 @@ void BravoGameInstance::SpawnTestInstances()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {
-	//int32 lIdx = 0;
-	//float lightDist = 10.0f;
-	//for ( int32 i = 0; i < 2; ++i )
-	//{
-	//	for ( int32 j = 0; j < 2; ++j )
-	//	{
-	//		glm::vec3 loc = glm::vec3(0.0f);
-	//		loc.y = i == 0 ? -lightDist : lightDist;
-	//		loc.x = j == 0 ? -lightDist : lightDist;
-	//		pointLights[lIdx]->SetLocation(loc + Engine->GetCamera()->GetLocation());
-	//		lIdx++;
-	//	}
-	//}
-	pointLights[0]->SetLocation(Engine->GetCamera()->GetLocation());
-	return;
-
-	std::shared_ptr<BravoActor> cube = Cubes[0].lock();
-	cube->SetRotation(glm::vec3(LifeTime*10.0f, 0.0f, 90.0f));
-	std::vector<std::shared_ptr<BravoComponent>> components = cube->GetComponents();
-	std::shared_ptr<BravoStaticMeshComponent> mesh = std::dynamic_pointer_cast<BravoStaticMeshComponent>(components[0]);
+	//std::shared_ptr<BravoActor> cube = Cubes[0].lock();
+	//cube->SetRotation(glm::vec3(LifeTime*10.0f, 0.0f, 90.0f));
 	
-	for ( int32 i = 0; i < mesh->InstanceCount(); ++i )
+	for ( int32 i = 0; i < pointLights.size(); ++i )
 	{
-		BravoTransform newTransform;
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.z = glm::sin(glm::radians(float(360.0f / mesh->InstanceCount() * i))) * 2;
-		newLocation.y = glm::cos(glm::radians(float(360.0f / mesh->InstanceCount() * i))) * 2;
-		newTransform.SetLocation(newLocation);
-		newTransform.SetScale(glm::vec3(0.1f));
-		mesh->UpdateInstance(i, BravoMeshInstance(newTransform), false);
+		newLocation.y = 20 + glm::sin(LifeTime) * 20;
+		pointLights[i]->SetLocation(newLocation);
 	}
-	mesh->UpdateInstanceBuffer();
 
 	for ( int32 i = 0; i < spotLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 5;
-		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 5;
+		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 10;
+		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 10;
 	
-		newLocation.y = 20.0f;
+		newLocation.y = 30.0f;
 
 		spotLights[i]->SetLocation(newLocation);
 		spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);

@@ -22,9 +22,9 @@ void BravoPointLightActor::SetSettings(BravoPointLightSettings _Settings)
 
 void BravoPointLightActor::GetShaderData(BravoPointLightShaderData& OutShaderData) const
 {
-	OutShaderData.Color = GetLightColor();
+	OutShaderData.Color = GetLightColor() * Settings.Intencity;
 
 	OutShaderData.Position = GetLocation();
 
-	OutShaderData.FarPlane = Settings.MaxDistance;
+	OutShaderData.FarPlane = Settings.Intencity;
 }

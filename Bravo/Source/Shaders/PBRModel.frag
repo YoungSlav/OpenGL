@@ -142,6 +142,36 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 }
 // ----------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------
+vec3 calcLight(vec3 V, vec3 N, vec3 L, vec3 H, vec3 F0, vec3 albedo, float roughness, float metallic, vec3 radiance)
+{
+	// Cook-Torrance BRDF
+	float NDF = DistributionGGX(N, H, roughness);   
+	float G   = GeometrySmith(N, V, L, roughness);      
+	vec3 F    = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);
+           
+	vec3 numerator    = NDF * G * F; 
+	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+	vec3 specular = numerator / denominator;
+        
+	// kS is equal to Fresnel
+	vec3 kS = F;
+	// for energy conservation, the diffuse and specular light can't
+	// be above 1.0 (unless the surface emits light); to preserve this
+	// relationship the diffuse component (kD) should equal 1.0 - kS.
+	vec3 kD = vec3(1.0) - kS;
+	// multiply kD by the inverse metalness such that only non-metals 
+	// have diffuse lighting, or a linear blend if partly metal (pure metals
+	// have no diffuse light).
+	kD *= 1.0 - metallic;	  
+
+	// scale light by NdotL
+	float NdotL = max(dot(N, L), 0.0);        
+
+	// add to outgoing radiance Lo
+	return  (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+}
+
 void main()
 {
 	vec3 albedo = material.useAlbedoTexture ? texture(material.albedoTexture, fs_in.TexCoords).rgb : material.albedoColor;
@@ -170,8 +200,49 @@ void main()
 
 	// reflectance equation
 	vec3 Lo = vec3(0.0);
+	for ( int i = 0; i < directionalLightCount; i += dirLights[i].cascadeCount )
+	{
+		float shadow = CalcDirLightShadow(i, N);
+		if ( shadow >= 1.0)
+			continue;
+
+		vec3 L = -dirLights[i].direction;
+		vec3 H = normalize(V + L);
+
+		float diff = max(dot(N, -dirLights[i].direction), 0.0);
+
+		vec3 radiance = dirLights[i].color * diff;
+		Lo += (1.0 - shadow) * calcLight(V, N, L, H, F0, albedo, roughness, metallic, radiance);
+	}
+
+
+	for(int i = 0; i < spotLightCount; ++i) 
+	{
+		vec3 L = normalize(spotLights[i].position - fs_in.FragPos);
+		float spotEffect = dot(L, -spotLights[i].direction);
+		if (spotEffect <= spotLights[i].outerCutOff)
+			continue;
+
+		float shadow = CalcSpotLightShadow(i, N);
+		if ( shadow >= 1.0)
+			continue;
+
+		vec3 H = normalize(V + L);
+		float distance = length(spotLights[i].position - fs_in.FragPos);
+		float epsilon = spotLights[i].cutOff - spotLights[i].outerCutOff;
+		float coneAttenuation = clamp((spotEffect - spotLights[i].outerCutOff) / epsilon, 0.0, 1.0);
+		
+		float attenuation = 1.0 / (distance * distance);
+		vec3 radiance = spotLights[i].color * attenuation * coneAttenuation;
+
+		Lo += (1.0 - shadow) * calcLight(V, N, L, H, F0, albedo, roughness, metallic, radiance);
+	}
+
 	for(int i = 0; i < pointLightCount; ++i) 
 	{
+		float shadow = CalcPointLightShadow(i);
+		if ( shadow >= 1.0)
+			continue;
 		// calculate per-light radiance
 		vec3 L = normalize(pointLights[i].position - fs_in.FragPos);
 		vec3 H = normalize(V + L);
@@ -179,41 +250,18 @@ void main()
 		float attenuation = 1.0 / (distance * distance);
 		vec3 radiance = pointLights[i].color * attenuation;
 
-		// Cook-Torrance BRDF
-		float NDF = DistributionGGX(N, H, roughness);   
-		float G   = GeometrySmith(N, V, L, roughness);      
-		vec3 F    = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);
-           
-		vec3 numerator    = NDF * G * F; 
-		float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
-		vec3 specular = numerator / denominator;
-        
-		// kS is equal to Fresnel
-		vec3 kS = F;
-		// for energy conservation, the diffuse and specular light can't
-		// be above 1.0 (unless the surface emits light); to preserve this
-		// relationship the diffuse component (kD) should equal 1.0 - kS.
-		vec3 kD = vec3(1.0) - kS;
-		// multiply kD by the inverse metalness such that only non-metals 
-		// have diffuse lighting, or a linear blend if partly metal (pure metals
-		// have no diffuse light).
-		kD *= 1.0 - metallic;	  
-
-		// scale light by NdotL
-		float NdotL = max(dot(N, L), 0.0);        
-
-		// add to outgoing radiance Lo
-		Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+		Lo += (1.0 - shadow) * calcLight(V, N, L, H, F0, albedo, roughness, metallic, radiance);
 	}   
     
-	// ambient lighting (note that the next IBL tutorial will replace 
-	// this ambient lighting with environment lighting).
-	vec3 ambient = vec3(0.03) * albedo * ao;
+	// ambient lighting
+	vec3 ambient = vec3(0.0);
+	for ( int i = 0; i < directionalLightCount; i += dirLights[i].cascadeCount )
+		ambient += dirLights[i].ambient * albedo * ao;
 
 	vec3 color = ambient + Lo;
 
 	// HDR tonemapping
-	color = vec3(1.0) - exp (-color * 2.2);
+	color = vec3(1.0) - exp(-color * 2.2);
 	// gamma correct
 	color = pow(color, vec3(1.0/2.2)); 
 
@@ -324,7 +372,7 @@ float CalcPointLightShadow(int index)
 	const float biasModifier = 1.0f;
 	float bias = 0.005;
 	bias *= 1 / (pointLights[index].farPlane * biasModifier);
-
+	
 	float shadow = 0.0;
 	float viewDistance = length(viewPos - fs_in.FragPos);
 	float diskRadius = (1.0 + (viewDistance / drawDistance)) / pointLights[index].farPlane;

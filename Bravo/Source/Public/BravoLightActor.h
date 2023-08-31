@@ -30,8 +30,10 @@ public:
 	void SetShaderPath(const std::string& InPath) { Path = InPath; }
 	virtual void UpdateDepthMap();
 
+
 protected:
 	virtual void OnDestroy() override;
+
 
 public:
 	static BravoLightAttenuationConstants LightAttenuationConstants;

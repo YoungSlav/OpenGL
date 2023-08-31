@@ -10,7 +10,7 @@ struct BravoSpotLightSettings
 	float CutOff = 15.0f;
 	float OuterCutOff = 20.0f;
 
-	float MaxDistance = 100.0f;
+	float Intencity = 100.0f;
 };
 
 struct BravoSpotLightShaderData

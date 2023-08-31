@@ -25,7 +25,7 @@ void BravoDirectionalLightActor::GetShaderData(std::vector<BravoDirectionalLight
 	{
 		BravoDirectionalLightShaderData newData;
 		newData.Ambient = GetAmbientLightColor();
-		newData.Color = GetLightColor();
+		newData.Color = GetLightColor() * Settings.Intencity;
 		newData.Direction = GetDirection();
 		newData.LayerOffset = Offset;
 		newData.CascadeCount = (int32)Settings.ShadowCascadeLevels.size();

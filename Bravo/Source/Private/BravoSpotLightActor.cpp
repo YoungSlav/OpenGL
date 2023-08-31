@@ -22,7 +22,7 @@ void BravoSpotLightActor::SetSettings(BravoSpotLightSettings _Settings)
 void BravoSpotLightActor::GetLightSpaceTransformationMatrix(glm::mat4& OutTransformationMatrix) const
 {
 	const float NearPlane = 0.1f;	
-	const float FarPlane = Settings.MaxDistance;
+	const float FarPlane = Settings.Intencity;
 
 	const float FOV = glm::radians(Settings.OuterCutOff * 2.0f);
 	const float AspectRatio = 1.0f;
@@ -35,7 +35,7 @@ void BravoSpotLightActor::GetLightSpaceTransformationMatrix(glm::mat4& OutTransf
 
 void BravoSpotLightActor::GetShaderData(BravoSpotLightShaderData& OutShaderData) const
 {
-	OutShaderData.Color = GetLightColor();
+	OutShaderData.Color = GetLightColor() * Settings.Intencity;
 
 	OutShaderData.Position = GetLocation();
 	OutShaderData.Direction = GetDirection();
@@ -43,7 +43,7 @@ void BravoSpotLightActor::GetShaderData(BravoSpotLightShaderData& OutShaderData)
 	OutShaderData.CutOff = glm::cos(glm::radians(Settings.CutOff));
 	OutShaderData.OuterCutOff = glm::cos(glm::radians(Settings.OuterCutOff));
 
-	OutShaderData.FarPlane = Settings.MaxDistance;
+	OutShaderData.FarPlane = Settings.Intencity;
 
 	GetLightSpaceTransformationMatrix(OutShaderData.LightSpaceMatrix);
 }

@@ -6,7 +6,7 @@
 
 struct BravoPointLightSettings
 {
-	float MaxDistance;
+	float Intencity = 100.0f;
 };
 
 struct BravoPointLightShaderData

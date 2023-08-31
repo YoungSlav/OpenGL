@@ -11,8 +11,8 @@
 
 // TODO:
 /*
-* PBR
 * Input refactoring 
+* async content loading
 * frustrum culling
 * multiple projects in solution: Engine, Game
 * 
