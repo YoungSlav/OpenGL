@@ -11,6 +11,7 @@
 
 // TODO:
 /*
+*	GRAPHICS:
 * fix point shadows?
 * async content loading
 * create some cool looking scene. kinda tired and bored looking at fucking cubes
@@ -19,12 +20,14 @@
 * bloom
 * proper anti aliasing
 * landscape rendering (height maps)
-* Input refactoring 
 * frustum culling
 * occlusion culling would be cool AF
 * transparent objects
 * 
 * 
+* 
+*	ENGINE:
+* Input refactoring 
 * Multiline text 
 * Widget clicking 
 * Edit text 
@@ -37,7 +40,7 @@
 * Physics engine integration (reactphysics3d)
 *
 * 
-*  
+*	EDITOR:
 * Editor game instance 
 * multiple projects in solution: Engine, Game
 * world editor? (json?)
