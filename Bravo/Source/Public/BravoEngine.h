@@ -13,9 +13,15 @@
 /*
 * fix point shadows?
 * async content loading
+* create some cool looking scene. kinda tired and bored looking at fucking cubes
+* outline shader using stencil buffer
+* bloom
+* proper anti aliasing
+* landscape rendering (height maps)
 * Input refactoring 
-* frustrum culling
-* multiple projects in solution: Engine, Game
+* frustum culling
+* occlusion culling would be cool AF
+* transparent objects
 * 
 * 
 * Multiline text 
@@ -28,10 +34,11 @@
 * Outline shader?
 * Gizmo for actor moving 
 * Physics engine integration (reactphysics3d)
-
+*
 * 
 *  
 * Editor game instance 
+* multiple projects in solution: Engine, Game
 * world editor? (json?)
 * serialization?
 * splines?
