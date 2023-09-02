@@ -38,7 +38,8 @@
     <ClCompile Include="Source\Private\BravoInput.cpp" />
     <ClCompile Include="Source\Private\BravoLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoLightManager.cpp" />
-    <ClCompile Include="Source\Private\BravoMaterialAsset.cpp" />
+    <ClCompile Include="Source\Private\BravoMaterialPBR.cpp" />
+    <ClCompile Include="Source\Private\BravoMaterialUnlit.cpp" />
     <ClCompile Include="Source\Private\BravoMath.cpp" />
     <ClCompile Include="Source\Private\BravoObject.cpp" />
     <ClCompile Include="Source\Private\BravoPointDepthMap.cpp" />
@@ -86,7 +87,9 @@
     <ClInclude Include="Source\Public\BravoInput.h" />
     <ClInclude Include="Source\Public\BravoLightActor.h" />
     <ClInclude Include="Source\Public\BravoLightManager.h" />
-    <ClInclude Include="Source\Public\BravoMaterialAsset.h" />
+    <ClInclude Include="Source\Public\BravoMaterial.h" />
+    <ClInclude Include="Source\Public\BravoMaterialPBR.h" />
+    <ClInclude Include="Source\Public\BravoMaterialUnlit.h" />
     <ClInclude Include="Source\Public\BravoMath.h" />
     <ClInclude Include="Source\Public\BravoPointDepthMap.h" />
     <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />

@@ -61,8 +61,6 @@ public:
 	void SetMatrix3d(const std::string& name, const glm::mat3& val) const;
 	void SetMatrix4d(const std::string& name, const glm::mat4& val) const;
 
-	void SetMaterial(const std::string& name, std::shared_ptr<class BravoMaterialAsset> val) const;
-
 protected:
 	bool LoadShader(GLenum ShaderType, int32& OutShader, const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
 	bool LinkProgramm();

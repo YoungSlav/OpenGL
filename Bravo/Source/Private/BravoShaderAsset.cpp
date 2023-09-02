@@ -1,7 +1,7 @@
 #include "BravoShaderAsset.h"
 #include "BravoEngine.h"
 #include "BravoAssetManager.h"
-#include "BravoMaterialAsset.h"
+#include "BravoMaterial.h"
 
 #include <windows.h>
 #include <fstream>
@@ -148,7 +148,8 @@ void BravoShaderAsset::SetTexture(const std::string& name, std::shared_ptr<Bravo
 	}
 	else
 	{
-		Log::LogMessage("BravoShader::SetTexture() value is none!");
+		EmptyTexture->Use();
+		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), EmptyTexture->GetTextureUnit());
 	}
 }
 
@@ -167,7 +168,7 @@ void BravoShaderAsset::SetCubemap(const std::string& name, std::shared_ptr<Bravo
 
 void BravoShaderAsset::SetBool(const std::string& name, const bool val) const
 {
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int32)val); 
+	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val ? 1 : 0); 
 }
 
 void BravoShaderAsset::SetInt(const std::string& name, const size_t val) const
@@ -218,60 +219,4 @@ void BravoShaderAsset::SetMatrix3d(const std::string& name, const glm::mat3& val
 void BravoShaderAsset::SetMatrix4d(const std::string& name, const glm::mat4& val) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
-}
-
-void BravoShaderAsset::SetMaterial(const std::string& name, std::shared_ptr<class BravoMaterialAsset> val) const
-{
-	if ( !val )
-	{
-		Log::LogMessage("BravoShader::SetMaterial() value is none!");
-		return;
-	}
-	
-	val->Use();
-
-	BravoMaterialShaderData data = val->GetShadeData();
-
-	
-	bool albedoTexture = data.albedoTexture != 0 && data.useAlbedoTexture;
-	bool metallicTexture = data.metallicTexture != 0 && data.useMetallicTexture;
-	bool roughnessTexture = data.roughnessTexture != 0 && data.useRoughnessTexture;
-	bool aoTexture = data.aoTexture != 0 && data.useAoTexture;
-	bool normalTexture = data.normalTexture != 0 && data.useNormalTexture;
-
-	SetVector3d(name + ".albedoColor", data.albedoColor);
-	SetVector1d(name + ".metallicColor", data.metallicColor);
-	SetVector1d(name + ".roughnessColor", data.roughnessColor);
-	SetVector1d(name + ".aoColor", data.aoColor);
-	
-	SetBool(name + ".useAlbedoTexture", albedoTexture);
-	SetBool(name + ".useMetallicTexture", metallicTexture);
-	SetBool(name + ".useRoughnessTexture", roughnessTexture);
-	SetBool(name + ".useAoTexture", aoTexture);
-	SetBool(name + ".useNormalTexture", normalTexture);
-
-	if ( albedoTexture )
-		SetInt(name + ".albedoTexture", data.albedoTextureUnit);
-	else
-		SetTexture(name + ".albedoTexture", EmptyTexture);
-	
-	if ( metallicTexture )
-		SetInt(name + ".metallicTexture", data.metallicTextureUnit);
-	else
-		SetTexture(name + ".metallicTexture", EmptyTexture);
-	
-	if ( roughnessTexture )
-		SetInt(name + ".roughnessTexture", data.roughnessTextureUnit);
-	else
-		SetTexture(name + ".roughnessTexture", EmptyTexture);
-	
-	if ( aoTexture )
-		SetInt(name + ".aoTexture", data.aoTextureUnit);
-	else
-		SetTexture(name + ".aoTexture", EmptyTexture);
-
-	if ( normalTexture )
-		SetInt(name + ".normalTexture", data.normalTextureUnit);
-	else
-		SetTexture(name + ".normalTexture", EmptyTexture);
 }

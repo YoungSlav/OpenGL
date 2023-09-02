@@ -103,6 +103,12 @@
     <Filter Include="Public\Lights\PointLight">
       <UniqueIdentifier>{8c0e5aee-75ee-400f-804a-c9d6fca4e83d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Private\Actors\Materials">
+      <UniqueIdentifier>{3e75c9cc-a437-4829-992c-8155ac334993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Actors\Materials">
+      <UniqueIdentifier>{9bc8a3f7-87d0-47ee-b0e7-6e934762fb5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -220,9 +226,6 @@
     <ClCompile Include="Source\Private\BravoDirectionalLightShaderDataCollection.cpp">
       <Filter>Private\Lights\DirectionalLight</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoMaterialAsset.cpp">
-      <Filter>Private\Assets</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoFontAsset.cpp">
       <Filter>Private\Assets</Filter>
     </ClCompile>
@@ -243,6 +246,12 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp">
       <Filter>Private\Lights\PointLight</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoMaterialPBR.cpp">
+      <Filter>Private\Actors\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoMaterialUnlit.cpp">
+      <Filter>Private\Actors\Materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -392,14 +401,20 @@
     <ClInclude Include="Source\Public\BravoFontAsset.h">
       <Filter>Public\Assets</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoMaterialAsset.h">
-      <Filter>Public\Assets</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoShaderAsset.h">
       <Filter>Public\Assets</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoStaticMeshAsset.h">
       <Filter>Public\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMaterial.h">
+      <Filter>Public\Actors\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMaterialPBR.h">
+      <Filter>Public\Actors\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoMaterialUnlit.h">
+      <Filter>Public\Actors\Materials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

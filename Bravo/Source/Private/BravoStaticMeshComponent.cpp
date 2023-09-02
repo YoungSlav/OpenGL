@@ -2,15 +2,11 @@
 #include "BravoActor.h"
 #include "BravoAssetManager.h"
 #include "BravoLightManager.h"
-#include "BravoMaterialAsset.h"
+#include "BravoMaterial.h"
 
 
 bool BravoStaticMeshComponent::Initialize_Internal()
 {
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("PBRShaderModel", BravoShaderLoadingParams("Shaders\\PBRModel"));
-	if ( !Shader )
-		return false;
-
 	AddInstance(BravoMeshInstance(BravoTransform()), false);
 
 	return true;
@@ -18,7 +14,7 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 
 bool BravoStaticMeshComponent::EnsureReady()
 {
-	if ( !Mesh || !Shader || !Material )
+	if ( !Mesh || !Material )
 		return false;
 
 	if ( !Mesh->IsLoadedToGPU() )
@@ -141,7 +137,7 @@ void BravoStaticMeshComponent::OnDestroy()
 	glDeleteBuffers(1, &instanceVBO);
 	glDeleteVertexArrays(10, &VAO);
 	VAO = 0;
-	Shader->ReleaseFromGPU();
+	Material->Destroy();
 	Mesh->ReleaseFromGPU();
 }
 
@@ -150,14 +146,14 @@ void BravoStaticMeshComponent::SetMesh(std::shared_ptr<BravoStaticMeshAsset> InM
 	Mesh = InMesh;
 }
 
-std::shared_ptr<BravoMaterialAsset> BravoStaticMeshComponent::GetMaterial() const
+std::shared_ptr<BravoMaterial> BravoStaticMeshComponent::GetMaterial() const
 {
 	return Material;
 }
-void BravoStaticMeshComponent::SetMaterial(std::shared_ptr<BravoMaterialAsset> _Material)
+void BravoStaticMeshComponent::SetMaterial(std::shared_ptr<BravoMaterial> _Material)
 {
 	if ( Material )
-		Material->StopUsage();
+		Material->Destroy();
 	Material = _Material;
 }
 
@@ -171,14 +167,13 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 
 	glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
-	Shader->Use();
-		Shader->SetMatrix4d("projection", CameraProjection);
-		Shader->SetMatrix4d("view", CameraView);
-		Shader->SetMatrix4d("model", model);
-		Shader->SetMaterial("material", Material);
-		Shader->SetVector3d("viewPos", CameraLocation);
-		Shader->SetVector1d("drawDistance", Engine->GetCamera()->GetMaxDrawingDistance());
-		Engine->GetLightManager()->ApplyLights(Shader);
+	Material->Use();
+		Material->GetShader()->SetMatrix4d("projection", CameraProjection);
+		Material->GetShader()->SetMatrix4d("view", CameraView);
+		Material->GetShader()->SetMatrix4d("model", model);
+		Material->GetShader()->SetVector3d("viewPos", CameraLocation);
+		Material->GetShader()->SetVector1d("drawDistance", Engine->GetCamera()->GetMaxDrawingDistance());
+		Engine->GetLightManager()->ApplyLights(Material->GetShader());
 
 		glBindVertexArray(VAO);
 		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
@@ -186,8 +181,7 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 
 
 		Engine->GetLightManager()->ResetLightsUsage();
-		Material->StopUsage();
-	Shader->StopUsage();
+	Material->StopUsage();
 }
 
 void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> _Shader)

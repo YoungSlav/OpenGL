@@ -6,11 +6,13 @@
 
 struct BravoTextureLoadingParams
 {
-	BravoTextureLoadingParams(const std::string& _Path) :
-		TexturePath(_Path)
+	BravoTextureLoadingParams(const std::string& _Path, bool _sRGB = false) :
+		TexturePath(_Path),
+		sRGB(_sRGB)
 	{}
 
 	std::string TexturePath;
+	bool sRGB = false;
 };
 
 class BravoTextureAsset : public BravoAsset

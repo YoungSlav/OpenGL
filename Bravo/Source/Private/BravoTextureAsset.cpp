@@ -6,7 +6,7 @@
 
 bool BravoTextureAsset::Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
 {
-	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturePath));
+	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturePath, params.sRGB));
 	return TextureData != nullptr && TextureData->bInitialized;
 }
 
