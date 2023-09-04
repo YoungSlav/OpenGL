@@ -14,7 +14,7 @@ struct BravoCubemapLoadingParams
 class BravoCubemapAsset : public BravoAsset
 {
 public:
-	bool Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params);
+	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params);
 
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -22,6 +22,8 @@ public:
 	inline const int32 GetTextureUnit() const { return TextureUnit; }
 
 protected:
+
+	void AsyncLoad(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params);
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
 

@@ -95,6 +95,8 @@ void BravoEngine::UpdateViewport()
 		bRequestExit = true;
 		return;
 	}
+
+	AssetManager->CheckPendingAssets();
 	
 	//glCullFace(GL_FRONT);
 	lightManager->UpdateLightsShaderData();

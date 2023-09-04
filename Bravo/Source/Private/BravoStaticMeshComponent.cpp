@@ -17,7 +17,7 @@ bool BravoStaticMeshComponent::EnsureReady()
 	if ( !Mesh || !Material )
 		return false;
 
-	if ( !Mesh->IsLoadedToGPU() )
+	if ( Mesh->GetLoadingState() == EAssetLoadingState::InRAM )
 	{
 		if ( VAO != 0 )
 			glDeleteVertexArrays(10, &VAO);

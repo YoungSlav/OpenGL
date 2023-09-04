@@ -5,29 +5,40 @@
 #include "openGL.h"
 
 
+enum EAssetLoadingState : int32
+{
+	Failed = 0,
+	AsyncLoading = 1,
+	InRAM = 2,
+	Loaded = 3
+};
+
 class BravoAsset : public BravoObject
 {
 public:
-	bool Load(const std::string& ResourcesPath) { return false; }
+	
+	void Load(const std::string& ResourcesPath) { }
 
 	virtual void Use() {};
 	virtual void StopUsage() {};
 
 	bool EnsureReady();
-	inline bool IsLoadedToGPU() const { return bLoadedToGPU; }
-
+	inline EAssetLoadingState GetLoadingState() const { return LoadingState; }
+	 
 	bool LoadToGPU();
 	void ReleaseFromGPU();
 
 protected:
 
+
 	virtual void OnDestroy() override;
 
-	virtual bool LoadToGPU_Internal() {return true;}
+
+	virtual bool LoadToGPU_Internal() { return false; }
 	virtual void ReleaseFromGPU_Internal() {}
 
 
 
-private:
-	bool bLoadedToGPU = false;
+protected:
+	EAssetLoadingState LoadingState = EAssetLoadingState::Failed;
 };

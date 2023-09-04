@@ -7,12 +7,13 @@
 
 #define POINT_TO_PIXEL 1.333f
 
-bool BravoFontAsset::Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params)
+EAssetLoadingState BravoFontAsset::Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params)
 {
 	if ( !params.FontSizes.size() )
 	{
 		Log::LogMessage("Failed to load font " + GetName() +". Expecting sizes array in params.", ELog::Error );
-		return false;
+		LoadingState = EAssetLoadingState::Failed;
+		return LoadingState;
 	}
 
 	std::string Path = ResourcesPath + params.FontPath;
@@ -25,7 +26,8 @@ bool BravoFontAsset::Load(const std::string& ResourcesPath, const BravoFontLoadi
 	if ( !file.read(fontBuffer.data(), size) )
 	{
 		Log::LogMessage("Failed to read font from file " + Path, ELog::Error);
-		return false;
+		LoadingState = EAssetLoadingState::Failed;
+		return LoadingState;
 	}
 	stbtt_fontinfo fontInfo;
     stbtt_InitFont(&fontInfo, reinterpret_cast<const uint8*>(fontBuffer.data()), stbtt_GetFontOffsetForIndex(reinterpret_cast<const uint8*>(fontBuffer.data()),0));
@@ -55,7 +57,8 @@ bool BravoFontAsset::Load(const std::string& ResourcesPath, const BravoFontLoadi
 		Log::LogMessage("Failed to load font " + Path +". Atlas size is too small", ELog::Error );
 		stbtt_PackEnd(&pc);
 		AtlasBitmap.clear();
-		return false;
+		LoadingState = EAssetLoadingState::Failed;
+		return LoadingState;
 	}
     stbtt_PackEnd(&pc);
 
@@ -68,8 +71,9 @@ bool BravoFontAsset::Load(const std::string& ResourcesPath, const BravoFontLoadi
 		font.second.Ascent  = a*scale;
 		font.second.Descent = d*scale;
 		font.second.Linegap = l*scale;
-	}	
-	return true;
+	}
+	LoadingState = EAssetLoadingState::InRAM;
+	return LoadingState;
 }
 
 bool BravoFontAsset::LoadToGPU_Internal()

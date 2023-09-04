@@ -4,10 +4,23 @@
 #include "openGL.h"
 #include "stdafx.h"
 
-bool BravoTextureAsset::Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
+
+EAssetLoadingState BravoTextureAsset::Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
+{
+	std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, ResourcesPath, params);
+
+	LoadingState = EAssetLoadingState::AsyncLoading;
+	asyncLoadThread.detach();
+	return LoadingState;
+}
+
+void BravoTextureAsset::AsyncLoad(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
 {
 	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturePath, params.sRGB));
-	return TextureData != nullptr && TextureData->bInitialized;
+	if ( TextureData != nullptr && TextureData->bInitialized )
+		LoadingState = EAssetLoadingState::InRAM;
+	else
+		LoadingState = EAssetLoadingState::Failed;
 }
 
 bool BravoTextureAsset::LoadToGPU_Internal()

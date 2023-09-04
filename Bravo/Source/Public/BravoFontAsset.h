@@ -35,7 +35,7 @@ struct BravoFontLoadingParams
 class BravoFontAsset : public BravoAsset
 {
 public:
-	bool Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params);
+	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params);
 	
 
 	virtual void Use() override;

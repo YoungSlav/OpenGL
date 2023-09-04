@@ -22,7 +22,8 @@ bool BravoInfinitePlaneActor::EnsureReady()
 {
 	if ( !Mesh || !Shader )
 		return false;
-	if ( !Mesh->IsLoadedToGPU() )
+
+	if ( Mesh->GetLoadingState() == EAssetLoadingState::InRAM )
 	{
 		if ( VAO != 0 )
 			glDeleteVertexArrays(5, &VAO);

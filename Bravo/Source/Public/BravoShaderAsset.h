@@ -30,19 +30,8 @@ struct BravoShaderLoadingParams
 class BravoShaderAsset : public BravoAsset
 {
 public:
-	bool Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
-
-	struct Light
-	{
-		glm::vec3 position;
-
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
-	};
-
-
-	
+	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
+		
 	virtual void Use() override;
 	virtual void StopUsage() override;
 

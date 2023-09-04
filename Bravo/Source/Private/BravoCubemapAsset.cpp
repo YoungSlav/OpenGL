@@ -5,12 +5,21 @@
 #include "stdafx.h"
 
 
-bool BravoCubemapAsset::Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params)
+EAssetLoadingState BravoCubemapAsset::Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params)
+{
+	std::thread asyncLoadThread(&BravoCubemapAsset::AsyncLoad, this, ResourcesPath, params);
+	LoadingState = EAssetLoadingState::AsyncLoading;
+	asyncLoadThread.detach();
+	return LoadingState;
+}
+
+void BravoCubemapAsset::AsyncLoad(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params)
 {
 	if ( params.TexturesPaths.size() != 6 )
 	{
 		Log::LogMessage("Invalid number of textures to initialize cubemap: " + GetName(), ELog::Error);
-		return false;
+		LoadingState = EAssetLoadingState::Failed;
+		return;
 	}
 	bool success = true;
 	for (uint32 i = 0; i < 6; i++)
@@ -19,8 +28,8 @@ bool BravoCubemapAsset::Load(const std::string& ResourcesPath, const BravoCubema
 
 		success = success && Textures[i] != nullptr && Textures[i]->bInitialized;
 	}
-
-	return success;
+	if ( success )
+		LoadingState = EAssetLoadingState::InRAM;
 }
 
 bool BravoCubemapAsset::LoadToGPU_Internal()

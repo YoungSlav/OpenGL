@@ -13,7 +13,6 @@
 /*
 *	GRAPHICS:
 * fix point shadows?
-* async content loading
 * create some cool looking scene. kinda tired and bored looking at fucking cubes
 * billboarding
 * outline shader using stencil buffer

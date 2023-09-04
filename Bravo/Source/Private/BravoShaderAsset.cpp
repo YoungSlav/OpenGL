@@ -8,7 +8,7 @@
 #include <sstream>
 #include <regex>
 
-bool BravoShaderAsset::Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params)
+EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params)
 {
 	ShaderID = glCreateProgram();
 	int32 VertShader = 0;
@@ -27,9 +27,11 @@ bool BravoShaderAsset::Load(const std::string& ResourcesPath, const BravoShaderL
 		if ( GeomShader ) glDeleteShader(GeomShader);
 		if ( FragShader ) glDeleteShader(FragShader);
 
-		return true;
+		LoadingState = EAssetLoadingState::Loaded;
+		return LoadingState;
 	}
-	return false;
+	LoadingState = EAssetLoadingState::Failed;
+	return LoadingState;
 }
 void BravoShaderAsset::Use()
 {
@@ -141,13 +143,14 @@ bool BravoShaderAsset::LinkProgramm()
 
 void BravoShaderAsset::SetTexture(const std::string& name, std::shared_ptr<BravoTextureAsset> val) const
 {
-	if ( val )
+	if ( val->EnsureReady() )
 	{
 		val->Use();
 		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val->GetTextureUnit());
 	}
-	else
+	else if ( EmptyTexture->EnsureReady() )
 	{
+		
 		EmptyTexture->Use();
 		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), EmptyTexture->GetTextureUnit());
 	}

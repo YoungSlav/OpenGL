@@ -3,10 +3,10 @@
 
 bool BravoAsset::EnsureReady()
 {
-	if ( !bLoadedToGPU )
+	if ( LoadingState != EAssetLoadingState::Loaded )
 		return LoadToGPU();
-	
-	return true;
+
+	return LoadingState == EAssetLoadingState::Loaded;
 }
 
 void BravoAsset::OnDestroy()
@@ -17,15 +17,15 @@ void BravoAsset::OnDestroy()
 
 bool BravoAsset::LoadToGPU()
 {
-	if ( !bLoadedToGPU )
+	if ( LoadingState == EAssetLoadingState::InRAM )
 	{
 		if ( LoadToGPU_Internal() )
-			bLoadedToGPU = true;
+			LoadingState = EAssetLoadingState::Loaded;
 	}
-	return bLoadedToGPU;
+	return LoadingState == EAssetLoadingState::Loaded;
 }
 void BravoAsset::ReleaseFromGPU()
 {
 	ReleaseFromGPU_Internal();
-	bLoadedToGPU = false;
+	LoadingState = EAssetLoadingState::InRAM;
 }

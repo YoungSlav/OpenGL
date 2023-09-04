@@ -18,7 +18,7 @@ struct BravoTextureLoadingParams
 class BravoTextureAsset : public BravoAsset
 {
 public:
-	bool Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params);
+	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params);
 
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -27,6 +27,9 @@ public:
 	inline std::shared_ptr<class BravoTextureData> GetTextureData() const { return TextureData; }
 
 protected:
+
+	void AsyncLoad(const std::string& ResourcesPath, const BravoTextureLoadingParams& params);
+
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
 

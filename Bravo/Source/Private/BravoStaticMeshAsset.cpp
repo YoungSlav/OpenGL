@@ -5,7 +5,16 @@
 
 #include "BravoEngine.h"
 
-bool BravoStaticMeshAsset::Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params)
+EAssetLoadingState BravoStaticMeshAsset::Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params)
+{
+	std::thread asyncLoadThread(&BravoStaticMeshAsset::AsyncLoad, this, ResourcesPath, params);
+
+	LoadingState = EAssetLoadingState::AsyncLoading;
+	asyncLoadThread.detach();
+	return LoadingState;
+}
+
+void BravoStaticMeshAsset::AsyncLoad(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params)
 {
 	// read file via ASSIMP
 	Assimp::Importer importer;
@@ -14,13 +23,14 @@ bool BravoStaticMeshAsset::Load(const std::string& ResourcesPath, const BravoSta
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
 		Log::LogMessage( "Failed to load mesh: " + std::string(importer.GetErrorString()));
-		return false;
+		LoadingState = EAssetLoadingState::Failed;
+		return;
 	}
 
 	// process ASSIMP's root node recursively
 	ProcessNode(scene->mRootNode, scene);
 
-	return true;
+	LoadingState = EAssetLoadingState::InRAM;
 }
 
 void BravoStaticMeshAsset::ProcessNode(aiNode *node, const aiScene *scene)

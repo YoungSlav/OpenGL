@@ -35,7 +35,7 @@ struct BravoStaticMeshLoadingParams
 class BravoStaticMeshAsset : public BravoAsset
 {
 public:
-	bool Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params);
+	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params);
 
 	const std::vector<Vertex>& GetVerticies() const { return Vertices; }
 	const std::vector<uint32>& GetIndices() const { return Indices; }
@@ -44,6 +44,8 @@ public:
 	GLuint GetEBO() const { return EBO; }
  
 protected:
+	void AsyncLoad(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params);
+
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
 

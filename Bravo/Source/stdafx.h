@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <utility>
+#include <thread>
 
 // utilities
 #include "Log.h"

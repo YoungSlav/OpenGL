@@ -20,9 +20,22 @@ public:
 
 		if ( std::shared_ptr<ClassName> asset = NewObject<ClassName>(Name) )
 		{
-			if ( asset->Load(ResourcesFolderPath, std::forward<Args>(args)...) && asset->LoadToGPU() )
+			LoadedAssets.insert({Name, asset});
+			EAssetLoadingState LoadingState = asset->Load(ResourcesFolderPath, std::forward<Args>(args)...);
+			if ( LoadingState == EAssetLoadingState::Loaded )
 			{
-				LoadedAssets.insert({Name, asset});
+				return asset;
+			}
+			else if ( LoadingState == EAssetLoadingState::InRAM )
+			{
+				if ( asset->LoadToGPU() )
+				{
+					return asset;
+				}
+			}
+			else if ( LoadingState == EAssetLoadingState::AsyncLoading )
+			{
+				PendingLoadingAssets.push_back(asset);
 				return asset;
 			}
 		}
@@ -33,6 +46,18 @@ public:
 	const std::string& GetResourceFolder()
 	{
 		return ResourcesFolderPath;
+	}
+
+	void CheckPendingAssets()
+	{
+		for ( int32 i = (int32)PendingLoadingAssets.size()-1; i >= 0; --i )
+		{
+			if ( PendingLoadingAssets[i]->GetLoadingState() == EAssetLoadingState::InRAM )
+				PendingLoadingAssets[i]->LoadToGPU();
+
+			if ( PendingLoadingAssets[i]->GetLoadingState() != EAssetLoadingState::AsyncLoading )
+				PendingLoadingAssets.erase(PendingLoadingAssets.begin()+i);
+		}
 	}
 
 
@@ -57,6 +82,7 @@ private:
 	}
 
 private:
+	std::vector<std::shared_ptr<class BravoAsset>> PendingLoadingAssets;
 	std::map<std::string, std::shared_ptr<class BravoAsset>> LoadedAssets;
 
 	const std::string ResourcesFolderRelativePath = "..\\..\\Resources\\";
