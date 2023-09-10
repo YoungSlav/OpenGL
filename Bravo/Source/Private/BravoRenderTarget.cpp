@@ -101,13 +101,12 @@ void BravoRenderTarget::Render()
 		int32 TextureUnit = BravoTextureUnitManager::BindTexture();
 		glActiveTexture(GL_TEXTURE0 + TextureUnit);
 		glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-		GetShader()->SetInt("screenTexture", 0);
+		GetShader()->SetInt("screenTexture", TextureUnit);
 	
 		glBindVertexArray(PlaneVAO);
     
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	
-		//glBindTexture(GL_TEXTURE_2D, 0);
 		BravoTextureUnitManager::UnbindTexture(TextureUnit);
 		glBindVertexArray(0);
 	GetShader()->StopUsage();

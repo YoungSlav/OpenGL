@@ -42,7 +42,7 @@ bool BravoGameInstance::Initialize_Internal()
 	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>("Player") )
 	{
 		Player->SetLocation(glm::vec3(-15.0792866, 17.3910675, 0.121996939));
-		Player->SetRotation(glm::vec3(0.00000000, 0.800000012, -59.5000076));
+		Player->SetRotation(glm::vec3(0.00000000, 0.0, -60));
 
 
 		//Player->SetLocation(glm::vec3(10, 0.0f, 0));
@@ -52,7 +52,6 @@ bool BravoGameInstance::Initialize_Internal()
 		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>("Camera");
 		Engine->SetCamera(Camera);
 		Camera->AttachTo(Player);
-		Player->Destroy();
 	}
 
 	
@@ -92,7 +91,7 @@ bool BravoGameInstance::Initialize_Internal()
 	//SpawnSpotLights();
 	
 	//SpawnTestInstances();
-	//SpawnCubes();
+	SpawnCubes();
 	SpawnTestCube();
 	return true;
 }
