@@ -19,6 +19,11 @@ namespace GlobalEngine
 	}
 };
 
+std::shared_ptr<BravoEngine> BravoEngine::GetEngine()
+{
+	return GlobalEngine::Engine();
+}
+
 bool BravoEngine::Initialize_Internal()
 {
 	GlobalEngine::_Engine = Self<BravoEngine>();
@@ -60,7 +65,8 @@ void BravoEngine::GameLoop()
 			GetCamera()->UpdateCamera();
 
 		UpdateViewport();
-		ProcessInput(Window);
+		if ( Input )
+			Input->ProcessInput(DeltaTime);
 
 		while ((glfwGetTime()  - newTime) < (1.0 / FPSLimit)) { }
 	}
@@ -182,9 +188,6 @@ void BravoEngine::CreateOpenGLWindow()
 
 	glfwFocusWindow(Window);
 
-
-	glfwSetCursorPosCallback(Window, BravoEngine::Mouse_callback);
-	glfwSetScrollCallback(Window, BravoEngine::Scroll_callback);
     glfwSetFramebufferSizeCallback(Window, BravoEngine::Framebuffer_size_callback);
 
 
@@ -203,39 +206,6 @@ void BravoEngine::Framebuffer_size_callback(GLFWwindow* window, int32 width, int
 {
 	if ( GlobalEngine::Engine() )
 		GlobalEngine::Engine()->Resize(glm::ivec2(width, height));
-}
-
-void BravoEngine::ProcessInput(GLFWwindow *window)
-{
-	static float oldTime = 0.0f;
-	float newTime = (float)glfwGetTime();
-	float deltaTime = newTime - oldTime;
-	oldTime = newTime;
-
-	if ( GlobalEngine::Engine() && GlobalEngine::Engine()->GetInput() )
-		GlobalEngine::Engine()->GetInput()->ProcessInput(window, deltaTime);
-}
-
-void BravoEngine::Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	static float oldTime = 0.0f;
-	float newTime = (float)glfwGetTime();
-	float deltaTime = newTime - oldTime;
-	oldTime = newTime;
-
-	if ( GlobalEngine::Engine() && GlobalEngine::Engine()->GetInput() )
-		GlobalEngine::Engine()->GetInput()->OnMouseScroll(window, (float)xoffset, (float)yoffset, deltaTime);
-}
-
-void BravoEngine::Mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	static float oldTime = 0.0f;
-	float newTime = (float)glfwGetTime();
-	float deltaTime = newTime - oldTime;
-	oldTime = newTime;
-
-	if ( GlobalEngine::Engine() && GlobalEngine::Engine()->GetInput() )
-		GlobalEngine::Engine()->GetInput()->OnMouseMove(window, (float)xpos, (float)ypos, deltaTime);
 }
 
 void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)

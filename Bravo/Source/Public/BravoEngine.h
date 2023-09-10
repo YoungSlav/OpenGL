@@ -26,7 +26,6 @@
 * 
 * 
 *	ENGINE:
-* Input refactoring 
 * Multiline text 
 * Widget clicking 
 * Edit text 
@@ -78,6 +77,8 @@ public:
 	inline std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
 	inline const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 
+	static std::shared_ptr<BravoEngine> GetEngine();
+
 protected:
 	bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
@@ -91,9 +92,7 @@ private:
 
 	// input
 	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);
-	static void ProcessInput(GLFWwindow *window);
-	static void Scroll_callback(struct GLFWwindow* window, double xoffset, double yoffset);
-	static void Mouse_callback(struct GLFWwindow* window, double xpos, double ypos);
+
 private:
 	glm::ivec2 ViewportSize = glm::vec2(1024.0f, 768.0f);
 

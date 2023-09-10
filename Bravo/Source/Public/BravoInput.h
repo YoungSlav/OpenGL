@@ -2,47 +2,72 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 
-class BravoInputListener
+enum EKeySubscriptionType : int32
 {
-	friend class BravoInput;
-protected:
-	virtual void InputKey(int32 Key, bool bPressed, float DeltaTime) {}
-	virtual void InputMouseMove(float DeltaX, float DeltaY, float DeltaTime) {}
-	virtual void InputMouseScroll(float DeltaX, float DeltaY, float DeltaTime) {}
+	Pressed = 0x01,
+	Hold = 0x02,
+	Released = 0x04,
+
+	Any = 0x07
+};
+
+struct BravoKeySubscription
+{
+	int32 Key = 0;
+	int32 SubscribedType = EKeySubscriptionType::Any;
+	Delegate<void, bool, float> Callback;
+
+	bool CheckType(EKeySubscriptionType Type)
+	{
+		return SubscribedType & Type;
+	}
+	bool CheckType(int32 Types)
+	{
+		return SubscribedType & Types;
+	}
+};
+
+struct BravoMouseScrollSubscription
+{
+	Delegate<void, const glm::vec2&, float> Callback;
+};
+
+struct BravoMouseMoveSubscription
+{
+	Delegate<void, const glm::vec2&, const glm::vec2&, float> Callback;
 };
 
 class BravoInput : public BravoObject
 {
-	friend class BravoEngine;
 public:
 	void SetOwnerWindow(struct GLFWwindow* _Window);
-
 	void SetMouseEnabled(bool bNewMouseEnabled) const;
+	void ProcessInput(float DeltaTime);
 
-	void SubscribeToKey(int32 Key, std::shared_ptr<BravoInputListener> Subscriber);
-	void SubscribeToMouseMove(std::shared_ptr<BravoInputListener> Subscriber);
-	void SubscribeToMouseScroll(std::shared_ptr<BravoInputListener> Subscriber);
+	bool GetKeyState(int32 Key) const;
 
-	void UnsubscribeFromKey(std::shared_ptr<BravoInputListener> Subscriber);
-	void UnsubscribeFromMouseMove(std::shared_ptr<BravoInputListener> Subscriber);
-	void UnsubscribeFromMouseScroll(std::shared_ptr<BravoInputListener> Subscriber);
+	void SubscribeKey(const BravoKeySubscription& NewSubscription);
+	void SubscribeMouseScroll(const BravoMouseScrollSubscription& Callback);
+	void SubscribeMousePosition(const BravoMouseMoveSubscription& Callback);
 
-protected:
-	void ProcessInput(struct GLFWwindow* window, float DeltaTime);
-	void OnMouseScroll(struct GLFWwindow* window, float xoffset, float yoffset, float DeltaTime);
-	void OnMouseMove(struct GLFWwindow* window, float xpos, float ypos, float DeltaTime);
+
+	void UnSubscribeAll(std::shared_ptr<BravoObject> Owner);
+	void UnSubscribeKey(int32 Key, std::shared_ptr<BravoObject> Owner);
+	void UnSubscribeMouseScroll(std::shared_ptr<BravoObject> Owner);
+	void UnSubscribeMousePosition(std::shared_ptr<BravoObject> Owner);
 
 private:
-	std::map<int32, std::weak_ptr<BravoInputListener>> KeyListeners;
-	std::vector<std::weak_ptr<BravoInputListener>> MouseMoveListeners;
-	std::vector<std::weak_ptr<BravoInputListener>> MouseScrollListeners;
+	static void SCallbackScroll(struct GLFWwindow* window, double xoffset, double yoffset);
+	static void SCallbackMouse(struct GLFWwindow* window, double xpos, double ypos);
 
-	float OldMouseX = 0.0f;
-	float OldMouseY = 0.0f;
-
+private:
+	std::vector<BravoKeySubscription> KeysSubscribers;
+	std::vector<BravoMouseScrollSubscription> MouseScrollSubscribers;
+	std::vector<BravoMouseMoveSubscription> MousePositionSubscribers;
+	std::map<int32, bool> KeyStates;
 
 	struct GLFWwindow* Window = nullptr;
-
-	bool bInitialized = false;
-
+	glm::vec2 MousePos = glm::vec2(0.0);
+	glm::vec2 DeltaMouseMove = glm::vec2(0.0);
+	glm::vec2 DeltaMouseScroll = glm::vec2(0.0);
 };

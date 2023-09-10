@@ -7,19 +7,72 @@ bool BravoPlayer::Initialize_Internal()
 {
 	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
-		Input->SubscribeToKey(GLFW_KEY_W, Self<BravoPlayer>());
-		Input->SubscribeToKey(GLFW_KEY_S, Self<BravoPlayer>());
-		Input->SubscribeToKey(GLFW_KEY_A, Self<BravoPlayer>());
-		Input->SubscribeToKey(GLFW_KEY_D, Self<BravoPlayer>());
-		Input->SubscribeToKey(GLFW_KEY_E, Self<BravoPlayer>());
-		Input->SubscribeToKey(GLFW_KEY_Q, Self<BravoPlayer>());
-		Input->SubscribeToKey(GLFW_MOUSE_BUTTON_LEFT, Self<BravoPlayer>());
-		Input->SubscribeToKey(GLFW_MOUSE_BUTTON_RIGHT, Self<BravoPlayer>());
-
-		Input->SubscribeToKey(GLFW_KEY_ESCAPE, Self<BravoPlayer>());
-
-		Input->SubscribeToMouseMove(Self<BravoPlayer>());
-		Input->SubscribeToMouseScroll(Self<BravoPlayer>());
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_W;
+		subscription.SubscribedType = EKeySubscriptionType::Hold;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_W);
+		Input->SubscribeKey(subscription);
+		}
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_S;
+		subscription.SubscribedType = EKeySubscriptionType::Hold;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_S);
+		Input->SubscribeKey(subscription);
+		}
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_A;
+		subscription.SubscribedType = EKeySubscriptionType::Hold;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_A);
+		Input->SubscribeKey(subscription);
+		}
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_D;
+		subscription.SubscribedType = EKeySubscriptionType::Hold;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_D);
+		Input->SubscribeKey(subscription);
+		}
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_E;
+		subscription.SubscribedType = EKeySubscriptionType::Hold;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_E);
+		Input->SubscribeKey(subscription);
+		}
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_Q;
+		subscription.SubscribedType = EKeySubscriptionType::Hold;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_Q);
+		Input->SubscribeKey(subscription);
+		}
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_MOUSE_BUTTON_RIGHT;
+		subscription.SubscribedType = EKeySubscriptionType::Hold | EKeySubscriptionType::Released;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_MOUSERIGHT);
+		Input->SubscribeKey(subscription);
+		}
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_ESCAPE;
+		subscription.SubscribedType = EKeySubscriptionType::Released;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnInput_ESCAPE);
+		Input->SubscribeKey(subscription);
+		}
+		{
+			BravoMouseMoveSubscription subscription;
+			subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseMove);
+			Input->SubscribeMousePosition(subscription);
+		}
+		{
+			BravoMouseScrollSubscription subscription;
+			subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseScroll);
+			Input->SubscribeMouseScroll(subscription);
+		}
 	}
 	return true;
 }
@@ -28,9 +81,7 @@ void BravoPlayer::OnDestroy()
 {
 	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
-		Input->UnsubscribeFromKey(Self<BravoPlayer>());
-		Input->UnsubscribeFromMouseMove(Self<BravoPlayer>());
-		Input->UnsubscribeFromMouseScroll(Self<BravoPlayer>());
+		Input->UnSubscribeAll(Self<BravoPlayer>());
 	}
 
 	if ( Engine && Engine->GetCamera() )
@@ -43,7 +94,27 @@ void BravoPlayer::Tick(float DeltaTime)
 	Velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-void BravoPlayer::InputKey(int32 Key, bool bPressed, float DeltaTime)
+void BravoPlayer::OnInput_W(bool ButtonState, float DeltaTime)
+{
+	glm::vec3 front;
+    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front.y = sin(glm::radians(GetRotation().z));
+    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front = glm::normalize(front);
+	
+	AdjustVelocity(front);
+}
+void BravoPlayer::OnInput_S(bool ButtonState, float DeltaTime)
+{
+	glm::vec3 front;
+    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front.y = sin(glm::radians(GetRotation().z));
+    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front = glm::normalize(front);
+
+	AdjustVelocity(-front);
+}
+void BravoPlayer::OnInput_A(bool ButtonState, float DeltaTime)
 {
 	static const float sensitivity = 2.5f;
 	glm::vec3 front;
@@ -53,50 +124,54 @@ void BravoPlayer::InputKey(int32 Key, bool bPressed, float DeltaTime)
     front = glm::normalize(front);
 
 	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));
+	AdjustVelocity(right);
+}
+void BravoPlayer::OnInput_D(bool ButtonState, float DeltaTime)
+{
+	static const float sensitivity = 2.5f;
+	glm::vec3 front;
+    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front.y = sin(glm::radians(GetRotation().z));
+    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front = glm::normalize(front);
+
+	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));
+	AdjustVelocity(-right);
+}
+void BravoPlayer::OnInput_E(bool ButtonState, float DeltaTime)
+{
 	glm::vec3 up = BravoMath::upV;
-	
-	if( Key == GLFW_KEY_W && bPressed )
-		Velocity += sensitivity * front;
-	if( Key == GLFW_KEY_S && bPressed )
-		Velocity -= sensitivity * front;
-	if( Key == GLFW_KEY_A && bPressed )
-		Velocity += sensitivity * right;
-	if( Key == GLFW_KEY_D && bPressed )
-		Velocity -= sensitivity * right;
-	if( Key == GLFW_KEY_E && bPressed )
-		Velocity += sensitivity * up;
-	if( Key == GLFW_KEY_Q && bPressed )
-		Velocity -= sensitivity * up;
-
-	if ( Key == GLFW_KEY_ESCAPE && bPressed )
-	{
-		if( Engine )
-			Engine->StopGame();
-	}
-
-	if ( Key == GLFW_MOUSE_BUTTON_RIGHT )
-	{
-		bMouseInput = bPressed;
-		//BravoEngine::GetInstance()->GetViewport()->SetMouseEnabled(!bPressed);
-	}
-
+	AdjustVelocity(up);
+}
+void BravoPlayer::OnInput_Q(bool ButtonState, float DeltaTime)
+{
+	glm::vec3 up = BravoMath::upV;
+	AdjustVelocity(-up);
+}
+void BravoPlayer::AdjustVelocity(const glm::vec3& DeltaVelocity)
+{
+	Velocity += (DeltaVelocity * InputMoveSensitivity);
+}
+void BravoPlayer::OnInput_ESCAPE(bool ButtonState, float DeltaTime)
+{
+	if( Engine )
+		Engine->StopGame();
+}
+void BravoPlayer::OnInput_MOUSERIGHT(bool ButtonState, float DeltaTime)
+{
+	bMouseInput = ButtonState;
 }
 
-void BravoPlayer::InputMouseMove(float DeltaX, float DeltaY, float DeltaTime)
+void BravoPlayer::OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime)
+{
+	MoveSpeed = glm::clamp(MoveSpeed + InputMouseScrollSensitivity * DeltaScroll.y, MinMoveSpeed, MaxMoveSpeed);
+}
+void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
 {
 	if ( !bMouseInput ) return;
-	static const float sensitivity = 0.1f;
 	SetRotation(glm::vec3(
 		GetRotation().x,
-		GetRotation().y + DeltaX * sensitivity,
-		glm::clamp((GetRotation().z + DeltaY * sensitivity), -89.0f, 89.0f))
+		GetRotation().y + DeltaMove.x * InputMouseMoveSensitivity,
+		glm::clamp((GetRotation().z - DeltaMove.y * InputMouseMoveSensitivity), -89.0f, 89.0f))
 	);
-}
-
-void BravoPlayer::InputMouseScroll(float DeltaX, float DeltaY, float DeltaTime)
-{
-	static const float sensitivity = 1.0f;
-	int32 delta = (int32)(DeltaY / glm::abs(DeltaY));
-	MoveSpeed = glm::clamp(MoveSpeed + sensitivity * delta, MinMoveSpeed, MaxMoveSpeed);
-	Log::LogMessage(std::to_string(MoveSpeed));
 }
