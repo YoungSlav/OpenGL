@@ -369,9 +369,7 @@ float CalcPointLightShadow(int index)
 	// now get current linear depth as the length between the fragment and light position
 	float currentDepth = length(fragToLight);
 	// now test for shadows
-	const float biasModifier = 1.0f;
-	float bias = 0.005;
-	bias *= 1 / (pointLights[index].farPlane * biasModifier);
+	const float bias = 0.075;
 	
 	float shadow = 0.0;
 	float viewDistance = length(viewPos - fs_in.FragPos);
@@ -380,7 +378,7 @@ float CalcPointLightShadow(int index)
 	{
 		vec3 sampleCoord = fragToLight + gridSamplingDisk[i] * diskRadius;
 		float pcfDepth = texture(pointDepthMaps, vec4(sampleCoord, index)).r;
-		pcfDepth *= drawDistance;   // undo mapping [0;1]
+		pcfDepth *= pointLights[index].farPlane;   // undo mapping [0;1]
 		shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
 	}
 	shadow /= float(samples);
