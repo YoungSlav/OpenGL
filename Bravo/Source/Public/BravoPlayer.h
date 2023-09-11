@@ -3,7 +3,7 @@
 #include "BravoActor.h"
 #include "BravoCamera.h"
 
-class BravoPlayer : public BravoActor, public BravoTickable
+class BravoPlayer : public BravoActor, public IBravoTickable
 {
 public:
 

@@ -2,16 +2,16 @@
 
 
 #include "BravoActor.h"
-#include "BravoRenderable.h"
+#include "IBravoRenderable.h"
 #include "BravoShaderAsset.h"
 #include "BravoStaticMeshAsset.h"
 
-class BravoInfinitePlaneActor : public BravoActor, public BravoRenderable
+class BravoInfinitePlaneActor : public BravoActor, public IBravoRenderable
 {
 public:
 	BravoInfinitePlaneActor() :
 		BravoActor(),
-		BravoRenderable(INT_MAX)
+		IBravoRenderable(INT_MAX)
 	{
 	}
 
@@ -19,7 +19,7 @@ public:
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) override;
+	virtual void Render() override;
 	virtual void OnDestroy() override;
 
 private:

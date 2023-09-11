@@ -3,7 +3,7 @@
 #include "BravoStaticMeshAsset.h"
 #include "BravoShaderAsset.h"
 #include "BravoDepthMap.h"
-#include "BravoRenderable.h"
+#include "IBravoRenderable.h"
 
 struct BravoLightAttenuationConstants
 {

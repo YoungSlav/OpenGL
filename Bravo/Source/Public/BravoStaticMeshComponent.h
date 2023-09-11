@@ -3,7 +3,7 @@
 #include "BravoStaticMeshAsset.h"
 #include "BravoEngine.h"
 #include "BravoComponent.h"
-#include "BravoRenderable.h"
+#include "IBravoRenderable.h"
 #include "BravoShaderAsset.h"
 #include "BravoMath.h"
 #include "BravoTransform.h"
@@ -19,7 +19,7 @@ public:
 	}
 };
 
-class BravoStaticMeshComponent : public BravoComponent, public BravoRenderable
+class BravoStaticMeshComponent : public BravoComponent, public IBravoRenderable
 {
 public:
 	void SetMesh(std::shared_ptr<BravoStaticMeshAsset> InMesh);
@@ -37,7 +37,8 @@ public:
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) override;
+	virtual void Render() override;
+	virtual void RenderSelection() override;
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) override;
 	virtual void OnDestroy() override;
 
@@ -47,6 +48,7 @@ private:
 
 	GLuint VAO = 0;
 	GLuint instanceVBO = 0;
-	std::shared_ptr<BravoStaticMeshAsset> Mesh;
-	std::shared_ptr<class BravoMaterial> Material;
+	std::shared_ptr<BravoStaticMeshAsset> Mesh = nullptr;
+	std::shared_ptr<class BravoMaterial> Material = nullptr;
+	std::shared_ptr<class BravoShaderAsset> SelectionShader = nullptr;
 };

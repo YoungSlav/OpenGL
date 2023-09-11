@@ -31,6 +31,5 @@ void main()
 	vec3 B = cross(N, T);
 	vs_out.TBN = mat3(T, B, N);
 
-
 	gl_Position = projection * view * vec4(vs_out.FragPos, 1.0);
 }

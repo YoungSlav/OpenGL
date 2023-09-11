@@ -47,8 +47,9 @@
 * animations?
 * */
 
-class BravoInput;
+typedef MulticastDelegate<const glm::ivec2&> OnResizeSignature;
 
+class BravoInput;
 class BravoEngine : public BravoObject
 {
 public:
@@ -62,9 +63,11 @@ public:
 	void GameLoop();
 	void StopGame();
 	
+	void RenderSelection() const;
 	void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const;
 	
 	void RegisterObject(std::shared_ptr<BravoObject> Object);
+	std::shared_ptr<BravoObject> FindObjectByHandle(const BravoHandle& Handle);
 	BravoHandle GenerateNewHandle() { return ++LastUsedHandle; }
 	void DestroyObject(std::shared_ptr<BravoObject> Object);
 
@@ -78,6 +81,8 @@ public:
 	inline const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 
 	static std::shared_ptr<BravoEngine> GetEngine();
+
+	OnResizeSignature OnResizeDelegate;
 
 protected:
 	bool Initialize_Internal() override;
@@ -100,8 +105,9 @@ private:
 
 	// object managing
 	std::vector< std::shared_ptr<BravoObject> > Objects;
-	std::vector< std::shared_ptr<BravoTickable> > TickableObjects;
-	std::vector< std::shared_ptr<class BravoRenderable> > RenderableObjects;
+	std::map<BravoHandle, std::shared_ptr<BravoObject>> HandleToObject;
+	std::vector< std::shared_ptr<IBravoTickable> > TickableObjects;
+	std::vector< std::shared_ptr<class IBravoRenderable> > RenderableObjects;
 	std::vector< std::shared_ptr<class BravoActor> > Actors;
 
 	std::shared_ptr<class BravoAssetManager> AssetManager = nullptr;
@@ -109,6 +115,7 @@ private:
 	std::shared_ptr<class BravoLightManager> LightManager;
 	std::shared_ptr<class BravoRenderTarget> ViewportRenderTarget;
 	std::shared_ptr<class BravoHUD> HUD;
+	std::shared_ptr<class BravoSelectionManager> SelectionManager;
 
 
 	std::weak_ptr<class BravoCamera> Camera;

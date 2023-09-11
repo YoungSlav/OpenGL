@@ -64,14 +64,10 @@ bool BravoPlayer::Initialize_Internal()
 		Input->SubscribeKey(subscription);
 		}
 		{
-			BravoMouseMoveSubscription subscription;
-			subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseMove);
-			Input->SubscribeMousePosition(subscription);
+			Input->OnMouseMoveDelegate.AddSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseMove);
 		}
 		{
-			BravoMouseScrollSubscription subscription;
-			subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseScroll);
-			Input->SubscribeMouseScroll(subscription);
+			Input->OnMouseScrollDelegate.AddSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseScroll);
 		}
 	}
 	return true;
@@ -79,11 +75,6 @@ bool BravoPlayer::Initialize_Internal()
 
 void BravoPlayer::OnDestroy()
 {
-	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
-	{
-		Input->UnSubscribeAll(Self<BravoPlayer>());
-	}
-
 	if ( Engine && Engine->GetCamera() )
 		Engine->GetCamera()->Detach();
 }

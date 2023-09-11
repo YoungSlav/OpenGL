@@ -15,6 +15,9 @@
 // utilities
 #include "Log.h"
 
+//openGL
+#include "openGL.h"
+
 
 // third party
 #include "glm/glm.hpp"

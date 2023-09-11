@@ -3,7 +3,7 @@
 #include "BravoScreen.h"
 
 
-class BravoScreen_Debug : public BravoScreen, public BravoTickable
+class BravoScreen_Debug : public BravoScreen, public IBravoTickable
 {
 public:
 

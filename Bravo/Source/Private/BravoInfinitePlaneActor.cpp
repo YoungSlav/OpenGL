@@ -61,17 +61,33 @@ bool BravoInfinitePlaneActor::EnsureReady()
 	return true;
 }
 
-void BravoInfinitePlaneActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
+void BravoInfinitePlaneActor::Render()
 {
 	if ( !EnsureReady() )
 		return;
+
+	glm::mat4 CameraProjection;
+	glm::mat4 CameraView;
+	float MinDrawingDistance;
+	float MaxDrawingDistance;
+	if ( std::shared_ptr<BravoCamera> camera = Engine->GetCamera() )
+	{
+		CameraProjection = camera->GetProjectionMatrix();
+		CameraView = camera->GetViewMatrix();
+		MinDrawingDistance = camera->GetMinDrawingDistance();
+		MaxDrawingDistance = camera->GetMaxDrawingDistance();
+	}
+	else
+	{
+		return;
+	}
 
 	glm::mat4 model = Transform.GetTransformMatrix();
 	Shader->Use();
 		Shader->SetMatrix4d("projection", CameraProjection);
 		Shader->SetMatrix4d("view", CameraView);
-		Shader->SetVector1d("near", Engine->GetCamera()->GetMinDrawingDistance());
-		Shader->SetVector1d("far", Engine->GetCamera()->GetMaxDrawingDistance());
+		Shader->SetVector1d("near", MinDrawingDistance);
+		Shader->SetVector1d("far", MaxDrawingDistance);
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);

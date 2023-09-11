@@ -1,6 +1,7 @@
 #include "BravoSkyboxActor.h"
 #include "BravoAssetManager.h"
 #include "BravoEngine.h"
+#include "BravoCamera.h"
 
 void BravoSkyboxActor::SetCubemap(std::shared_ptr<BravoCubemapAsset> InCubemap)
 {
@@ -67,13 +68,24 @@ bool BravoSkyboxActor::Initialize_Internal()
 	return true;
 }
 
-void BravoSkyboxActor::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
+void BravoSkyboxActor::Render()
 {
 	if ( !Shader || !Cubemap || !VAO )
 		return;
 
 	Shader->Use();
 	Cubemap->Use();
+	glm::mat4 CameraProjection;
+	glm::mat4 CameraView;
+	if ( std::shared_ptr<BravoCamera> camera = Engine->GetCamera() )
+	{
+		CameraProjection = camera->GetProjectionMatrix();
+		CameraView = camera->GetViewMatrix();
+	}
+	else
+	{
+		return;
+	}
 
 	glm::mat4 view = glm::mat4(glm::mat3(CameraView));  
 	Shader->SetMatrix4d("view", view);

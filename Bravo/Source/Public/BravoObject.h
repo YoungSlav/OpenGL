@@ -6,7 +6,7 @@
 
 class BravoEngine;
 
-class BravoTickable
+class IBravoTickable
 {
 	friend class BravoEngine;
 protected:

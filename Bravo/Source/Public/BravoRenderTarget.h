@@ -1,15 +1,22 @@
 #pragma once
+#include "stdafx.h"
 #include "BravoObject.h"
 
 class BravoRenderTarget : public BravoObject
 {
 public:
 
-	void Setup(const glm::ivec2& Size, bool HDR, std::shared_ptr<class BravoShaderAsset> InShader);
+	void Setup(const glm::ivec2& _Size,
+		GLint _InternalFormat,
+		GLenum _Format,
+		GLenum _Type,
+		bool _DepthStencil,
+		std::shared_ptr<class BravoShaderAsset> _Shader = nullptr);
 
 	void Resize(const glm::ivec2& Size);
 	void Clean();
 
+	// TODO: move render out of here. the owner of render target is responsible for rendering it, or do what ever with it
 	void Render();
 
 	void Use();
@@ -18,7 +25,6 @@ public:
 protected:
 
 	virtual void OnDestroy() override;
-	std::shared_ptr<class BravoShaderAsset> GetShader() const { return Shader.expired() ? nullptr : Shader.lock(); }
 
 private:
 
@@ -27,9 +33,11 @@ private:
 
 	uint32 TextureColorBuffer = 0;
 
-	std::weak_ptr<class BravoShaderAsset> Shader;
-
 	glm::ivec2 Size;
 
-	bool HDR = false;
+	std::shared_ptr<class BravoShaderAsset> Shader;
+	GLint InternalFormat;
+	GLenum Format;
+	GLenum Type;
+	bool DepthStencil;
 };

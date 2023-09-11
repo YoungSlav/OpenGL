@@ -8,6 +8,10 @@ class BravoMaterial : public BravoObject
 {
 public:
 	void Load() {};
+	bool EnsureReady()
+	{
+		return ShaderAsset != nullptr && ShaderAsset->EnsureReady();
+	}
 	
 	virtual void Use() = 0;
 	virtual void StopUsage() = 0;

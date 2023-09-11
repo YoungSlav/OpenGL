@@ -5,11 +5,20 @@
 #include "BravoTextureAsset.h"
 #include "BravoTextureUnitManager.h"
 
-void BravoRenderTarget::Setup(const glm::ivec2& InSize, bool _HDR, std::shared_ptr<class BravoShaderAsset> InShader)
+void BravoRenderTarget::Setup(
+	const glm::ivec2& _Size,
+	GLint _InternalFormat,
+	GLenum _Format,
+	GLenum _Type,
+	bool _DepthStencil,
+	std::shared_ptr<BravoShaderAsset> _Shader)
 {
-	HDR = _HDR;
-	Size = InSize;
-	Shader = InShader;
+	Shader = _Shader;
+	Size = _Size;
+	InternalFormat = _InternalFormat;
+	Format = _Format;
+	DepthStencil = _DepthStencil;
+	Type = _Type;
 
 	static float planeVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
         // positions   // texCoords
@@ -36,21 +45,23 @@ void BravoRenderTarget::Setup(const glm::ivec2& InSize, bool _HDR, std::shared_p
 	// framebuffer configuration
 	glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
+	
 	// create a color attachment texture
 	glGenTextures(1, &TextureColorBuffer);
     glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, HDR ? GL_RGB16F : GL_RGB, Size.x, Size.y, 0, GL_RGB, HDR ? GL_FLOAT : GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, _InternalFormat, Size.x, Size.y, 0, _Format, _Type, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureColorBuffer, 0);
 
-	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
-	glGenRenderbuffers(1, &RBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Size.x, Size.y); // use a single renderbuffer object for both a depth AND stencil buffer.
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO); // now actually attach it
-    // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if ( DepthStencil )
+	{
+		glGenRenderbuffers(1, &RBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Size.x, Size.y);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+	}
+	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         Log::LogMessage("Framebuffer is not complete!", ELog::Error);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -61,7 +72,7 @@ void BravoRenderTarget::Setup(const glm::ivec2& InSize, bool _HDR, std::shared_p
 void BravoRenderTarget::Resize(const glm::ivec2& InSize)
 {
 	Clean();
-	Setup(InSize, HDR, GetShader());
+	Setup(InSize, InternalFormat, Format, Type, DepthStencil, Shader);
 }
 
 void BravoRenderTarget::Clean()
@@ -83,8 +94,6 @@ void BravoRenderTarget::Use()
 void BravoRenderTarget::StopUsage()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	if ( GetShader() )
-		GetShader()->StopUsage();
 }
 
 void BravoRenderTarget::OnDestroy()
@@ -94,14 +103,16 @@ void BravoRenderTarget::OnDestroy()
 
 void BravoRenderTarget::Render()
 {
-	if ( !GetShader() )
+	if ( !Shader )
+		return;
+	if ( !Shader->EnsureReady() )
 		return;
 
-	GetShader()->Use();
+	Shader->Use();
 		int32 TextureUnit = BravoTextureUnitManager::BindTexture();
 		glActiveTexture(GL_TEXTURE0 + TextureUnit);
 		glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-		GetShader()->SetInt("screenTexture", TextureUnit);
+		Shader->SetInt("screenTexture", TextureUnit);
 	
 		glBindVertexArray(PlaneVAO);
     
@@ -109,5 +120,5 @@ void BravoRenderTarget::Render()
 	
 		BravoTextureUnitManager::UnbindTexture(TextureUnit);
 		glBindVertexArray(0);
-	GetShader()->StopUsage();
+	Shader->StopUsage();
 }

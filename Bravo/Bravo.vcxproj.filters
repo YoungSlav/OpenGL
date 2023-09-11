@@ -109,6 +109,9 @@
     <Filter Include="Public\Actors\Materials">
       <UniqueIdentifier>{9bc8a3f7-87d0-47ee-b0e7-6e934762fb5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Selection">
+      <UniqueIdentifier>{7cff3cb1-50bd-4fa1-bddc-1739f4f603ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -253,6 +256,9 @@
     <ClCompile Include="Source\Private\BravoMaterialUnlit.cpp">
       <Filter>Private\Actors\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoSelectionManager.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -353,7 +359,7 @@
     <ClInclude Include="Source\Public\BravoStaticMeshComponent.h">
       <Filter>Public\Actors\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoRenderable.h">
+    <ClInclude Include="Source\Public\IBravoRenderable.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoTransform.h">
@@ -415,6 +421,9 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoMaterialUnlit.h">
       <Filter>Public\Actors\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoSelectionManager.h">
+      <Filter>Public\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -486,6 +495,12 @@
     </None>
     <None Include="Source\Shaders\PBRModel.vert">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\MeshSelection.vert">
+      <Filter>Shaders\Selection</Filter>
+    </None>
+    <None Include="Source\Shaders\MeshSelection.frag">
+      <Filter>Shaders\Selection</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -1,12 +1,12 @@
 #pragma once
 
-class BravoRenderable
+class IBravoRenderable
 {
 	friend class BravoEngine;
 
 public:
-	BravoRenderable() = default;
-	BravoRenderable(int32 _RenderPriority) : RenderPriority(_RenderPriority) {}
+	IBravoRenderable() = default;
+	IBravoRenderable(int32 _RenderPriority) : RenderPriority(_RenderPriority) {}
 
 	void SetRenderPriority(int32 _RenderPriority) { RenderPriority = _RenderPriority; }
 	int32 GetRenderPriority() const { return RenderPriority; }
@@ -15,7 +15,8 @@ public:
 	bool GetCastShadows() const { return bCastShadows; }
 
 protected:
-	virtual void Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView) = 0;
+	virtual void Render() = 0;
+	virtual void RenderSelection() {};
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
 	
 private:

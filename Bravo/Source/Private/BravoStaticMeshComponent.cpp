@@ -1,20 +1,31 @@
 #include "BravoStaticMeshComponent.h"
 #include "BravoActor.h"
-#include "BravoAssetManager.h"
 #include "BravoLightManager.h"
 #include "BravoMaterial.h"
+#include "BravoCamera.h"
+#include "BravoEngine.h"
+#include "BravoShaderAsset.h"
+#include "BravoAssetManager.h"
+
 
 
 bool BravoStaticMeshComponent::Initialize_Internal()
 {
-	AddInstance(BravoMeshInstance(BravoTransform()), false);
+	if ( !BravoComponent::Initialize_Internal() )
+		return false;
 
+	if (auto AssetManager = Engine->GetAssetManager())
+	{
+		SelectionShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshSelectionShader", BravoShaderLoadingParams("Shaders\\MeshSelection"));
+	}
+
+	AddInstance(BravoMeshInstance(BravoTransform()), false);
 	return true;
 }
 
 bool BravoStaticMeshComponent::EnsureReady()
 {
-	if ( !Mesh || !Material )
+	if ( !Mesh )
 		return false;
 
 	if ( Mesh->GetLoadingState() == EAssetLoadingState::InRAM )
@@ -157,13 +168,27 @@ void BravoStaticMeshComponent::SetMaterial(std::shared_ptr<BravoMaterial> _Mater
 	Material = _Material;
 }
 
-void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm::mat4& CameraProjection, const glm::mat4& CameraView)
+void BravoStaticMeshComponent::Render()
 {
 	if ( !Instances.size() )
 		return;
 
-	if ( !EnsureReady() )
+	if ( !EnsureReady() || !Material || !Material->EnsureReady() )
 		return;
+
+	glm::mat4 CameraProjection;
+	glm::mat4 CameraView;
+	glm::vec3 CameraLocation;
+	if ( std::shared_ptr<BravoCamera> camera = Engine->GetCamera() )
+	{
+		CameraProjection = camera->GetProjectionMatrix();
+		CameraView = camera->GetViewMatrix();
+		CameraLocation = camera->GetLocation();
+	}
+	else
+	{
+		return;
+	}
 
 	glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
@@ -182,6 +207,44 @@ void BravoStaticMeshComponent::Render(const glm::vec3& CameraLocation, const glm
 
 		Engine->GetLightManager()->ResetLightsUsage();
 	Material->StopUsage();
+}
+
+void BravoStaticMeshComponent::RenderSelection()
+{
+	if ( !Instances.size() )
+		return;
+
+	if ( !EnsureReady() || !SelectionShader || !SelectionShader->EnsureReady() )
+		return;
+
+	glm::mat4 CameraProjection;
+	glm::mat4 CameraView;
+	glm::vec3 CameraLocation;
+	float MaxDrawingDistance;
+	if ( std::shared_ptr<BravoCamera> camera = Engine->GetCamera() )
+	{
+		CameraProjection = camera->GetProjectionMatrix();
+		CameraView = camera->GetViewMatrix();
+		CameraLocation = camera->GetLocation();
+		MaxDrawingDistance = camera->GetMaxDrawingDistance();
+	}
+	else
+	{
+		return;
+	}
+
+	glm::mat4 model = GetTransform_World().GetTransformMatrix();
+
+	glm::mat4 tranform = CameraProjection * CameraView * model;
+	SelectionShader->Use();
+		SelectionShader->SetMatrix4d("tranform", tranform);
+		SelectionShader->SetInt("ObjectHandle", GetHandle());
+		
+		glBindVertexArray(VAO);
+		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
+		glBindVertexArray(0);
+
+	SelectionShader->StopUsage();
 }
 
 void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> _Shader)

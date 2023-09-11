@@ -38,7 +38,7 @@ void BravoMaterialUnlit::Use()
 	
 	ShaderAsset->SetTexture("material.Texture", AlbedoTexture);
 
-	ShaderAsset->SetBool("material.useTexture", AlbedoTexture != nullptr);
+	ShaderAsset->SetBool("material.useTexture", AlbedoTexture != nullptr && AlbedoTexture->EnsureReady() );
 
 	ShaderAsset->SetVector3d("material.Color", AlbedoColor);
 }

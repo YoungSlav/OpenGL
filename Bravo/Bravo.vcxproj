@@ -46,6 +46,7 @@
     <ClCompile Include="Source\Private\BravoPointLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
+    <ClCompile Include="Source\Private\BravoSelectionManager.cpp" />
     <ClCompile Include="Source\Private\BravoStaticMeshAsset.cpp" />
     <ClCompile Include="Source\Private\BravoPlayer.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
@@ -93,9 +94,10 @@
     <ClInclude Include="Source\Public\BravoMath.h" />
     <ClInclude Include="Source\Public\BravoPointDepthMap.h" />
     <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
+    <ClInclude Include="Source\Public\BravoSelectionManager.h" />
     <ClInclude Include="Source\Public\BravoSpotDepthMap.h" />
     <ClInclude Include="Source\Public\BravoPointLightActor.h" />
-    <ClInclude Include="Source\Public\BravoRenderable.h" />
+    <ClInclude Include="Source\Public\IBravoRenderable.h" />
     <ClInclude Include="Source\Public\BravoRenderTarget.h" />
     <ClInclude Include="Source\Public\BravoStaticMeshAsset.h" />
     <ClInclude Include="Source\Public\BravoObject.h" />
@@ -126,6 +128,8 @@
     <ClInclude Include="Source\ThirdParty\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Shaders\MeshSelection.frag" />
+    <None Include="Source\Shaders\MeshSelection.vert" />
     <None Include="Source\Shaders\Unlit.frag" />
     <None Include="Source\Shaders\Unlit.vert" />
     <None Include="Source\Shaders\PBRModel.frag" />

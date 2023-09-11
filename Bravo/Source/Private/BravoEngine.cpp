@@ -6,7 +6,8 @@
 #include "BravoAssetManager.h"
 #include "openGL.h"
 #include "BravoHUD.h"
-#include "BravoRenderable.h"
+#include "IBravoRenderable.h"
+#include "BravoSelectionManager.h"
 
 namespace GlobalEngine
 {
@@ -41,6 +42,9 @@ bool BravoEngine::Initialize_Internal()
 
 	HUD = NewObject<BravoHUD>("HUD");
 	HUD->SetSize(ViewportSize);
+
+
+	SelectionManager = NewObject<BravoSelectionManager>("SelectionManager");
 
 	return true;
 }
@@ -115,7 +119,7 @@ void BravoEngine::UpdateViewport()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for ( auto& it : RenderableObjects )
 		{
-			it->Render(camera->GetLocation(), camera->GetProjectionMatrix(), camera->GetViewMatrix());
+			it->Render();
 		}
 
 		viewportRT->StopUsage();
@@ -140,6 +144,14 @@ void BravoEngine::UpdateViewport()
 	glfwPollEvents();
 }
 
+void BravoEngine::RenderSelection() const
+{
+	for ( auto& it : RenderableObjects )
+	{
+		it->RenderSelection();
+	}
+}
+
 void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const
 {
 	for ( auto& it : RenderableObjects )
@@ -154,9 +166,10 @@ void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 	ViewportSize = InViewportSize;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, ViewportSize.x, ViewportSize.y);
+	ViewportRenderTarget->Resize(ViewportSize*2);	
 	
-	ViewportRenderTarget->Resize(ViewportSize*2);
-		
+
+	OnResizeDelegate.Broadcast(ViewportSize);
 	HUD->SetSize(ViewportSize);
 }
 
@@ -193,7 +206,9 @@ void BravoEngine::CreateOpenGLWindow()
 
 	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget") )
 	{
-		ViewportRenderTarget->Setup(ViewportSize*2, true, AssetManager->FindOrLoad<BravoShaderAsset>("PostProccesShaderAsset", BravoShaderLoadingParams("Shaders\\PostProccess")));
+		ViewportRenderTarget->Setup(ViewportSize*2,
+			GL_RGB16F, GL_RGB, GL_FLOAT, true,
+			AssetManager->FindOrLoad<BravoShaderAsset>("PostProccesShaderAsset", BravoShaderLoadingParams("Shaders\\PostProccess")));
 	}
 	
 	glEnable(GL_BLEND);
@@ -211,8 +226,10 @@ void BravoEngine::Framebuffer_size_callback(GLFWwindow* window, int32 width, int
 void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 {
 	Objects.push_back(newObject);
+
+	HandleToObject.insert({newObject->GetHandle(), newObject});
 	
-	if ( std::shared_ptr<BravoTickable> asTickable = std::dynamic_pointer_cast<BravoTickable>(newObject) )
+	if ( std::shared_ptr<IBravoTickable> asTickable = std::dynamic_pointer_cast<IBravoTickable>(newObject) )
 	{
 		TickableObjects.push_back(asTickable);
 	}
@@ -228,19 +245,32 @@ void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 			}
 		}
 	}
-	if ( std::shared_ptr<BravoRenderable> asRenderable = std::dynamic_pointer_cast<BravoRenderable>(newObject) )
+	if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(newObject) )
 	{
 		RenderableObjects.push_back(asRenderable);
 		sort(RenderableObjects.begin(), RenderableObjects.end(), 
-			[](std::shared_ptr<BravoRenderable> left, std::shared_ptr<BravoRenderable> right) -> bool
+			[](std::shared_ptr<IBravoRenderable> left, std::shared_ptr<IBravoRenderable> right) -> bool
 			{ 
 				return left->GetRenderPriority() < right->GetRenderPriority(); 
 			});
 	}
 }
 
+std::shared_ptr<BravoObject> BravoEngine::FindObjectByHandle(const BravoHandle& Handle)
+{
+	auto it = HandleToObject.find(Handle);
+	if ( it != HandleToObject.end() )
+		return it->second;
+	return nullptr;
+}
+
 void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 {
+	if ( Input )
+		Input->UnSubscribeAll(Object);
+
+	HandleToObject.erase(Object->GetHandle());
+
 	if ( std::shared_ptr<BravoActor> asActor = std::dynamic_pointer_cast<BravoActor>(Object) )
 	{
 		if ( std::shared_ptr<BravoLightManager> lightManager = GetLightManager() )
@@ -251,10 +281,10 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 		Actors.erase(std::remove(Actors.begin(), Actors.end(), asActor), Actors.end());
 	}
 
-	if ( std::shared_ptr<BravoTickable> asTiackble = std::dynamic_pointer_cast<BravoTickable>(Object) )
+	if ( std::shared_ptr<IBravoTickable> asTiackble = std::dynamic_pointer_cast<IBravoTickable>(Object) )
 		TickableObjects.erase(std::remove(TickableObjects.begin(), TickableObjects.end(), asTiackble), TickableObjects.end());
 
-	if ( std::shared_ptr<BravoRenderable> asRenderable = std::dynamic_pointer_cast<BravoRenderable>(Object) )
+	if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(Object) )
 		RenderableObjects.erase(std::remove(RenderableObjects.begin(), RenderableObjects.end(), asRenderable), RenderableObjects.end());
 
 	Objects.erase(std::remove(Objects.begin(), Objects.end(), Object), Objects.end());
@@ -268,4 +298,5 @@ void BravoEngine::OnDestroy()
 	LightManager.reset();
 	ViewportRenderTarget.reset();
 	HUD.reset();
+	SelectionManager.reset();
 }

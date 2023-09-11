@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 
-class BravoGameInstance : public BravoObject, public BravoTickable
+class BravoGameInstance : public BravoObject, public IBravoTickable
 {
 public:
 

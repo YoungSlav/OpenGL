@@ -11,11 +11,15 @@ enum EKeySubscriptionType : int32
 	Any = 0x07
 };
 
+typedef Delegate<void, bool, float> OnKeyInputSignature;
+typedef MulticastDelegate<const glm::vec2&, float> OnMouseScrollSignature;
+typedef MulticastDelegate<const glm::vec2&, const glm::vec2&, float> OnMouseMoveSignature;
+
 struct BravoKeySubscription
 {
 	int32 Key = 0;
 	int32 SubscribedType = EKeySubscriptionType::Any;
-	Delegate<void, bool, float> Callback;
+	OnKeyInputSignature Callback;
 
 	bool CheckType(EKeySubscriptionType Type)
 	{
@@ -27,16 +31,6 @@ struct BravoKeySubscription
 	}
 };
 
-struct BravoMouseScrollSubscription
-{
-	Delegate<void, const glm::vec2&, float> Callback;
-};
-
-struct BravoMouseMoveSubscription
-{
-	Delegate<void, const glm::vec2&, const glm::vec2&, float> Callback;
-};
-
 class BravoInput : public BravoObject
 {
 public:
@@ -45,11 +39,11 @@ public:
 	void ProcessInput(float DeltaTime);
 
 	bool GetKeyState(int32 Key) const;
+	const glm::vec2& GetMousePosition() const { return MousePos; }
 
 	void SubscribeKey(const BravoKeySubscription& NewSubscription);
-	void SubscribeMouseScroll(const BravoMouseScrollSubscription& Callback);
-	void SubscribeMousePosition(const BravoMouseMoveSubscription& Callback);
-
+	OnMouseScrollSignature OnMouseScrollDelegate;
+	OnMouseMoveSignature OnMouseMoveDelegate;
 
 	void UnSubscribeAll(std::shared_ptr<BravoObject> Owner);
 	void UnSubscribeKey(int32 Key, std::shared_ptr<BravoObject> Owner);
@@ -62,8 +56,7 @@ private:
 
 private:
 	std::vector<BravoKeySubscription> KeysSubscribers;
-	std::vector<BravoMouseScrollSubscription> MouseScrollSubscribers;
-	std::vector<BravoMouseMoveSubscription> MousePositionSubscribers;
+
 	std::map<int32, bool> KeyStates;
 
 	struct GLFWwindow* Window = nullptr;

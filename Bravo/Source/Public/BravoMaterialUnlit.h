@@ -15,6 +15,9 @@ public:
 	virtual void Use() override;
 	virtual void StopUsage() override;
 
+	void SetTexture(std::shared_ptr<class BravoTextureAsset> _Texture) { AlbedoTexture = _Texture; }
+	void SetColor(const glm::vec3& _Color) { AlbedoColor = _Color; }
+
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void OnDestroy() override;

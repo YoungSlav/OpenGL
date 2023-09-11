@@ -43,15 +43,6 @@ void BravoInput::SubscribeKey(const BravoKeySubscription& NewSubscription)
 	KeyStates.insert({NewSubscription.Key, bPressed});	
 }
 
-void BravoInput::SubscribeMouseScroll(const BravoMouseScrollSubscription& Callback)
-{
-	MouseScrollSubscribers.push_back(Callback);
-}
-void BravoInput::SubscribeMousePosition(const BravoMouseMoveSubscription& Callback)
-{
-	MousePositionSubscribers.push_back(Callback);
-}
-
 void BravoInput::UnSubscribeAll(std::shared_ptr<BravoObject> Owner)
 {
 	for ( int32 i = (int32)KeysSubscribers.size()-1; i >= 0; --i )
@@ -75,19 +66,11 @@ void BravoInput::UnSubscribeKey(int32 Key, std::shared_ptr<BravoObject> Owner)
 }
 void BravoInput::UnSubscribeMouseScroll(std::shared_ptr<BravoObject> Owner)
 {
-	for ( int32 i = (int32)MouseScrollSubscribers.size()-1; i >= 0; --i )
-	{
-		if ( MouseScrollSubscribers[i].Callback.IsBoundTo(Owner.get()) )
-			MouseScrollSubscribers.erase(MouseScrollSubscribers.begin()+i);
-	}
+	OnMouseScrollDelegate.RemoveObject(Owner.get());
 }
 void BravoInput::UnSubscribeMousePosition(std::shared_ptr<BravoObject> Owner)
 {
-	for ( int32 i = (int32)MousePositionSubscribers.size()-1; i >= 0; --i )
-	{
-		if ( MousePositionSubscribers[i].Callback.IsBoundTo(Owner.get()) )
-			MousePositionSubscribers.erase(MousePositionSubscribers.begin()+i);
-	}
+	OnMouseMoveDelegate.RemoveObject(Owner.get());
 }
 
 bool BravoInput::GetKeyState(int32 Key) const
@@ -137,15 +120,8 @@ void BravoInput::ProcessInput(float DeltaTime)
 		}
 	}
 
-	for ( auto it : MousePositionSubscribers )
-	{
-		it.Callback.Execute(MousePos, DeltaMouseMove, DeltaTime);
-	}
-
-	for ( auto it : MouseScrollSubscribers )
-	{
-		it.Callback.Execute(DeltaMouseScroll, DeltaTime);
-	}
+	OnMouseMoveDelegate.Broadcast(MousePos, DeltaMouseMove, DeltaTime);
+	OnMouseScrollDelegate.Broadcast(DeltaMouseScroll, DeltaTime);
 
 	DeltaMouseScroll = glm::vec2(0.0);
 	DeltaMouseMove = glm::vec2(0.0);
