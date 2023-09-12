@@ -5,7 +5,7 @@
 struct BravoSelection
 {
 	glm::vec2 MousePosition = glm::vec2(-1.0f,-1.0f);
-	std::shared_ptr<BravoObject> Object = nullptr;
+	std::shared_ptr<class IBravoRenderable> Object = nullptr;
 	int32 InstanceIndex = 0;
 };
 

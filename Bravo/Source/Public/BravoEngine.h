@@ -63,7 +63,7 @@ public:
 	void GameLoop();
 	void StopGame();
 	
-	void RenderSelection() const;
+	void RenderSelectionIDs() const;
 	void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const;
 	
 	void RegisterObject(std::shared_ptr<BravoObject> Object);

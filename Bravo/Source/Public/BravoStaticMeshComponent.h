@@ -38,7 +38,9 @@ public:
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Render() override;
-	virtual void RenderSelection() override;
+	virtual void RenderSelectionID() override;
+	virtual void RenderOutline_1stPass() override;
+	virtual void RenderOutline_2ndPass() override;
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) override;
 	virtual void OnDestroy() override;
 
@@ -50,5 +52,7 @@ private:
 	GLuint instanceVBO = 0;
 	std::shared_ptr<BravoStaticMeshAsset> Mesh = nullptr;
 	std::shared_ptr<class BravoMaterial> Material = nullptr;
-	std::shared_ptr<class BravoShaderAsset> SelectionShader = nullptr;
+	std::shared_ptr<class BravoShaderAsset> SelectionIDShader = nullptr;
+	std::shared_ptr<class BravoShaderAsset> OutlineShader = nullptr;
+	std::shared_ptr<class BravoShaderAsset> OutlineMaskShader = nullptr;
 };

@@ -128,8 +128,12 @@
     <ClInclude Include="Source\ThirdParty\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Shaders\MeshSelection.frag" />
-    <None Include="Source\Shaders\MeshSelection.vert" />
+    <None Include="Source\Shaders\MeshOutline.frag" />
+    <None Include="Source\Shaders\MeshOutline.vert" />
+    <None Include="Source\Shaders\MeshOutlineMask.frag" />
+    <None Include="Source\Shaders\MeshOutlineMask.vert" />
+    <None Include="Source\Shaders\MeshSelectionID.frag" />
+    <None Include="Source\Shaders\MeshSelectionID.vert" />
     <None Include="Source\Shaders\Unlit.frag" />
     <None Include="Source\Shaders\Unlit.vert" />
     <None Include="Source\Shaders\PBRModel.frag" />

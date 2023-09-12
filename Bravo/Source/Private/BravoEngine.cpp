@@ -116,11 +116,40 @@ void BravoEngine::UpdateViewport()
 	{
 		viewportRT->Use();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glStencilMask(0x00);
+		
+		
+
 		for ( auto& it : RenderableObjects )
 		{
 			it->Render();
 		}
+
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+		for ( auto& it : RenderableObjects )
+		{
+			it->RenderOutline_1stPass();
+		}
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		for ( auto& it : RenderableObjects )
+		{
+			it->RenderOutline_2ndPass();
+		}
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+
+		glDisable(GL_DEPTH_TEST);
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);   
+		glEnable(GL_DEPTH_TEST); 
 
 		viewportRT->StopUsage();
 	}
@@ -132,11 +161,9 @@ void BravoEngine::UpdateViewport()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, ViewportSize.x, ViewportSize.y);
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		viewportRT->Render();
 	}
-
 	HUD->Render();
 	glEnable(GL_DEPTH_TEST);
 
@@ -144,11 +171,11 @@ void BravoEngine::UpdateViewport()
 	glfwPollEvents();
 }
 
-void BravoEngine::RenderSelection() const
+void BravoEngine::RenderSelectionIDs() const
 {
 	for ( auto& it : RenderableObjects )
 	{
-		it->RenderSelection();
+		it->RenderSelectionID();
 	}
 }
 

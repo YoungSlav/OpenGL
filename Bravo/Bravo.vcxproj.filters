@@ -112,6 +112,9 @@
     <Filter Include="Shaders\Selection">
       <UniqueIdentifier>{7cff3cb1-50bd-4fa1-bddc-1739f4f603ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Outline">
+      <UniqueIdentifier>{f5768bb3-f2b8-4a5c-86b0-70f5420e5888}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -496,11 +499,23 @@
     <None Include="Source\Shaders\PBRModel.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\MeshSelection.vert">
+    <None Include="Source\Shaders\MeshSelectionID.vert">
       <Filter>Shaders\Selection</Filter>
     </None>
-    <None Include="Source\Shaders\MeshSelection.frag">
+    <None Include="Source\Shaders\MeshSelectionID.frag">
       <Filter>Shaders\Selection</Filter>
+    </None>
+    <None Include="Source\Shaders\MeshOutline.frag">
+      <Filter>Shaders\Outline</Filter>
+    </None>
+    <None Include="Source\Shaders\MeshOutline.vert">
+      <Filter>Shaders\Outline</Filter>
+    </None>
+    <None Include="Source\Shaders\MeshOutlineMask.frag">
+      <Filter>Shaders\Outline</Filter>
+    </None>
+    <None Include="Source\Shaders\MeshOutlineMask.vert">
+      <Filter>Shaders\Outline</Filter>
     </None>
   </ItemGroup>
 </Project>

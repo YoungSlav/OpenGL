@@ -16,7 +16,9 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 
 	if (auto AssetManager = Engine->GetAssetManager())
 	{
-		SelectionShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshSelectionShader", BravoShaderLoadingParams("Shaders\\MeshSelection"));
+		SelectionIDShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshSelectionShader", BravoShaderLoadingParams("Shaders\\MeshSelectionID"));
+		OutlineShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshOutlineShader", BravoShaderLoadingParams("Shaders\\MeshOutline"));
+		OutlineMaskShader = AssetManager->FindOrLoad<BravoShaderAsset>("OutlineMaskShader", BravoShaderLoadingParams("Shaders\\MeshOutlineMask"));
 	}
 
 	AddInstance(BravoMeshInstance(BravoTransform()), false);
@@ -176,21 +178,15 @@ void BravoStaticMeshComponent::Render()
 	if ( !EnsureReady() || !Material || !Material->EnsureReady() )
 		return;
 
-	glm::mat4 CameraProjection;
-	glm::mat4 CameraView;
-	glm::vec3 CameraLocation;
-	if ( std::shared_ptr<BravoCamera> camera = Engine->GetCamera() )
-	{
-		CameraProjection = camera->GetProjectionMatrix();
-		CameraView = camera->GetViewMatrix();
-		CameraLocation = camera->GetLocation();
-	}
-	else
-	{
+	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
+	if ( !camera )
 		return;
-	}
 
-	glm::mat4 model = GetTransform_World().GetTransformMatrix();
+	const glm::mat4 CameraProjection = camera->GetProjectionMatrix();
+	const glm::mat4 CameraView = camera->GetViewMatrix();
+	const glm::vec3 CameraLocation = camera->GetLocation();
+	
+	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
 	Material->Use();
 		Material->GetShader()->SetMatrix4d("projection", CameraProjection);
@@ -209,42 +205,116 @@ void BravoStaticMeshComponent::Render()
 	Material->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderSelection()
+void BravoStaticMeshComponent::RenderSelectionID()
 {
 	if ( !Instances.size() )
 		return;
 
-	if ( !EnsureReady() || !SelectionShader || !SelectionShader->EnsureReady() )
+	if ( !EnsureReady() || !SelectionIDShader || !SelectionIDShader->EnsureReady() )
 		return;
 
-	glm::mat4 CameraProjection;
-	glm::mat4 CameraView;
-	glm::vec3 CameraLocation;
-	float MaxDrawingDistance;
-	if ( std::shared_ptr<BravoCamera> camera = Engine->GetCamera() )
-	{
-		CameraProjection = camera->GetProjectionMatrix();
-		CameraView = camera->GetViewMatrix();
-		CameraLocation = camera->GetLocation();
-		MaxDrawingDistance = camera->GetMaxDrawingDistance();
-	}
-	else
-	{
+	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
+	if ( !camera )
 		return;
-	}
+
+	glm::mat4 CameraProjection = camera->GetProjectionMatrix();
+	glm::mat4 CameraView = camera->GetViewMatrix();
+	glm::vec3 CameraLocation = camera->GetLocation();
 
 	glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
-	glm::mat4 tranform = CameraProjection * CameraView * model;
-	SelectionShader->Use();
-		SelectionShader->SetMatrix4d("tranform", tranform);
-		SelectionShader->SetInt("ObjectHandle", GetHandle());
+	glm::mat4 ModelTranform = CameraProjection * CameraView * model;
+	SelectionIDShader->Use();
+		SelectionIDShader->SetMatrix4d("transform", ModelTranform);
+		SelectionIDShader->SetInt("ObjectHandle", GetHandle());
 		
 		glBindVertexArray(VAO);
 		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
 		glBindVertexArray(0);
 
-	SelectionShader->StopUsage();
+	SelectionIDShader->StopUsage();
+}
+
+void BravoStaticMeshComponent::RenderOutline_1stPass()
+{
+	if ( !GetOutlined() )
+		return;
+
+	if ( !Instances.size() )
+		return;
+
+	if ( !EnsureReady() || !OutlineMaskShader || !OutlineMaskShader->EnsureReady() )
+		return;
+
+	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
+	if ( !camera )
+		return;
+
+	glm::mat4 CameraProjection = camera->GetProjectionMatrix();
+	glm::mat4 CameraView = camera->GetViewMatrix();
+	
+
+	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
+	const std::vector<int32> OutlinedIDs = GetOutlinedIDs();
+	const glm::mat4 ModelTranform = CameraProjection * CameraView * model;
+	OutlineMaskShader->Use();
+		for ( const int32& OulineInstance : OutlinedIDs )
+		{
+			if ( Instances.size() <= OulineInstance || OulineInstance < 0  )
+				continue;
+
+			const glm::mat4 InstanceTransorm = ModelTranform * Instances[OulineInstance].TransfromMatrix, OutlineScale;
+			
+			OutlineMaskShader->SetMatrix4d("transform", InstanceTransorm);
+		
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+	OutlineMaskShader->StopUsage();
+}
+
+void BravoStaticMeshComponent::RenderOutline_2ndPass()
+{
+	if ( !GetOutlined() )
+		return;
+
+	if ( !Instances.size() )
+		return;
+
+	if ( !EnsureReady() || !OutlineShader || !OutlineShader->EnsureReady() )
+		return;
+
+	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
+	if ( !camera )
+		return;
+
+	glm::mat4 CameraProjection = camera->GetProjectionMatrix();
+	glm::mat4 CameraView = camera->GetViewMatrix();
+	
+
+	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
+	const std::vector<int32> OutlinedIDs = GetOutlinedIDs();
+	const glm::mat4 ModelTranform = CameraProjection * CameraView * model;
+	const glm::vec2 ViewportSize = (glm::vec2)(Engine->GetViewportSize());
+	const glm::vec3 OutlineScale = glm::vec3(1.0f) + glm::vec3(20.0f / ViewportSize.y);
+	OutlineShader->Use();
+		OutlineShader->SetVector3d("OutlineColor", GetOutlineColor());
+		for ( const int32& OulineInstance : OutlinedIDs )
+		{
+			if ( Instances.size() <= OulineInstance || OulineInstance < 0  )
+				continue;
+
+			const glm::mat4 InstanceTransorm = glm::scale(ModelTranform * Instances[OulineInstance].TransfromMatrix, OutlineScale);
+			
+			OutlineShader->SetMatrix4d("transform", InstanceTransorm);
+		
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+	OutlineShader->StopUsage();
+
 }
 
 void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> _Shader)
