@@ -12,10 +12,9 @@
 // TODO:
 /*
 *	GRAPHICS:
-* fix point shadows?
 * create some cool looking scene. kinda tired and bored looking at fucking cubes
 * billboarding
-* outline shader using stencil buffer
+* improve outline shader
 * bloom
 * proper anti aliasing
 * landscape rendering (height maps)
@@ -26,13 +25,13 @@
 * 
 * 
 *	ENGINE:
+* refactor render target and create separete object for post proccess.
 * Multiline text 
 * Widget clicking 
 * Edit text 
 * Buttons 
 * Json integration 
 * Objects serialization deserialization 
-* Pixel clicking actor selection 
 * Outline shader?
 * Gizmo for actor moving 
 * Physics engine integration (reactphysics3d)
