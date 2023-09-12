@@ -25,8 +25,8 @@ public:
 protected:
 	virtual void Render() = 0;
 	virtual void RenderSelectionID() {};
-	virtual void RenderOutline_1stPass() {};
-	virtual void RenderOutline_2ndPass() {};
+	virtual void RenderOutlineStencilMask() {};
+	virtual void RenderOutline() {};
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
 	
 private:

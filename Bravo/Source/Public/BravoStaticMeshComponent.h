@@ -39,8 +39,8 @@ protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Render() override;
 	virtual void RenderSelectionID() override;
-	virtual void RenderOutline_1stPass() override;
-	virtual void RenderOutline_2ndPass() override;
+	virtual void RenderOutlineStencilMask() override;
+	virtual void RenderOutline() override;
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) override;
 	virtual void OnDestroy() override;
 

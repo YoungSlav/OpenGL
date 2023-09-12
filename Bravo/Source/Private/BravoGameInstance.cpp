@@ -86,8 +86,8 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	
 	
-	//SpawnDirLights();
-	SpawnPointLights();
+	SpawnDirLights();
+	//SpawnPointLights();
 	//SpawnSpotLights();
 	
 	SpawnTestInstances();

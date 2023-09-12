@@ -235,7 +235,7 @@ void BravoStaticMeshComponent::RenderSelectionID()
 	SelectionIDShader->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderOutline_1stPass()
+void BravoStaticMeshComponent::RenderOutlineStencilMask()
 {
 	if ( !GetOutlined() )
 		return;
@@ -274,7 +274,7 @@ void BravoStaticMeshComponent::RenderOutline_1stPass()
 	OutlineMaskShader->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderOutline_2ndPass()
+void BravoStaticMeshComponent::RenderOutline()
 {
 	if ( !GetOutlined() )
 		return;
@@ -297,7 +297,7 @@ void BravoStaticMeshComponent::RenderOutline_2ndPass()
 	const std::vector<int32> OutlinedIDs = GetOutlinedIDs();
 	const glm::mat4 ModelTranform = CameraProjection * CameraView * model;
 	const glm::vec2 ViewportSize = (glm::vec2)(Engine->GetViewportSize());
-	const glm::vec3 OutlineScale = glm::vec3(1.0f) + glm::vec3(20.0f / ViewportSize.y);
+	const glm::vec3 OutlineScale = glm::vec3(1.1f);
 	OutlineShader->Use();
 		OutlineShader->SetVector3d("OutlineColor", GetOutlineColor());
 		for ( const int32& OulineInstance : OutlinedIDs )

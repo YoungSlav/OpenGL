@@ -128,27 +128,25 @@ void BravoEngine::UpdateViewport()
 
 		glEnable(GL_STENCIL_TEST);
 		glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+		glStencilMask(0xFF);
 
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
-		for ( auto& it : RenderableObjects )
-		{
-			it->RenderOutline_1stPass();
-		}
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);
-		for ( auto& it : RenderableObjects )
-		{
-			it->RenderOutline_2ndPass();
-		}
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 0, 0xFF);
+
 		glEnable(GL_DEPTH_TEST);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		for ( auto& it : RenderableObjects )
+		{
+			it->RenderOutlineStencilMask();
+		}
 
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glDisable(GL_DEPTH_TEST);
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);   
+		for ( auto& it : RenderableObjects )
+		{
+			it->RenderOutline();
+		}
+		
+
+		glDisable(GL_STENCIL_TEST);
 		glEnable(GL_DEPTH_TEST); 
 
 		viewportRT->StopUsage();
