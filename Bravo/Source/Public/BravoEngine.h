@@ -104,7 +104,7 @@ private:
 	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);
 
 private:
-	glm::ivec2 ViewportSize = glm::vec2(1024.0f, 768.0f);
+	glm::ivec2 ViewportSize = glm::ivec2(1024, 768);
 
 	struct GLFWwindow* Window = nullptr;
 
