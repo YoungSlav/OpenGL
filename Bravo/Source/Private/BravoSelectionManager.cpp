@@ -43,7 +43,7 @@ void BravoSelectionManager::OnMouseClicked(bool ButtonState, float DeltaTime)
 {
 	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
-		SelectionRenderTarget->Use();
+		SelectionRenderTarget->Bind();
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			Engine->RenderSelectionIDs();
@@ -59,17 +59,16 @@ void BravoSelectionManager::OnMouseClicked(bool ButtonState, float DeltaTime)
 
 			BravoSelection selection;
 			BravoHandle handle = (BravoHandle)(pixelColor[0]);
-			selection.MousePosition = MousePosition;
-			auto Object = Engine->FindObjectByHandle(handle);
-			selection.Object = std::dynamic_pointer_cast<IBravoRenderable>(Object);
-			selection.InstanceIndex = (int32)(pixelColor[1]);
-			if ( selection.Object != nullptr )
+			if ( auto Object = Engine->FindObjectByHandle(handle) )
 			{
-				selection.Object->SetOutlined(!selection.Object->GetOutlined());
-				selection.Object->SetOutlinedIDs({selection.InstanceIndex});
-				OnObjectSelected.Broadcast(selection);
+				selection.Object = std::dynamic_pointer_cast<IBravoRenderable>(Object);
+				selection.InstanceIndex = (int32)(pixelColor[1]);
+				if ( selection.Object != nullptr )
+				{
+					OnObjectSelected.Broadcast(selection);
+				}
 			}
 
-		SelectionRenderTarget->StopUsage();
+		SelectionRenderTarget->Unbind();
 	}
 }

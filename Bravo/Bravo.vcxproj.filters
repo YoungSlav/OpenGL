@@ -262,6 +262,9 @@
     <ClCompile Include="Source\Private\BravoSelectionManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoOutlineManager.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -428,6 +431,9 @@
     <ClInclude Include="Source\Public\BravoSelectionManager.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoOutlineManager.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\PhongModel.frag">
@@ -505,16 +511,16 @@
     <None Include="Source\Shaders\MeshSelectionID.frag">
       <Filter>Shaders\Selection</Filter>
     </None>
-    <None Include="Source\Shaders\MeshOutline.frag">
-      <Filter>Shaders\Outline</Filter>
-    </None>
-    <None Include="Source\Shaders\MeshOutline.vert">
-      <Filter>Shaders\Outline</Filter>
-    </None>
     <None Include="Source\Shaders\MeshOutlineMask.frag">
       <Filter>Shaders\Outline</Filter>
     </None>
     <None Include="Source\Shaders\MeshOutlineMask.vert">
+      <Filter>Shaders\Outline</Filter>
+    </None>
+    <None Include="Source\Shaders\OutlinePostProccess.frag">
+      <Filter>Shaders\Outline</Filter>
+    </None>
+    <None Include="Source\Shaders\OutlinePostProccess.vert">
       <Filter>Shaders\Outline</Filter>
     </None>
   </ItemGroup>

@@ -39,8 +39,7 @@ protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Render() override;
 	virtual void RenderSelectionID() override;
-	virtual void RenderOutlineStencilMask() override;
-	virtual void RenderOutline() override;
+	virtual void RenderOutlineMask(const glm::vec3& Color, int32 InstanceID) override;
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) override;
 	virtual void OnDestroy() override;
 
@@ -53,6 +52,5 @@ private:
 	std::shared_ptr<BravoStaticMeshAsset> Mesh = nullptr;
 	std::shared_ptr<class BravoMaterial> Material = nullptr;
 	std::shared_ptr<class BravoShaderAsset> SelectionIDShader = nullptr;
-	std::shared_ptr<class BravoShaderAsset> OutlineShader = nullptr;
 	std::shared_ptr<class BravoShaderAsset> OutlineMaskShader = nullptr;
 };

@@ -17,7 +17,6 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 	if (auto AssetManager = Engine->GetAssetManager())
 	{
 		SelectionIDShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshSelectionShader", BravoShaderLoadingParams("Shaders\\MeshSelectionID"));
-		OutlineShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshOutlineShader", BravoShaderLoadingParams("Shaders\\MeshOutline"));
 		OutlineMaskShader = AssetManager->FindOrLoad<BravoShaderAsset>("OutlineMaskShader", BravoShaderLoadingParams("Shaders\\MeshOutlineMask"));
 	}
 
@@ -235,15 +234,15 @@ void BravoStaticMeshComponent::RenderSelectionID()
 	SelectionIDShader->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderOutlineStencilMask()
+void BravoStaticMeshComponent::RenderOutlineMask(const glm::vec3& Color, int32 InstanceID)
 {
-	if ( !GetOutlined() )
-		return;
-
 	if ( !Instances.size() )
 		return;
 
 	if ( !EnsureReady() || !OutlineMaskShader || !OutlineMaskShader->EnsureReady() )
+		return;
+
+	if ( Instances.size() <= InstanceID || InstanceID < 0  )
 		return;
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -255,66 +254,17 @@ void BravoStaticMeshComponent::RenderOutlineStencilMask()
 	
 
 	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
-	const std::vector<int32> OutlinedIDs = GetOutlinedIDs();
-	const glm::mat4 ModelTranform = CameraProjection * CameraView * model;
+	const glm::mat4 InstanceTransorm = CameraProjection * CameraView * model * Instances[InstanceID].TransfromMatrix;
 	OutlineMaskShader->Use();
-		for ( const int32& OulineInstance : OutlinedIDs )
-		{
-			if ( Instances.size() <= OulineInstance || OulineInstance < 0  )
-				continue;
-
-			const glm::mat4 InstanceTransorm = ModelTranform * Instances[OulineInstance].TransfromMatrix, OutlineScale;
-			
-			OutlineMaskShader->SetMatrix4d("transform", InstanceTransorm);
 		
-			glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
-		}
+		OutlineMaskShader->SetVector3d("OutlineColor", Color);
+		OutlineMaskShader->SetMatrix4d("transform", InstanceTransorm);
+		
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+		
 	OutlineMaskShader->StopUsage();
-}
-
-void BravoStaticMeshComponent::RenderOutline()
-{
-	if ( !GetOutlined() )
-		return;
-
-	if ( !Instances.size() )
-		return;
-
-	if ( !EnsureReady() || !OutlineShader || !OutlineShader->EnsureReady() )
-		return;
-
-	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
-	if ( !camera )
-		return;
-
-	glm::mat4 CameraProjection = camera->GetProjectionMatrix();
-	glm::mat4 CameraView = camera->GetViewMatrix();
-	
-
-	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
-	const std::vector<int32> OutlinedIDs = GetOutlinedIDs();
-	const glm::mat4 ModelTranform = CameraProjection * CameraView * model;
-	const glm::vec2 ViewportSize = (glm::vec2)(Engine->GetViewportSize());
-	const glm::vec3 OutlineScale = glm::vec3(1.1f);
-	OutlineShader->Use();
-		OutlineShader->SetVector3d("OutlineColor", GetOutlineColor());
-		for ( const int32& OulineInstance : OutlinedIDs )
-		{
-			if ( Instances.size() <= OulineInstance || OulineInstance < 0  )
-				continue;
-
-			const glm::mat4 InstanceTransorm = glm::scale(ModelTranform * Instances[OulineInstance].TransfromMatrix, OutlineScale);
-			
-			OutlineShader->SetMatrix4d("transform", InstanceTransorm);
-		
-			glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
-		}
-	OutlineShader->StopUsage();
-
 }
 
 void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> _Shader)

@@ -10,17 +10,20 @@ public:
 		GLint _InternalFormat,
 		GLenum _Format,
 		GLenum _Type,
-		bool _DepthStencil,
+		bool _DepthComponent,
 		std::shared_ptr<class BravoShaderAsset> _Shader = nullptr);
 
 	void Resize(const glm::ivec2& Size);
 	void Clean();
 
+	uint32 GetColorTexture() const { return TextureColorBuffer; }
+	uint32 GetDepthTexture() const { return TextureDepthBuffer; }
+
 	// TODO: move render out of here. the owner of render target is responsible for rendering it, or do what ever with it
 	void Render();
 
-	void Use();
-	void StopUsage();
+	void Bind();
+	void Unbind();
 
 protected:
 
@@ -28,10 +31,11 @@ protected:
 
 private:
 
-	uint32 FBO = 0, RBO = 0;
+	uint32 FBO = 0;
 	uint32 PlaneVAO = 0, PlaneVBO = 0;
 
 	uint32 TextureColorBuffer = 0;
+	uint32 TextureDepthBuffer = 0;
 
 	glm::ivec2 Size;
 
@@ -39,5 +43,5 @@ private:
 	GLint InternalFormat;
 	GLenum Format;
 	GLenum Type;
-	bool DepthStencil;
+	bool DepthComponent = false;
 };

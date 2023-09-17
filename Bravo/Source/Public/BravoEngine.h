@@ -25,7 +25,8 @@
 * 
 * 
 *	ENGINE:
-* refactor render target and create separete object for post proccess.
+* move rendering stuff into separate class
+* refactor render target and create separate object for post process.
 * Multiline text 
 * Widget clicking 
 * Edit text 
@@ -78,6 +79,11 @@ public:
 	inline std::shared_ptr<class BravoHUD> GetHUD() const { return HUD; }
 	inline std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
 	inline const glm::ivec2& GetViewportSize() const { return ViewportSize; }
+	inline std::shared_ptr<class BravoSelectionManager> GetSelectionManager() const { return SelectionManager; }
+
+	// TODO: get rid of this nasty hack. implement propper render buffer management
+	void BindVieportRenderBuffer();
+
 
 	static std::shared_ptr<BravoEngine> GetEngine();
 
@@ -115,6 +121,7 @@ private:
 	std::shared_ptr<class BravoRenderTarget> ViewportRenderTarget;
 	std::shared_ptr<class BravoHUD> HUD;
 	std::shared_ptr<class BravoSelectionManager> SelectionManager;
+	std::shared_ptr<class BravoOutlineManager> OutlineManager;
 
 
 	std::weak_ptr<class BravoCamera> Camera;

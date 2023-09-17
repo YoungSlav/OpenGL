@@ -8,6 +8,7 @@
 #include "BravoHUD.h"
 #include "IBravoRenderable.h"
 #include "BravoSelectionManager.h"
+#include "BravoOutlineManager.h"
 
 namespace GlobalEngine
 {
@@ -19,6 +20,11 @@ namespace GlobalEngine
 		return _Engine.lock();
 	}
 };
+
+void BravoEngine::BindVieportRenderBuffer()
+{
+	ViewportRenderTarget->Bind();
+}
 
 std::shared_ptr<BravoEngine> BravoEngine::GetEngine()
 {
@@ -45,6 +51,8 @@ bool BravoEngine::Initialize_Internal()
 
 
 	SelectionManager = NewObject<BravoSelectionManager>("SelectionManager");
+
+	OutlineManager = NewObject<BravoOutlineManager>("OutlineManager");
 
 	return true;
 }
@@ -114,42 +122,18 @@ void BravoEngine::UpdateViewport()
 	
 	// we want to draw into PP texture first
 	{
-		viewportRT->Use();
+		viewportRT->Bind();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		glStencilMask(0x00);
-		
-		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for ( auto& it : RenderableObjects )
 		{
 			it->Render();
 		}
 
-		glEnable(GL_STENCIL_TEST);
-		glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
-		glStencilMask(0xFF);
+		OutlineManager->RenderSelections();
 
-
-		glEnable(GL_DEPTH_TEST);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		for ( auto& it : RenderableObjects )
-		{
-			it->RenderOutlineStencilMask();
-		}
-
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glDisable(GL_DEPTH_TEST);
-		for ( auto& it : RenderableObjects )
-		{
-			it->RenderOutline();
-		}
-		
-
-		glDisable(GL_STENCIL_TEST);
-		glEnable(GL_DEPTH_TEST); 
-
-		viewportRT->StopUsage();
+		viewportRT->Unbind();
 	}
 
 
@@ -324,4 +308,5 @@ void BravoEngine::OnDestroy()
 	ViewportRenderTarget.reset();
 	HUD.reset();
 	SelectionManager.reset();
+	OutlineManager.reset();
 }
