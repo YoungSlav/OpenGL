@@ -234,7 +234,7 @@ void BravoStaticMeshComponent::RenderSelectionID()
 	SelectionIDShader->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderOutlineMask(const glm::vec3& Color, int32 InstanceID)
+void BravoStaticMeshComponent::RenderOutlineMask(int32 InstanceID)
 {
 	if ( !Instances.size() )
 		return;
@@ -257,7 +257,7 @@ void BravoStaticMeshComponent::RenderOutlineMask(const glm::vec3& Color, int32 I
 	const glm::mat4 InstanceTransorm = CameraProjection * CameraView * model * Instances[InstanceID].TransfromMatrix;
 	OutlineMaskShader->Use();
 		
-		OutlineMaskShader->SetVector3d("OutlineColor", Color);
+		OutlineMaskShader->SetVector1d("OutlineColor", (float)(GetHandle()));
 		OutlineMaskShader->SetMatrix4d("transform", InstanceTransorm);
 		
 		glBindVertexArray(VAO);

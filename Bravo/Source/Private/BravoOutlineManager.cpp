@@ -15,7 +15,7 @@ bool BravoOutlineManager::Initialize_Internal()
 
 	glm::ivec2 Size = Engine->GetViewportSize();
 	OutlineRenderTarget = NewObject<BravoRenderTarget>("OutlineRenderTarget");
-	OutlineRenderTarget->Setup(Size, GL_RGB32F, GL_RGB, GL_FLOAT, true);
+	OutlineRenderTarget->Setup(Size, GL_R32F, GL_RED, GL_FLOAT, true);
 
 	Engine->OnResizeDelegate.AddSP(Self<BravoOutlineManager>(), &BravoOutlineManager::OnViewportResized);
 
@@ -96,7 +96,10 @@ void BravoOutlineManager::RenderSelections()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for ( const BravoSelection& Selection : ActiveSelections )
 	{
-		Selection.Object->RenderOutlineMask(glm::vec3(1.0f, 1.0f, 0.0f), Selection.InstanceIndex);
+		if ( std::shared_ptr<BravoObject> asObj = std::dynamic_pointer_cast<BravoObject>(Selection.Object) )
+		{
+			Selection.Object->RenderOutlineMask(Selection.InstanceIndex);
+		}
 	}
 	OutlineRenderTarget->Unbind();
 
@@ -106,21 +109,13 @@ void BravoOutlineManager::RenderSelections()
 		glActiveTexture(GL_TEXTURE0 + OutlineColorMask);
 		glBindTexture(GL_TEXTURE_2D, OutlineRenderTarget->GetColorTexture());
 		OutlinePostProccessShader->SetInt("OutlineColorMask", OutlineColorMask);
-
-		int32 OutlineDepthMask = BravoTextureUnitManager::BindTexture();
-		glActiveTexture(GL_TEXTURE0 + OutlineDepthMask);
-		glBindTexture(GL_TEXTURE_2D, OutlineRenderTarget->GetDepthTexture());
-		OutlinePostProccessShader->SetInt("OutlineDepthMask", OutlineDepthMask);
-
-		OutlinePostProccessShader->SetVector1d("nearPlane", camera->GetMinDrawingDistance());
-		OutlinePostProccessShader->SetVector1d("farPlane", camera->GetMaxDrawingDistance());
+		OutlinePostProccessShader->SetVector3d("OutlineColor", OutlineColor);
 				
 		glBindVertexArray(PlaneVAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
 		BravoTextureUnitManager::UnbindTexture(OutlineColorMask);
-		BravoTextureUnitManager::UnbindTexture(OutlineDepthMask);
 
 	OutlinePostProccessShader->StopUsage();
 }

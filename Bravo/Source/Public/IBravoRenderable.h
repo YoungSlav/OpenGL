@@ -14,7 +14,7 @@ public:
 
 	virtual void Render() = 0;
 	virtual void RenderSelectionID() {};
-	virtual void RenderOutlineMask(const glm::vec3& Color, int32 InstanceID) {};
+	virtual void RenderOutlineMask(int32 InstanceID) {};
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
 	
 private:

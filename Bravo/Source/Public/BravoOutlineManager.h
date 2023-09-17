@@ -22,4 +22,6 @@ private:
 
 	uint32 PlaneVAO = 0, PlaneVBO = 0;
 	std::shared_ptr<class BravoShaderAsset> OutlinePostProccessShader = nullptr;
+
+	glm::vec3 OutlineColor = glm::vec3(1.0f, 1.0f, 0.0f);
 };
