@@ -4,6 +4,7 @@
 #include "BravoShaderAsset.h"
 #include "BravoTextureAsset.h"
 #include "BravoTextureUnitManager.h"
+#include "BravoEngine.h"
 
 void BravoRenderTarget::Setup(
 	const glm::ivec2& _Size,
@@ -45,7 +46,7 @@ void BravoRenderTarget::Setup(
 
 	// framebuffer configuration
 	glGenFramebuffers(1, &FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+    Engine->PushFramebuffer(FBO, Size);
 	
 	// create a color attachment texture
 	glGenTextures(1, &TextureColorBuffer);
@@ -74,7 +75,7 @@ void BravoRenderTarget::Setup(
 	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         Log::LogMessage("Framebuffer is not complete!", ELog::Error);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    Engine->PopFramebuffer();
 }
 
 void BravoRenderTarget::Resize(const glm::ivec2& InSize)
@@ -95,15 +96,12 @@ void BravoRenderTarget::Clean()
 
 void BravoRenderTarget::Bind()
 {
-	glViewport(0, 0, Size.x, Size.y);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	Engine->PushFramebuffer(FBO, Size);
 }
 
-// TODO: fix this shit
-#include "BravoEngine.h"
 void BravoRenderTarget::Unbind()
 {
-	Engine->BindVieportRenderBuffer();
+	Engine->PopFramebuffer();
 }
 
 void BravoRenderTarget::OnDestroy()

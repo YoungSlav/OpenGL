@@ -9,7 +9,7 @@ class BravoSkyboxActor : public BravoActor, public IBravoRenderable
 public:
 	BravoSkyboxActor() :
 		BravoActor(),
-		IBravoRenderable(INT_MAX-1)
+		IBravoRenderable(ERenderPriority::Overlay)
 	{
 	}
 

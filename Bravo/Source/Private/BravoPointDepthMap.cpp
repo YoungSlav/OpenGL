@@ -40,11 +40,11 @@ void BravoPointDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize
 		constexpr float bordercolor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
+		Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0);
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		Engine->PopFramebuffer();
 }
 
 void BravoPointDepthMap::ClearGPUData()
@@ -68,8 +68,7 @@ void BravoPointDepthMap::Render(const std::vector<BravoPointLightShaderData>& Ca
 		return;
 
 	DepthMapShader->Use();
-	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
-		glViewport(0, 0, Size, Size);
+	Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		for ( size_t cIdx = 0; cIdx < CastersData.size(); ++cIdx )
@@ -106,7 +105,7 @@ void BravoPointDepthMap::Render(const std::vector<BravoPointLightShaderData>& Ca
 			Engine->RenderDepthMap(DepthMapShader);
 		}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Engine->PopFramebuffer();
 	DepthMapShader->StopUsage();
 }
 

@@ -21,9 +21,30 @@ namespace GlobalEngine
 	}
 };
 
-void BravoEngine::BindVieportRenderBuffer()
+void BravoEngine::PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size)
 {
-	ViewportRenderTarget->Bind();
+	if ( FramebufferStack.empty() || std::get<0>(FramebufferStack.top()) != Framebuffer )
+	{
+		FramebufferStack.push({Framebuffer, Size});
+		glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+		glViewport(0, 0, Size.x, Size.y);
+	}
+}
+void BravoEngine::PopFramebuffer()
+{
+	if ( FramebufferStack.empty() )
+	{
+		return;
+	}
+	
+	FramebufferStack.pop();
+	if ( !FramebufferStack.empty() )
+	{
+		uint32 Framebuffer = std::get<0>(FramebufferStack.top());
+		const glm::vec2& Size = std::get<1>(FramebufferStack.top());
+		glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+		glViewport(0, 0, Size.x, Size.y);
+	}
 }
 
 std::shared_ptr<BravoEngine> BravoEngine::GetEngine()
@@ -140,11 +161,11 @@ void BravoEngine::UpdateViewport()
 	glDisable(GL_DEPTH_TEST);
 	// render everything on screen
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, ViewportSize.x, ViewportSize.y);
+		PushFramebuffer(0, ViewportSize);
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		viewportRT->Render();
+		PopFramebuffer();
 	}
 	HUD->Render();
 	glEnable(GL_DEPTH_TEST);
@@ -173,8 +194,8 @@ void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader)
 void BravoEngine::Resize(const glm::ivec2& InViewportSize)
 {
 	ViewportSize = InViewportSize;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, ViewportSize.x, ViewportSize.y);
+	PushFramebuffer(0, ViewportSize);
+	PopFramebuffer();
 	ViewportRenderTarget->Resize(ViewportSize*2);	
 	
 
@@ -257,7 +278,8 @@ void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 	if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(newObject) )
 	{
 		RenderableObjects.push_back(asRenderable);
-		sort(RenderableObjects.begin(), RenderableObjects.end(), 
+		
+		RenderableObjects.sort(
 			[](std::shared_ptr<IBravoRenderable> left, std::shared_ptr<IBravoRenderable> right) -> bool
 			{ 
 				return left->GetRenderPriority() < right->GetRenderPriority(); 

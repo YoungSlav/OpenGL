@@ -81,8 +81,9 @@ public:
 	inline const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 	inline std::shared_ptr<class BravoSelectionManager> GetSelectionManager() const { return SelectionManager; }
 
-	// TODO: get rid of this nasty hack. implement propper render buffer management
-	void BindVieportRenderBuffer();
+	
+	void PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size);
+	void PopFramebuffer();
 
 
 	static std::shared_ptr<BravoEngine> GetEngine();
@@ -109,21 +110,23 @@ private:
 	struct GLFWwindow* Window = nullptr;
 
 	// object managing
-	std::vector< std::shared_ptr<BravoObject> > Objects;
+	std::list< std::shared_ptr<BravoObject> > Objects;
 	std::map<BravoHandle, std::shared_ptr<BravoObject>> HandleToObject;
-	std::vector< std::shared_ptr<IBravoTickable> > TickableObjects;
-	std::vector< std::shared_ptr<class IBravoRenderable> > RenderableObjects;
-	std::vector< std::shared_ptr<class BravoActor> > Actors;
+	std::list< std::shared_ptr<IBravoTickable> > TickableObjects;
+	std::list< std::shared_ptr<class IBravoRenderable> > RenderableObjects;
+	std::list< std::shared_ptr<class BravoActor> > Actors;
+
 
 	std::shared_ptr<class BravoAssetManager> AssetManager = nullptr;
 	std::shared_ptr<class BravoInput> Input;
 	std::shared_ptr<class BravoLightManager> LightManager;
-	std::shared_ptr<class BravoRenderTarget> ViewportRenderTarget;
 	std::shared_ptr<class BravoHUD> HUD;
 	std::shared_ptr<class BravoSelectionManager> SelectionManager;
 	std::shared_ptr<class BravoOutlineManager> OutlineManager;
 
 
+	std::shared_ptr<class BravoRenderTarget> ViewportRenderTarget;
+	std::stack<std::tuple<uint32, glm::ivec2>> FramebufferStack;
 	std::weak_ptr<class BravoCamera> Camera;
 
 

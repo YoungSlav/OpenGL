@@ -11,7 +11,7 @@ class BravoInfinitePlaneActor : public BravoActor, public IBravoRenderable
 public:
 	BravoInfinitePlaneActor() :
 		BravoActor(),
-		IBravoRenderable(INT_MAX)
+		IBravoRenderable(ERenderPriority::Overlay)
 	{
 	}
 

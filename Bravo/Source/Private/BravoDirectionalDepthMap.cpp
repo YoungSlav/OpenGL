@@ -40,12 +40,12 @@ void BravoDirectionalDepthMap::Setup(const int32 LayersCount, const uint32 Textu
 		constexpr float bordercolor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
+	Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0);
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Engine->PopFramebuffer();
 }
 
 void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightShaderData>& CastersData)
@@ -54,11 +54,10 @@ void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightSha
 		return;
 		
 	DepthMapShader->Use();
-	glBindFramebuffer(GL_FRAMEBUFFER, DepthMapFBO);
+	Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 		for ( size_t layer = 0; layer < CastersData.size(); ++layer )
 		{
 			glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, (int32)layer);
-			glViewport(0, 0, Size, Size);
 			glClear(GL_DEPTH_BUFFER_BIT);
 
 			
@@ -67,7 +66,7 @@ void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightSha
 			Engine->RenderDepthMap(DepthMapShader);
 		}
 			
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Engine->PopFramebuffer();
 	DepthMapShader->StopUsage();
 }
 

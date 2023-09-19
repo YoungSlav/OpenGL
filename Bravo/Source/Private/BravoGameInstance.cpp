@@ -87,8 +87,8 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	
 	SpawnDirLights();
-	//SpawnPointLights();
-	//SpawnSpotLights();
+	SpawnPointLights();
+	SpawnSpotLights();
 	
 	SpawnTestInstances();
 	SpawnCubes();
@@ -150,7 +150,7 @@ void BravoGameInstance::SpawnSpotLights()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
 	std::shared_ptr<BravoStaticMeshAsset> coneAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("ConeMeshAsset", BravoStaticMeshLoadingParams("primitives\\cone.fbx"));
-	int32 count = 1;
+	int32 count = 2;
 	for ( int32 i = 0 ; i < count; ++i )
 	{
 		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
