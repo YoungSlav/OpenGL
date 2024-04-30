@@ -4,7 +4,8 @@
 struct BravoUnlitMaterialParams
 {
 	std::string AlbedoTexture = "";
-	glm::vec3 AlbedoColor = glm::vec3(0.0f);
+	glm::vec3 AlbedoColor = glm::vec3(0.0f, 0.0f, 1.0f);
+	bool bUseVertexColor = false;
 };
 
 class BravoMaterialUnlit : public BravoMaterial
@@ -26,5 +27,7 @@ protected:
 	std::shared_ptr<class BravoTextureAsset> AlbedoTexture = nullptr;
 
 	glm::vec3 AlbedoColor = glm::vec3(0.0f);
+
+	bool bUseVertexColor = false;
 };
 

@@ -24,6 +24,8 @@ void BravoMaterialUnlit::Load(const BravoUnlitMaterialParams& params)
 	ShaderAsset = AssetManager->FindOrLoad<BravoShaderAsset>("UnlitShader", BravoShaderLoadingParams("Shaders\\Unlit"));
 	AlbedoTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.AlbedoTexture, BravoTextureLoadingParams(params.AlbedoTexture, true));
 	AlbedoColor = params.AlbedoColor;
+
+	bUseVertexColor = params.bUseVertexColor;
 }
 
 void BravoMaterialUnlit::Use()
@@ -39,6 +41,7 @@ void BravoMaterialUnlit::Use()
 	ShaderAsset->SetTexture("material.Texture", AlbedoTexture);
 
 	ShaderAsset->SetBool("material.useTexture", AlbedoTexture != nullptr && AlbedoTexture->EnsureReady() );
+	ShaderAsset->SetBool("material.useVertexColor", bUseVertexColor);
 
 	ShaderAsset->SetVector3d("material.Color", AlbedoColor);
 }

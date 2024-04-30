@@ -20,7 +20,7 @@
 * landscape rendering (height maps)
 * frustum culling
 * occlusion culling would be cool AF
-* transparent objects
+* transparent objects (OIT)
 * 
 * 
 * 
