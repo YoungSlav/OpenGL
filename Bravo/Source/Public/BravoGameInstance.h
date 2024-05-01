@@ -14,7 +14,7 @@ protected:
 	void SpawnDirLights();
 	void SpawnSpotLights();
 	void SpawnPointLights();
-	void SpawnCubes();
+	void SpawnSpheres();
 	void SpawnTestInstances();
 	void SpawnTriangles();
 	void SpawnTriangles_Inst();

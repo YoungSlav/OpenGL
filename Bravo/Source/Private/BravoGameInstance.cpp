@@ -62,7 +62,7 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 
-	SpawnTriangles();
+	
 	
 	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	//{
@@ -82,8 +82,12 @@ bool BravoGameInstance::Initialize_Internal()
 	//	planeMesh->SetMaterial(planeMat);
 	//}
 	
+	SpawnDirLights();
+
+	SpawnTriangles();
+	SpawnTriangles_Inst();
+
 	
-	//SpawnDirLights();
 	//SpawnPointLights();
 	//SpawnSpotLights();
 	//
@@ -96,11 +100,18 @@ void BravoGameInstance::SpawnTriangles()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	std::shared_ptr<BravoStaticMeshAsset> triangleAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("triangleAsset", BravoStaticMeshLoadingParams("primitives\\triangle.fbx"));
+	std::shared_ptr<BravoStaticMeshAsset> triangleAsset =
+		AssetManager->FindOrLoad<BravoStaticMeshAsset>("triangleAsset", BravoStaticMeshLoadingParams("primitives\\triangle.fbx"));
 	BravoUnlitMaterialParams materailLoadingParams;
 	materailLoadingParams.bUseVertexColor = true;
-
 	int32 count = 100;
+
+	//std::shared_ptr<BravoStaticMeshAsset> triangleAsset =
+	//	AssetManager->FindOrLoad<BravoStaticMeshAsset>("triangleAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	//BravoUnlitMaterialParams materailLoadingParams;
+	//materailLoadingParams.bUseVertexColor = false;
+	//int32 count = 1000;
+
 	for ( int32 i = 0; i < count; ++i )
 	{
 		if ( auto triangleActor = NewObject<BravoActor>("Triangle") )
@@ -123,9 +134,17 @@ void BravoGameInstance::SpawnTriangles_Inst()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	std::shared_ptr<BravoStaticMeshAsset> triangleAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("triangleAsset", BravoStaticMeshLoadingParams("primitives\\triangle.fbx"));
+	std::shared_ptr<BravoStaticMeshAsset> triangleAsset =
+		AssetManager->FindOrLoad<BravoStaticMeshAsset>("triangleAsset", BravoStaticMeshLoadingParams("primitives\\triangle.fbx"));
 	BravoUnlitMaterialParams materailLoadingParams;
 	materailLoadingParams.bUseVertexColor = true;
+	int32 count = 100;
+
+	//std::shared_ptr<BravoStaticMeshAsset> triangleAsset =
+	//	AssetManager->FindOrLoad<BravoStaticMeshAsset>("triangleAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	//BravoUnlitMaterialParams materailLoadingParams;
+	//materailLoadingParams.bUseVertexColor = false;
+	//int32 count = 1000;
 
 	
 	if ( auto triangleActor = NewObject<BravoActor>("Triangle") )
@@ -137,10 +156,12 @@ void BravoGameInstance::SpawnTriangles_Inst()
 		std::shared_ptr<BravoMaterialUnlit> material = triangleMesh->NewObject<BravoMaterialUnlit>();
 		material->Load(materailLoadingParams);
 		triangleMesh->SetMaterial(material);
-		int32 count = 99;
-		for ( int32 i = 0; i < count; ++i )
+		for ( int32 i = 1; i < count; ++i )
 		{
-			triangleMesh->AddInstance(BravoTransform(BravoMath::RandVector(10.0), glm::vec3(BravoMath::RandVector(360.0f)), glm::vec3(1.0f)), false);
+			triangleMesh->AddInstance(BravoTransform(BravoMath::RandVector(10.0),
+				glm::vec3(BravoMath::RandVector(360.0f)),
+				glm::vec3(1.0f)),
+				false);
 		}
 		triangleMesh->UpdateInstanceBuffer();
 	}
@@ -235,7 +256,7 @@ void BravoGameInstance::SpawnSpotLights()
 	}
 }
 
-void BravoGameInstance::SpawnCubes()
+void BravoGameInstance::SpawnSpheres()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
