@@ -95,9 +95,9 @@ void BravoStaticMeshAsset::ProcessNode(aiNode *node, const aiScene *scene)
 				vector.z = mesh->mBitangents[i].z;
 				vertex.Bitangent = vector;
 			}
-			if ( mesh->mColors[0] )
+			if ( mesh->HasVertexColors(0) )
 			{
-				vertex.Color = glm::vec4(mesh->mColors[0]->r, mesh->mColors[0]->g, mesh->mColors[0]->b, mesh->mColors[0]->a);
+				vertex.Color = glm::vec4(mesh->mColors[0][i].r, mesh->mColors[0][i].g, mesh->mColors[0][i].b, mesh->mColors[0][i].a);
 			}
 			Vertices.push_back(vertex);
 		}

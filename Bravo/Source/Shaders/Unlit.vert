@@ -18,5 +18,8 @@ void main()
 {
 	vs_out.TexCoords = aTexCoords;
 	vs_out.FragColor = aColor.rgb;
-    gl_Position = projection * view * model * instanceMatrix * vec4(aPos, 1.0);
+	
+	gl_Position = projection * view * vec4(aPos, 1.0);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+	gl_Position = projection * view * model * instanceMatrix * vec4(aPos, 1.0);
 }

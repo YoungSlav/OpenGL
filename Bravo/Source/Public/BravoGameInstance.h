@@ -16,7 +16,8 @@ protected:
 	void SpawnPointLights();
 	void SpawnCubes();
 	void SpawnTestInstances();
-	void SpawnTriangle();
+	void SpawnTriangles();
+	void SpawnTriangles_Inst();
 
 	std::vector<std::shared_ptr<class BravoSpotLightActor>> spotLights;
 	std::vector<std::shared_ptr<class BravoPointLightActor>> pointLights;

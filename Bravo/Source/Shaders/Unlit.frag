@@ -19,18 +19,16 @@ uniform Material material;
 
 void main()
 {
-    FragColor = vec4(fs_in.FragColor.rgb, 1.0);
-    //if ( material.useVertexColor )
-    //{
-    //    FragColor = vec4(fs_in.FragColor.rgb, 1.0);
-    //}
-    //else if ( material.useTexture )
-    //{
-    //    FragColor = vec4(texture(material.Texture, fs_in.TexCoords).rgb, 1.0);
-    //}
-    //else
-    //{
-    //    FragColor = vec4(material.Color, 1.0);
-    //}
-    //FragColor = vec4(material.useTexture ? texture(material.Texture, fs_in.TexCoords).rgb : material.Color, 1.0);
+    if ( material.useVertexColor )
+    {
+        FragColor = vec4(fs_in.FragColor.rgb, 1.0);
+    }
+    else if ( material.useTexture )
+    {
+        FragColor = vec4(texture(material.Texture, fs_in.TexCoords).rgb, 1.0);
+    }
+    else
+    {
+        FragColor = vec4(material.Color, 1.0);
+    }
 }

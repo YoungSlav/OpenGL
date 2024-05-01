@@ -42,12 +42,7 @@ bool BravoGameInstance::Initialize_Internal()
 	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>("Player") )
 	{
 		Player->SetLocation(glm::vec3(-15.0792866, 17.3910675, 0.121996939));
-		Player->SetRotation(glm::vec3(0.00000000, 0.0, -60));
-
-
-		//Player->SetLocation(glm::vec3(10, 0.0f, 0));
-		//Player->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - Player->GetLocation());
-		//Player->SetDirection(glm::normalize(glm::vec3(0.0f) - Player->GetLocation()));
+		Player->SetRotation(glm::vec3(0.00000000, 0.0, -30.0));
 		
 		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>("Camera");
 		Engine->SetCamera(Camera);
@@ -67,7 +62,7 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 
-	SpawnTriangle();
+	SpawnTriangles();
 	
 	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	//{
@@ -80,7 +75,7 @@ bool BravoGameInstance::Initialize_Internal()
 	//	planeMesh->SetCastShadows(true);
 	//	
 	//	BravoPBRMaterialParams materailLoadingParams;
-	//	materailLoadingParams.AlbedoColor = glm::vec3(0.5f, 0.0f, 0.0f);
+	//	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	//	materailLoadingParams.AoColor = 1.0f;
 	//	std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
 	//	planeMat->Load(materailLoadingParams);
@@ -88,7 +83,7 @@ bool BravoGameInstance::Initialize_Internal()
 	//}
 	
 	
-	SpawnDirLights();
+	//SpawnDirLights();
 	//SpawnPointLights();
 	//SpawnSpotLights();
 	//
@@ -97,7 +92,7 @@ bool BravoGameInstance::Initialize_Internal()
 	return true;
 }
 
-void BravoGameInstance::SpawnTriangle()
+void BravoGameInstance::SpawnTriangles()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
@@ -105,7 +100,34 @@ void BravoGameInstance::SpawnTriangle()
 	BravoUnlitMaterialParams materailLoadingParams;
 	materailLoadingParams.bUseVertexColor = true;
 
+	int32 count = 100;
+	for ( int32 i = 0; i < count; ++i )
+	{
+		if ( auto triangleActor = NewObject<BravoActor>("Triangle") )
+		{
+			auto triangleMesh = triangleActor->NewObject<BravoStaticMeshComponent>("TriangleMeshComponent");
+			triangleMesh->SetMesh(triangleAsset);
+			triangleMesh->SetCastShadows(false);
 
+			std::shared_ptr<BravoMaterialUnlit> material = triangleMesh->NewObject<BravoMaterialUnlit>();
+			material->Load(materailLoadingParams);
+			
+			triangleActor->SetLocation(BravoMath::RandVector(10.0));
+			triangleActor->SetRotation(BravoMath::RandVector(360.0));
+			triangleMesh->SetMaterial(material);
+		}
+	}
+}
+
+void BravoGameInstance::SpawnTriangles_Inst()
+{
+	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
+
+	std::shared_ptr<BravoStaticMeshAsset> triangleAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("triangleAsset", BravoStaticMeshLoadingParams("primitives\\triangle.fbx"));
+	BravoUnlitMaterialParams materailLoadingParams;
+	materailLoadingParams.bUseVertexColor = true;
+
+	
 	if ( auto triangleActor = NewObject<BravoActor>("Triangle") )
 	{
 		auto triangleMesh = triangleActor->NewObject<BravoStaticMeshComponent>("TriangleMeshComponent");
@@ -114,16 +136,13 @@ void BravoGameInstance::SpawnTriangle()
 
 		std::shared_ptr<BravoMaterialUnlit> material = triangleMesh->NewObject<BravoMaterialUnlit>();
 		material->Load(materailLoadingParams);
-		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = 0.0;
-		newLocation.z = 0.0;
-		newLocation.y = 0.0f;
-
-		
-		triangleMesh->SetLocation(newLocation);
 		triangleMesh->SetMaterial(material);
-		//cubeMesh->SetScale(glm::vec3(0.3f));
-
+		int32 count = 99;
+		for ( int32 i = 0; i < count; ++i )
+		{
+			triangleMesh->AddInstance(BravoTransform(BravoMath::RandVector(10.0), glm::vec3(BravoMath::RandVector(360.0f)), glm::vec3(1.0f)), false);
+		}
+		triangleMesh->UpdateInstanceBuffer();
 	}
 }
 
@@ -244,7 +263,7 @@ void BravoGameInstance::SpawnCubes()
 			glm::vec3 newLocation = glm::vec3(0.0f);
 			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 3;
 			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 3;
-			newLocation.y = 10.0f;
+			newLocation.y = 7.0f;
 
 			
 			cubeMesh->SetLocation(newLocation);
