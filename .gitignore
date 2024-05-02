@@ -26,6 +26,7 @@ node_modules/
 
 .vs/
 .localhistory/
+.idea/
 
 *.opendb
 
