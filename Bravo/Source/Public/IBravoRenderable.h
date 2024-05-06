@@ -2,19 +2,26 @@
 
 enum ERenderPriority : int32
 {
-	Prepass = 0,
+	Early = 0,
 	Starndart = 1,
-	Overlay = 2
+	Late = 2
+};
+
+enum ERenderGroup : int32
+{
+	 Main = 0,
+	 Overlay = 1
 };
 
 class IBravoRenderable
 {
 public:
 	IBravoRenderable() = default;
-	IBravoRenderable(ERenderPriority _RenderPriority) : RenderPriority(_RenderPriority) {}
+	IBravoRenderable(ERenderPriority _RenderPriority)  : RenderPriority(_RenderPriority), RenderGroup(ERenderGroup::Main) {}
+	IBravoRenderable(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup) : RenderPriority(_RenderPriority), RenderGroup(_RenderGroup) {}
 
-	void SetRenderPriority(ERenderPriority _RenderPriority) { RenderPriority = _RenderPriority; }
 	ERenderPriority GetRenderPriority() const { return RenderPriority; }
+	ERenderGroup GetRenderGroup() const { return RenderGroup; }
 
 	void SetCastShadows(bool _bCastShadows) { bCastShadows = _bCastShadows; }
 	bool GetCastShadows() const { return bCastShadows; }
@@ -25,7 +32,9 @@ public:
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
 	
 private:
-	ERenderPriority RenderPriority = Starndart;
+	const ERenderPriority RenderPriority = Starndart;
+	const ERenderGroup RenderGroup = Main;
+
 	bool bCastShadows = false;
 	
 };

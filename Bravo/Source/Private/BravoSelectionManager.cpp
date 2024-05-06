@@ -1,5 +1,6 @@
 #include "BravoSelectionManager.h"
 #include "BravoEngine.h"
+#include "BravoViewport.h"
 #include "BravoRenderTarget.h"
 #include "BravoInput.h"
 #include "IBravoRenderable.h"
@@ -9,11 +10,11 @@ bool BravoSelectionManager::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
-	Size = Engine->GetViewportSize();
+	Size = Engine->GetViewport()->GetViewportSize();
 	SelectionRenderTarget = NewObject<BravoRenderTarget>("SelectionRenderTarget");
 	SelectionRenderTarget->Setup(Size, GL_RG32F, GL_RG, GL_FLOAT, true);
 
-	Engine->OnResizeDelegate.AddSP(Self<BravoSelectionManager>(), &BravoSelectionManager::OnViewportResized);
+	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<BravoSelectionManager>(), &BravoSelectionManager::OnViewportResized);
 
 	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
@@ -46,7 +47,7 @@ void BravoSelectionManager::OnMouseClicked(bool ButtonState, float DeltaTime)
 		SelectionRenderTarget->Bind();
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			Engine->RenderSelectionIDs();
+			Engine->GetViewport()->RenderSelectionIDs();
 
 			glReadBuffer(GL_COLOR_ATTACHMENT0);
 			

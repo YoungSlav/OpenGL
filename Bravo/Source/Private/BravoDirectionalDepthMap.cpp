@@ -4,6 +4,7 @@
 #include "BravoTextureUnitManager.h"
 #include "BravoAssetManager.h"
 #include "BravoDirectionalLightActor.h"
+#include "BravoViewport.h"
 
 
 bool BravoDirectionalDepthMap::Initialize_Internal()
@@ -40,12 +41,12 @@ void BravoDirectionalDepthMap::Setup(const int32 LayersCount, const uint32 Textu
 		constexpr float bordercolor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
 
-	Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
+	Engine->GetViewport()->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0);
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 
-	Engine->PopFramebuffer();
+	Engine->GetViewport()->PopFramebuffer();
 }
 
 void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightShaderData>& CastersData)
@@ -54,7 +55,7 @@ void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightSha
 		return;
 		
 	DepthMapShader->Use();
-	Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
+	Engine->GetViewport()->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 		for ( size_t layer = 0; layer < CastersData.size(); ++layer )
 		{
 			glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0, (int32)layer);
@@ -63,10 +64,10 @@ void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightSha
 			
 			DepthMapShader->SetMatrix4d("lightSpaceMatrix", CastersData[layer].LightSpaceMatrix);
 	
-			Engine->RenderDepthMap(DepthMapShader);
+			Engine->GetViewport()->RenderDepthMap(DepthMapShader);
 		}
 			
-	Engine->PopFramebuffer();
+	Engine->GetViewport()->PopFramebuffer();
 	DepthMapShader->StopUsage();
 }
 

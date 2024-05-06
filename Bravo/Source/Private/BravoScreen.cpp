@@ -1,5 +1,6 @@
 #include "BravoScreen.h"
 #include "BravoEngine.h"
+#include "BravoViewport.h"
 #include "BravoWidget.h"
 #include "BravoHUD.h"
 
@@ -8,10 +9,10 @@ bool BravoScreen::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
-	if ( !Engine || !Engine->GetHUD() )
+	if ( !Engine || !Engine->GetViewport()->GetHUD() )
 		return false;
 
-	HUD = Engine->GetHUD();
+	HUD = Engine->GetViewport()->GetHUD();
 	
 	return true;
 }

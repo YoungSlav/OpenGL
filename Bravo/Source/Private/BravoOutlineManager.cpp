@@ -1,5 +1,6 @@
 #include "BravoOutlineManager.h"
 #include "BravoEngine.h"
+#include "BravoViewport.h"
 #include "BravoRenderTarget.h"
 #include "IBravoRenderable.h"
 #include "BravoShaderAsset.h"
@@ -13,11 +14,11 @@ bool BravoOutlineManager::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
-	glm::ivec2 Size = Engine->GetViewportSize();
+	glm::ivec2 Size = Engine->GetViewport()->GetViewportSize();
 	OutlineRenderTarget = NewObject<BravoRenderTarget>("OutlineRenderTarget");
 	OutlineRenderTarget->Setup(Size, GL_R32F, GL_RED, GL_FLOAT, true);
 
-	Engine->OnResizeDelegate.AddSP(Self<BravoOutlineManager>(), &BravoOutlineManager::OnViewportResized);
+	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<BravoOutlineManager>(), &BravoOutlineManager::OnViewportResized);
 
 	if ( auto SelectionManager = Engine->GetSelectionManager() )
 	{

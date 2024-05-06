@@ -1,5 +1,6 @@
 #include "BravoGameInstance.h"
 #include "BravoEngine.h"
+#include "BravoViewport.h"
 #include "BravoAssetManager.h"
 
 #include "BravoAsset.h"
@@ -31,10 +32,10 @@ bool BravoGameInstance::Initialize_Internal()
 	if ( !Engine )
 		return false;
 
-	if ( Engine->GetHUD() )
+	if ( Engine->GetViewport()->GetHUD() )
 	{
 		auto screen = NewObject<BravoScreen_Debug>("DebugScreen");
-		Engine->GetHUD()->AddScreen(screen);
+		Engine->GetViewport()->GetHUD()->AddScreen(screen);
 	}
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();

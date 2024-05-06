@@ -1,5 +1,6 @@
 #include "BravoPointDepthMap.h"
 #include "BravoEngine.h"
+#include "BravoViewport.h"
 #include "BravoTextureUnitManager.h"
 #include "BravoAssetManager.h"
 #include "BravoShaderAsset.h"
@@ -40,11 +41,11 @@ void BravoPointDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize
 		constexpr float bordercolor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
 
-		Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
+		Engine->GetViewport()->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, DepthMapsTextures, 0);
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
-		Engine->PopFramebuffer();
+		Engine->GetViewport()->PopFramebuffer();
 }
 
 void BravoPointDepthMap::ClearGPUData()
@@ -68,7 +69,7 @@ void BravoPointDepthMap::Render(const std::vector<BravoPointLightShaderData>& Ca
 		return;
 
 	DepthMapShader->Use();
-	Engine->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
+	Engine->GetViewport()->PushFramebuffer(DepthMapFBO, glm::ivec2(Size));
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		for ( size_t cIdx = 0; cIdx < CastersData.size(); ++cIdx )
@@ -102,10 +103,10 @@ void BravoPointDepthMap::Render(const std::vector<BravoPointLightShaderData>& Ca
 			DepthMapShader->SetVector1d("farPlane", FarPlane);
 			DepthMapShader->SetVector3d("position", LightPosition);
 	
-			Engine->RenderDepthMap(DepthMapShader);
+			Engine->GetViewport()->RenderDepthMap(DepthMapShader);
 		}
 
-	Engine->PopFramebuffer();
+	Engine->GetViewport()->PopFramebuffer();
 	DepthMapShader->StopUsage();
 }
 

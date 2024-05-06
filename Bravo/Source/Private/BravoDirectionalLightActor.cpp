@@ -5,6 +5,7 @@
 #include "BravoMath.h"
 #include "BravoAssetManager.h"
 #include "BravoTextureUnitManager.h"
+#include "BravoViewport.h"
 
 
 
@@ -40,7 +41,7 @@ glm::mat4 BravoDirectionalLightActor::GetLightSpaceMatrix(const float nearPlane,
 {
 	std::vector<glm::vec4> FrustumCorners;
 	{
-		const glm::ivec2 ViewportSize = Engine->GetViewportSize();
+		const glm::ivec2 ViewportSize = Engine->GetViewport()->GetViewportSize();
 		const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;
 		glm::mat4 proj = glm::perspective(glm::radians(Engine->GetCamera()->GetFOV()), AspectRatio,  nearPlane, farPlane);
 		BravoMath::GetFrustumCornersWorldSpace(proj * Engine->GetCamera()->GetViewMatrix(), FrustumCorners);

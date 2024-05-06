@@ -1,5 +1,6 @@
 #include "BravoCamera.h"
 #include "BravoEngine.h"
+#include "BravoViewport.h"
 #include "BravoMath.h"
 
 void BravoCamera::AttachTo(const std::shared_ptr<BravoActor> InActor)
@@ -44,7 +45,7 @@ void BravoCamera::UpdateCamera_Internal()
 	
 	ViewMatrix = glm::lookAt(GetLocation(), GetLocation() + front, up);
 
-	const glm::ivec2 ViewportSize = Engine->GetViewportSize();
+	const glm::ivec2 ViewportSize = Engine->GetViewport()->GetViewportSize();
 	const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;
 
 	ProjectionMatrix = glm::perspective(glm::radians(FOV), AspectRatio, MinDrawingDistance, MaxDrawingDistance);

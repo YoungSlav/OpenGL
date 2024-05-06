@@ -47,7 +47,7 @@
 * animations?
 * */
 
-typedef MulticastDelegate<const glm::ivec2&> OnResizeSignature;
+
 
 class BravoInput;
 class BravoEngine : public BravoObject
@@ -62,10 +62,7 @@ public:
 
 	void GameLoop();
 	void StopGame();
-	
-	void RenderSelectionIDs() const;
-	void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const;
-	
+		
 	void RegisterObject(std::shared_ptr<BravoObject> Object);
 	std::shared_ptr<BravoObject> FindObjectByHandle(const BravoHandle& Handle);
 	BravoHandle GenerateNewHandle() { return ++LastUsedHandle; }
@@ -73,60 +70,43 @@ public:
 
 	void SetCamera(std::shared_ptr<class BravoCamera> _Camera);
 
+	inline std::shared_ptr<class BravoViewport> GetViewport() const { return Viewport; }
 	inline std::shared_ptr<class BravoInput> GetInput() const { return Input; }
 	inline std::shared_ptr<class BravoLightManager> GetLightManager() const { return LightManager; }
 	inline std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager; }
-	inline std::shared_ptr<class BravoHUD> GetHUD() const { return HUD; }
 	inline std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
-	inline const glm::ivec2& GetViewportSize() const { return ViewportSize; }
 	inline std::shared_ptr<class BravoSelectionManager> GetSelectionManager() const { return SelectionManager; }
-
-	
-	void PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size);
-	void PopFramebuffer();
-
 
 	static std::shared_ptr<BravoEngine> GetEngine();
 
-	OnResizeSignature OnResizeDelegate;
+	inline bool IsShutingDown() const { return bRequestExit; }
+	void ShutDown() { bRequestExit = true; }
 
 protected:
 	bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
 
 private:
-	void CreateOpenGLWindow();
 
 	void Tick(float DeltaTime);
-	void UpdateViewport();
-	void Resize(const glm::ivec2& InViewportSize);
-
-	// input
-	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);
-
+	
 private:
-	glm::ivec2 ViewportSize = glm::vec2(1024.0f, 768.0f);
-
-	struct GLFWwindow* Window = nullptr;
-
 	// object managing
 	std::list< std::shared_ptr<BravoObject> > Objects;
+	std::list< std::shared_ptr<class BravoActor> > Actors;
 	std::map<BravoHandle, std::shared_ptr<BravoObject>> HandleToObject;
 	std::list< std::shared_ptr<IBravoTickable> > TickableObjects;
-	std::list< std::shared_ptr<class IBravoRenderable> > RenderableObjects;
-	std::list< std::shared_ptr<class BravoActor> > Actors;
 
 
+	std::shared_ptr<class BravoViewport> Viewport;
 	std::shared_ptr<class BravoAssetManager> AssetManager = nullptr;
 	std::shared_ptr<class BravoInput> Input;
 	std::shared_ptr<class BravoLightManager> LightManager;
-	std::shared_ptr<class BravoHUD> HUD;
 	std::shared_ptr<class BravoSelectionManager> SelectionManager;
-	std::shared_ptr<class BravoOutlineManager> OutlineManager;
+	
 
 
-	std::shared_ptr<class BravoRenderTarget> ViewportRenderTarget;
-	std::stack<std::tuple<uint32, glm::ivec2>> FramebufferStack;
+	
 	std::weak_ptr<class BravoCamera> Camera;
 
 

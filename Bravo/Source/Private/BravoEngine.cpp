@@ -9,6 +9,7 @@
 #include "IBravoRenderable.h"
 #include "BravoSelectionManager.h"
 #include "BravoOutlineManager.h"
+#include "BravoViewport.h"
 
 namespace GlobalEngine
 {
@@ -21,31 +22,6 @@ namespace GlobalEngine
 	}
 };
 
-void BravoEngine::PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size)
-{
-	if ( FramebufferStack.empty() || std::get<0>(FramebufferStack.top()) != Framebuffer )
-	{
-		FramebufferStack.push({Framebuffer, Size});
-		glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
-		glViewport(0, 0, Size.x, Size.y);
-	}
-}
-void BravoEngine::PopFramebuffer()
-{
-	if ( FramebufferStack.empty() )
-	{
-		return;
-	}
-	
-	FramebufferStack.pop();
-	if ( !FramebufferStack.empty() )
-	{
-		uint32 Framebuffer = std::get<0>(FramebufferStack.top());
-		const glm::vec2& Size = std::get<1>(FramebufferStack.top());
-		glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
-		glViewport(0, 0, Size.x, Size.y);
-	}
-}
 
 std::shared_ptr<BravoEngine> BravoEngine::GetEngine()
 {
@@ -59,21 +35,17 @@ bool BravoEngine::Initialize_Internal()
 	LastUsedHandle = GetHandle();
 
 	AssetManager = NewObject<BravoAssetManager>("AssetManager");
-
-	CreateOpenGLWindow();
+	Viewport = NewObject<BravoViewport>("Viewport");
+	Viewport->Setup();
 
 	Input = NewObject<BravoInput>("Input");
-	Input->SetOwnerWindow(Window);
+	Input->SetOwnerWindow(Viewport->Window);
 
 	LightManager = NewObject<BravoLightManager>("LightManager");
 
-	HUD = NewObject<BravoHUD>("HUD");
-	HUD->SetSize(ViewportSize);
-
-
 	SelectionManager = NewObject<BravoSelectionManager>("SelectionManager");
 
-	OutlineManager = NewObject<BravoOutlineManager>("OutlineManager");
+	
 
 	return true;
 }
@@ -86,8 +58,10 @@ void BravoEngine::SetCamera(std::shared_ptr<class BravoCamera> _Camera)
 
 void BravoEngine::GameLoop()
 {
-	while( !bRequestExit && !glfwWindowShouldClose(Window) )
+	while( !bRequestExit && !glfwWindowShouldClose(Viewport->Window) )
 	{
+		AssetManager->CheckPendingAssets();
+		
 		float newTime = (float)glfwGetTime();
 		float DeltaTime = newTime - GameTime;
 		GameTime = newTime;
@@ -97,7 +71,9 @@ void BravoEngine::GameLoop()
 		if ( GetCamera() )
 			GetCamera()->UpdateCamera();
 
-		UpdateViewport();
+		Viewport->UpdateViewport();
+		
+
 		if ( Input )
 			Input->ProcessInput(DeltaTime);
 
@@ -114,7 +90,7 @@ void BravoEngine::StopGame()
 		DestroyObject(*Objects.cbegin());
 	}
 
-	glfwSetWindowShouldClose(Window, true);
+	glfwSetWindowShouldClose(Viewport->Window, true);
 }
 
 void BravoEngine::Tick(float DeltaTime)
@@ -123,135 +99,6 @@ void BravoEngine::Tick(float DeltaTime)
 		it->Update(DeltaTime);
 }
 
-void BravoEngine::UpdateViewport()
-{
-	std::shared_ptr<BravoCamera> camera = GetCamera();
-	std::shared_ptr<BravoLightManager> lightManager = GetLightManager();
-	std::shared_ptr<BravoRenderTarget> viewportRT = ViewportRenderTarget;
-
-	if ( !lightManager || !viewportRT || !camera )
-	{
-		bRequestExit = true;
-		return;
-	}
-
-	AssetManager->CheckPendingAssets();
-	
-	//glCullFace(GL_FRONT);
-	lightManager->UpdateLightsShaderData();
-	//glCullFace(GL_BACK);
-	
-	// we want to draw into PP texture first
-	{
-		viewportRT->Bind();
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		for ( auto& it : RenderableObjects )
-		{
-			it->Render();
-		}
-
-		OutlineManager->RenderSelections();
-
-		viewportRT->Unbind();
-	}
-
-
-	glDisable(GL_DEPTH_TEST);
-	// render everything on screen
-	{
-		PushFramebuffer(0, ViewportSize);
-		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		viewportRT->Render();
-		PopFramebuffer();
-	}
-	HUD->Render();
-	glEnable(GL_DEPTH_TEST);
-
-	glfwSwapBuffers(Window);
-	glfwPollEvents();
-}
-
-void BravoEngine::RenderSelectionIDs() const
-{
-	for ( auto& it : RenderableObjects )
-	{
-		it->RenderSelectionID();
-	}
-}
-
-void BravoEngine::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const
-{
-	for ( auto& it : RenderableObjects )
-	{
-		if ( it->GetCastShadows() )
-			it->RenderDepthMap(Shader);
-	}
-}
-
-void BravoEngine::Resize(const glm::ivec2& InViewportSize)
-{
-	ViewportSize = InViewportSize;
-	PushFramebuffer(0, ViewportSize);
-	PopFramebuffer();
-	ViewportRenderTarget->Resize(ViewportSize*2);	
-	
-
-	OnResizeDelegate.Broadcast(ViewportSize);
-	HUD->SetSize(ViewportSize);
-}
-
-void BravoEngine::CreateOpenGLWindow()
-{
-	// glfw: initialize and configure
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	// create window
-	Window = glfwCreateWindow(ViewportSize.x, ViewportSize.y, "Bravo Engine", NULL, NULL);
-    if ( Window == nullptr )
-    {
-		Log::LogMessage("Failed to create GLFW window", ELog::Error);
-        glfwTerminate();
-		return;
-    }
-
-
-    glfwMakeContextCurrent(Window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-		Log::LogMessage("Failed to initialize GLAD", ELog::Error);
-		return;
-    }
-
-	glfwFocusWindow(Window);
-
-    glfwSetFramebufferSizeCallback(Window, BravoEngine::Framebuffer_size_callback);
-
-
-	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget") )
-	{
-		ViewportRenderTarget->Setup(ViewportSize*2,
-			GL_RGB16F, GL_RGB, GL_FLOAT, true,
-			AssetManager->FindOrLoad<BravoShaderAsset>("PostProccesShaderAsset", BravoShaderLoadingParams("Shaders\\PostProccess")));
-	}
-	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-}
-
-void BravoEngine::Framebuffer_size_callback(GLFWwindow* window, int32 width, int32 height)
-{
-	if ( GlobalEngine::Engine() )
-		GlobalEngine::Engine()->Resize(glm::ivec2(width, height));
-}
 
 void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 {
@@ -277,13 +124,7 @@ void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 	}
 	if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(newObject) )
 	{
-		RenderableObjects.push_back(asRenderable);
-		
-		RenderableObjects.sort(
-			[](std::shared_ptr<IBravoRenderable> left, std::shared_ptr<IBravoRenderable> right) -> bool
-			{ 
-				return left->GetRenderPriority() < right->GetRenderPriority(); 
-			});
+		Viewport->RegisterRenderable(asRenderable);
 	}
 }
 
@@ -315,8 +156,9 @@ void BravoEngine::DestroyObject(std::shared_ptr<BravoObject> Object)
 	if ( std::shared_ptr<IBravoTickable> asTiackble = std::dynamic_pointer_cast<IBravoTickable>(Object) )
 		TickableObjects.erase(std::remove(TickableObjects.begin(), TickableObjects.end(), asTiackble), TickableObjects.end());
 
+
 	if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(Object) )
-		RenderableObjects.erase(std::remove(RenderableObjects.begin(), RenderableObjects.end(), asRenderable), RenderableObjects.end());
+		Viewport->RemoveRenderable(asRenderable);
 
 	Objects.erase(std::remove(Objects.begin(), Objects.end(), Object), Objects.end());
 }
@@ -325,10 +167,10 @@ void BravoEngine::OnDestroy()
 {
 	BravoObject::OnDestroy();
 
+	Viewport.reset();
 	Input.reset();
 	LightManager.reset();
-	ViewportRenderTarget.reset();
-	HUD.reset();
+	
 	SelectionManager.reset();
-	OutlineManager.reset();
+	
 }

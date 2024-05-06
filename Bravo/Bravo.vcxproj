@@ -46,6 +46,8 @@
     <ClCompile Include="Source\Private\BravoPointDepthMap.cpp" />
     <ClCompile Include="Source\Private\BravoPointLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
+    <ClCompile Include="Source\Private\BravoRenderPass.cpp" />
+    <ClCompile Include="Source\Private\BravoViewport.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
     <ClCompile Include="Source\Private\BravoSelectionManager.cpp" />
     <ClCompile Include="Source\Private\BravoStaticMeshAsset.cpp" />
@@ -96,6 +98,8 @@
     <ClInclude Include="Source\Public\BravoOutlineManager.h" />
     <ClInclude Include="Source\Public\BravoPointDepthMap.h" />
     <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
+    <ClInclude Include="Source\Public\BravoRenderPass.h" />
+    <ClInclude Include="Source\Public\BravoViewport.h" />
     <ClInclude Include="Source\Public\BravoSelectionManager.h" />
     <ClInclude Include="Source\Public\BravoSpotDepthMap.h" />
     <ClInclude Include="Source\Public\BravoPointLightActor.h" />

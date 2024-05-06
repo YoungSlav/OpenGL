@@ -115,6 +115,12 @@
     <Filter Include="Shaders\Outline">
       <UniqueIdentifier>{f5768bb3-f2b8-4a5c-86b0-70f5420e5888}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Private\Rendering">
+      <UniqueIdentifier>{dc2bc07b-643a-40f8-8ece-6116b22f707e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Rendering">
+      <UniqueIdentifier>{6eb9f452-6edc-42eb-8e88-e3b4b3d37d80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -135,9 +141,6 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoGameInstance.cpp">
       <Filter>Private\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoRenderTarget.cpp">
-      <Filter>Private\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoMath.cpp">
       <Filter>Private\Core</Filter>
@@ -265,6 +268,15 @@
     <ClCompile Include="Source\Private\BravoOutlineManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoRenderPass.cpp">
+      <Filter>Private\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoRenderTarget.cpp">
+      <Filter>Private\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoViewport.cpp">
+      <Filter>Private\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -286,9 +298,6 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoGameInstance.h">
       <Filter>Public\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoRenderTarget.h">
-      <Filter>Public\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoMath.h">
       <Filter>Public\Core</Filter>
@@ -365,9 +374,6 @@
     <ClInclude Include="Source\Public\BravoStaticMeshComponent.h">
       <Filter>Public\Actors\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\IBravoRenderable.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoTransform.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
@@ -433,6 +439,18 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoOutlineManager.h">
       <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoRenderPass.h">
+      <Filter>Public\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoRenderTarget.h">
+      <Filter>Public\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\IBravoRenderable.h">
+      <Filter>Public\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoViewport.h">
+      <Filter>Public\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
