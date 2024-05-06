@@ -87,16 +87,20 @@ protected:
 	virtual void OnDestroy() override;
 
 private:
+	void FireFreshBeginPlays();
 
 	void Tick(float DeltaTime);
 	
 private:
+
+	// freshly created objects awaiting BeginPlay call
+	std::list< std::shared_ptr<BravoObject> > FreshObjects;
+
 	// object managing
 	std::list< std::shared_ptr<BravoObject> > Objects;
 	std::list< std::shared_ptr<class BravoActor> > Actors;
 	std::map<BravoHandle, std::shared_ptr<BravoObject>> HandleToObject;
 	std::list< std::shared_ptr<IBravoTickable> > TickableObjects;
-
 
 	std::shared_ptr<class BravoViewport> Viewport;
 	std::shared_ptr<class BravoAssetManager> AssetManager = nullptr;
@@ -104,11 +108,7 @@ private:
 	std::shared_ptr<class BravoLightManager> LightManager;
 	std::shared_ptr<class BravoSelectionManager> SelectionManager;
 	
-
-
-	
 	std::weak_ptr<class BravoCamera> Camera;
-
 
 	BravoHandle LastUsedHandle = 0;
 

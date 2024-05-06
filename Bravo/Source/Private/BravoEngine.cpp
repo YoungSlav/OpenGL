@@ -35,15 +35,19 @@ bool BravoEngine::Initialize_Internal()
 	LastUsedHandle = GetHandle();
 
 	AssetManager = NewObject<BravoAssetManager>("AssetManager");
+	
 	Viewport = NewObject<BravoViewport>("Viewport");
 	Viewport->Setup();
+
+	SelectionManager = NewObject<BravoSelectionManager>("SelectionManager");
 
 	Input = NewObject<BravoInput>("Input");
 	Input->SetOwnerWindow(Viewport->Window);
 
+
+
 	LightManager = NewObject<BravoLightManager>("LightManager");
 
-	SelectionManager = NewObject<BravoSelectionManager>("SelectionManager");
 
 	
 
@@ -60,11 +64,13 @@ void BravoEngine::GameLoop()
 {
 	while( !bRequestExit && !glfwWindowShouldClose(Viewport->Window) )
 	{
-		AssetManager->CheckPendingAssets();
-		
 		float newTime = (float)glfwGetTime();
 		float DeltaTime = newTime - GameTime;
 		GameTime = newTime;
+		
+		AssetManager->CheckPendingAssets();
+
+		FireFreshBeginPlays();
 
 		Tick(DeltaTime);
 		
@@ -81,6 +87,15 @@ void BravoEngine::GameLoop()
 	}
 
 	glfwTerminate();
+}
+
+void BravoEngine::FireFreshBeginPlays()
+{
+	for ( auto it : FreshObjects )
+	{
+		it->OnBeginPlay();
+	}
+	FreshObjects.clear();
 }
 
 void BravoEngine::StopGame()
@@ -103,6 +118,8 @@ void BravoEngine::Tick(float DeltaTime)
 void BravoEngine::RegisterObject(std::shared_ptr<BravoObject> newObject)
 {
 	Objects.push_back(newObject);
+	
+	FreshObjects.push_back(newObject);
 
 	HandleToObject.insert({newObject->GetHandle(), newObject});
 	

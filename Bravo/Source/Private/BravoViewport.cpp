@@ -172,7 +172,6 @@ void BravoViewport::UpdateViewport()
 	}
 
 	
-	
 	//glCullFace(GL_FRONT);
 	lightManager->UpdateLightsShaderData();
 	//glCullFace(GL_BACK);

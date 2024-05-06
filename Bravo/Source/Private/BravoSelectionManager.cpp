@@ -14,6 +14,11 @@ bool BravoSelectionManager::Initialize_Internal()
 	SelectionRenderTarget = NewObject<BravoRenderTarget>("SelectionRenderTarget");
 	SelectionRenderTarget->Setup(Size, GL_RG32F, GL_RG, GL_FLOAT, true);
 
+	return true;
+}
+
+void BravoSelectionManager::OnBeginPlay()
+{
 	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<BravoSelectionManager>(), &BravoSelectionManager::OnViewportResized);
 
 	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
@@ -24,8 +29,6 @@ bool BravoSelectionManager::Initialize_Internal()
 		subscription.Callback.BindSP(Self<BravoSelectionManager>(), &BravoSelectionManager::OnMouseClicked);
 		Input->SubscribeKey(subscription);
 	}
-
-	return true;
 }
 
 void BravoSelectionManager::OnViewportResized(const glm::ivec2& ViewportSize)

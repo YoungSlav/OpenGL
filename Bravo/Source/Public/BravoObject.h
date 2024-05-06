@@ -25,6 +25,7 @@ protected:
 
 class BravoObject : public SharedFromThis
 {
+	friend class BravoEngine;
 public:
 	BravoObject() = default;
 	~BravoObject();
@@ -69,8 +70,10 @@ protected:
 	virtual bool Initialize_Internal() { return true; }
 	virtual void OnChildObjectAdded(std::weak_ptr<BravoObject> _OwnedObject) {}
 	virtual void OnDestroy() {}
+	virtual void OnBeginPlay() {}
 
 private:
+	
 	void AddChildObject(std::weak_ptr<BravoObject> _OwnedObject);
 
 protected:

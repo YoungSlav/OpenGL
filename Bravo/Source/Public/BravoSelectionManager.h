@@ -26,6 +26,7 @@ public:
 protected:
 
 	virtual bool Initialize_Internal() override;
+	virtual void OnBeginPlay() override;
 	virtual void OnDestroy() override;
 
 	void OnViewportResized(const glm::ivec2& _Size);

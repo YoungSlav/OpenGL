@@ -20,11 +20,6 @@ bool BravoOutlineManager::Initialize_Internal()
 
 	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<BravoOutlineManager>(), &BravoOutlineManager::OnViewportResized);
 
-	if ( auto SelectionManager = Engine->GetSelectionManager() )
-	{
-		SelectionManager->OnObjectSelected.AddSP(Self<BravoOutlineManager>(), &BravoOutlineManager::OnSelectionChanged);
-	}
-
 	if (auto AssetManager = Engine->GetAssetManager())
 	{
 		OutlinePostProccessShader = AssetManager->FindOrLoad<BravoShaderAsset>("OutlinePostProccess", BravoShaderLoadingParams("Shaders\\OutlinePostProccess"));
@@ -52,6 +47,14 @@ bool BravoOutlineManager::Initialize_Internal()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
 	return true;
+}
+
+void BravoOutlineManager::OnBeginPlay()
+{
+	if ( auto SelectionManager = Engine->GetSelectionManager() )
+	{
+		SelectionManager->OnObjectSelected.AddSP(Self<BravoOutlineManager>(), &BravoOutlineManager::OnSelectionChanged);
+	}
 }
 
 void BravoOutlineManager::OnDestroy()
