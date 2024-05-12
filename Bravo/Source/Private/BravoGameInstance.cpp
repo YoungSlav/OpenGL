@@ -27,6 +27,8 @@
 #include "BravoHUD.h"
 #include "BravoTransform.h"
 
+#include "BravoGizmo.h"
+
 bool BravoGameInstance::Initialize_Internal()
 {
 	if ( !Engine )
@@ -65,22 +67,27 @@ bool BravoGameInstance::Initialize_Internal()
 
 	
 	
-	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	//{
+	//	std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	//	planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+	//	//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+	//	planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+	//	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+	//	planeMesh->SetMesh(planeAsset);
+	//	planeMesh->SetCastShadows(true);
+	//	
+	//	BravoPBRMaterialParams materailLoadingParams;
+	//	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	//	materailLoadingParams.AoColor = 1.0f;
+	//	std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
+	//	planeMat->Load(materailLoadingParams);
+	//	planeMesh->SetMaterial(planeMat);
+	//}
+
+	if ( auto gizmo = NewObject<BravoGizmo>("BravoGizmo") )
 	{
-		std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
-		planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
-		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-		planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
-		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-		planeMesh->SetMesh(planeAsset);
-		planeMesh->SetCastShadows(true);
-		
-		BravoPBRMaterialParams materailLoadingParams;
-		materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
-		materailLoadingParams.AoColor = 1.0f;
-		std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
-		planeMat->Load(materailLoadingParams);
-		planeMesh->SetMaterial(planeMat);
+		gizmo->SetLocation(glm::vec3(2.0f, 2.0f, 2.0f));
 	}
 	
 	SpawnDirLights();
@@ -89,7 +96,7 @@ bool BravoGameInstance::Initialize_Internal()
 	SpawnPointLights();
 	SpawnSpotLights();
 	//
-	SpawnTestInstances();
+	//SpawnTestInstances();
 	//SpawnCubes();
 	return true;
 }

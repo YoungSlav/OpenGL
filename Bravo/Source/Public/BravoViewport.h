@@ -9,8 +9,6 @@ class BravoViewport : public BravoObject
 {
 	friend class BravoEngine;
 
-	
-
 public:
 	void UpdateViewport();
 	void RenderSelectionIDs() const;

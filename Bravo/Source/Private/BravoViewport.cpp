@@ -145,7 +145,8 @@ void BravoViewport::RenderSelectionIDs() const
 	auto RenderGroup = GetRenderGroup(ERenderGroup::Main);
 	for ( auto& it : RenderGroup->Renderables )
 	{
-		it->RenderSelectionID();
+		if ( it->IsVisisble() )
+			it->RenderSelectionID();
 	}
 }
 
@@ -154,7 +155,7 @@ void BravoViewport::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shade
 	auto RenderGroup = GetRenderGroup(ERenderGroup::Main);
 	for ( auto& it : RenderGroup->Renderables )
 	{
-		if ( it->GetCastShadows() )
+		if ( it->IsVisisble() && it->GetCastShadows() )
 			it->RenderDepthMap(Shader);
 	}
 }
@@ -186,7 +187,8 @@ void BravoViewport::UpdateViewport()
 
 		for ( auto& it : RenderGroup->Renderables )
 		{
-			it->Render();
+			if ( it->IsVisisble() )
+				it->Render();
 		}
 
 		OutlineManager->RenderSelections();

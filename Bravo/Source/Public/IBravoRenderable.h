@@ -23,6 +23,9 @@ public:
 	ERenderPriority GetRenderPriority() const { return RenderPriority; }
 	ERenderGroup GetRenderGroup() const { return RenderGroup; }
 
+	void SetVisisble(bool bNewVisible) { bVisible = bNewVisible; }
+	bool IsVisisble() const { return bVisible; }
+
 	void SetCastShadows(bool _bCastShadows) { bCastShadows = _bCastShadows; }
 	bool GetCastShadows() const { return bCastShadows; }
 
@@ -36,5 +39,6 @@ private:
 	const ERenderGroup RenderGroup = Main;
 
 	bool bCastShadows = false;
+	bool bVisible = true;
 	
 };

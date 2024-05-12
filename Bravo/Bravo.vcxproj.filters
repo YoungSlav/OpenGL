@@ -277,6 +277,9 @@
     <ClCompile Include="Source\Private\BravoViewport.cpp">
       <Filter>Private\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoGizmo.cpp">
+      <Filter>Private\Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -451,6 +454,9 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoViewport.h">
       <Filter>Public\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoGizmo.h">
+      <Filter>Public\Actors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

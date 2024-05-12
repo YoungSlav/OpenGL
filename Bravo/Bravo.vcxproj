@@ -33,6 +33,7 @@
     <ClCompile Include="Source\Private\BravoEngine.cpp" />
     <ClCompile Include="Source\Private\BravoFontAsset.cpp" />
     <ClCompile Include="Source\Private\BravoGameInstance.cpp" />
+    <ClCompile Include="Source\Private\BravoGizmo.cpp" />
     <ClCompile Include="Source\Private\BravoHUD.cpp" />
     <ClCompile Include="Source\Private\BravoInfinitePlaneActor.cpp" />
     <ClCompile Include="Source\Private\BravoInput.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="Source\Public\BravoEngine.h" />
     <ClInclude Include="Source\Public\BravoFontAsset.h" />
     <ClInclude Include="Source\Public\BravoGameInstance.h" />
+    <ClInclude Include="Source\Public\BravoGizmo.h" />
     <ClInclude Include="Source\Public\BravoHUD.h" />
     <ClInclude Include="Source\Public\BravoInfinitePlaneActor.h" />
     <ClInclude Include="Source\Public\BravoInput.h" />
