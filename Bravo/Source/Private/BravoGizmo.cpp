@@ -5,6 +5,7 @@
 #include "BravoEngine.h"
 #include "BravoMaterialUnlit.h"
 #include "BravoInput.h"
+#include "BravoViewport.h"
 
 bool BravoGizmo::Initialize_Internal()
 {
@@ -164,19 +165,24 @@ void BravoGizmo::OnBeginPlay()
 {
 	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
+		{
 		BravoKeySubscription subscription;
 		subscription.Key = GLFW_KEY_SPACE;
 		subscription.SubscribedType = EKeySubscriptionType::Released;
 		subscription.Callback.BindSP(Self<BravoGizmo>(), &BravoGizmo::OnInput_ChangeGizmo);
 		Input->SubscribeKey(subscription);
-	}
-}
+		}
 
-void BravoGizmo::OnInput_ChangeGizmo(bool ButtonState, float DeltaTime)
-{
-	int32 CurrentState = (int32)(GizmoState);
-	int32 NewState = (CurrentState+1) % 3;
-	SetGizmoState(EBravoGizmoState(NewState));
+		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_MOUSE_BUTTON_LEFT;
+		subscription.SubscribedType = EKeySubscriptionType::Any;
+		subscription.Callback.BindSP(Self<BravoGizmo>(), &BravoGizmo::OnInput_Mouse);
+		Input->SubscribeKey(subscription);
+		}
+
+		Input->OnMouseMoveDelegate.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnMouseMove);
+	}
 }
 
 void BravoGizmo::SetGizmoState(EBravoGizmoState NewState)
@@ -190,3 +196,45 @@ void BravoGizmo::SetGizmoState(EBravoGizmoState NewState)
 	for ( auto it : ScaleComponents)
 		it->SetVisisble(GizmoState == EBravoGizmoState::Scale);
 }
+
+void BravoGizmo::OnInput_ChangeGizmo(bool ButtonState, float DeltaTime)
+{
+	int32 CurrentState = (int32)(GizmoState);
+	int32 NewState = (CurrentState+1) % 3;
+	SetGizmoState(EBravoGizmoState(NewState));
+}
+
+void BravoGizmo::OnInput_Mouse(bool ButtonState, float DeltaTime)
+{
+	bMouseInput = ButtonState;
+	
+	if ( bMouseInput )
+	{
+		glm::vec3 Origin, Direction;
+		Engine->GetViewport()->DeProject(Engine->GetInput()->GetMousePosition(), Origin, Direction);
+		float Dist = 0.0f;
+		glm::intersectRayPlane(Origin, Direction, GetLocation(), BravoMath::upV, Dist);
+
+		MouseStart = Origin + Direction * Dist;
+
+		StartLocation = GetLocation();
+	}
+}
+
+
+void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
+{
+	if ( !bMouseInput ) return;
+
+
+	glm::vec3 Origin, Direction;
+	Engine->GetViewport()->DeProject(Engine->GetInput()->GetMousePosition(), Origin, Direction);
+	float Dist = 0.0f;
+	glm::intersectRayPlane(Origin, Direction, GetLocation(), BravoMath::upV, Dist);
+
+	glm::vec3 NewMouseWorld = Origin + Direction * Dist;
+
+	SetLocation(StartLocation + NewMouseWorld - MouseStart);
+
+}
+

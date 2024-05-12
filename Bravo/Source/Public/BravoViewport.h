@@ -21,6 +21,10 @@ public:
 	void PopFramebuffer();
 
 	OnResizeSignature OnResizeDelegate;
+
+	bool DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, glm::vec3& OutDirection);
+
+
 	
 protected:
 	bool Initialize_Internal() override;

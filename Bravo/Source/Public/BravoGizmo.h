@@ -19,6 +19,9 @@ protected:
 
 	void OnInput_ChangeGizmo(bool ButtonState, float DeltaTime);
 
+	void OnInput_Mouse(bool ButtonState, float DeltaTime);
+	void OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime);
+
 	void SetGizmoState(EBravoGizmoState NewState);
 
 protected:
@@ -28,4 +31,8 @@ protected:
 	std::list<std::shared_ptr<class BravoStaticMeshComponent>> ScaleComponents;
 
 	EBravoGizmoState GizmoState = EBravoGizmoState::Transform;
+
+	bool bMouseInput = false;
+	glm::vec3 MouseStart;
+	glm::vec3 StartLocation;
 };
