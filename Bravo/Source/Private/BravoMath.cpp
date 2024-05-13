@@ -50,6 +50,30 @@ glm::vec3 BravoMath::RandVector(float MaxDimension)
 	return Result;
 }
 
+bool BravoMath::IsNearlyZero(float Number, double Tolerance)
+{
+	return std::abs(Number) <= Tolerance;
+}
+bool BravoMath::IsNearlyZero(double Number, double Tolerance)
+{
+	return std::abs(Number) <= Tolerance;
+}
+bool BravoMath::IsNearlyZero(const glm::vec3& vector, double Tolerance)
+{
+	return std::abs(vector.length()) <= Tolerance;
+}
+
+float BravoMath::MaxComponent(const glm::vec3& Vector)
+{
+	if ( std::abs(Vector.x) > std::abs(Vector.y) && std::abs(Vector.x) > std::abs(Vector.z) )
+		return Vector.x;
+	if ( std::abs(Vector.y) > std::abs(Vector.x) && std::abs(Vector.y) > std::abs(Vector.z) )
+		return Vector.y;
+	if ( std::abs(Vector.z) > std::abs(Vector.y) && std::abs(Vector.z) > std::abs(Vector.x) )
+		return Vector.z;
+	return Vector.z;
+}
+
 void BravoMath::GetFrustumCornersWorldSpace(const glm::mat4& frustrum, std::vector<glm::vec4>& OutFrustumCorners)
 {
 	OutFrustumCorners.clear();

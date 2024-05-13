@@ -76,6 +76,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnScaleX);
 	ScaleComponents.push_back(Mesh);
 	}
 	{
@@ -90,6 +91,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnScaleY);
 	ScaleComponents.push_back(Mesh);
 	}
 	{
@@ -104,6 +106,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnScaleZ);
 	ScaleComponents.push_back(Mesh);
 	}
 
@@ -121,6 +124,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnRotationX);
 	RotationComponents.push_back(Mesh);
 	}
 	{
@@ -135,6 +139,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnRotationY);
 	RotationComponents.push_back(Mesh);
 	}
 	{
@@ -149,6 +154,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnRotationZ);
 	RotationComponents.push_back(Mesh);
 	}
 
@@ -211,36 +217,116 @@ void BravoGizmo::OnInput_ChangeGizmo(bool ButtonState, float DeltaTime)
 void BravoGizmo::OnTransformX(const int32&)
 {
 	ResetInput();
-	TransformInputMask = BravoMath::forwardV;
-	TransformInputPlane = BravoMath::upV;
+	InputMask = BravoMath::forwardV;
+	InputPlane = BravoMath::upV;
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{
-		TransformDiff = GetLocation() - Intersection;
+		InputOffset = GetLocation() - Intersection;
 		bInputActive = true;
 	}
 }
 void BravoGizmo::OnTransformY(const int32&)
 {
 	ResetInput();
-	TransformInputMask = BravoMath::rightV;
-	TransformInputPlane = BravoMath::forwardV;
+	InputMask = BravoMath::rightV;
+	InputPlane = BravoMath::forwardV;
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{
-		TransformDiff = GetLocation() - Intersection;
+		InputOffset = GetLocation() - Intersection;
 		bInputActive = true;
 	}
 }
 void BravoGizmo::OnTransformZ(const int32&)
 {
 	ResetInput();
-	TransformInputMask = BravoMath::upV;
-	TransformInputPlane = BravoMath::forwardV;
+	InputMask = BravoMath::upV;
+	InputPlane = BravoMath::forwardV;
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{
-		TransformDiff = GetLocation() - Intersection;
+		InputOffset = GetLocation() - Intersection;
+		bInputActive = true;
+	}
+}
+
+void BravoGizmo::OnScaleX(const int32&)
+{
+	ResetInput();
+	InputMask = BravoMath::forwardV;
+	InputPlane = BravoMath::upV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		ScaleOriginal = GetScale();
+		InputOffset = GetLocation() - Intersection;
+		bInputActive = true;
+	}
+}
+void BravoGizmo::OnScaleY(const int32&)
+{
+	ResetInput();
+	InputMask = BravoMath::rightV;
+	InputPlane = BravoMath::forwardV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		ScaleOriginal = GetScale();
+		InputOffset = GetLocation() - Intersection;
+		bInputActive = true;
+	}
+}
+void BravoGizmo::OnScaleZ(const int32&)
+{
+	ResetInput();
+	InputMask = BravoMath::upV;
+	InputPlane = BravoMath::forwardV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		ScaleOriginal = GetScale();
+		InputOffset = GetLocation() - Intersection;
+		bInputActive = true;
+	}
+}
+
+void BravoGizmo::OnRotationX(const int32&)
+{
+	ResetInput();
+	InputMask = BravoMath::forwardV;
+	InputPlane = BravoMath::upV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		InputOffset = glm::normalize(Intersection - GetLocation());
+		RotationOriginal = GetRotation();
+		bInputActive = true;
+	}
+}
+void BravoGizmo::OnRotationY(const int32&)
+{
+	ResetInput();
+	InputMask = BravoMath::rightV;
+	InputPlane = BravoMath::forwardV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		InputOffset = glm::normalize(Intersection - GetLocation());
+		RotationOriginal = GetRotation();
+		bInputActive = true;
+	}
+}
+void BravoGizmo::OnRotationZ(const int32&)
+{
+	ResetInput();
+	InputMask = BravoMath::upV;
+	InputPlane = BravoMath::forwardV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		InputOffset = glm::normalize(Intersection - GetLocation());
+		RotationOriginal = GetRotation();
 		bInputActive = true;
 	}
 }
@@ -250,12 +336,12 @@ bool BravoGizmo::CastRay(glm::vec3& OutIntersection)
 	glm::vec3 Origin, Direction;
 	Engine->GetViewport()->DeProject(Engine->GetInput()->GetMousePosition(), Origin, Direction);
 	float Dist = 0.0f;
-	if ( glm::intersectRayPlane(Origin, Direction, GetLocation(), TransformInputPlane, Dist) )
+	if ( glm::intersectRayPlane(Origin, Direction, GetLocation(), InputPlane, Dist) )
 	{
 		OutIntersection = Origin + Direction * Dist;
 		return true;
 	}
-	if ( glm::intersectRayPlane(Origin, Direction, GetLocation(), -TransformInputPlane, Dist) )
+	if ( glm::intersectRayPlane(Origin, Direction, GetLocation(), -InputPlane, Dist) )
 	{
 		OutIntersection = Origin + Direction * Dist;
 		return true;
@@ -271,8 +357,12 @@ void BravoGizmo::OnInput_MouseReleased(bool ButtonState, float DeltaTime)
 void BravoGizmo::ResetInput()
 {
 	bInputActive = false;
-	TransformInputMask = glm::vec3(0.0);
-	TransformInputPlane = glm::vec3(0.0);
+	
+	InputOffset = glm::vec3(0.0);
+	InputMask = glm::vec3(0.0);
+	InputPlane = glm::vec3(0.0);
+
+	ScaleOriginal = glm::vec3(0.0);
 }
 
 
@@ -280,12 +370,40 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 {
 	if ( !bInputActive )
 		return;
+
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( !CastRay(Intersection) )
 		return;
 
-	glm::vec3 MaskNewLocation = GetLocation() + (Intersection + TransformDiff - GetLocation())*TransformInputMask;
+	if ( GizmoState == EBravoGizmoState::Transform )
+	{
+		glm::vec3 MaskNewLocation = GetLocation() + (Intersection + InputOffset - GetLocation())*InputMask;
+		SetLocation(MaskNewLocation);
+	}
+	else if ( GizmoState == EBravoGizmoState::Scale )
+	{
+		float iOffset = BravoMath::MaxComponent(InputOffset * InputMask);
+		
+		if ( BravoMath::IsNearlyZero(iOffset) )
+			return;
 
-	SetLocation(MaskNewLocation);
+		float cOffset = BravoMath::MaxComponent((GetLocation() - Intersection) * InputMask);
+
+		glm::vec3 NewScale = (ScaleOriginal * cOffset) / iOffset;
+		glm::vec3 MaskedNewScale = ((NewScale - ScaleOriginal) * InputMask) + ScaleOriginal;
+		SetScale(MaskedNewScale);
+	}
+	else if ( GizmoState == EBravoGizmoState::Rotation )
+	{
+		// TODO: replace with quaternions?
+		glm::vec3 currentOffset = glm::normalize(Intersection - GetLocation());
+
+		float rad = std::atan2(glm::dot(glm::cross(InputOffset, currentOffset), InputPlane), glm::dot(InputOffset, currentOffset));
+
+		float degrees = glm::degrees(rad);
+
+		glm::vec3 AddRotation = degrees * InputMask;
+		SetRotation(RotationOriginal - AddRotation);
+	}
 }
 

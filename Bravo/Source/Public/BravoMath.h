@@ -18,6 +18,12 @@ public:
 
 	static glm::vec3 RandVector(float MaxDimension);
 
+	static bool IsNearlyZero(float Number, double Tolerance = 1e-5);
+	static bool IsNearlyZero(double Number, double Tolerance = 1e-5);
+	static bool IsNearlyZero(const glm::vec3& vector, double Tolerance = 1e-5);
+
+	static float MaxComponent(const glm::vec3& Vector);
+
 	static void GetFrustumCornersWorldSpace(const glm::mat4& frustrum, std::vector<glm::vec4>& OutFrustumCorners);
 
 	static const glm::vec3 upV;

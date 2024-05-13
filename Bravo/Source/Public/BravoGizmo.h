@@ -28,6 +28,14 @@ protected:
 	void OnTransformY(const int32&);
 	void OnTransformZ(const int32&);
 
+	void OnScaleX(const int32&);
+	void OnScaleY(const int32&);
+	void OnScaleZ(const int32&);
+
+	void OnRotationX(const int32&);
+	void OnRotationY(const int32&);
+	void OnRotationZ(const int32&);
+
 	void ResetInput();
 
 private:
@@ -42,7 +50,11 @@ protected:
 	EBravoGizmoState GizmoState = EBravoGizmoState::Transform;
 
 	bool bInputActive = false;
-	glm::vec3 TransformDiff;
-	glm::vec3 TransformInputPlane = glm::vec3(0.0);
-	glm::vec3 TransformInputMask = glm::vec3(0.0);
+	glm::vec3 InputPlane = glm::vec3(0.0);
+	glm::vec3 InputMask = glm::vec3(0.0);
+	glm::vec3 InputOffset = glm::vec3(0.0);
+
+
+	glm::vec3 ScaleOriginal = glm::vec3(0.0);
+	glm::vec3 RotationOriginal = glm::vec3(0.0);
 };
