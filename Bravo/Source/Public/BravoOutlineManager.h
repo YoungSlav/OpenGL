@@ -3,6 +3,7 @@
 #include "BravoObject.h"
 #include "BravoSelectionManager.h"
 
+// TODO: refactor into post process
 class BravoOutlineManager : public BravoObject
 {
 public:

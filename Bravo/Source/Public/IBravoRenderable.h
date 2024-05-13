@@ -13,6 +13,8 @@ enum ERenderGroup : int32
 	 Overlay = 1
 };
 
+typedef MulticastDelegate<const int32&> OnObjectClickedSignature;
+
 class IBravoRenderable
 {
 public:
@@ -33,8 +35,20 @@ public:
 	virtual void RenderSelectionID() {};
 	virtual void RenderOutlineMask(int32 InstanceID) {};
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
+
+	OnObjectClickedSignature OnObjectClicked;
+
+	void ObjectClicked(int32 InstanceIndex = 0)
+	{
+		OnObjectClicked.Broadcast(InstanceIndex);
+	};
+
+
 	
 private:
+
+	
+
 	const ERenderPriority RenderPriority = Starndart;
 	const ERenderGroup RenderGroup = Main;
 

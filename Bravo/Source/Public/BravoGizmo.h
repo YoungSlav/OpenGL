@@ -19,10 +19,19 @@ protected:
 
 	void OnInput_ChangeGizmo(bool ButtonState, float DeltaTime);
 
-	void OnInput_Mouse(bool ButtonState, float DeltaTime);
+	void OnInput_MouseReleased(bool ButtonState, float DeltaTime);
 	void OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime);
 
 	void SetGizmoState(EBravoGizmoState NewState);
+
+	void OnTransformX(const int32&);
+	void OnTransformY(const int32&);
+	void OnTransformZ(const int32&);
+
+	void ResetInput();
+
+private:
+	bool CastRay(glm::vec3& OutIntersection);
 
 protected:
 
@@ -32,8 +41,8 @@ protected:
 
 	EBravoGizmoState GizmoState = EBravoGizmoState::Transform;
 
-	bool bMouseInput = false;
-	glm::vec3 MouseStart;
-	glm::vec3 MouseDiff;
-	glm::vec3 StartLocation;
+	bool bInputActive = false;
+	glm::vec3 TransformDiff;
+	glm::vec3 TransformInputPlane = glm::vec3(0.0);
+	glm::vec3 TransformInputMask = glm::vec3(0.0);
 };

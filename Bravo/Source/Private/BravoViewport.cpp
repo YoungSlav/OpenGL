@@ -160,7 +160,7 @@ void BravoViewport::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shade
 	}
 }
 
-bool BravoViewport::DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, glm::vec3& OutDirection)
+void BravoViewport::DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, glm::vec3& OutDirection)
 {
 	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 
@@ -180,8 +180,6 @@ bool BravoViewport::DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, 
 		glm::ivec4(0, 0, ViewportSize.x, ViewportSize.y));
 
 	OutDirection = glm::normalize(farPlane - OutOrigin);
-	
-	return true;
 }
 
 void BravoViewport::UpdateViewport()

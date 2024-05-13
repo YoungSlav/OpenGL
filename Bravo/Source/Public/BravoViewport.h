@@ -22,7 +22,7 @@ public:
 
 	OnResizeSignature OnResizeDelegate;
 
-	bool DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, glm::vec3& OutDirection);
+	void DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, glm::vec3& OutDirection);
 
 
 	

@@ -88,7 +88,6 @@ void BravoInput::ProcessInput(float DeltaTime)
 		if ( stateIt != KeyStates.end() )
 		{
 			bPressedOld = stateIt->second;
-			stateIt->second = bPressedNow;
 		}
 
 		if ( !bPressedNow && bPressedOld )
@@ -118,6 +117,11 @@ void BravoInput::ProcessInput(float DeltaTime)
 				listener.Callback.Execute(bPressedNow, DeltaTime);
 			}
 		}
+	}
+
+	for ( auto& stateIt : KeyStates )
+	{
+		stateIt.second = GetKeyState(stateIt.first);
 	}
 
 	OnMouseMoveDelegate.Broadcast(MousePos, DeltaMouseMove, DeltaTime);

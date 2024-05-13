@@ -4,6 +4,7 @@
 #include "BravoRenderTarget.h"
 #include "BravoInput.h"
 #include "IBravoRenderable.h"
+#include "BravoGizmo.h"
 
 bool BravoSelectionManager::Initialize_Internal()
 {
@@ -25,7 +26,7 @@ void BravoSelectionManager::OnBeginPlay()
 	{
 		BravoKeySubscription subscription;
 		subscription.Key = GLFW_MOUSE_BUTTON_LEFT;
-		subscription.SubscribedType = EKeySubscriptionType::Released;
+		subscription.SubscribedType = EKeySubscriptionType::Pressed;
 		subscription.Callback.BindSP(Self<BravoSelectionManager>(), &BravoSelectionManager::OnMouseClicked);
 		Input->SubscribeKey(subscription);
 	}
@@ -69,6 +70,7 @@ void BravoSelectionManager::OnMouseClicked(bool ButtonState, float DeltaTime)
 				selection.InstanceIndex = (int32)(pixelColor[1]);
 				if ( selection.Object != nullptr )
 				{
+					selection.Object->ObjectClicked(selection.InstanceIndex);
 					OnObjectSelected.Broadcast(selection);
 				}
 			}

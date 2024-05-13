@@ -30,6 +30,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnTransformX);
 	TransformComponents.push_back(Mesh);
 	}
 	{
@@ -43,6 +44,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnTransformY);
 	TransformComponents.push_back(Mesh);
 	}
 	{
@@ -56,6 +58,7 @@ bool BravoGizmo::Initialize_Internal()
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnTransformZ);
 	TransformComponents.push_back(Mesh);
 	}
 	
@@ -176,8 +179,8 @@ void BravoGizmo::OnBeginPlay()
 		{
 		BravoKeySubscription subscription;
 		subscription.Key = GLFW_MOUSE_BUTTON_LEFT;
-		subscription.SubscribedType = EKeySubscriptionType::Any;
-		subscription.Callback.BindSP(Self<BravoGizmo>(), &BravoGizmo::OnInput_Mouse);
+		subscription.SubscribedType = EKeySubscriptionType::Released;
+		subscription.Callback.BindSP(Self<BravoGizmo>(), &BravoGizmo::OnInput_MouseReleased);
 		Input->SubscribeKey(subscription);
 		}
 
@@ -187,6 +190,7 @@ void BravoGizmo::OnBeginPlay()
 
 void BravoGizmo::SetGizmoState(EBravoGizmoState NewState)
 {
+	ResetInput();
 	GizmoState = NewState;
 	
 	for ( auto it : TransformComponents )
@@ -204,40 +208,84 @@ void BravoGizmo::OnInput_ChangeGizmo(bool ButtonState, float DeltaTime)
 	SetGizmoState(EBravoGizmoState(NewState));
 }
 
-void BravoGizmo::OnInput_Mouse(bool ButtonState, float DeltaTime)
+void BravoGizmo::OnTransformX(const int32&)
 {
-	bMouseInput = ButtonState;
-	
-	if ( bMouseInput )
+	ResetInput();
+	TransformInputMask = BravoMath::forwardV;
+	TransformInputPlane = BravoMath::upV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
 	{
-		glm::vec3 Origin, Direction;
-		Engine->GetViewport()->DeProject(Engine->GetInput()->GetMousePosition(), Origin, Direction);
-		float Dist = 0.0f;
-		glm::intersectRayPlane(Origin, Direction, GetLocation(), BravoMath::upV, Dist);
-
-		MouseStart = Origin + Direction * Dist;
-		StartLocation = GetLocation();
-
-		MouseDiff = MouseStart - StartLocation;
-		MouseDiff.y = 0.0f;
+		TransformDiff = GetLocation() - Intersection;
+		bInputActive = true;
 	}
+}
+void BravoGizmo::OnTransformY(const int32&)
+{
+	ResetInput();
+	TransformInputMask = BravoMath::rightV;
+	TransformInputPlane = BravoMath::forwardV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		TransformDiff = GetLocation() - Intersection;
+		bInputActive = true;
+	}
+}
+void BravoGizmo::OnTransformZ(const int32&)
+{
+	ResetInput();
+	TransformInputMask = BravoMath::upV;
+	TransformInputPlane = BravoMath::forwardV;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( CastRay(Intersection) )
+	{
+		TransformDiff = GetLocation() - Intersection;
+		bInputActive = true;
+	}
+}
+
+bool BravoGizmo::CastRay(glm::vec3& OutIntersection)
+{
+	glm::vec3 Origin, Direction;
+	Engine->GetViewport()->DeProject(Engine->GetInput()->GetMousePosition(), Origin, Direction);
+	float Dist = 0.0f;
+	if ( glm::intersectRayPlane(Origin, Direction, GetLocation(), TransformInputPlane, Dist) )
+	{
+		OutIntersection = Origin + Direction * Dist;
+		return true;
+	}
+	if ( glm::intersectRayPlane(Origin, Direction, GetLocation(), -TransformInputPlane, Dist) )
+	{
+		OutIntersection = Origin + Direction * Dist;
+		return true;
+	}
+	return false;
+}
+
+void BravoGizmo::OnInput_MouseReleased(bool ButtonState, float DeltaTime)
+{
+	ResetInput();
+}
+
+void BravoGizmo::ResetInput()
+{
+	bInputActive = false;
+	TransformInputMask = glm::vec3(0.0);
+	TransformInputPlane = glm::vec3(0.0);
 }
 
 
 void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
 {
-	if ( !bMouseInput ) return;
+	if ( !bInputActive )
+		return;
+	glm::vec3 Intersection = glm::vec3(0.0);
+	if ( !CastRay(Intersection) )
+		return;
 
+	glm::vec3 MaskNewLocation = GetLocation() + (Intersection + TransformDiff - GetLocation())*TransformInputMask;
 
-	glm::vec3 Origin, Direction;
-	Engine->GetViewport()->DeProject(Engine->GetInput()->GetMousePosition(), Origin, Direction);
-	float Dist = 0.0f;
-	glm::intersectRayPlane(Origin, Direction, GetLocation(), BravoMath::upV, Dist);
-
-	glm::vec3 NewMouseWorld = Origin + Direction * Dist;
-	NewMouseWorld.y = GetLocation().y;
-
-	SetLocation(NewMouseWorld + MouseDiff);
-
+	SetLocation(MaskNewLocation);
 }
 
