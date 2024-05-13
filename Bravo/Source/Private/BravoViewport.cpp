@@ -129,6 +129,7 @@ void BravoViewport::RegisterRenderable(std::shared_ptr<IBravoRenderable> Rendera
 		});
 }
 
+
 void BravoViewport::RemoveRenderable(std::shared_ptr<IBravoRenderable> Renderable)
 {
 	for ( auto it : RenderGroups )

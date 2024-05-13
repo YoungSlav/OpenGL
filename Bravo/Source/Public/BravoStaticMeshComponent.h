@@ -22,6 +22,10 @@ public:
 class BravoStaticMeshComponent : public BravoComponent, public IBravoRenderable
 {
 public:
+	BravoStaticMeshComponent() = default;
+	BravoStaticMeshComponent(ERenderPriority _RenderPriority) : BravoComponent(), IBravoRenderable(_RenderPriority) {}
+	BravoStaticMeshComponent(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup) : BravoComponent(), IBravoRenderable(_RenderPriority, _RenderGroup) {}
+
 	void SetMesh(std::shared_ptr<BravoStaticMeshAsset> InMesh);
 	std::shared_ptr<class BravoMaterial> GetMaterial() const;
 	void SetMaterial(std::shared_ptr<BravoMaterial> _Material);

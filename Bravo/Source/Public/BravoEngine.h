@@ -57,7 +57,7 @@ public:
 	std::shared_ptr<Class> SpawnGameInstance(const std::string& _Name)
 	{
 		static_assert(std::is_base_of_v<BravoGameInstance, Class>);
-		return NewObject<Class>(_Name, Self<BravoEngine>());
+		return NewObject<Class>(_Name);
 	}
 
 	void GameLoop();

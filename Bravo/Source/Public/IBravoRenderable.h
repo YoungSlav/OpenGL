@@ -31,6 +31,7 @@ public:
 	void SetCastShadows(bool _bCastShadows) { bCastShadows = _bCastShadows; }
 	bool GetCastShadows() const { return bCastShadows; }
 
+
 	virtual void Render() = 0;
 	virtual void RenderSelectionID() {};
 	virtual void RenderOutlineMask(int32 InstanceID) {};
@@ -46,8 +47,6 @@ public:
 
 	
 private:
-
-	
 
 	const ERenderPriority RenderPriority = Starndart;
 	const ERenderGroup RenderGroup = Main;

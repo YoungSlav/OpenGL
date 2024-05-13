@@ -6,7 +6,7 @@
 class BravoGameInstance : public BravoObject, public IBravoTickable
 {
 public:
-
+	BravoGameInstance() = default;
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;

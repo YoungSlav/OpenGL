@@ -23,7 +23,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 0.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformX");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformX", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -37,7 +37,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 0.0, 1.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, -90.0, 0.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformY");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformY", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -51,7 +51,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformZ");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -68,7 +68,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 0.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleX");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleX", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(ScaleMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -83,7 +83,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 0.0, 1.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, -90.0, 0.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleY");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleY", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(ScaleMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -98,7 +98,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleZ");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(ScaleMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -116,7 +116,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(90.0f, -90.0, 90.0f);
 
-	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationX");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationX", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -131,7 +131,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(90.0f, -90.0, 0.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationY");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationY", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
@@ -146,7 +146,7 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 0.0, 1.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationZ");
+	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);

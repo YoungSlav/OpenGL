@@ -38,8 +38,8 @@ public:
 	const std::shared_ptr<BravoObject> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
 	const std::string& GetName() const { return Name; }
 
-	template <typename Class>
-	std::shared_ptr<Class> NewObject(const std::string& _Name = "", std::shared_ptr<BravoObject> _Owner = nullptr)
+	template <typename Class, typename... Args>
+	std::shared_ptr<Class> NewObject(const std::string& _Name = "", Args&&... args)
 	{
 		static_assert(std::is_base_of_v<BravoObject, Class>);
 		
@@ -48,19 +48,17 @@ public:
 
 		BravoHandle newHandle = Engine->GenerateNewHandle();
 
-		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class());
-
-		std::shared_ptr<BravoObject> ActualOwner = _Owner ? _Owner : Self<BravoObject>();
+		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(std::forward<Args>(args)...));
 
 		if ( !newObject->Initialize(
 						newHandle,
 						_Name.empty() ? std::to_string(newHandle): _Name,
 						Engine, 
-						ActualOwner )
+						Self<BravoObject>() )
 			)
 			return nullptr;
 
-		ActualOwner->AddChildObject(newObject);
+		AddChildObject(newObject);
 		Engine->RegisterObject(newObject);
 
 		return std::dynamic_pointer_cast<Class>(newObject);
