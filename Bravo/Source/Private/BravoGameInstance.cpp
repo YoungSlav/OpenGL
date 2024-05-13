@@ -85,19 +85,20 @@ bool BravoGameInstance::Initialize_Internal()
 	//	planeMesh->SetMaterial(planeMat);
 	//}
 
-	if ( auto gizmo = NewObject<BravoGizmo>("BravoGizmo") )
-	{
-		gizmo->SetLocation(glm::vec3(2.0f, 2.0f, 2.0f));
-	}
+	//if ( auto gizmo = NewObject<BravoGizmo>("BravoGizmo") )
+	//{
+	//	gizmo->SetLocation(glm::vec3(2.0f, 2.0f, 2.0f));
+	//}
 	
 	SpawnDirLights();
 
 	
 	SpawnPointLights();
 	SpawnSpotLights();
+
+	SpawnSpheres();
 	//
 	//SpawnTestInstances();
-	//SpawnCubes();
 	return true;
 }
 

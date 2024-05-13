@@ -72,6 +72,9 @@ void BravoOutlineManager::OnViewportResized(const glm::ivec2& Size)
 
 void BravoOutlineManager::OnSelectionChanged(const BravoSelection& Selection)
 {
+	if ( Selection.Object->GetRenderGroup() != ERenderGroup::Main )
+		return;
+
 	auto found = std::find(ActiveSelections.begin(), ActiveSelections.end(), Selection);
 	if ( found == ActiveSelections.end() )
 	{

@@ -33,7 +33,12 @@ protected:
 
 	void OnMouseClicked(bool ButtonState, float DeltaTime);
 
+	void ChangeSelection(const BravoSelection& Selection);
+	void ClearSelection();
+
 private:
 	glm::ivec2 Size;
 	std::shared_ptr<class BravoRenderTarget> SelectionRenderTarget;
+
+	std::shared_ptr<class BravoGizmo> Gizmo = nullptr;
 };

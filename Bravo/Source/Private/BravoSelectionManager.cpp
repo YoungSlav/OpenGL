@@ -70,11 +70,33 @@ void BravoSelectionManager::OnMouseClicked(bool ButtonState, float DeltaTime)
 				selection.InstanceIndex = (int32)(pixelColor[1]);
 				if ( selection.Object != nullptr )
 				{
-					selection.Object->ObjectClicked(selection.InstanceIndex);
-					OnObjectSelected.Broadcast(selection);
+					ChangeSelection(selection);
+					
 				}
 			}
 
 		SelectionRenderTarget->Unbind();
 	}
+}
+
+void BravoSelectionManager::ChangeSelection(const BravoSelection& Selection)
+{
+	Selection.Object->ObjectClicked(Selection.InstanceIndex);
+	OnObjectSelected.Broadcast(Selection);
+	if ( std::shared_ptr<BravoComponent> asComp = std::dynamic_pointer_cast<BravoComponent>(Selection.Object) )
+	{
+		if ( std::dynamic_pointer_cast<BravoGizmo>(asComp->GetOwningActor()) )
+			return;
+		
+		ClearSelection();
+		Gizmo = NewObject<BravoGizmo>("Gizmo");
+		Gizmo->SetLocation( asComp->GetLocation_World());
+	}
+	
+}
+
+void BravoSelectionManager::ClearSelection()
+{
+	if ( Gizmo != nullptr )
+		Gizmo->Destroy();
 }

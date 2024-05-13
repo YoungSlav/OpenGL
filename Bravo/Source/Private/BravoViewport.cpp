@@ -143,11 +143,13 @@ void BravoViewport::RemoveRenderable(std::shared_ptr<IBravoRenderable> Renderabl
 
 void BravoViewport::RenderSelectionIDs() const
 {
-	auto RenderGroup = GetRenderGroup(ERenderGroup::Main);
-	for ( auto& it : RenderGroup->Renderables )
+	for ( auto RenderGroup : RenderGroups )
 	{
-		if ( it->IsVisisble() )
-			it->RenderSelectionID();
+		for ( auto& it : RenderGroup.second->Renderables )
+		{
+			if ( it->IsVisisble() )
+				it->RenderSelectionID();
+		}
 	}
 }
 
@@ -207,11 +209,20 @@ void BravoViewport::UpdateViewport()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		auto RenderGroup = GetRenderGroup(ERenderGroup::Main);
-
 		for ( auto& it : RenderGroup->Renderables )
 		{
 			if ( it->IsVisisble() )
 				it->Render();
+		}
+
+		if ( RenderGroup = GetRenderGroup(ERenderGroup::Overlay) )
+		{
+			glClear(GL_DEPTH_BUFFER_BIT);
+			for ( auto& it : RenderGroup->Renderables )
+			{
+				if ( it->IsVisisble() )
+					it->Render();
+			}
 		}
 
 		OutlineManager->RenderSelections();
