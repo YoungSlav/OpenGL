@@ -216,8 +216,10 @@ void BravoGizmo::OnInput_Mouse(bool ButtonState, float DeltaTime)
 		glm::intersectRayPlane(Origin, Direction, GetLocation(), BravoMath::upV, Dist);
 
 		MouseStart = Origin + Direction * Dist;
-
 		StartLocation = GetLocation();
+
+		MouseDiff = MouseStart - StartLocation;
+		MouseDiff.y = 0.0f;
 	}
 }
 
@@ -233,8 +235,9 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 	glm::intersectRayPlane(Origin, Direction, GetLocation(), BravoMath::upV, Dist);
 
 	glm::vec3 NewMouseWorld = Origin + Direction * Dist;
+	NewMouseWorld.y = GetLocation().y;
 
-	SetLocation(StartLocation + NewMouseWorld - MouseStart);
+	SetLocation(NewMouseWorld + MouseDiff);
 
 }
 

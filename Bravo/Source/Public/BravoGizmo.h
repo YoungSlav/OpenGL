@@ -34,5 +34,6 @@ protected:
 
 	bool bMouseInput = false;
 	glm::vec3 MouseStart;
+	glm::vec3 MouseDiff;
 	glm::vec3 StartLocation;
 };

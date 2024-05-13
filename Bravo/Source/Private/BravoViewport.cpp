@@ -164,18 +164,23 @@ bool BravoViewport::DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, 
 {
 	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 
-	float mouseX = ScreenPos.x / (ViewportSize.x * 0.5f) - 1.0f;
-    float mouseY = ScreenPos.y / (ViewportSize.y * 0.5f) - 1.0f;
+	double x = ScreenPos.x;
+	double y = ViewportSize.y - 1.0f - ScreenPos.y;
 
-	glm::mat4 invVP = glm::inverse(camera->GetProjectionMatrix() * camera->GetViewMatrix());
+	OutOrigin = glm::unProject(
+		glm::vec3(x, y, 0.0),
+		camera->GetViewMatrix(),
+		camera->GetProjectionMatrix(),
+		glm::ivec4(0, 0, ViewportSize.x, ViewportSize.y));
 
-	glm::vec4 screenPos = glm::vec4(mouseX, -mouseY, 1.0f, 1.0f);
+	glm::vec3 farPlane = glm::unProject(
+		glm::vec3(x, y, 1.0),
+		camera->GetViewMatrix(),
+		camera->GetProjectionMatrix(),
+		glm::ivec4(0, 0, ViewportSize.x, ViewportSize.y));
 
-	glm::vec4 worldPos = invVP * screenPos;
-
-	OutOrigin = camera->GetLocation();
-	OutDirection = glm::normalize(glm::vec3(worldPos));
-
+	OutDirection = glm::normalize(farPlane - OutOrigin);
+	
 	return true;
 }
 
