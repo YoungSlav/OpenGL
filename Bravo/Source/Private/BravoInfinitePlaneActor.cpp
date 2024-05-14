@@ -82,7 +82,7 @@ void BravoInfinitePlaneActor::Render()
 		return;
 	}
 
-	glm::mat4 model = Transform.GetTransformMatrix();
+	glm::mat4 model = GetTransform().GetTransformMatrix();
 	Shader->Use();
 		Shader->SetMatrix4d("projection", CameraProjection);
 		Shader->SetMatrix4d("view", CameraView);

@@ -63,6 +63,7 @@ public:
 	inline bool IsNearlyEqual(const BravoTransform& Other, float Eps = FLT_EPS)
 	{
 		UpdateTransformMatrix();
+		Other.UpdateTransformMatrix();
 		// "Code from hell" material :)
 		return (
 			abs(TransformMatrix[0][0] - Other.TransformMatrix[0][0]) <= Eps &&

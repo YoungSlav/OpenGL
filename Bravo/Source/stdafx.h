@@ -29,6 +29,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/intersect.hpp"
+#include "glm/gtc/epsilon.hpp"
 #include "Delegates.h"
 
 #include "BravoTypes.h"

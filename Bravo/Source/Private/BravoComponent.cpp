@@ -10,6 +10,7 @@ bool BravoComponent::Initialize_Internal()
 	{
 		if ( std::shared_ptr<ITransformable> asTranformable = std::dynamic_pointer_cast<ITransformable>(Owner) )
 		{
+			SetParent(asTranformable);
 			return true;
 		}
 	}
@@ -27,34 +28,4 @@ std::shared_ptr<BravoActor> BravoComponent::GetOwningActor() const
 		}
 	}
 	return nullptr;
-}
-
-BravoTransform BravoComponent::GetTransform_World() const
-{
-	if ( std::shared_ptr<ITransformable> asTransformable = std::dynamic_pointer_cast<ITransformable>(GetOwner()) )
-	{
-		BravoTransform ownerTransform = asTransformable->GetTransform_World();
-		BravoTransform worldTransform(ownerTransform.GetTransformMatrix() * Transform.GetTransformMatrix());
-		return worldTransform;
-	}
-	else
-	{
-		return GetTransform();
-	}
-}
-
-
-void BravoComponent::SetTransform_World(const BravoTransform& InTransform)
-{
-	if ( std::shared_ptr<ITransformable> asTransformable = std::dynamic_pointer_cast<ITransformable>(GetOwner()) )
-	{
-		BravoTransform ownerTransform = asTransformable->GetTransform_World();
-		glm::mat4 parentWorldInverse = glm::inverse(ownerTransform.GetTransformMatrix());
-		glm::mat4 localTransform = parentWorldInverse * InTransform.GetTransformMatrix();
-		Transform.SetTransformMatrix(localTransform);
-	}
-	else
-	{
-		SetTransform(InTransform);
-	}
 }
