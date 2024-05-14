@@ -8,12 +8,12 @@ bool BravoComponent::Initialize_Internal()
 
 	if ( std::shared_ptr<BravoObject> Owner = GetOwner() )
 	{
-		if ( std::shared_ptr<BravoActor> AsActor = std::dynamic_pointer_cast<BravoActor>(Owner) )
+		if ( std::shared_ptr<ITransformable> asTranformable = std::dynamic_pointer_cast<ITransformable>(Owner) )
 		{
 			return true;
 		}
 	}
-	Log::LogMessage("Owner of the component " + GetName() + " is not an actor! All components must be owned by an actor!", ELog::Error);
+	Log::LogMessage("Owner of the component " + GetName() + " is not an actor! All components must be owned by an actor or another component!", ELog::Error);
 	return false;
 }
 
@@ -29,27 +29,32 @@ std::shared_ptr<BravoActor> BravoComponent::GetOwningActor() const
 	return nullptr;
 }
 
-glm::vec3 BravoComponent::GetLocation_World() const
-{
-	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetLocation();
-}
-
-glm::vec3 BravoComponent::GetRotation_World() const
-{
-	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetRotation();
-}
-	
-glm::vec3 BravoComponent::GetDirection_World() const
-{
-	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetDirection();
-}
-
-glm::vec3 BravoComponent::GetScale_World() const
-{
-	return Transform.LocalToWorld(GetOwningActor()->GetTransform()).GetScale();
-}
-
 BravoTransform BravoComponent::GetTransform_World() const
 {
-	return Transform.LocalToWorld(GetOwningActor()->GetTransform());
+	if ( std::shared_ptr<ITransformable> asTransformable = std::dynamic_pointer_cast<ITransformable>(GetOwner()) )
+	{
+		BravoTransform ownerTransform = asTransformable->GetTransform_World();
+		BravoTransform worldTransform(ownerTransform.GetTransformMatrix() * Transform.GetTransformMatrix());
+		return worldTransform;
+	}
+	else
+	{
+		return GetTransform();
+	}
+}
+
+
+void BravoComponent::SetTransform_World(const BravoTransform& InTransform)
+{
+	if ( std::shared_ptr<ITransformable> asTransformable = std::dynamic_pointer_cast<ITransformable>(GetOwner()) )
+	{
+		BravoTransform ownerTransform = asTransformable->GetTransform_World();
+		glm::mat4 parentWorldInverse = glm::inverse(ownerTransform.GetTransformMatrix());
+		glm::mat4 localTransform = parentWorldInverse * InTransform.GetTransformMatrix();
+		Transform.SetTransformMatrix(localTransform);
+	}
+	else
+	{
+		SetTransform(InTransform);
+	}
 }

@@ -23,9 +23,9 @@ public:
 
 	inline const glm::vec3& GetLocation() const { return Location; }
 	inline const glm::vec3& GetRotation() const { return Rotation; }
-	inline glm::vec3 GetDirection() const { return BravoMath::RotationToDirection(Rotation); }
+	inline const glm::vec3& GetDirection() const { return Direction; }
 	inline const glm::vec3& GetScale() const { return Scale; }
-	inline const glm::mat4& GetTransformMatrix() const { return TransformMatrix; }
+	inline const glm::mat4& GetTransformMatrix() const { UpdateTransformMatrix(); return TransformMatrix; }
 
 
 	inline void SetTransformMatrix(const glm::mat4& _transform)
@@ -37,34 +37,32 @@ public:
 	inline void SetLocation(const glm::vec3& _location)
 	{
 		Location = _location;
-		UpdateTransformMatrix();
+		bMatrixDirty = true;
 	}
 
 	inline void SetRotation(const glm::vec3& _rotation)
 	{
 		Rotation = _rotation;
-		UpdateTransformMatrix();
+		Direction = BravoMath::RotationToDirection(Rotation);
+		bMatrixDirty = true;
 	}
 	
 	inline void SetDirection(const glm::vec3& _direction)
 	{
+		Direction = _direction;
 		Rotation = BravoMath::DirectionToRotation(_direction);
-		UpdateTransformMatrix();
+		bMatrixDirty = true;
 	}
 
 	inline void SetScale(const glm::vec3& _scale)
 	{
-		Scale = _scale;	
-		UpdateTransformMatrix();
-	}
-
-	inline BravoTransform LocalToWorld(const BravoTransform& OwnerTransform) const
-	{
-		return BravoTransform(OwnerTransform.GetTransformMatrix() * TransformMatrix);
+		Scale = _scale;
+		bMatrixDirty = true;
 	}
 
 	inline bool IsNearlyEqual(const BravoTransform& Other, float Eps = FLT_EPS)
 	{
+		UpdateTransformMatrix();
 		// "Code from hell" material :)
 		return (
 			abs(TransformMatrix[0][0] - Other.TransformMatrix[0][0]) <= Eps &&
@@ -90,11 +88,13 @@ public:
 	}
 
 private:
-	inline void UpdateTransformMatrix()
+	inline void UpdateTransformMatrix() const
 	{
+		if ( !bMatrixDirty ) return;
 		glm::mat4 transform;
 		ApplyOnMatrix(transform);
 		TransformMatrix = transform;
+		bMatrixDirty = false;
 	}
 
 	inline void ApplyOnMatrix(glm::mat4& OutMatrix) const
@@ -119,12 +119,18 @@ private:
 		);
 
 		Rotation = glm::degrees(glm::eulerAngles(glm::quat_cast(TransformMatrix)));
+		Direction = BravoMath::RotationToDirection(Rotation);
+
+		bMatrixDirty = false;
 	}
 
 private:
-	glm::mat4 TransformMatrix;
+	mutable glm::mat4 TransformMatrix;
+	mutable bool bMatrixDirty = true;
+
 
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 Direction = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 };

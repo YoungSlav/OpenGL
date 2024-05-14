@@ -124,6 +124,7 @@
     <ClInclude Include="Source\Public\BravoWidget_Plane.h" />
     <ClInclude Include="Source\Public\BravoScreen.h" />
     <ClInclude Include="Source\Public\BravoWidget_Text.h" />
+    <ClInclude Include="Source\Public\ITransformable.h" />
     <ClInclude Include="Source\Public\Log.h" />
     <ClInclude Include="Source\Public\BravoShaderAsset.h" />
     <ClInclude Include="Source\Public\BravoTextureAsset.h" />

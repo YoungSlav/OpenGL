@@ -458,6 +458,9 @@
     <ClInclude Include="Source\Public\BravoGizmo.h">
       <Filter>Public\Actors</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\ITransformable.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\PhongModel.frag">
