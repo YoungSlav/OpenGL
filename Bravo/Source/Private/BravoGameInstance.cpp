@@ -50,6 +50,7 @@ bool BravoGameInstance::Initialize_Internal()
 		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>("Camera");
 		Engine->SetCamera(Camera);
 		Camera->AttachTo(Player);
+		Camera->SetTransform(BravoTransform());
 	}
 
 	

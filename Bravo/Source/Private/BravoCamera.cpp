@@ -5,12 +5,11 @@
 
 void BravoCamera::AttachTo(const std::shared_ptr<BravoActor> InActor)
 {
-	Owner = InActor;
-	bAttachedToActor = true;
+	SetParent(std::dynamic_pointer_cast<ITransformable>(InActor));
 }
 void BravoCamera::Detach()
 {
-	bAttachedToActor = false;
+	SetParent(nullptr);
 }
 
 bool BravoCamera::Initialize_Internal()
@@ -21,29 +20,21 @@ bool BravoCamera::Initialize_Internal()
 
 void BravoCamera::UpdateCamera()
 {
-	if ( bAttachedToActor )
-	{
-		if ( std::shared_ptr<BravoActor> O = GetOwner() )
-		{
-			SetLocation(O->GetLocation());
-			SetRotation(O->GetRotation());
-		}
-	}
 	UpdateCamera_Internal();
 }
 
 void BravoCamera::UpdateCamera_Internal()
 {
 	glm::vec3 front;
-    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front.y = sin(glm::radians(GetRotation().z));
-    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
+    front.x = cos(glm::radians(GetRotation_World().y)) * cos(glm::radians(GetRotation_World().z));
+    front.y = sin(glm::radians(GetRotation_World().z));
+    front.z = sin(glm::radians(GetRotation_World().y)) * cos(glm::radians(GetRotation_World().z));
     front = glm::normalize(front);
     // Also re-calculate the Right and Up vector
     glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     glm::vec3 up    = glm::normalize(glm::cross(front, right));
 	
-	ViewMatrix = glm::lookAt(GetLocation(), GetLocation() + front, up);
+	ViewMatrix = glm::lookAt(GetLocation_World(), GetLocation_World() + front, up);
 
 	const glm::ivec2 ViewportSize = Engine->GetViewport()->GetViewportSize();
 	const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;

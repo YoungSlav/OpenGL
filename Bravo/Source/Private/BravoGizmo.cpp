@@ -25,6 +25,7 @@ bool BravoGizmo::Initialize_Internal()
 	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformX", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
+	Mesh->SetScale(glm::vec3(0.25f));
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
@@ -39,6 +40,7 @@ bool BravoGizmo::Initialize_Internal()
 	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformY", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
+	Mesh->SetScale(glm::vec3(0.25f));
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
@@ -53,6 +55,7 @@ bool BravoGizmo::Initialize_Internal()
 	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
+	Mesh->SetScale(glm::vec3(0.25f));
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
@@ -72,7 +75,7 @@ bool BravoGizmo::Initialize_Internal()
 	Mesh->SetMesh(ScaleMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
-	Mesh->SetScale(glm::vec3(4.0f));
+	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
@@ -87,7 +90,7 @@ bool BravoGizmo::Initialize_Internal()
 	Mesh->SetMesh(ScaleMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
-	Mesh->SetScale(glm::vec3(4.0f));
+	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
@@ -102,7 +105,7 @@ bool BravoGizmo::Initialize_Internal()
 	Mesh->SetMesh(ScaleMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
-	Mesh->SetScale(glm::vec3(4.0f));
+	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
@@ -120,7 +123,7 @@ bool BravoGizmo::Initialize_Internal()
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
-	Mesh->SetScale(glm::vec3(4.0f));
+	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
@@ -135,7 +138,7 @@ bool BravoGizmo::Initialize_Internal()
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
-	Mesh->SetScale(glm::vec3(4.0f));
+	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
@@ -150,7 +153,7 @@ bool BravoGizmo::Initialize_Internal()
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
 	Mesh->SetRotation(Rotation);
-	Mesh->SetScale(glm::vec3(4.0f));
+	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);

@@ -100,7 +100,7 @@ private:
 
 	inline void ApplyOnMatrix(glm::mat4& OutMatrix) const
 	{
-		OutMatrix = glm::translate(OutMatrix, Location);
+		OutMatrix = glm::translate(glm::mat4(1.0f), Location);
 		OutMatrix = OutMatrix * glm::toMat4(BravoMath::EulerToQuat(Rotation));
 		OutMatrix = glm::scale(OutMatrix, Scale);
 	}
@@ -119,7 +119,14 @@ private:
 			glm::length(glm::vec3(TransformMatrix[2][0], TransformMatrix[2][1], TransformMatrix[2][2]))
 		);
 
-		Rotation = glm::degrees(glm::eulerAngles(glm::quat_cast(TransformMatrix)));
+		glm::mat3 rotationMatrix(
+			glm::vec3(TransformMatrix[0]) / Scale.x,
+			glm::vec3(TransformMatrix[1]) / Scale.y,
+			glm::vec3(TransformMatrix[2]) / Scale.z
+		);
+
+		Rotation = glm::degrees(glm::eulerAngles(glm::quat_cast(rotationMatrix)));
+
 		Direction = BravoMath::RotationToDirection(Rotation);
 
 		bMatrixDirty = false;

@@ -23,8 +23,6 @@ public:
 
 	void UpdateCamera();
 
-	std::shared_ptr<BravoActor> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
-
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void UpdateCamera_Internal();
@@ -33,9 +31,6 @@ private:
 	float FOV = 45.0f;
 	float MinDrawingDistance = 0.1f;
 	float MaxDrawingDistance = 1000.0f;
-
-	bool bAttachedToActor = false;
-	std::weak_ptr<BravoActor> Owner;
 	
 	glm::mat4 ViewMatrix;
 	glm::mat4 ProjectionMatrix;

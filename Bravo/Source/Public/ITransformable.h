@@ -16,7 +16,7 @@ public:
 		}
 	}
 
-	void SetParent(std::shared_ptr<ITransformable> _Parent)
+	void SetParent(const std::shared_ptr<ITransformable> _Parent)
 	{
 		if ( std::shared_ptr<ITransformable> oldParent = GetParent() )
 		{
@@ -24,42 +24,44 @@ public:
 		}
 		Parent = _Parent;
 		_Parent->OnTransformUpdated.AddRaw(this, &ITransformable::OnParentTransformUpdated);
+
+		SetTransform_World(WorldTransform);
 	}
 	std::shared_ptr<ITransformable> GetParent() const { return Parent.expired() ? nullptr : Parent.lock(); }
 
-	const BravoTransform& GetTransform() const { return Transform; }
-	const glm::vec3& GetLocation() const { return Transform.GetLocation(); }
-	const glm::vec3& GetRotation() const { return Transform.GetRotation(); }
-	const glm::vec3& GetDirection() const { return Transform.GetDirection(); }
-	const glm::vec3& GetScale() const { return Transform.GetScale(); }
+	const BravoTransform& GetTransform() const { return LocalTransform; }
+	const glm::vec3& GetLocation() const { return LocalTransform.GetLocation(); }
+	const glm::vec3& GetRotation() const { return LocalTransform.GetRotation(); }
+	const glm::vec3& GetDirection() const { return LocalTransform.GetDirection(); }
+	const glm::vec3& GetScale() const { return LocalTransform.GetScale(); }
 
 	void SetTransform(const BravoTransform& InTransform)
 	{
-		Transform = InTransform;
+		LocalTransform = InTransform;
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetLocation(const glm::vec3& InLocation)
 	{
-		Transform.SetLocation(InLocation);
+		LocalTransform.SetLocation(InLocation);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetRotation(const glm::vec3& InRotation)
 	{
-		Transform.SetRotation(InRotation);
+		LocalTransform.SetRotation(InRotation);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetDirection(const glm::vec3& Direction)
 	{
-		Transform.SetDirection(Direction);
+		LocalTransform.SetDirection(Direction);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetScale(const glm::vec3& InScale)
 	{
-		Transform.SetScale(InScale);
+		LocalTransform.SetScale(InScale);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
@@ -77,7 +79,6 @@ public:
 
 	void SetTransform_World(const BravoTransform& InTransform)
 	{
-		WorldTransform = InTransform;
 		if ( std::shared_ptr<ITransformable> p = GetParent() )
 		{
 			BravoTransform panretTransform = p->GetTransform_World();
@@ -121,12 +122,15 @@ private:
 	{
 		if ( std::shared_ptr<ITransformable> p = GetParent() )
 		{
-			BravoTransform parentTransform = p->GetTransform_World();
-			WorldTransform.SetTransformMatrix(parentTransform.GetTransformMatrix() * Transform.GetTransformMatrix());
+			const BravoTransform& parentTransform = p->GetTransform_World();
+			glm::mat4 parentMat = parentTransform.GetTransformMatrix();
+			glm::mat4 myMat = LocalTransform.GetTransformMatrix();
+			glm::mat4 myWorld = parentMat * myMat;
+			WorldTransform.SetTransformMatrix(myWorld);
 		}
 		else
 		{
-			WorldTransform = Transform;
+			WorldTransform = LocalTransform;
 		}
 	}
 
@@ -136,7 +140,7 @@ private:
 	}
 
 private:
-	BravoTransform Transform;
+	BravoTransform LocalTransform;
 	BravoTransform WorldTransform;
 
 	OnTransformUpdatedSignature OnTransformUpdated;
