@@ -103,50 +103,48 @@ bool BravoGameInstance::Initialize_Internal()
 	return true;
 }
 
-glm::mat4 ApplyOnMatrix(const glm::vec3& L, const glm::quat& R, const glm::vec3& S)
-{
-	glm::mat4 OutMatrix(1.0);
-	OutMatrix = glm::translate(glm::mat4(1.0f), L);
-	OutMatrix *= glm::toMat4(R);
-	OutMatrix = glm::scale(OutMatrix, S);
-	return OutMatrix;
-}
-
-void DecomposeTransformMatrix(const glm::mat4& TransformMatrix, glm::vec3& L, glm::quat& R, glm::vec3& S)
-{
-	glm::vec3 scale;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-	glm::decompose(TransformMatrix, S, R, L, skew,perspective);
-
-	//R=glm::conjugate(R);
-
-}
 
 void BravoGameInstance::Test()
 {
 	glm::vec3 location = BravoMath::RandVector(1000000.0);
-	glm::vec3 axis = glm::normalize(BravoMath::RandVector(1.0f));
-	glm::quat rotation = glm::rotation(BravoMath::forwardV, glm::normalize(axis));
-	glm::vec3 scale = BravoMath::RandVector(10000.0);
+	glm::vec3 rotation = BravoMath::RotationToDirection(BravoMath::RandVector(1.0));
+	BravoMath::DirectionToQuaternion(BravoMath::RandVector(1.0));
+	glm::vec3 scale = glm::abs(BravoMath::RandVector(10.0));
 
-	glm::mat4 parentM = ApplyOnMatrix(location, rotation, scale);
-	glm::mat4 childM(1.0);
+	BravoTransform parent(location, rotation, scale);
+	location = parent.GetLocation();
+	rotation = parent.GetRotation();
+	scale = parent.GetScale();
+	
+	BravoTransform child;
 
-	glm::mat4 childWorld = parentM * childM;
+	BravoTransform childWorld(parent.GetTransformMatrix() * child.GetTransformMatrix());
+	
+	glm::vec3 worldCLoc = childWorld.GetLocation();
+	glm::vec3 worldCRot = childWorld.GetRotation();
+	glm::vec3 worldCSc = childWorld.GetScale();
 
-	glm::vec3 worldCLoc(0.0);
-	glm::quat worldCRot;
-	glm::vec3 worldCSc(0.0);
+	bool mat = childWorld.IsNearlyEqual(parent);
+	bool loc = !glm::all(glm::epsilonNotEqual(location, worldCLoc, FLT_EPS));
+	bool rot = !glm::all(glm::epsilonNotEqual(rotation, worldCRot, FLT_EPS));
+	bool sc = !glm::all(glm::epsilonNotEqual(scale, worldCSc, FLT_EPS));
 
-	DecomposeTransformMatrix(childWorld, worldCLoc, worldCRot, worldCSc);
 
-	if (glm::all(glm::epsilonNotEqual(location, worldCLoc, FLT_EPS)) ||
-		glm::all(glm::epsilonNotEqual(rotation, worldCRot, FLT_EPS)) ||
-		glm::all(glm::epsilonNotEqual(scale, worldCSc, FLT_EPS)) )
+	if ( !mat )
 	{
-		Log::LogMessage("TRANFORM FAILED", ELog::Error);
+		Log::LogMessage(std::format("Mat failed {} --> {}", Log::to_string(parent.GetTransformMatrix()), Log::to_string(childWorld.GetTransformMatrix())));
+	}
+	if ( !loc )
+	{
+		Log::LogMessage(std::format("Loc failed {} --> {}", Log::to_string(parent.GetLocation()), Log::to_string(childWorld.GetLocation())));
+	}
+	if ( !rot )
+	{
+		Log::LogMessage(std::format("Rot failed {} --> {}", Log::to_string(parent.GetRotation()), Log::to_string(childWorld.GetRotation())));
+	}
+	if ( !sc )
+	{
+		Log::LogMessage(std::format("Sc failed {} --> {}", Log::to_string(parent.GetScale()), Log::to_string(childWorld.GetScale())));
 	}
 }
 

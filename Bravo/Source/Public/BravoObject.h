@@ -46,20 +46,10 @@ public:
 		if ( !Engine )
 			return nullptr;
 
-		BravoHandle newHandle = Engine->GenerateNewHandle();
-
 		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(std::forward<Args>(args)...));
 
-		if ( !newObject->Initialize(
-						newHandle,
-						_Name.empty() ? std::to_string(newHandle): _Name,
-						Engine, 
-						Self<BravoObject>() )
-			)
+		if ( !InitializeNewObject(newObject, _Name) )
 			return nullptr;
-
-		AddChildObject(newObject);
-		Engine->RegisterObject(newObject);
 
 		return std::dynamic_pointer_cast<Class>(newObject);
 	}
@@ -72,10 +62,12 @@ protected:
 
 private:
 	
+	bool InitializeNewObject(std::shared_ptr<BravoObject> obj, const std::string& _Name);
+
 	void AddChildObject(std::weak_ptr<BravoObject> _OwnedObject);
 
 protected:
-	std::shared_ptr<BravoEngine> Engine;
+	std::shared_ptr<class BravoEngine> Engine;
 
 private:
 	std::weak_ptr<BravoObject> Owner;

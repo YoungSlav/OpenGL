@@ -107,12 +107,10 @@ private:
 
 	inline void DecomposeTransformMatrix()
 	{
-		glm::vec3 scale;
 		glm::quat rotation;
-		glm::vec3 translation;
 		glm::vec3 skew;
 		glm::vec4 perspective;
-		glm::decompose(TransformMatrix, Scale, rotation, Location, skew,perspective);
+		glm::decompose(TransformMatrix, Scale, rotation, Location, skew, perspective);
 
 		rotation=glm::conjugate(rotation);
 
