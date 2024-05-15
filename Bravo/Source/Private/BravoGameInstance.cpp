@@ -120,7 +120,7 @@ void DecomposeTransformMatrix(const glm::mat4& TransformMatrix, glm::vec3& L, gl
 	glm::vec4 perspective;
 	glm::decompose(TransformMatrix, S, R, L, skew,perspective);
 
-	R=glm::conjugate(R);
+	//R=glm::conjugate(R);
 
 }
 

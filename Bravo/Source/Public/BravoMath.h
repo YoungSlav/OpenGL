@@ -19,11 +19,11 @@ public:
 	static glm::quat EulerToQuat(const glm::vec3& EulerRotation);
 
 	template<typename T>
-	T BravoMath::Rand(T Min, T Max)
+	static T Rand(T Min, T Max)
 	{
 		double r = (double)(rand()) / (double)(RAND_MAX);
 
-		return Min + (T)(((Max - Min)*r);
+		return Min + (T)((Max - Min)*r);
 	}
 	static glm::vec3 RandVector(float MaxDimension);
 
