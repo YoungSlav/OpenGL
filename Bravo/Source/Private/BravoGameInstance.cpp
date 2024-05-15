@@ -103,6 +103,53 @@ bool BravoGameInstance::Initialize_Internal()
 	return true;
 }
 
+glm::mat4 ApplyOnMatrix(const glm::vec3& L, const glm::quat& R, const glm::vec3& S)
+{
+	glm::mat4 OutMatrix(1.0);
+	OutMatrix = glm::translate(glm::mat4(1.0f), L);
+	OutMatrix *= glm::toMat4(R);
+	OutMatrix = glm::scale(OutMatrix, S);
+	return OutMatrix;
+}
+
+void DecomposeTransformMatrix(const glm::mat4& TransformMatrix, glm::vec3& L, glm::quat& R, glm::vec3& S)
+{
+	glm::vec3 scale;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(TransformMatrix, S, R, L, skew,perspective);
+
+	R=glm::conjugate(R);
+
+}
+
+void BravoGameInstance::Test()
+{
+	glm::vec3 location = BravoMath::RandVector(1000000.0);
+	glm::vec3 axis = glm::normalize(BravoMath::RandVector(1.0f));
+	glm::quat rotation = glm::rotation(BravoMath::forwardV, glm::normalize(axis));
+	glm::vec3 scale = BravoMath::RandVector(10000.0);
+
+	glm::mat4 parentM = ApplyOnMatrix(location, rotation, scale);
+	glm::mat4 childM(1.0);
+
+	glm::mat4 childWorld = parentM * childM;
+
+	glm::vec3 worldCLoc(0.0);
+	glm::quat worldCRot;
+	glm::vec3 worldCSc(0.0);
+
+	DecomposeTransformMatrix(childWorld, worldCLoc, worldCRot, worldCSc);
+
+	if (glm::all(glm::epsilonNotEqual(location, worldCLoc, FLT_EPS)) ||
+		glm::all(glm::epsilonNotEqual(rotation, worldCRot, FLT_EPS)) ||
+		glm::all(glm::epsilonNotEqual(scale, worldCSc, FLT_EPS)) )
+	{
+		Log::LogMessage("TRANFORM FAILED", ELog::Error);
+	}
+}
+
 void BravoGameInstance::SpawnTriangles()
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
@@ -344,6 +391,8 @@ void BravoGameInstance::Tick(float DeltaTime)
 {
 	//std::shared_ptr<BravoActor> cube = Cubes[0].lock();
 	//cube->SetRotation(glm::vec3(LifeTime*10.0f, 0.0f, 90.0f));
+
+	Test();
 	
 	for ( int32 i = 0; i < pointLights.size(); ++i )
 	{

@@ -13,9 +13,18 @@ public:
 	static glm::vec3 RotationToDirection(const glm::vec3& Rotation);
 	static glm::vec3 QuaternionToDirection(const glm::quat& Quaternion);
 
+
+	static glm::vec3 NormalizeEulerAngles(const glm::vec3& angles);
 	static glm::vec3 QuatToEuler(const glm::quat& QuatRotation);
 	static glm::quat EulerToQuat(const glm::vec3& EulerRotation);
 
+	template<typename T>
+	T BravoMath::Rand(T Min, T Max)
+	{
+		double r = (double)(rand()) / (double)(RAND_MAX);
+
+		return Min + (T)(((Max - Min)*r);
+	}
 	static glm::vec3 RandVector(float MaxDimension);
 
 	static bool IsNearlyZero(float Number, double Tolerance = 1e-5);

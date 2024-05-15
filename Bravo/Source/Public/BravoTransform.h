@@ -101,32 +101,22 @@ private:
 	inline void ApplyOnMatrix(glm::mat4& OutMatrix) const
 	{
 		OutMatrix = glm::translate(glm::mat4(1.0f), Location);
-		OutMatrix = OutMatrix * glm::toMat4(BravoMath::EulerToQuat(Rotation));
+		OutMatrix *= glm::toMat4(glm::quat(glm::radians(Rotation)));
 		OutMatrix = glm::scale(OutMatrix, Scale);
 	}
 
 	inline void DecomposeTransformMatrix()
 	{
-		Location = glm::vec3(
-			TransformMatrix[3].x,
-			TransformMatrix[3].y,
-			TransformMatrix[3].z
-		);
-		
-		Scale = glm::vec3(
-			glm::length(glm::vec3(TransformMatrix[0][0], TransformMatrix[0][1], TransformMatrix[0][2])),
-			glm::length(glm::vec3(TransformMatrix[1][0], TransformMatrix[1][1], TransformMatrix[1][2])),
-			glm::length(glm::vec3(TransformMatrix[2][0], TransformMatrix[2][1], TransformMatrix[2][2]))
-		);
+		glm::vec3 scale;
+		glm::quat rotation;
+		glm::vec3 translation;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(TransformMatrix, Scale, rotation, Location, skew,perspective);
 
-		glm::mat3 rotationMatrix(
-			glm::vec3(TransformMatrix[0]) / Scale.x,
-			glm::vec3(TransformMatrix[1]) / Scale.y,
-			glm::vec3(TransformMatrix[2]) / Scale.z
-		);
+		rotation=glm::conjugate(rotation);
 
-		Rotation = glm::degrees(glm::eulerAngles(glm::quat_cast(rotationMatrix)));
-
+		Rotation = BravoMath::QuatToEuler(rotation);
 		Direction = BravoMath::RotationToDirection(Rotation);
 
 		bMatrixDirty = false;

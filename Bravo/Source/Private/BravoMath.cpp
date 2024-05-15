@@ -39,13 +39,24 @@ glm::quat BravoMath::EulerToQuat(const glm::vec3& EulerRotation)
 	return glm::quat(glm::radians(EulerRotation));
 }
 
+glm::vec3 BravoMath::NormalizeEulerAngles(const glm::vec3& angles)
+{
+    glm::vec3 normalizedAngles;
+    normalizedAngles.x = fmod(fmod(angles.x, 360.0f) + 360.0f, 360.0f);
+    normalizedAngles.y = fmod(fmod(angles.y, 360.0f) + 360.0f, 360.0f);
+    normalizedAngles.z = fmod(fmod(angles.z, 360.0f) + 360.0f, 360.0f);
+    return normalizedAngles;
+}
+
+
+
 glm::vec3 BravoMath::RandVector(float MaxDimension)
 {
 	int32 iMaxDimension = (int32)MaxDimension;
 	glm::vec3 Result(
-		((rand() % iMaxDimension*2) - iMaxDimension),
-		((rand() % iMaxDimension*2) - iMaxDimension),
-		((rand() % iMaxDimension*2) - iMaxDimension)
+		BravoMath::Rand(-MaxDimension, MaxDimension),
+		BravoMath::Rand(-MaxDimension, MaxDimension),
+		BravoMath::Rand(-MaxDimension, MaxDimension)
 	);
 	return Result;
 }
