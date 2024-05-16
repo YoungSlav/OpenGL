@@ -17,6 +17,15 @@ glm::vec3 BravoMath::QuaternionToDirection(const glm::quat& Quaternion)
 	return rotation;
 }
 
+static glm::vec3 QuatToEuler(const glm::quat& QuatRotation)
+{
+	return glm::degrees(glm::eulerAngles(QuatRotation));
+}
+static glm::quat EulerToQuat(const glm::vec3& EulerRotation)
+{
+	return glm::quat(glm::radians(EulerRotation));
+}
+
 glm::vec3 BravoMath::RandVector(float MaxDimension)
 {
 	int32 iMaxDimension = (int32)MaxDimension;
