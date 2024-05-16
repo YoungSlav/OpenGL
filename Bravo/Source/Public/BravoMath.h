@@ -7,10 +7,7 @@
 class BravoMath
 {
 public:
-	static glm::vec3 DirectionToRotation(const glm::vec3& Direction);
 	static glm::quat DirectionToQuaternion(const glm::vec3& Direction);
-
-	static glm::vec3 RotationToDirection(const glm::vec3& Rotation);
 	static glm::vec3 QuaternionToDirection(const glm::quat& Quaternion);
 
 

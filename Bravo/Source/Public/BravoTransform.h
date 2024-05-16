@@ -10,7 +10,7 @@ public:
 	{
 		UpdateTransformMatrix();
 	}
-	BravoTransform(const glm::vec3& _location, const glm::vec3& _rotation, const glm::vec3& _scale) :
+	BravoTransform(const glm::vec3& _location, const glm::quat& _rotation, const glm::vec3& _scale) :
 		Location(_location), Rotation(_rotation), Scale(_scale)
 	{
 		UpdateTransformMatrix();
@@ -22,7 +22,7 @@ public:
 	}
 
 	inline const glm::vec3& GetLocation() const { return Location; }
-	inline const glm::vec3& GetRotation() const { return Rotation; }
+	inline const glm::quat& GetRotation() const { return Rotation; }
 	inline const glm::vec3& GetDirection() const { return Direction; }
 	inline const glm::vec3& GetScale() const { return Scale; }
 	inline const glm::mat4& GetTransformMatrix() const { UpdateTransformMatrix(); return TransformMatrix; }
@@ -40,17 +40,17 @@ public:
 		bMatrixDirty = true;
 	}
 
-	inline void SetRotation(const glm::vec3& _rotation)
+	inline void SetRotation(const glm::quat& _rotation)
 	{
 		Rotation = _rotation;
-		Direction = BravoMath::RotationToDirection(Rotation);
+		Direction = BravoMath::QuaternionToDirection(Rotation);
 		bMatrixDirty = true;
 	}
 	
 	inline void SetDirection(const glm::vec3& _direction)
 	{
 		Direction = _direction;
-		Rotation = BravoMath::DirectionToRotation(_direction);
+		Rotation = BravoMath::DirectionToQuaternion(_direction);
 		bMatrixDirty = true;
 	}
 
@@ -101,21 +101,17 @@ private:
 	inline void ApplyOnMatrix(glm::mat4& OutMatrix) const
 	{
 		OutMatrix = glm::translate(glm::mat4(1.0f), Location);
-		OutMatrix *= glm::toMat4(glm::quat(glm::radians(Rotation)));
+		OutMatrix *= glm::toMat4(Rotation);
 		OutMatrix = glm::scale(OutMatrix, Scale);
 	}
 
 	inline void DecomposeTransformMatrix()
 	{
-		glm::quat rotation;
 		glm::vec3 skew;
 		glm::vec4 perspective;
-		glm::decompose(TransformMatrix, Scale, rotation, Location, skew, perspective);
+		glm::decompose(TransformMatrix, Scale, Rotation, Location, skew, perspective);
 
-		rotation=glm::conjugate(rotation);
-
-		Rotation = BravoMath::QuatToEuler(rotation);
-		Direction = BravoMath::RotationToDirection(Rotation);
+		Direction = BravoMath::QuaternionToDirection(Rotation);
 
 		bMatrixDirty = false;
 	}
@@ -126,7 +122,7 @@ private:
 
 
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::quat Rotation = glm::quat(0, 0, 0, 1);
 	glm::vec3 Direction = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 };

@@ -30,17 +30,25 @@ public:
 	template<typename T>
 	static std::string to_string(const T& val)
 	{
-		return to_string_internal<T>(val);
+		if constexpr (std::is_same_v<T, glm::qua<typename T::value_type>>)
+		{
+			return to_string_internal<typename T::value_type, T::length()>(val);
+		}
+		else
+		{
+			return to_string_internal<T>(val);
+		}
 	}
 
 private:
 
-	// Templated function to convert non-glm types to string using std::to_string
-	template<typename T>
-	static std::string to_string_internal(const T& val) 
+	// Overload for glm::quat to construct a string representation
+	template<typename T, glm::qualifier Q = glm::defaultp>
+	static std::string to_string_internal(const glm::qua<T, Q>& qua)
 	{
-		return std::to_string(val);
+		return "(" + to_string_internal(glm::vec3(qua.x, qua.y, qua.z)) + " " + to_string_internal<float>(qua.w) + ")";
 	}
+	
 	
 	// Templated function to convert glm vector types to string
 	template<typename T, glm::length_t L, typename U = typename T::value_type>
@@ -76,13 +84,6 @@ private:
 		return ss.str();
 	}
 
-	// Overload for glm::quat to construct a string representation
-	template<typename T, glm::qualifier Q = glm::defaultp>
-	static std::string to_string_internal(const glm::qua<T, Q>& qua)
-	{
-		return "(" + to_string_internal<glm::vec>(glm::vec3(qua.x, qua.y, qua.z)) + " " + to_string(qua.w) + ")";
-	}
-
 	// Templated function to convert glm matrix types to string
 	template<typename T, glm::length_t C, glm::length_t R, typename U = typename T::value_type>
 	static std::string to_string_internal(const glm::mat<C, R, U>& mat) 
@@ -98,5 +99,12 @@ private:
 		}
 		str += ")";
 		return str;
+	}
+
+	// Templated function to convert non-glm types to string using std::to_string
+	template<typename T>
+	static std::string to_string_internal(const T& val) 
+	{
+		return std::to_string(val);
 	}
 };

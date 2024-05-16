@@ -107,8 +107,10 @@ bool BravoGameInstance::Initialize_Internal()
 void BravoGameInstance::Test()
 {
 	glm::vec3 location = BravoMath::RandVector(1000000.0);
-	glm::vec3 rotation = BravoMath::RotationToDirection(BravoMath::RandVector(1.0));
-	BravoMath::DirectionToQuaternion(BravoMath::RandVector(1.0));
+	glm::vec3 direction = BravoMath::RandVector(1.0f);
+	glm::quat rotation = BravoMath::DirectionToQuaternion(direction);
+	//glm::vec3 direction = BravoMath::RotationToDirection(rotation);
+	//rotation = BravoMath::DirectionToRotation(direction);
 	glm::vec3 scale = glm::abs(BravoMath::RandVector(10.0));
 
 	BravoTransform parent(location, rotation, scale);
@@ -121,7 +123,7 @@ void BravoGameInstance::Test()
 	BravoTransform childWorld(parent.GetTransformMatrix() * child.GetTransformMatrix());
 	
 	glm::vec3 worldCLoc = childWorld.GetLocation();
-	glm::vec3 worldCRot = childWorld.GetRotation();
+	glm::quat worldCRot = childWorld.GetRotation();
 	glm::vec3 worldCSc = childWorld.GetScale();
 
 	bool mat = childWorld.IsNearlyEqual(parent);
@@ -132,19 +134,23 @@ void BravoGameInstance::Test()
 
 	if ( !mat )
 	{
-		Log::LogMessage(std::format("Mat failed {} --> {}", Log::to_string(parent.GetTransformMatrix()), Log::to_string(childWorld.GetTransformMatrix())));
+		Log::LogMessage(std::format("Mat failed {} --> {}", Log::to_string(parent.GetTransformMatrix()), Log::to_string(childWorld.GetTransformMatrix())), Error);
 	}
 	if ( !loc )
 	{
-		Log::LogMessage(std::format("Loc failed {} --> {}", Log::to_string(parent.GetLocation()), Log::to_string(childWorld.GetLocation())));
+		Log::LogMessage(std::format("Loc failed {} --> {}", Log::to_string(parent.GetLocation()), Log::to_string(childWorld.GetLocation())), Error);
 	}
 	if ( !rot )
 	{
-		Log::LogMessage(std::format("Rot failed {} --> {}", Log::to_string(parent.GetRotation()), Log::to_string(childWorld.GetRotation())));
+		Log::LogMessage(std::format("Rot failed {} --> {}", Log::to_string(parent.GetRotation()), Log::to_string(childWorld.GetRotation())), Error);
+	}
+	else
+	{
+		Log::LogMessage(std::format("Rot good {}", Log::to_string(parent.GetRotation())));
 	}
 	if ( !sc )
 	{
-		Log::LogMessage(std::format("Sc failed {} --> {}", Log::to_string(parent.GetScale()), Log::to_string(childWorld.GetScale())));
+		Log::LogMessage(std::format("Sc failed {} --> {}", Log::to_string(parent.GetScale()), Log::to_string(childWorld.GetScale())), Error);
 	}
 }
 
