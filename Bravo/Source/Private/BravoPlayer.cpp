@@ -163,14 +163,15 @@ void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2&
 
 	glm::quat currentRotation = GetRotation();
 
-	float pitchAngle = glm::radians(DeltaMove.y * InputMouseMoveSensitivity);
+	//float pitchAngle = glm::radians(DeltaMove.y * InputMouseMoveSensitivity);
 	//glm::vec3 rightVector = GetRightVector();
-	glm::quat pitchRotation = glm::angleAxis(pitchAngle, BravoMath::rightV);
+	//glm::quat pitchRotation = glm::angleAxis(pitchAngle, rightVector);
 
 	float yawAngle = glm::radians(DeltaMove.x * InputMouseMoveSensitivity);
-	glm::quat yawRotation = glm::angleAxis(yawAngle, BravoMath::upV);
+	glm::vec3 upVector = BravoMath::upV;
+	glm::quat yawRotation = glm::angleAxis(yawAngle, upVector);
 
-	glm::quat newRotation = yawRotation * pitchRotation * currentRotation;
+	glm::quat newRotation = yawRotation * currentRotation;
 
 	newRotation = glm::normalize(newRotation);
 
