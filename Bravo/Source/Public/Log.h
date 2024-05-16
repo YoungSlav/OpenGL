@@ -30,23 +30,16 @@ public:
 	template<typename T>
 	static std::string to_string(const T& val)
 	{
-		if constexpr (std::is_same_v<T, glm::qua<typename T::value_type>>)
-		{
-			return to_string_internal<typename T::value_type, T::length()>(val);
-		}
-		else
-		{
-			return to_string_internal<T>(val);
-		}
+		return to_string_internal<T>(val);
 	}
 
 private:
 
-	// Overload for glm::quat to construct a string representation
-	template<typename T, glm::qualifier Q = glm::defaultp>
-	static std::string to_string_internal(const glm::qua<T, Q>& qua)
+	//template<typename T, typename U = typename T::value_type, typename Q = glm::qualifier::defaultp >
+	template<typename T=glm::qua, typename U = typename T::value_type, glm::qualifier Q = glm::qualifier::defaultp>
+	static std::string to_string_internal(const glm::qua<U, Q>& qua)
 	{
-		return "(" + to_string_internal(glm::vec3(qua.x, qua.y, qua.z)) + " " + to_string_internal<float>(qua.w) + ")";
+		return "(" + to_string_internal<glm::vec3>(glm::vec3(qua.x, qua.y, qua.z)) + " " + to_string_internal<float>(qua.w) + ")";
 	}
 	
 	

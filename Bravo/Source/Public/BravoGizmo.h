@@ -55,6 +55,6 @@ protected:
 	glm::vec3 InputOffset = glm::vec3(0.0);
 
 
-	glm::vec3 ScaleOriginal = glm::vec3(0.0);
-	glm::vec3 RotationOriginal = glm::vec3(0.0);
+	glm::vec3 ScaleOriginal = glm::vec3(0.0f);
+	glm::quat RotationOriginal;
 };

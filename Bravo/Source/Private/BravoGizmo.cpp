@@ -398,15 +398,15 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 	}
 	else if ( GizmoState == EBravoGizmoState::Rotation )
 	{
-		// TODO: replace with quaternions?
-		glm::vec3 currentOffset = glm::normalize(Intersection - GetLocation());
-
-		float rad = std::atan2(glm::dot(glm::cross(InputOffset, currentOffset), InputPlane), glm::dot(InputOffset, currentOffset));
-
-		float degrees = glm::degrees(rad);
-
-		glm::vec3 AddRotation = degrees * InputMask;
-		SetRotation(RotationOriginal - AddRotation);
+		//// TODO: replace with quaternions?
+		//glm::vec3 currentOffset = glm::normalize(Intersection - GetLocation());
+		//
+		//float rad = std::atan2(glm::dot(glm::cross(InputOffset, currentOffset), InputPlane), glm::dot(InputOffset, currentOffset));
+		//
+		//float degrees = glm::degrees(rad);
+		//
+		//glm::quat AddRotation = degrees * InputMask;
+		//SetRotation(RotationOriginal - AddRotation);
 	}
 }
 

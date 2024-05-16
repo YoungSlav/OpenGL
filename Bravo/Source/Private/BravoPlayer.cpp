@@ -160,6 +160,10 @@ void BravoPlayer::OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime)
 void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
 {
 	if ( !bMouseInput ) return;
+
+	glm::quat curentRotation = GetRotation();
+	glm::quat addPitch = glm::quat(glm::vec3())
+
 	SetRotation(glm::vec3(
 		GetRotation().x,
 		GetRotation().y + DeltaMove.x * InputMouseMoveSensitivity,
