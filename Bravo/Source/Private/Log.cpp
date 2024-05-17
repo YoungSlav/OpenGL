@@ -17,6 +17,9 @@ void Log::LogMessage(const char* const Message, ELog Type)
 
 	switch (Type)
 	{
+	case ELog::Success:
+		SetConsoleTextAttribute( hstdout, FOREGROUND_GREEN );
+		break;
 	case ELog::Log:
 		SetConsoleTextAttribute( hstdout, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE);
 		break;

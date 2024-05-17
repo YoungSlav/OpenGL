@@ -27,7 +27,7 @@ void BravoDirectionalLightActor::GetShaderData(std::vector<BravoDirectionalLight
 		BravoDirectionalLightShaderData newData;
 		newData.Ambient = GetAmbientLightColor();
 		newData.Color = GetLightColor() * Settings.Intencity;
-		newData.Direction = GetDirection();
+		newData.Direction = GetForwardVector_World();
 		newData.LayerOffset = Offset;
 		newData.CascadeCount = (int32)Settings.ShadowCascadeLevels.size();
 
@@ -54,7 +54,7 @@ glm::mat4 BravoDirectionalLightActor::GetLightSpaceMatrix(const float nearPlane,
 	}
 	center /= FrustumCorners.size();
 
-	const auto lightView = glm::lookAt(center - GetDirection(), center, glm::vec3(FLT_EPS, 1.0f, FLT_EPS));
+	const auto lightView = glm::lookAt(center - GetForwardVector_World(), center, glm::vec3(FLT_EPS, 1.0f, FLT_EPS));
 
 	float minX = std::numeric_limits<float>::max();
 	float maxX = std::numeric_limits<float>::lowest();

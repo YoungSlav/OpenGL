@@ -27,7 +27,10 @@ void BravoDirectionalLightShaderDataCollection::Update(const std::vector<std::sh
 {
 	int32 CollectionSize = 0;
 	for ( auto it : Casters )
-		CollectionSize += (int32)it->GetSettings().ShadowCascadeLevels.size();
+	{
+		int32 s = (int32)it->GetSettings().ShadowCascadeLevels.size();
+		CollectionSize += s;
+	}
 
 	if ( ShaderData.size() != CollectionSize )
 	{

@@ -31,6 +31,7 @@
 
 bool BravoGameInstance::Initialize_Internal()
 {
+
 	if ( !Engine )
 		return false;
 
@@ -42,17 +43,18 @@ bool BravoGameInstance::Initialize_Internal()
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
-	if ( std::shared_ptr<BravoPlayer> Player = NewObject<BravoPlayer>("Player") )
-	{
-		Player->SetLocation(glm::vec3(-15.0792866, 17.3910675, 0.121996939));
-		Player->SetRotation(glm::vec3(0.00000000, 0.0, -30.0));
 		
-		std::shared_ptr<BravoCamera> Camera = NewObject<BravoCamera>("Camera");
-		Engine->SetCamera(Camera);
-		Camera->AttachTo(Player);
-		Camera->SetTransform(BravoTransform());
-	}
+	Camera = NewObject<BravoCamera>("Camera");
+	Engine->SetCamera(Camera);
+	//Camera->SetLocation(glm::vec3(0.0f, 30.0f, -30.0));
+	//Camera->SetDirection(glm::vec3(0.0f) - Camera->GetLocation_World());
 
+	Player = NewObject<BravoPlayer>("Player");
+	
+	Player->SetLocation(glm::vec3(0.0f, 30.0f, -30.0));
+	Player->SetDirection(glm::vec3(0.0f) - Player->GetLocation_World());
+	Camera->AttachTo(Player);
+	Camera->SetTransform(BravoTransform());
 	
 	if ( auto skyboxActor = NewObject<BravoSkyboxActor>("Skybox") )
 	{
@@ -107,7 +109,7 @@ bool BravoGameInstance::Initialize_Internal()
 void BravoGameInstance::Test()
 {
 	glm::vec3 location = BravoMath::RandVector(1000000.0);
-	glm::vec3 direction = BravoMath::RandVector(1.0f);
+	glm::vec3 direction = glm::abs(BravoMath::RandVector(1.0f));
 	glm::quat rotation = BravoMath::DirectionToQuaternion(direction);
 	//glm::vec3 direction = BravoMath::RotationToDirection(rotation);
 	//rotation = BravoMath::DirectionToRotation(direction);
@@ -116,6 +118,7 @@ void BravoGameInstance::Test()
 	BravoTransform parent(location, rotation, scale);
 	location = parent.GetLocation();
 	rotation = parent.GetRotation();
+	direction = parent.GetForwardVector();
 	scale = parent.GetScale();
 	
 	BravoTransform child;
@@ -124,33 +127,38 @@ void BravoGameInstance::Test()
 	
 	glm::vec3 worldCLoc = childWorld.GetLocation();
 	glm::quat worldCRot = childWorld.GetRotation();
+	glm::vec3 worldCDir = childWorld.GetForwardVector();
 	glm::vec3 worldCSc = childWorld.GetScale();
+
+	
+	
 
 	bool mat = childWorld.IsNearlyEqual(parent);
 	bool loc = !glm::all(glm::epsilonNotEqual(location, worldCLoc, FLT_EPS));
 	bool rot = !glm::all(glm::epsilonNotEqual(rotation, worldCRot, FLT_EPS));
+	bool dir = !glm::all(glm::epsilonNotEqual(direction, worldCDir, FLT_EPS));
 	bool sc = !glm::all(glm::epsilonNotEqual(scale, worldCSc, FLT_EPS));
 
 
 	if ( !mat )
 	{
-		Log::LogMessage(std::format("Mat failed {} --> {}", Log::to_string(parent.GetTransformMatrix()), Log::to_string(childWorld.GetTransformMatrix())), Error);
+		Log::LogMessage(std::format("Mat failed {} --> {}", Log::to_string(location), Log::to_string(worldCLoc)), Error);
 	}
 	if ( !loc )
 	{
-		Log::LogMessage(std::format("Loc failed {} --> {}", Log::to_string(parent.GetLocation()), Log::to_string(childWorld.GetLocation())), Error);
+		Log::LogMessage(std::format("Loc failed {} --> {}", Log::to_string(location), Log::to_string(worldCLoc)), Error);
 	}
 	if ( !rot )
 	{
-		Log::LogMessage(std::format("Rot failed {} --> {}", Log::to_string(parent.GetRotation()), Log::to_string(childWorld.GetRotation())), Error);
+		Log::LogMessage(std::format("Rot failed {} --> {}", Log::to_string(rotation), Log::to_string(worldCRot)), Error);
 	}
-	else
+	if ( !dir )
 	{
-		Log::LogMessage(std::format("Rot good {}", Log::to_string(parent.GetRotation())));
+		Log::LogMessage(std::format("Dir failed {} --> {}", Log::to_string(direction), Log::to_string(worldCDir)), Error);
 	}
 	if ( !sc )
 	{
-		Log::LogMessage(std::format("Sc failed {} --> {}", Log::to_string(parent.GetScale()), Log::to_string(childWorld.GetScale())), Error);
+		Log::LogMessage(std::format("Sc failed {} --> {}", Log::to_string(scale), Log::to_string(worldCSc)), Error);
 	}
 }
 
@@ -256,7 +264,7 @@ void BravoGameInstance::SpawnPointLights()
 	{
 		if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
 		{
-			pointLightActor->SetLocation(locations[i]);
+		//	pointLightActor->SetLocation(locations[i]);
 			pointLightActor->SetLightColor(glm::vec3(1.0f));
 			BravoPointLightSettings PointSettings;
 			PointSettings.Intencity = 700.0f;
@@ -285,13 +293,7 @@ void BravoGameInstance::SpawnSpotLights()
 	{
 		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
 		{
-			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians((360.0f / count *i) + 3.14f / 2.0f)) * 20;
-			newLocation.z = glm::cos(glm::radians((360.0f / count *i) + 3.14f / 2.0f)) * 20;
-			newLocation.y = 10.0f;
-			spotLightActor->SetLocation(newLocation);
-
-			spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
+			//spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
 			spotLightActor->SetLightColor(glm::vec3(1.0f));
 			BravoSpotLightSettings SpotSettings;
 			SpotSettings.CutOff			= 5.0f;
@@ -301,7 +303,7 @@ void BravoGameInstance::SpawnSpotLights()
 
 			auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("SpotLightStaticMesh");
 			coneMesh->SetMesh(coneAsset);
-			coneMesh->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
+			coneMesh->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 			coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
 			BravoUnlitMaterialParams materailLoadingParams;
 			materailLoadingParams.AlbedoColor = spotLightActor->GetLightColor();
@@ -392,28 +394,37 @@ void BravoGameInstance::SpawnTestInstances()
 }
 
 void BravoGameInstance::Tick(float DeltaTime)
-{
-	//std::shared_ptr<BravoActor> cube = Cubes[0].lock();
-	//cube->SetRotation(glm::vec3(LifeTime*10.0f, 0.0f, 90.0f));
-
-	Test();
-	
+{	
 	for ( int32 i = 0; i < pointLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.y = 20 + glm::sin(LifeTime) * 20;
+		newLocation.x = glm::sin(LifeTime) * 20.0f;
+		newLocation.z = glm::cos(LifeTime) * 20.0f;
+		newLocation.y = 20.0f;
 		pointLights[i]->SetLocation(newLocation);
+
+		pointLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
+
+		
 	}
 
 	for ( int32 i = 0; i < spotLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
-		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 30;
-		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 30;
+		newLocation.x = glm::sin(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 10.0f;
+		newLocation.z = glm::cos(LifeTime + glm::radians(360.0f / spotLights.size() *i)) * 10.0f;
 	
-		newLocation.y = 30.0f;
+		newLocation.y = 10.0f;
 
 		spotLights[i]->SetLocation(newLocation);
 		spotLights[i]->SetDirection(glm::vec3(0.0f) - newLocation);
+	}
+	{
+		glm::vec3 newLocation2 = glm::vec3(0.0f);
+		newLocation2.x = glm::sin(LifeTime) * 50;
+		newLocation2.z = glm::cos(LifeTime) * 50;
+		newLocation2.y = 50.0f;
+		//Player->SetLocation(newLocation2);
+		//Player->SetDirection(glm::vec3(0.0f) - newLocation2);
 	}
 }

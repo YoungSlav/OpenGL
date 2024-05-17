@@ -32,7 +32,6 @@ public:
 	const BravoTransform& GetTransform() const { return LocalTransform; }
 	const glm::vec3& GetLocation() const { return LocalTransform.GetLocation(); }
 	const glm::quat& GetRotation() const { return LocalTransform.GetRotation(); }
-	const glm::vec3& GetDirection() const { return LocalTransform.GetDirection(); }
 	const glm::vec3& GetScale() const { return LocalTransform.GetScale(); }
 	glm::vec3 GetForwardVector() const { return LocalTransform.GetForwardVector(); }
 	glm::vec3 GetRightVector() const { return LocalTransform.GetRightVector(); }
@@ -51,6 +50,12 @@ public:
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetRotation(const glm::quat& InRotation)
+	{
+		LocalTransform.SetRotation(InRotation);
+		UpdateWorldTransform();
+		OnTransformUpdated.Broadcast(this);
+	}
+	void SetRotation(const glm::vec3& InRotation)
 	{
 		LocalTransform.SetRotation(InRotation);
 		UpdateWorldTransform();
@@ -82,7 +87,6 @@ public:
 	}
 	const glm::vec3& GetLocation_World() const { return WorldTransform.GetLocation(); }
 	const glm::quat& GetRotation_World() const { return WorldTransform.GetRotation(); }
-	const glm::vec3& GetDirection_World() const { return WorldTransform.GetDirection(); }
 	const glm::vec3& GetScale_World() const { return WorldTransform.GetScale(); }
 	glm::vec3 GetForwardVector_World() const { return WorldTransform.GetForwardVector(); }
 	glm::vec3 GetRightVector_World() const { return WorldTransform.GetRightVector(); }

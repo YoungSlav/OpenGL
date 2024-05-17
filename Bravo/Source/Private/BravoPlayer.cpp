@@ -87,46 +87,20 @@ void BravoPlayer::Tick(float DeltaTime)
 
 void BravoPlayer::OnInput_W(bool ButtonState, float DeltaTime)
 {
-	glm::vec3 front;
-    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front.y = sin(glm::radians(GetRotation().z));
-    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front = glm::normalize(front);
-	
-	AdjustVelocity(front);
+	AdjustVelocity(GetForwardVector_World());
 }
 void BravoPlayer::OnInput_S(bool ButtonState, float DeltaTime)
 {
-	glm::vec3 front;
-    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front.y = sin(glm::radians(GetRotation().z));
-    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front = glm::normalize(front);
-
-	AdjustVelocity(-front);
+	AdjustVelocity(-GetForwardVector_World());
 }
 void BravoPlayer::OnInput_A(bool ButtonState, float DeltaTime)
 {
-	static const float sensitivity = 2.5f;
-	glm::vec3 front;
-    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front.y = sin(glm::radians(GetRotation().z));
-    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front = glm::normalize(front);
-
-	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));
+	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, GetForwardVector_World()));
 	AdjustVelocity(right);
 }
 void BravoPlayer::OnInput_D(bool ButtonState, float DeltaTime)
 {
-	static const float sensitivity = 2.5f;
-	glm::vec3 front;
-    front.x = cos(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front.y = sin(glm::radians(GetRotation().z));
-    front.z = sin(glm::radians(GetRotation().y)) * cos(glm::radians(GetRotation().z));
-    front = glm::normalize(front);
-
-	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));
+	glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, GetForwardVector_World()));
 	AdjustVelocity(-right);
 }
 void BravoPlayer::OnInput_E(bool ButtonState, float DeltaTime)
@@ -161,17 +135,28 @@ void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2&
 {
 	if ( !bMouseInput ) return;
 
-	glm::quat currentRotation = GetRotation();
+	glm::quat currentRotation = GetRotation_World();
+	glm::vec3 currentRotationEuler = glm::eulerAngles(currentRotation);
+	
+	float currentPitch = glm::degrees(currentRotationEuler.x);
+	float currentYaw = glm::degrees(currentRotationEuler.y);
 
-	//float pitchAngle = glm::radians(DeltaMove.y * InputMouseMoveSensitivity);
-	//glm::vec3 rightVector = GetRightVector();
-	//glm::quat pitchRotation = glm::angleAxis(pitchAngle, rightVector);
+	float pitchDelta = DeltaMove.y * InputMouseMoveSensitivity;
+	float newPitch = currentPitch + pitchDelta;
+	
+	const float MaxPitch = 89.0f;
+    newPitch = glm::clamp(newPitch, -MaxPitch, MaxPitch);
 
-	float yawAngle = glm::radians(DeltaMove.x * InputMouseMoveSensitivity);
-	glm::vec3 upVector = BravoMath::upV;
-	glm::quat yawRotation = glm::angleAxis(yawAngle, upVector);
+	glm::quat pitchRotation = glm::angleAxis(glm::radians(newPitch - currentPitch), GetRightVector_World());
 
-	glm::quat newRotation = yawRotation * currentRotation;
+	
+	float yawDelta = DeltaMove.x * InputMouseMoveSensitivity;
+	float newYaw = currentYaw + yawDelta;
+	Log::LogMessage(Log::to_string(newYaw));
+
+	glm::quat yawRotation = glm::angleAxis(glm::radians(yawDelta), BravoMath::upV);
+
+	glm::quat newRotation = yawRotation * pitchRotation * currentRotation;
 
 	newRotation = glm::normalize(newRotation);
 

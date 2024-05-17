@@ -8,7 +8,8 @@ class BravoTransform final
 public:
 	BravoTransform()
 	{
-		UpdateTransformMatrix();
+		//UpdateTransformMatrix();
+		//DecomposeTransformMatrix();
 	}
 	BravoTransform(const glm::vec3& _location, const glm::quat& _rotation, const glm::vec3& _scale) :
 		Location(_location), Rotation(_rotation), Scale(_scale)
@@ -23,47 +24,22 @@ public:
 
 	inline const glm::vec3& GetLocation() const { return Location; }
 	inline const glm::quat& GetRotation() const { return Rotation; }
-	inline const glm::vec3& GetDirection() const { return Direction; }
 	inline const glm::vec3& GetScale() const { return Scale; }
 	inline const glm::mat4& GetTransformMatrix() const { UpdateTransformMatrix(); return TransformMatrix; }
 
 	glm::vec3 GetForwardVector() const
 	{
-		UpdateTransformMatrix();
-
-		glm::vec3 ForwardVector;
-		ForwardVector.x = TransformMatrix[0][2];
-		ForwardVector.y = TransformMatrix[1][2];
-		ForwardVector.z = TransformMatrix[2][2];
-		ForwardVector = glm::normalize(ForwardVector);
-
-		return ForwardVector;
+		return glm::rotate(Rotation, BravoMath::forwardV);
 	}
 
 	glm::vec3 GetRightVector() const
 	{
-		UpdateTransformMatrix();
-
-		glm::vec3 RightVector;
-		RightVector.x = TransformMatrix[0][0];
-		RightVector.y = TransformMatrix[1][0];
-		RightVector.z = TransformMatrix[2][0];
-		RightVector = glm::normalize(RightVector);
-
-		return RightVector;
+		return glm::rotate(Rotation, BravoMath::rightV);
 	}
 
 	glm::vec3 GetUpVector() const
 	{
-		UpdateTransformMatrix();
-
-		glm::vec3 UpVector;
-		UpVector.x = TransformMatrix[0][1];
-		UpVector.y = TransformMatrix[1][1];
-		UpVector.z = TransformMatrix[2][1];
-		UpVector = glm::normalize(UpVector);
-
-		return UpVector;
+		return glm::rotate(Rotation, BravoMath::upV);
 	}
 
 
@@ -82,29 +58,31 @@ public:
 	void SetRotation(const glm::quat& _rotation)
 	{
 		Rotation = _rotation;
-		Direction = BravoMath::QuaternionToDirection(Rotation);
 		bMatrixDirty = true;
 	}
 
 	void SetRotation(const glm::vec3& _eulerRotation)
 	{
 		Rotation = BravoMath::EulerToQuat(_eulerRotation);
-		Direction = BravoMath::QuaternionToDirection(Rotation);
 		bMatrixDirty = true;
 	}
 
 
 	void Rotate(const glm::quat& _rotation)
 	{
-		Rotation = Rotation * _rotation;
-		Direction = BravoMath::QuaternionToDirection(Rotation);
+		Rotation = _rotation * Rotation;
 		bMatrixDirty = true;
 	}
 	
 	void SetDirection(const glm::vec3& _direction)
 	{
-		Direction = _direction;
-		Rotation = BravoMath::DirectionToQuaternion(_direction);
+		glm::vec3 dir(0.0f);
+		if ( glm::length(_direction) <= FLT_EPS )
+			dir = BravoMath::forwardV;
+		else
+			dir = glm::normalize(_direction);
+
+		Rotation = BravoMath::DirectionToQuaternion(dir);
 		bMatrixDirty = true;
 	}
 
@@ -165,8 +143,6 @@ private:
 		glm::vec4 perspective;
 		glm::decompose(TransformMatrix, Scale, Rotation, Location, skew, perspective);
 
-		Direction = BravoMath::QuaternionToDirection(Rotation);
-
 		bMatrixDirty = false;
 	}
 
@@ -177,6 +153,5 @@ private:
 
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::quat Rotation = glm::quat();
-	glm::vec3 Direction = glm::vec3(1.0f, 0.0f, 0.0f);
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 };

@@ -28,7 +28,7 @@ void BravoSpotLightActor::GetLightSpaceTransformationMatrix(glm::mat4& OutTransf
 	const float AspectRatio = 1.0f;
 	
 	const glm::mat4 ShadowProjection = glm::perspective(FOV, AspectRatio, NearPlane, FarPlane);
-	const glm::mat4 LightView = glm::lookAt(GetLocation(), GetLocation() + GetDirection(), glm::vec3(0.0f, 1.0, 0.0f));
+	const glm::mat4 LightView = glm::lookAt(GetLocation(), GetLocation() + GetForwardVector_World(), glm::vec3(0.0f, 1.0, 0.0f));
 
 	OutTransformationMatrix = ShadowProjection * LightView;
 }
@@ -38,7 +38,7 @@ void BravoSpotLightActor::GetShaderData(BravoSpotLightShaderData& OutShaderData)
 	OutShaderData.Color = GetLightColor() * Settings.Intencity;
 
 	OutShaderData.Position = GetLocation();
-	OutShaderData.Direction = GetDirection();
+	OutShaderData.Direction = GetForwardVector_World();
 
 	OutShaderData.CutOff = glm::cos(glm::radians(Settings.CutOff));
 	OutShaderData.OuterCutOff = glm::cos(glm::radians(Settings.OuterCutOff));

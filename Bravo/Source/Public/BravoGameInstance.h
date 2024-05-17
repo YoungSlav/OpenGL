@@ -27,4 +27,7 @@ protected:
 	std::shared_ptr<class BravoStaticMeshComponent> Mesh;
 
 	std::shared_ptr<class BravoPointLightActor> pbrLight;
+
+	std::shared_ptr<class BravoCamera> Camera;
+	std::shared_ptr<class BravoPlayer> Player;
 };

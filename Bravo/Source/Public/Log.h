@@ -15,6 +15,7 @@
 
 enum ELog
 {
+	Success,
 	Log,
 	Warning,
 	Error
