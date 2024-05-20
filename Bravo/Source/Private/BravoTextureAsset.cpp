@@ -27,7 +27,7 @@ bool BravoTextureAsset::LoadToGPU_Internal()
 {
 	if ( !TextureData->TextureData )
 	{
-		Log::LogMessage("Failed to load texture \"" + GetName() + "\" to GPU", ELog::Error);
+		Log::LogMessage(ELog::Error, "Failed to load texture \" {} \" to GPU", GetName());
 		return false;
 	}
 

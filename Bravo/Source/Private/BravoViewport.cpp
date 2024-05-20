@@ -41,7 +41,7 @@ void BravoViewport::CreateOpenGLWindow()
 	Window = glfwCreateWindow(ViewportSize.x, ViewportSize.y, "Bravo Engine", NULL, NULL);
     if ( Window == nullptr )
     {
-		Log::LogMessage("Failed to create GLFW window", ELog::Error);
+		Log::LogMessage(ELog::Error, "Failed to create GLFW window");
         glfwTerminate();
 		return;
     }
@@ -51,7 +51,7 @@ void BravoViewport::CreateOpenGLWindow()
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-		Log::LogMessage("Failed to initialize GLAD", ELog::Error);
+		Log::LogMessage(ELog::Error, "Failed to initialize GLAD");
 		return;
     }
 

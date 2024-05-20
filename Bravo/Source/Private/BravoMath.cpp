@@ -4,6 +4,19 @@ const glm::vec3 BravoMath::forwardV = glm::vec3(0, 0, -1.0);
 const glm::vec3 BravoMath::upV = glm::vec3(0.0, 1.0, 0.0);
 const glm::vec3 BravoMath::rightV = glm::vec3(1.0, 0.0, 0.0);
 
+glm::vec3 BravoMath::NormalizeEuler(const glm::vec3& euler)
+{
+	// Convert Euler angles to rotation matrix
+	glm::mat4 rotationMatrix = glm::eulerAngleYXZ(glm::radians(euler.y), glm::radians(euler.x), glm::radians(euler.z));
+
+	// Extract pitch, yaw, and roll from the rotation matrix
+	float newPitch, newYaw, newRoll;
+	glm::extractEulerAngleYXZ(rotationMatrix, newYaw, newPitch, newRoll);
+
+	// Return adjusted pitch and yaw with roll set to 0
+	return glm::degrees(glm::vec3(newPitch, newYaw, newRoll));
+}
+
 
 glm::quat BravoMath::DirectionToQuaternion(const glm::vec3& Direction)
 {
@@ -28,7 +41,10 @@ glm::vec3 BravoMath::QuaternionToDirection(const glm::quat& Quaternion)
 
 glm::vec3 BravoMath::QuatToEuler(const glm::quat& QuatRotation)
 {
-	return glm::degrees(glm::eulerAngles(QuatRotation));
+	glm::vec3 euler = glm::degrees(glm::eulerAngles(QuatRotation));
+
+
+	return euler;
 }
 glm::quat BravoMath::EulerToQuat(const glm::vec3& EulerRotation)
 {

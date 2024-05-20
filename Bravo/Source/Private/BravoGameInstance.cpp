@@ -51,8 +51,8 @@ bool BravoGameInstance::Initialize_Internal()
 
 	Player = NewObject<BravoPlayer>("Player");
 	
-	Player->SetLocation(glm::vec3(0.0f, 30.0f, -30.0));
-	Player->SetDirection(glm::vec3(0.0f) - Player->GetLocation_World());
+	Player->SetLocation(glm::vec3(0.0f, 30.0f, 30.0));
+	Player->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - Player->GetLocation_World());
 	Camera->AttachTo(Player);
 	Camera->SetTransform(BravoTransform());
 	
@@ -70,28 +70,25 @@ bool BravoGameInstance::Initialize_Internal()
 
 	
 	
-	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
-	//{
-	//	std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
-	//	planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
-	//	//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-	//	planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
-	//	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-	//	planeMesh->SetMesh(planeAsset);
-	//	planeMesh->SetCastShadows(true);
-	//	
-	//	BravoPBRMaterialParams materailLoadingParams;
-	//	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	//	materailLoadingParams.AoColor = 1.0f;
-	//	std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
-	//	planeMat->Load(materailLoadingParams);
-	//	planeMesh->SetMaterial(planeMat);
-	//}
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	{
+		std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+		planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		//planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+		planeMesh->SetMesh(planeAsset);
+		planeMesh->SetCastShadows(true);
+		//planeMesh->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+		
+		BravoPBRMaterialParams materailLoadingParams;
+		materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		materailLoadingParams.AoColor = 1.0f;
+		std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
+		planeMat->Load(materailLoadingParams);
+		planeMesh->SetMaterial(planeMat);
+	}
 
-	//if ( auto gizmo = NewObject<BravoGizmo>("BravoGizmo") )
-	//{
-	//	gizmo->SetLocation(glm::vec3(2.0f, 2.0f, 2.0f));
-	//}
 	
 	SpawnDirLights();
 
@@ -100,8 +97,7 @@ bool BravoGameInstance::Initialize_Internal()
 	SpawnSpotLights();
 
 	SpawnSpheres();
-	//
-	//SpawnTestInstances();
+
 	return true;
 }
 
@@ -142,23 +138,23 @@ void BravoGameInstance::Test()
 
 	if ( !mat )
 	{
-		Log::LogMessage(std::format("Mat failed {} --> {}", Log::to_string(location), Log::to_string(worldCLoc)), Error);
+		Log::LogMessage(ELog::Error, "Mat failed {} --> {}", parent.GetTransformMatrix(), child.GetTransformMatrix());
 	}
 	if ( !loc )
 	{
-		Log::LogMessage(std::format("Loc failed {} --> {}", Log::to_string(location), Log::to_string(worldCLoc)), Error);
+		Log::LogMessage(ELog::Error, "Loc failed {} --> {}", location, worldCLoc);
 	}
 	if ( !rot )
 	{
-		Log::LogMessage(std::format("Rot failed {} --> {}", Log::to_string(rotation), Log::to_string(worldCRot)), Error);
+		Log::LogMessage(ELog::Error, "Rot failed {} --> {}", rotation, worldCRot);
 	}
 	if ( !dir )
 	{
-		Log::LogMessage(std::format("Dir failed {} --> {}", Log::to_string(direction), Log::to_string(worldCDir)), Error);
+		Log::LogMessage(ELog::Error, "Dir failed {} --> {}", direction, worldCDir);
 	}
 	if ( !sc )
 	{
-		Log::LogMessage(std::format("Sc failed {} --> {}", Log::to_string(scale), Log::to_string(worldCSc)), Error);
+		Log::LogMessage(ELog::Error, "Sc failed {} --> {}", scale, worldCSc);
 	}
 }
 
@@ -293,7 +289,7 @@ void BravoGameInstance::SpawnSpotLights()
 	{
 		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
 		{
-			//spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
+			spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
 			spotLightActor->SetLightColor(glm::vec3(1.0f));
 			BravoSpotLightSettings SpotSettings;
 			SpotSettings.CutOff			= 5.0f;
@@ -303,7 +299,7 @@ void BravoGameInstance::SpawnSpotLights()
 
 			auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("SpotLightStaticMesh");
 			coneMesh->SetMesh(coneAsset);
-			coneMesh->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+			coneMesh->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
 			coneMesh->SetScale(glm::vec3(0.5f, 0.25f, 0.25f));
 			BravoUnlitMaterialParams materailLoadingParams;
 			materailLoadingParams.AlbedoColor = spotLightActor->GetLightColor();

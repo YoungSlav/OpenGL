@@ -133,46 +133,33 @@ void BravoPlayer::OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime)
 }
 void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
 {
-	if ( !bMouseInput ) return;
+	if ( !bMouseInput || glm::all(glm::epsilonEqual(DeltaMove, glm::vec2(0.0f), FLT_EPS)) ) return;
 
 	glm::quat currentRotation = GetRotation_World();
-	glm::vec3 currentRotationEuler = glm::eulerAngles(currentRotation);
+		
+	float yawDelta = glm::radians(DeltaMove.x * -InputMouseMoveSensitivity);
+	glm::quat yawRotation = glm::angleAxis(yawDelta, BravoMath::upV);
 	
-	float currentPitch = glm::degrees(currentRotationEuler.x);
-	float currentYaw = glm::degrees(currentRotationEuler.y);
+	float pitchDelta = glm::radians(DeltaMove.y * -InputMouseMoveSensitivity);
+	glm::quat pitchRotation = glm::normalize(glm::angleAxis(pitchDelta, GetRightVector_World()));
 
-	float pitchDelta = DeltaMove.y * InputMouseMoveSensitivity;
-	float newPitch = currentPitch + pitchDelta;
-	
+	glm::quat newRotation = glm::normalize(pitchRotation * yawRotation * currentRotation);
+
+	const glm::vec3 cameraDirection = BravoMath::QuaternionToDirection(newRotation);
 	const float MaxPitch = 89.0f;
-    newPitch = glm::clamp(newPitch, -MaxPitch, MaxPitch);
+	const float maxDot = glm::abs(glm::cos(glm::radians(MaxPitch)));
+	const float dotPr = 1.0f - glm::abs(glm::dot(cameraDirection, BravoMath::upV));
 
-	glm::quat pitchRotation = glm::angleAxis(glm::radians(newPitch - currentPitch), GetRightVector_World());
+	if ( dotPr <= maxDot )
+	{
+		//Log::LogMessage(ELog::Error, "SHOULD RESTRICT, {} > {}", glm::degrees(glm::acos(dotPr)), glm::degrees(glm::acos(maxDot)));
+		newRotation = glm::normalize(yawRotation * currentRotation);
 
-	
-	float yawDelta = DeltaMove.x * InputMouseMoveSensitivity;
-	float newYaw = currentYaw + yawDelta;
-	Log::LogMessage(Log::to_string(newYaw));
-
-	glm::quat yawRotation = glm::angleAxis(glm::radians(yawDelta), BravoMath::upV);
-
-	glm::quat newRotation = yawRotation * pitchRotation * currentRotation;
-
-	newRotation = glm::normalize(newRotation);
-
+		// TODO: clamp instead of restriction
+	}
+	else
+	{
+		//Log::LogMessage(ELog::Success, "No restriction, {} <= {}", glm::degrees(glm::acos(dotPr)), glm::degrees(glm::acos(maxDot)));
+	}
 	SetRotation(newRotation);
-
-	////glm::quat curentRotation = GetRotation();
-	////glm::vec3 eulerRotation
-	//glm::quat addPitch = glm::quat(glm::radians(DeltaMove.y * InputMouseMoveSensitivity), GetForwardVector());
-	//Rotate(addPitch);
-	//
-	//glm::quat addYaw = glm::quat(glm::radians(DeltaMove.x * InputMouseMoveSensitivity), GetUpVector());
-	//Rotate(addYaw);
-
-	//SetRotation(glm::vec3(
-	//	GetRotation().x,
-	//	GetRotation().y + DeltaMove.x * InputMouseMoveSensitivity,
-	//	glm::clamp((GetRotation().z - DeltaMove.y * InputMouseMoveSensitivity), -89.0f, 89.0f))
-	//);
 }

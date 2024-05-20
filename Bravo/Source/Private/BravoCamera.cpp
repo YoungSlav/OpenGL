@@ -34,7 +34,7 @@ void BravoCamera::UpdateCamera_Internal()
     //glm::vec3 right = glm::normalize(glm::cross(BravoMath::upV, front));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     //glm::vec3 up    = glm::normalize(glm::cross(front, right));
 	
-	ViewMatrix = glm::lookAt(GetLocation_World(), GetLocation_World() + GetForwardVector_World(), GetUpVector_World());
+	ViewMatrix = glm::lookAt(GetLocation_World(), GetLocation_World() + GetForwardVector_World(), BravoMath::upV);
 
 	const glm::ivec2 ViewportSize = Engine->GetViewport()->GetViewportSize();
 	const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;

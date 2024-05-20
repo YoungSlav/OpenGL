@@ -25,7 +25,7 @@ public:
 		Parent = _Parent;
 		_Parent->OnTransformUpdated.AddRaw(this, &ITransformable::OnParentTransformUpdated);
 
-		SetTransform_World(WorldTransform);
+		OnParentTransformUpdated(_Parent.get());
 	}
 	std::shared_ptr<ITransformable> GetParent() const { return Parent.expired() ? nullptr : Parent.lock(); }
 
@@ -111,6 +111,12 @@ public:
 	{
 		BravoTransform worldTransform = GetTransform_World();
 		worldTransform.SetLocation(InLocation);
+		SetTransform_World(worldTransform);
+	}
+	void SetRotation_World(const glm::vec3& InRotation)
+	{
+		BravoTransform worldTransform = GetTransform_World();
+		worldTransform.SetRotation(InRotation);
 		SetTransform_World(worldTransform);
 	}
 	void SetRotation_World(const glm::quat& InRotation)

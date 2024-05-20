@@ -17,7 +17,7 @@ void BravoCubemapAsset::AsyncLoad(const std::string& ResourcesPath, const BravoC
 {
 	if ( params.TexturesPaths.size() != 6 )
 	{
-		Log::LogMessage("Invalid number of textures to initialize cubemap: " + GetName(), ELog::Error);
+		Log::LogMessage(ELog::Error, "Invalid number of textures to initialize cubemap: {}", GetName() );
 		LoadingState = EAssetLoadingState::Failed;
 		return;
 	}

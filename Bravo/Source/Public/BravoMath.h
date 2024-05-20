@@ -11,7 +11,7 @@ public:
 	static glm::vec3 QuaternionToDirection(const glm::quat& Quaternion);
 
 
-	static glm::vec3 NormalizeEulerAngles(const glm::vec3& angles);
+	static glm::vec3 NormalizeEuler(const glm::vec3& angles);
 	static glm::vec3 QuatToEuler(const glm::quat& QuatRotation);
 	static glm::quat EulerToQuat(const glm::vec3& EulerRotation);
 

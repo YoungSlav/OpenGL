@@ -24,23 +24,47 @@ enum ELog
 class Log
 {
 public:
-	static void LogMessage(const std::string& Message, ELog Type = ELog::Log);
-	static void LogMessage(const char* const Message, ELog Type = ELog::Log);
+	template<typename... Args>
+	static void LogMessage(const std::string& format_str, const Args&... args)
+	{
+		Print(std::vformat(format_str, std::make_format_args(Log::to_string(args)...)), ELog::Log);
+	}
 
+	template<typename... Args>
+	static void LogMessage(ELog Type, const std::string& format_str, const Args&... args)
+	{
+		Print(std::vformat(format_str, std::make_format_args(Log::to_string(args)...)), Type);
+	}
+private:
 
+	// TODO: deprecated
+	static void Print(const std::string& Message, ELog Type = ELog::Log);
+	static void Print(const char* const Message, ELog Type = ELog::Log);
+
+	
 	template<typename T>
 	static std::string to_string(const T& val)
 	{
 		return to_string_internal<T>(val);
 	}
 
-private:
+	template<typename T=char*>
+	static std::string to_string_internal(const char* val) 
+	{
+		return std::string(val);
+	}
+
+	template<typename T=std::string>
+	static std::string to_string_internal(const std::string& val) 
+	{
+		return val;
+	}
 
 	//template<typename T, typename U = typename T::value_type, typename Q = glm::qualifier::defaultp >
 	template<typename T=glm::qua, typename U = typename T::value_type, glm::qualifier Q = glm::qualifier::defaultp>
 	static std::string to_string_internal(const glm::qua<U, Q>& qua)
 	{
-		return "(" + to_string_internal<glm::vec3>(glm::vec3(qua.x, qua.y, qua.z)) + " " + to_string_internal<float>(qua.w) + ")";
+		return "(" + to_string_internal<glm::vec3>(glm::normalize(glm::vec3(qua.x, qua.y, qua.z))) + " " + to_string_internal<float>(glm::degrees(qua.w)) + ")";
 	}
 	
 	

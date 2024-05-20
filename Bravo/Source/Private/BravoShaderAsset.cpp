@@ -73,7 +73,7 @@ bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const std
 		}
 		else
 		{
-			Log::LogMessage("Failed to load shader: " + RealShaderName + ", no such file", ELog::Error);
+			Log::LogMessage(ELog::Error, "Failed to load shader: {}, no such file", RealShaderName);
 			return false;
 		}
 	}
@@ -112,8 +112,8 @@ bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const std
 	if (!success)
 	{
 		glGetShaderInfoLog(Shader, 512, NULL, infoLog);
-		Log::LogMessage("Failed to compile shader: " + RealShaderName, ELog::Error);
-		Log::LogMessage(infoLog, ELog::Error);
+		Log::LogMessage(ELog::Error, "Failed to compile shader: {}", RealShaderName);
+		Log::LogMessage(ELog::Error, infoLog );
 		glDeleteShader(Shader);
 		return false;
 	}
@@ -133,8 +133,8 @@ bool BravoShaderAsset::LinkProgramm()
     glGetProgramiv(ShaderID, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(ShaderID, 512, NULL, infoLog);
-		Log::LogMessage("PROGRAM::LINKING_FAILED", ELog::Error);
-		Log::LogMessage(infoLog, ELog::Error);
+		Log::LogMessage(ELog::Error, "PROGRAM::LINKING_FAILED");
+		Log::LogMessage(ELog::Error, infoLog );
 		return false;
     }
 	return true;
@@ -165,7 +165,7 @@ void BravoShaderAsset::SetCubemap(const std::string& name, std::shared_ptr<Bravo
 	}
 	else
 	{
-		Log::LogMessage("BravoShader::SetCubemap() value is none!");
+		Log::LogMessage(ELog::Warning, "BravoShader::SetCubemap() value is none!");
 	}
 }
 

@@ -14,7 +14,7 @@ bool BravoComponent::Initialize_Internal()
 			return true;
 		}
 	}
-	Log::LogMessage("Owner of the component " + GetName() + " is not an actor! All components must be owned by an actor or another component!", ELog::Error);
+	Log::LogMessage(ELog::Error, "Owner of the component {} is not an actor! All components must be owned by an actor or another component!", GetName());
 	return false;
 }
 

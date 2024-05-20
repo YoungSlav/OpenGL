@@ -75,7 +75,7 @@ void BravoRenderTarget::Setup(
 	}
 	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        Log::LogMessage("Framebuffer is not complete!", ELog::Error);
+        Log::LogMessage(ELog::Error, "Framebuffer is not complete!");
     Engine->GetViewport()->PopFramebuffer();
 }
 

@@ -37,6 +37,6 @@ int32 BravoTextureUnitManager::FindEmptyTextureUnit()
 		}
 	}
 
-	Log::LogMessage("No empty texture units", ELog::Warning);
+	Log::LogMessage(ELog::Error, "No empty texture units" );
 	return -1;
 }

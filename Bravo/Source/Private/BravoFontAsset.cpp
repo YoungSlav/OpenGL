@@ -11,7 +11,7 @@ EAssetLoadingState BravoFontAsset::Load(const std::string& ResourcesPath, const 
 {
 	if ( !params.FontSizes.size() )
 	{
-		Log::LogMessage("Failed to load font " + GetName() +". Expecting sizes array in params.", ELog::Error );
+		Log::LogMessage(ELog::Error, "Failed to load font {}. Expecting sizes array in params.", GetName() );
 		LoadingState = EAssetLoadingState::Failed;
 		return LoadingState;
 	}
@@ -25,7 +25,7 @@ EAssetLoadingState BravoFontAsset::Load(const std::string& ResourcesPath, const 
 	std::vector<int8> fontBuffer((uint32)size);
 	if ( !file.read(fontBuffer.data(), size) )
 	{
-		Log::LogMessage("Failed to read font from file " + Path, ELog::Error);
+		Log::LogMessage(ELog::Error, "Failed to read font from file {}", Path);
 		LoadingState = EAssetLoadingState::Failed;
 		return LoadingState;
 	}
@@ -54,7 +54,7 @@ EAssetLoadingState BravoFontAsset::Load(const std::string& ResourcesPath, const 
     stbtt_PackSetOversampling(&pc, 3, 3); // say, choose 3x1 oversampling for subpixel positioning
     if ( !stbtt_PackFontRanges(&pc, reinterpret_cast<const uint8*>(fontBuffer.data()), 0, ranges.data(), (int32)ranges.size()) )
 	{
-		Log::LogMessage("Failed to load font " + Path +". Atlas size is too small", ELog::Error );
+		Log::LogMessage(ELog::Error, "Failed to load font {}. Atlas size is too small", Path );
 		stbtt_PackEnd(&pc);
 		AtlasBitmap.clear();
 		LoadingState = EAssetLoadingState::Failed;
@@ -80,7 +80,7 @@ bool BravoFontAsset::LoadToGPU_Internal()
 {
 	if ( AtlasBitmap.size() != AtlasSizeX*AtlasSizeY )
 	{
-		Log::LogMessage("Failed to load font " + GetName() +" to GPU. Atlas is invalid.", ELog::Error );
+		Log::LogMessage(ELog::Error, "Failed to load font {} to GPU. Atlas is invalid.", GetName() );
 		return false;
 	}
 	glGenTextures(1, &TextureID);

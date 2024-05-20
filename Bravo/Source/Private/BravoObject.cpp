@@ -9,7 +9,7 @@ BravoObject::~BravoObject()
 {
 #if TEST_MEMORY_LEAKS
 	ObjectsSpawned--;
-	Log::LogMessage("Object " + Name + " destroyed! Total object count: " + std::to_string(ObjectsSpawned), ELog::Warning);
+	Log::LogMessage(ELog::Warning, "Object {} destroyed! Total object count: {}", Name, ObjectsSpawned);
 #endif
 }
 
@@ -40,7 +40,7 @@ bool BravoObject::Initialize(const BravoHandle& _Handle, const std::string& _Nam
 
 #if	TEST_MEMORY_LEAKS
 	ObjectsSpawned++;
-	Log::LogMessage("Object " + Name + " created! Total object count: " + std::to_string(ObjectsSpawned), ELog::Warning);
+	Log::LogMessage(ELog::Warning, "Object {} created! Total object count: {}", Name, ObjectsSpawned );
 #endif
 
 	return Initialize_Internal();

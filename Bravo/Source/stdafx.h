@@ -33,6 +33,7 @@
 #include "glm/gtx/intersect.hpp"
 #include "glm/gtc/epsilon.hpp"
 #include "Delegates.h"
+#include <glm/gtx/euler_angles.hpp>
 
 #include "BravoTypes.h"
 

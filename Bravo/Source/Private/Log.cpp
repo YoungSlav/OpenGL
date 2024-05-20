@@ -3,12 +3,12 @@
 #include <iostream>
 #include <windows.h>
 
-void Log::LogMessage( const std::string& Message, ELog Type )
+void Log::Print( const std::string& Message, ELog Type )
 {
-	Log::LogMessage(Message.c_str(), Type);
+	Log::Print(Message.c_str(), Type);
 }
 
-void Log::LogMessage(const char* const Message, ELog Type)
+void Log::Print(const char* const Message, ELog Type)
 {
 	static HANDLE hstdout = GetStdHandle( STD_OUTPUT_HANDLE );
 	

@@ -22,7 +22,7 @@ void BravoStaticMeshAsset::AsyncLoad(const std::string& ResourcesPath, const Bra
 	// check for errors
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
-		Log::LogMessage( "Failed to load mesh: " + std::string(importer.GetErrorString()));
+		Log::LogMessage(ELog::Error, "Failed to load mesh: {}", importer.GetErrorString());
 		LoadingState = EAssetLoadingState::Failed;
 		return;
 	}
@@ -35,7 +35,8 @@ void BravoStaticMeshAsset::AsyncLoad(const std::string& ResourcesPath, const Bra
 
 void BravoStaticMeshAsset::ProcessNode(aiNode *node, const aiScene *scene)
 {
-	//Log::LogMessage("LoadingNode: " + std::string(node->mName.C_Str()));
+	//Log::LogMessage("LoadingNode: {}", node->mName.C_Str() );
+
 	// process each mesh located at the current node
 	for(uint32 i = 0; i < node->mNumMeshes; i++)
 	{
@@ -44,11 +45,11 @@ void BravoStaticMeshAsset::ProcessNode(aiNode *node, const aiScene *scene)
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		if ( !mesh )
 		{
-			Log::LogMessage("  -Failed to load mesh #: " +  std::to_string(i), ELog::Warning);
+			Log::LogMessage(ELog::Warning, "  -Failed to load mesh #: {}", i );
 			continue;
 		}
 
-		//Log::LogMessage("  -LoadingMesh: " + std::string(mesh->mName.C_Str()));
+		//Log::LogMessage(ELog::Log"  -LoadingMesh: {}", mesh->mName.C_Str());
 		// Walk through each of the mesh's vertices
 		Vertices.reserve(mesh->mNumVertices + Vertices.size());
 		for(uint32 i = 0; i < mesh->mNumVertices; i++)
@@ -125,7 +126,7 @@ bool BravoStaticMeshAsset::LoadToGPU_Internal()
 {
 	if ( !(Vertices.size() && Indices.size() && Indices.size() % 3 == 0) )
 	{
-		Log::LogMessage("Vertex data is corrupt for mesh: " +  GetName(), ELog::Warning);
+		Log::LogMessage(ELog::Warning, "Vertex data is corrupt for mesh: {}",  GetName() );
 		return false;
 	}
 
