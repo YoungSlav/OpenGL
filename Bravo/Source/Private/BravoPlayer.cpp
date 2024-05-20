@@ -155,7 +155,7 @@ void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2&
 		//Log::LogMessage(ELog::Error, "SHOULD RESTRICT, {} > {}", glm::degrees(glm::acos(dotPr)), glm::degrees(glm::acos(maxDot)));
 		newRotation = glm::normalize(yawRotation * currentRotation);
 
-		// TODO: clamp instead of restriction
+		// TODO: clamp instead of restriction (need to project direction vector onto restriction "cone")
 	}
 	else
 	{
