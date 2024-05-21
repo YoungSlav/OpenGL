@@ -7,20 +7,38 @@
 #include "BravoShaderAsset.h"
 #include "BravoMath.h"
 #include "BravoTransform.h"
+#include "ITransformable.h"
 
-class BravoMeshInstance
+
+struct BravoInstanceData
 {
-public:
-	glm::mat4 TransfromMatrix;
-		
-	BravoMeshInstance(const BravoTransform& _Transform)
-	{
-		TransfromMatrix = _Transform.GetTransformMatrix();
-	}
+	alignas(16) glm::mat4 Transform = glm::mat4(1.0f);
 };
 
 class BravoStaticMeshComponent : public BravoComponent, public IBravoRenderable
 {
+	class Instance : public ITransformable
+	{
+	public:
+		Instance( const BravoInstanceData& Data, std::shared_ptr<ITransformable> _Parent, int32 _InstanceIndex) :
+			ITransformable(BravoTransform(Data.Transform), _Parent),
+			InstanceIndex(_InstanceIndex)
+		{}
+		~Instance() = default;
+
+		void SetData(const BravoInstanceData& Data)
+		{
+			SetTransform(BravoTransform(Data.Transform));
+		}
+		BravoInstanceData GetData() const
+		{
+			BravoInstanceData data;
+			data.Transform = GetTransform().GetTransformMatrix();
+			return data;
+		}
+
+		int32 InstanceIndex = -1;
+	};
 public:
 	BravoStaticMeshComponent() = default;
 	BravoStaticMeshComponent(ERenderPriority _RenderPriority) : BravoComponent(), IBravoRenderable(_RenderPriority) {}
@@ -31,15 +49,20 @@ public:
 	void SetMaterial(std::shared_ptr<BravoMaterial> _Material);
 	bool EnsureReady();
 
-	int32 AddInstance(const BravoMeshInstance& Instance, bool bUpdateInstanceBuffer = true);
-	void UpdateInstance(int32 InstanceId, const BravoMeshInstance& NewInstance, bool bUpdateInstanceBuffer = true);
-	void RemoveAllInstances(bool bUpdateInstanceBuffer = true);
-	void RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer = true);
-	int32 InstanceCount() const { return (int32)Instances.size(); }
+	int32 AddInstance(const BravoInstanceData& InstanceData);
+	void UpdateInstance(int32 Index, const BravoInstanceData& NewInstance);
+	void RemoveAllInstances();
+	void RemoveInstances(int32 Index, int32 Count);
+	BravoInstanceData GetInstanceData(int32 Index) const;
+
+	inline int32 InstanceCount() const { return (int32)Instances.size(); }
 
 	void UpdateInstanceBuffer();
 
 protected:
+
+	void OnInstanceTransformUpdated(const ITransformable* inst);
+
 	virtual bool Initialize_Internal() override;
 	virtual void Render() override;
 	virtual void RenderSelectionID() override;
@@ -48,11 +71,12 @@ protected:
 	virtual void OnDestroy() override;
 
 private:
-	std::vector<BravoMeshInstance> Instances;
+	std::vector<std::shared_ptr<Instance>> Instances;
+	std::vector<BravoInstanceData> InstanceData;
 	bool bInstanceStateDirty = true;
 
 	GLuint VAO = 0;
-	GLuint instanceVBO = 0;
+	GLuint instancesUBO = 0;
 	std::shared_ptr<BravoStaticMeshAsset> Mesh = nullptr;
 	std::shared_ptr<class BravoMaterial> Material = nullptr;
 	std::shared_ptr<class BravoShaderAsset> SelectionIDShader = nullptr;

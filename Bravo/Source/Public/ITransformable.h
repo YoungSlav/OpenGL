@@ -8,11 +8,23 @@ class ITransformable
 {
 public:
 	ITransformable() = default;
+	ITransformable(const BravoTransform& Transform) : 
+		LocalTransform(Transform),
+		WorldTransform()
+	{
+	}
+
+	ITransformable(const BravoTransform& Transform, const std::shared_ptr<ITransformable> _Parent) :
+		LocalTransform(Transform),
+		WorldTransform()
+	{
+		SetParent(_Parent);
+	}
 	~ITransformable()
 	{
-		if ( std::shared_ptr<ITransformable> oldParent = GetParent() )
+		if ( std::shared_ptr<ITransformable> parent = GetParent() )
 		{
-			oldParent->OnTransformUpdated.RemoveObject(this);
+			parent->OnTransformUpdated.RemoveObject(this);
 		}
 	}
 
@@ -22,12 +34,14 @@ public:
 		{
 			oldParent->OnTransformUpdated.RemoveObject(this);
 		}
-		Parent = _Parent;
-		_Parent->OnTransformUpdated.AddRaw(this, &ITransformable::OnParentTransformUpdated);
-
-		OnParentTransformUpdated(_Parent.get());
+		ParentPtr = _Parent;
+		if ( _Parent != nullptr )
+		{
+			_Parent->OnTransformUpdated.AddRaw(this, &ITransformable::OnParentTransformUpdated);
+			OnParentTransformUpdated(_Parent.get());
+		}
 	}
-	std::shared_ptr<ITransformable> GetParent() const { return Parent.expired() ? nullptr : Parent.lock(); }
+	std::shared_ptr<ITransformable> GetParent() const { return ParentPtr.expired() ? nullptr : ParentPtr.lock(); }
 
 	const BravoTransform& GetTransform() const { return LocalTransform; }
 	const glm::vec3& GetLocation() const { return LocalTransform.GetLocation(); }
@@ -161,12 +175,12 @@ private:
 		UpdateWorldTransform();
 	}
 
+public:
+	OnTransformUpdatedSignature OnTransformUpdated;
+
 private:
 	BravoTransform LocalTransform;
 	BravoTransform WorldTransform;
 
-	OnTransformUpdatedSignature OnTransformUpdated;
-
-
-	std::weak_ptr<ITransformable> Parent;
+	std::weak_ptr<ITransformable> ParentPtr;
 };

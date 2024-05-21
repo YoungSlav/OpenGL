@@ -20,7 +20,7 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 		OutlineMaskShader = AssetManager->FindOrLoad<BravoShaderAsset>("OutlineMaskShader", BravoShaderLoadingParams("Shaders\\MeshOutlineMask"));
 	}
 
-	AddInstance(BravoMeshInstance(BravoTransform()), false);
+	AddInstance(BravoInstanceData());
 	return true;
 }
 
@@ -46,7 +46,6 @@ bool BravoStaticMeshComponent::EnsureReady()
 		glBindBuffer(GL_ARRAY_BUFFER,  Mesh->GetVBO());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->GetEBO());
 
-
 		// vertex Positions
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 		glEnableVertexAttribArray(0);
@@ -66,24 +65,6 @@ bool BravoStaticMeshComponent::EnsureReady()
 		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
 		glEnableVertexAttribArray(5);
 
-		glGenBuffers(1, &instanceVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)0);
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)(1*sizeof(glm::vec4)));
-		glEnableVertexAttribArray(7);
-		glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)(2*sizeof(glm::vec4)));
-		glEnableVertexAttribArray(8);
-		glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(BravoMeshInstance), (void*)(3*sizeof(glm::vec4)));
-		glEnableVertexAttribArray(9);
-
-		glVertexAttribDivisor(6, 1);
-		glVertexAttribDivisor(7, 1);
-		glVertexAttribDivisor(8, 1);
-		glVertexAttribDivisor(9, 1);
-		
-
 		glBindVertexArray(0);
 	}
 
@@ -93,60 +74,74 @@ bool BravoStaticMeshComponent::EnsureReady()
 	return true;
 }
 
-int32 BravoStaticMeshComponent::AddInstance(const BravoMeshInstance& Instance, bool bUpdateInstanceBuffer)
+void BravoStaticMeshComponent::OnInstanceTransformUpdated(const ITransformable* inst)
+{
+	if ( const BravoStaticMeshComponent::Instance* asInst = static_cast<const BravoStaticMeshComponent::Instance*>(inst) )
+	{
+		UpdateInstance(asInst->InstanceIndex, asInst->GetData());
+	}
+}
+
+int32 BravoStaticMeshComponent::AddInstance(const BravoInstanceData& InstanceData)
 {
 	int32 index = (int32)Instances.size();
-	Instances.push_back(Instance);
-	if ( bUpdateInstanceBuffer )
-		UpdateInstanceBuffer();
-	else
-		bInstanceStateDirty = true;
+
+	std::shared_ptr<BravoStaticMeshComponent::Instance> newInstance(
+			new BravoStaticMeshComponent::Instance(
+				InstanceData,
+				Self<BravoStaticMeshComponent>(),
+				index));
+
+	newInstance->OnTransformUpdated.AddSP(Self<BravoStaticMeshComponent>(), &BravoStaticMeshComponent::OnInstanceTransformUpdated);
+
+	Instances.push_back(newInstance);
+
+	bInstanceStateDirty = true;
+
 	return index;
 }
 
-void BravoStaticMeshComponent::UpdateInstance(int32 InstanceId, const BravoMeshInstance& NewInstance, bool bUpdateInstanceBuffer)
+void BravoStaticMeshComponent::UpdateInstance(int32 Index, const BravoInstanceData& InstanceData)
 {
-	if (InstanceId < 0 || InstanceId >= Instances.size())
+	if (Index < 0 || Index >= Instances.size())
 		return;
-	Instances[InstanceId] = NewInstance;
-	if ( bUpdateInstanceBuffer )
-		UpdateInstanceBuffer();
-	else
-		bInstanceStateDirty = true;
+	Instances[Index]->SetData(InstanceData);
+	bInstanceStateDirty = true;
 }
 
-void BravoStaticMeshComponent::RemoveAllInstances(bool bUpdateInstanceBuffer)
+void BravoStaticMeshComponent::RemoveAllInstances()
 {
 	Instances.clear();
-	if ( bUpdateInstanceBuffer )
-		UpdateInstanceBuffer();
-	else
-		bInstanceStateDirty = true;
+	bInstanceStateDirty = true;
 }
 
-void BravoStaticMeshComponent::RemoveInstances(int32 Index, int32 Count, bool bUpdateInstanceBuffer)
+void BravoStaticMeshComponent::RemoveInstances(int32 Index, int32 Count)
 {
 	Instances.erase(Instances.begin() + Index, Instances.begin() + Index + Count);
-	if ( bUpdateInstanceBuffer )
-		UpdateInstanceBuffer();
-	else
-		bInstanceStateDirty = true;
+	bInstanceStateDirty = true;
+}
+
+BravoInstanceData BravoStaticMeshComponent::GetInstanceData(int32 Index) const
+{
+	if ( Index >= 0 && Index < InstanceCount() )
+	{
+		return Instances[Index]->GetData();
+	}
+	return BravoInstanceData();
 }
 
 void BravoStaticMeshComponent::UpdateInstanceBuffer()
 {
-	if ( VAO == 0 || instanceVBO == 0 )
-		return;
+	// TODO
+	
+
 
 	bInstanceStateDirty = false;
 	
-	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-	glBufferData(GL_ARRAY_BUFFER, Instances.size() * sizeof(glm::mat4), Instances.data(), GL_DYNAMIC_DRAW);
 }
 
 void BravoStaticMeshComponent::OnDestroy()
 {
-	glDeleteBuffers(1, &instanceVBO);
 	glDeleteVertexArrays(10, &VAO);
 	VAO = 0;
 	Material->Destroy();
@@ -254,7 +249,7 @@ void BravoStaticMeshComponent::RenderOutlineMask(int32 InstanceID)
 	
 
 	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
-	const glm::mat4 InstanceTransorm = CameraProjection * CameraView * model * Instances[InstanceID].TransfromMatrix;
+	const glm::mat4 InstanceTransorm = CameraProjection * CameraView * model * Instances[InstanceID]->GetTransform().GetTransformMatrix();
 	OutlineMaskShader->Use();
 		
 		OutlineMaskShader->SetVector1d("OutlineColor", (float)(GetHandle()));

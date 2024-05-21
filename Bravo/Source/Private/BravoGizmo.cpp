@@ -38,21 +38,6 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 0.0, 1.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, -90.0, 0.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformY", ERenderPriority::Starndart, ERenderGroup::Overlay);
-	Mesh->SetMesh(TransformMesh);
-	Mesh->SetScale(glm::vec3(0.25f));
-	Mesh->SetCastShadows(false);
-	Mesh->SetRotation(Rotation);
-	auto material = Mesh->NewObject<BravoMaterialUnlit>();
-	material->Load(materailLoadingParams);
-	Mesh->SetMaterial(material);
-	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnTransformY);
-	TransformComponents.push_back(Mesh);
-	}
-	{
-	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
-	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
-	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
 	Mesh->SetScale(glm::vec3(0.25f));
@@ -62,6 +47,21 @@ bool BravoGizmo::Initialize_Internal()
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
 	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnTransformZ);
+	TransformComponents.push_back(Mesh);
+	}
+	{
+	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
+	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
+	
+	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformY", ERenderPriority::Starndart, ERenderGroup::Overlay);
+	Mesh->SetMesh(TransformMesh);
+	Mesh->SetScale(glm::vec3(0.25f));
+	Mesh->SetCastShadows(false);
+	Mesh->SetRotation(Rotation);
+	auto material = Mesh->NewObject<BravoMaterialUnlit>();
+	material->Load(materailLoadingParams);
+	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnTransformY);
 	TransformComponents.push_back(Mesh);
 	}
 	
@@ -86,21 +86,6 @@ bool BravoGizmo::Initialize_Internal()
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 0.0, 1.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, -90.0, 0.0f);
 	
-	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleY", ERenderPriority::Starndart, ERenderGroup::Overlay);
-	Mesh->SetMesh(ScaleMesh);
-	Mesh->SetCastShadows(false);
-	Mesh->SetRotation(Rotation);
-	Mesh->SetScale(glm::vec3(1.0f));
-	auto material = Mesh->NewObject<BravoMaterialUnlit>();
-	material->Load(materailLoadingParams);
-	Mesh->SetMaterial(material);
-	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnScaleY);
-	ScaleComponents.push_back(Mesh);
-	}
-	{
-	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
-	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
-	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(ScaleMesh);
 	Mesh->SetCastShadows(false);
@@ -110,6 +95,21 @@ bool BravoGizmo::Initialize_Internal()
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
 	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnScaleZ);
+	ScaleComponents.push_back(Mesh);
+	}
+	{
+	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
+	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
+	
+	auto Mesh = NewObject<BravoStaticMeshComponent>("ScaleY", ERenderPriority::Starndart, ERenderGroup::Overlay);
+	Mesh->SetMesh(ScaleMesh);
+	Mesh->SetCastShadows(false);
+	Mesh->SetRotation(Rotation);
+	Mesh->SetScale(glm::vec3(1.0f));
+	auto material = Mesh->NewObject<BravoMaterialUnlit>();
+	material->Load(materailLoadingParams);
+	Mesh->SetMaterial(material);
+	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnScaleY);
 	ScaleComponents.push_back(Mesh);
 	}
 
@@ -220,8 +220,9 @@ void BravoGizmo::OnInput_ChangeGizmo(bool ButtonState, float DeltaTime)
 void BravoGizmo::OnTransformX(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::forwardV;
-	InputPlane = BravoMath::upV;
+	InputMask = BravoMath::rightV;
+	InputPlane = BravoMath::forwardV;
+	
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{
@@ -232,8 +233,9 @@ void BravoGizmo::OnTransformX(const int32&)
 void BravoGizmo::OnTransformY(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::rightV;
+	InputMask = BravoMath::upV;
 	InputPlane = BravoMath::forwardV;
+	
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{
@@ -244,8 +246,8 @@ void BravoGizmo::OnTransformY(const int32&)
 void BravoGizmo::OnTransformZ(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::upV;
-	InputPlane = BravoMath::forwardV;
+	InputMask = -BravoMath::forwardV;
+	InputPlane = BravoMath::upV;
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{
@@ -257,8 +259,8 @@ void BravoGizmo::OnTransformZ(const int32&)
 void BravoGizmo::OnScaleX(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::forwardV;
-	InputPlane = BravoMath::upV;
+	InputMask = BravoMath::rightV;
+	InputPlane = BravoMath::forwardV;
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{
@@ -270,7 +272,7 @@ void BravoGizmo::OnScaleX(const int32&)
 void BravoGizmo::OnScaleY(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::rightV;
+	InputMask = BravoMath::upV;
 	InputPlane = BravoMath::forwardV;
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
@@ -283,8 +285,8 @@ void BravoGizmo::OnScaleY(const int32&)
 void BravoGizmo::OnScaleZ(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::upV;
-	InputPlane = BravoMath::forwardV;
+	InputMask = -BravoMath::forwardV;
+	InputPlane = BravoMath::upV;
 	glm::vec3 Intersection = glm::vec3(0.0);
 	if ( CastRay(Intersection) )
 	{

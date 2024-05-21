@@ -145,21 +145,27 @@ void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2&
 
 	glm::quat newRotation = glm::normalize(pitchRotation * yawRotation * currentRotation);
 
-	const glm::vec3 cameraDirection = BravoMath::QuaternionToDirection(newRotation);
+	const glm::vec3 newCameraDirection = BravoMath::QuaternionToDirection(newRotation);
 	const float MaxPitch = 89.0f;
 	const float maxDot = glm::abs(glm::cos(glm::radians(MaxPitch)));
-	const float dotPr = 1.0f - glm::abs(glm::dot(cameraDirection, BravoMath::upV));
+	const float newDot = 1.0f - glm::abs(glm::dot(newCameraDirection, BravoMath::upV));
 
-	if ( dotPr <= maxDot )
+	if ( newDot <= maxDot )
 	{
-		//Log::LogMessage(ELog::Error, "SHOULD RESTRICT, {} > {}", glm::degrees(glm::acos(dotPr)), glm::degrees(glm::acos(maxDot)));
-		newRotation = glm::normalize(yawRotation * currentRotation);
+		const glm::vec3 currentCameraDirection = BravoMath::QuaternionToDirection(currentRotation);
+		const float currentDot = 1.0f - glm::abs(glm::dot(currentCameraDirection, BravoMath::upV));
 
-		// TODO: clamp instead of restriction (need to project direction vector onto restriction "cone")
+		if ( newDot <= currentDot )
+		{
+			//Log::LogMessage(ELog::Error, "SHOULD RESTRICT, {} > {}", glm::degrees(glm::acos(newDot)), glm::degrees(glm::acos(currentDot)));
+			newRotation = glm::normalize(yawRotation * currentRotation);
+
+			// TODO: clamp instead of restriction (need to project direction vector onto restriction "cone")
+		}
 	}
 	else
 	{
-		//Log::LogMessage(ELog::Success, "No restriction, {} <= {}", glm::degrees(glm::acos(dotPr)), glm::degrees(glm::acos(maxDot)));
+		//Log::LogMessage(ELog::Success, "No restriction, {} <= {}", glm::degrees(glm::acos(newDot)), glm::degrees(glm::acos(maxDot)));
 	}
 	SetRotation(newRotation);
 }
