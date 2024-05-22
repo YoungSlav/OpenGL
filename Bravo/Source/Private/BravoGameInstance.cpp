@@ -51,7 +51,7 @@ bool BravoGameInstance::Initialize_Internal()
 
 	Player = NewObject<BravoPlayer>("Player");
 	
-	Player->SetLocation(glm::vec3(0.0f, 30.0f, 0.0));
+	Player->SetLocation(glm::vec3(0.0f, 30.0f, 0.0) - BravoMath::forwardV*30.0f);
 	Player->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - Player->GetLocation_World());
 	Camera->AttachTo(Player);
 	Camera->SetTransform(BravoTransform());
@@ -369,12 +369,12 @@ void BravoGameInstance::Tick(float DeltaTime)
 
 void BravoGameInstance::TestCompTransform(float DeltaTime)
 {
-	TestActor->SetScale(glm::vec3(0.5f));
-	TestComponent->SetScale(glm::vec3(0.5f, 0.75f, 0.9f));
+	//TestActor->SetScale(glm::vec3(0.5f));
+	//TestComponent->SetScale(glm::vec3(0.5f, 0.75f, 0.9f));
 
 	glm::quat cRotation = TestComponent->GetRotation_World();
 
 	glm::quat aRotation = glm::quat(glm::radians(20.0f * DeltaTime), BravoMath::upV);
 
-	TestComponent->SetRotation_World(aRotation * cRotation);
+	//TestComponent->SetRotation_World(aRotation * cRotation);
 }

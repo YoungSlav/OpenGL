@@ -38,7 +38,7 @@ bool BravoGizmo::Initialize_Internal()
 	}
 	{
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 0.0, 1.0);
-	glm::vec3 Rotation = glm::vec3(0.0f, -90.0, 0.0f);
+	glm::vec3 Rotation = glm::vec3(0.0f, 90.0, 0.0f);
 	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("TransformZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(TransformMesh);
@@ -351,24 +351,24 @@ void BravoGizmo::OnScaleZ(const int32&)
 void BravoGizmo::OnRotationX(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::forwardV;
-	InputPlane = BravoMath::upV;
+	InputMask = GetRightVector_World();
+	InputPlane = GetRightVector_World();
 
 	bInputActive = CastRay(OldIntersection);
 }
 void BravoGizmo::OnRotationY(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::upV;
-	InputPlane = BravoMath::forwardV;
+	InputMask = GetUpVector_World();
+	InputPlane = GetUpVector_World();
 
 	bInputActive = CastRay(OldIntersection);
 }
 void BravoGizmo::OnRotationZ(const int32&)
 {
 	ResetInput();
-	InputMask = BravoMath::rightV;
-	InputPlane = BravoMath::forwardV;
+	InputMask = GetForwardVector_World();
+	InputPlane = GetForwardVector_World();
 
 	bInputActive = CastRay(OldIntersection);
 }
@@ -419,25 +419,25 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 	if ( !CastRay(Intersection) )
 		return;
 
-	glm::vec3 WorlDelta = (Intersection - OldIntersection) * InputMask;
-	if ( glm::length(WorlDelta) < FLT_EPS )
-		return;
-
 	if ( GizmoState == EBravoGizmoState::Transform )
 	{
 		glm::vec3 WorlDelta = (Intersection - OldIntersection) * InputMask;
-
-		for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
+		if ( glm::length(WorlDelta) >= FLT_EPS )
 		{
-			if ( it.expired() )
-				continue;
+			Log::LogMessage(ELog::Log, "Translate : {}", WorlDelta);
+
+			for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
+			{
+				if ( it.expired() )
+					continue;
 			
-			std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
-			asTransformable->SetLocation_World(asTransformable->GetLocation_World() + WorlDelta);
-		}
+				std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
+				asTransformable->SetLocation_World(asTransformable->GetLocation_World() + WorlDelta);
+			}
 
 		
-		SetLocation_World(GetLocation_World() + WorlDelta);
+			SetLocation_World(GetLocation_World() + WorlDelta);
+		}
 	}
 	else if ( GizmoState == EBravoGizmoState::Scale )
 	{
@@ -446,7 +446,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 		float OldOffset = glm::length((GetLocation_World() - OldIntersection) * InputMask);
 		float CurrentOffset = glm::length((GetLocation_World() - Intersection) * InputMask);
 
-		if ( !BravoMath::IsNearlyZero(OldOffset) )
+		if ( !BravoMath::IsNearlyZero(OldOffset) && !BravoMath::IsNearlyZero(OldOffset - CurrentOffset) )
 		{
 			float ScaleFactor = CurrentOffset / OldOffset;
 
@@ -461,6 +461,8 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 			{
 				ActualScaleFactor = glm::vec3(ScaleFactor);
 			}
+
+			Log::LogMessage(ELog::Log, "Scale : {}", ActualScaleFactor);
 			
 			for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
 			{
@@ -474,21 +476,36 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 	}
 	else if ( GizmoState == EBravoGizmoState::Rotation )
 	{
-		// TODO something is fucked up
 		glm::vec3 currentOffset = glm::normalize(Intersection - GetLocation());
 		glm::vec3 oldOffset = glm::normalize(OldIntersection - GetLocation());
 
-		float rad = std::atan2(glm::dot(glm::cross(oldOffset, currentOffset), InputPlane), glm::dot(oldOffset, currentOffset));
+		float rad = -std::atan2(glm::dot(glm::cross(oldOffset, currentOffset), InputPlane), glm::dot(oldOffset, currentOffset));
+		
 
-		glm::quat rotation(rad, InputMask);
-
-		for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
+		if ( glm::abs(rad) > FLT_EPS )
 		{
-			if ( it.expired() )
-				continue;
+			glm::quat rotation(rad, InputPlane);
+
+			Log::LogMessage(ELog::Log, "Rotate : {}", rotation);
+
+			for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
+			{
+				if ( it.expired() )
+					continue;
 			
-			std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
-			asTransformable->SetRotation_World(rotation * asTransformable->GetRotation_World());
+				std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
+				asTransformable->SetRotation_World(glm::normalize(rotation * asTransformable->GetRotation_World()));
+			}
+
+			std::vector<glm::quat> r;
+			for ( auto it : TransformComponents )
+				r.push_back(it->GetRotation_World());
+
+			SetRotation_World(glm::normalize(rotation * GetRotation_World()));
+
+			int32 i = 0;
+			for ( auto it : TransformComponents )
+				it->SetRotation_World(r[i++]);
 		}
 	}
 
