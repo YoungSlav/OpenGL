@@ -75,14 +75,22 @@ void BravoOutlineManager::OnSelectionChanged(const BravoSelection& Selection)
 	if ( Selection.Object->GetRenderGroup() != ERenderGroup::Main )
 		return;
 
-	auto found = std::find(ActiveSelections.begin(), ActiveSelections.end(), Selection);
-	if ( found == ActiveSelections.end() )
+	std::vector<int32>& CurentlySelectedInstanes = ActiveSelections[Selection.Object];
+
+	auto found = std::find(CurentlySelectedInstanes.begin(), CurentlySelectedInstanes.end(), Selection.InstanceIndex);
+	if ( found == CurentlySelectedInstanes.end() )
 	{
-		ActiveSelections.push_back(Selection);
+		CurentlySelectedInstanes.push_back(Selection.InstanceIndex);
+		Selection.Object->UpdateSelection(CurentlySelectedInstanes);
 	}
 	else
 	{
-		ActiveSelections.erase(found);
+		CurentlySelectedInstanes.erase(found);
+		if ( CurentlySelectedInstanes.empty() )
+		{
+			Selection.Object->ClearSelection();
+			ActiveSelections.erase(Selection.Object);
+		}
 	}
 }
 
@@ -101,14 +109,13 @@ void BravoOutlineManager::RenderSelections()
 	OutlineRenderTarget->Bind();
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	for ( const BravoSelection& Selection : ActiveSelections )
+	for ( auto it : ActiveSelections )
 	{
-		if ( std::shared_ptr<BravoObject> asObj = std::dynamic_pointer_cast<BravoObject>(Selection.Object) )
-		{
-			Selection.Object->RenderOutlineMask(Selection.InstanceIndex);
-		}
+		it.first->RenderOutlineMask();
 	}
 	OutlineRenderTarget->Unbind();
+
+
 
 	OutlinePostProccessShader->Use();
 

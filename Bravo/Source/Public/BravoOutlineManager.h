@@ -19,7 +19,8 @@ protected:
 	void OnSelectionChanged(const BravoSelection& Selection);
 
 private:
-	std::vector<BravoSelection> ActiveSelections;
+	std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>> ActiveSelections;
+	
 	std::shared_ptr<class BravoRenderTarget> OutlineRenderTarget;
 
 	uint32 PlaneVAO = 0, PlaneVBO = 0;

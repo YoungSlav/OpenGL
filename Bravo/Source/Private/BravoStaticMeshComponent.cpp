@@ -25,6 +25,11 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+	glGenBuffers(1, &SelectedInstancesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SelectedInstancesSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	AddInstance(BravoInstanceData());
 	return true;
 }
@@ -149,18 +154,43 @@ void BravoStaticMeshComponent::UpdateInstanceBuffer()
 	}
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, InstancesSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, InstanceData.size() * sizeof(BravoInstanceData), InstanceData.data(), GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, InstanceData.size() * sizeof(BravoInstanceData), InstanceData.data(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	bInstanceStateDirty = false;
+}
+
+void BravoStaticMeshComponent::UpdateSelection(const std::vector<int32>& SelectedInstances)
+{
+	std::vector<BravoInstanceData> SelectedInstanceData;
+	SelectedInstanceData.reserve(SelectedInstances.size());
+	for ( const int32& i : SelectedInstances )
+	{
+		SelectedInstanceData.push_back(Instances[i]->GetData());
+	}
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SelectedInstancesSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, SelectedInstanceData.size() * sizeof(BravoInstanceData), SelectedInstanceData.data(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	SelectedInstancesCount = (int32)SelectedInstances.size();
+}
+
+void BravoStaticMeshComponent::ClearSelection()
+{
+	SelectedInstancesCount = 0;
 }
 
 void BravoStaticMeshComponent::OnDestroy()
 {
 	glDeleteBuffers(1, &InstancesSSBO);
 	InstancesSSBO = 0;
+	
+	glDeleteBuffers(1, &SelectedInstancesSSBO);
+	SelectedInstancesSSBO = 0;
+
 	glDeleteVertexArrays(6, &VAO);
 	VAO = 0;
+
 	Material->Destroy();
 	Mesh->ReleaseFromGPU();
 }
@@ -253,15 +283,12 @@ void BravoStaticMeshComponent::RenderSelectionID()
 	SelectionIDShader->StopUsage();
 }
 
-void BravoStaticMeshComponent::RenderOutlineMask(int32 InstanceID)
+void BravoStaticMeshComponent::RenderOutlineMask()
 {
-	if ( !Instances.size() )
+	if ( SelectedInstancesCount == 0)
 		return;
 
 	if ( !EnsureReady() || !OutlineMaskShader || !OutlineMaskShader->EnsureReady() )
-		return;
-
-	if ( Instances.size() <= InstanceID || InstanceID < 0  )
 		return;
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -270,19 +297,21 @@ void BravoStaticMeshComponent::RenderOutlineMask(int32 InstanceID)
 
 	glm::mat4 CameraProjection = camera->GetProjectionMatrix();
 	glm::mat4 CameraView = camera->GetViewMatrix();
-	
+	glm::vec3 CameraLocation = camera->GetLocation();
 
-	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
-	const glm::mat4 InstanceTransorm = CameraProjection * CameraView * model * Instances[InstanceID]->GetTransform().GetTransformMatrix();
+	glm::mat4 model = GetTransform_World().GetTransformMatrix();
+
+	glm::mat4 ModelTranform = CameraProjection * CameraView * model;
+
 	OutlineMaskShader->Use();
 		
 		OutlineMaskShader->SetVector1d("OutlineColor", (float)(GetHandle()));
-		OutlineMaskShader->SetMatrix4d("transform", InstanceTransorm);
+		OutlineMaskShader->SetMatrix4d("transform", ModelTranform);
 
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SelectedInstancesSSBO);
 		
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, SelectedInstancesCount);
 		glBindVertexArray(0);
 
 		
@@ -302,6 +331,4 @@ void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderA
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
 	glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
-
-
 }

@@ -33,9 +33,13 @@ public:
 
 
 	virtual void Render() = 0;
-	virtual void RenderSelectionID() {};
-	virtual void RenderOutlineMask(int32 InstanceID) {};
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
+	
+	// selection
+	virtual void ClearSelection() {};
+	virtual void UpdateSelection(const std::vector<int32>& SelectedInstances) {};
+	virtual void RenderSelectionID() {};
+	virtual void RenderOutlineMask() {};
 
 	OnObjectClickedSignature OnObjectClicked;
 

@@ -314,7 +314,6 @@ void BravoGameInstance::SpawnTestInstances()
 			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 20;
 			sphereMesh->AddInstance(BravoInstanceData(BravoTransform(newLocation, glm::quat(), glm::vec3(0.3f))));
 		}
-		sphereMesh->UpdateInstanceBuffer();
 		Cubes.push_back(sphereActor);
 	}
 }
