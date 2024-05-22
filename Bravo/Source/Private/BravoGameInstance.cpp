@@ -70,40 +70,54 @@ bool BravoGameInstance::Initialize_Internal()
 
 	
 	
-	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	//{
+	//	std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	//	planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+	//	//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+	//	//planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+	//	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+	//	planeMesh->SetMesh(planeAsset);
+	//	planeMesh->SetCastShadows(true);
+	//	//planeMesh->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+	//	
+	//	BravoPBRMaterialParams materailLoadingParams;
+	//	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	//	materailLoadingParams.AoColor = 1.0f;
+	//	std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
+	//	planeMat->Load(materailLoadingParams);
+	//	planeMesh->SetMaterial(planeMat);
+	//}
+
 	{
-		std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
-		planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
-		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-		//planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
-		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-		planeMesh->SetMesh(planeAsset);
-		planeMesh->SetCastShadows(true);
-		//planeMesh->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
-		
-		BravoPBRMaterialParams materailLoadingParams;
-		materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
-		materailLoadingParams.AoColor = 1.0f;
-		std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
-		planeMat->Load(materailLoadingParams);
-		planeMesh->SetMaterial(planeMat);
+	TestActor = NewObject<BravoActor>("TestActor");
+	auto cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	TestComponent = TestActor->NewObject<BravoStaticMeshComponent>("TestComponent");
+	TestComponent->SetMesh(cubeAsset);
+
+	BravoPBRMaterialParams materailLoadingParams;
+	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	materailLoadingParams.AoColor = 1.0f;
+	auto material = TestComponent->NewObject<BravoMaterialPBR>();
+	material->Load(materailLoadingParams);
+	TestComponent->SetMaterial(material);
 	}
 
 	
 	SpawnDirLights();
 
 	
-	SpawnPointLights();
-	SpawnSpotLights();
+	//SpawnPointLights();
+	//SpawnSpotLights();
 
-	SpawnSpheres();
-	SpawnTestInstances();
+	//SpawnSpheres();
+	//SpawnTestInstances();
 
 	return true;
 }
 
 
-void BravoGameInstance::Test()
+void BravoGameInstance::TestTransforms()
 {
 	glm::vec3 location = BravoMath::RandVector(1000000.0);
 	glm::vec3 direction = glm::abs(BravoMath::RandVector(1.0f));
@@ -127,15 +141,11 @@ void BravoGameInstance::Test()
 	glm::vec3 worldCDir = childWorld.GetForwardVector();
 	glm::vec3 worldCSc = childWorld.GetScale();
 
-	
-	
-
 	bool mat = childWorld.IsNearlyEqual(parent);
 	bool loc = !glm::all(glm::epsilonNotEqual(location, worldCLoc, FLT_EPS));
 	bool rot = !glm::all(glm::epsilonNotEqual(rotation, worldCRot, FLT_EPS));
 	bool dir = !glm::all(glm::epsilonNotEqual(direction, worldCDir, FLT_EPS));
 	bool sc = !glm::all(glm::epsilonNotEqual(scale, worldCSc, FLT_EPS));
-
 
 	if ( !mat )
 	{
@@ -352,4 +362,19 @@ void BravoGameInstance::Tick(float DeltaTime)
 		//Player->SetLocation(newLocation2);
 		//Player->SetDirection(glm::vec3(0.0f) - newLocation2);
 	}
+
+	TestCompTransform(DeltaTime);
+}
+
+
+void BravoGameInstance::TestCompTransform(float DeltaTime)
+{
+	TestActor->SetScale(glm::vec3(0.5f));
+	TestComponent->SetScale(glm::vec3(0.5f, 0.75f, 0.9f));
+
+	glm::quat cRotation = TestComponent->GetRotation_World();
+
+	glm::quat aRotation = glm::quat(glm::radians(20.0f * DeltaTime), BravoMath::upV);
+
+	TestComponent->SetRotation_World(aRotation * cRotation);
 }

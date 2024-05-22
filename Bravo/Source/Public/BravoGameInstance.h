@@ -11,7 +11,9 @@ protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void Test();
+	void TestTransforms();
+
+	void TestCompTransform(float DeltaTime);
 
 	void SpawnDirLights();
 	void SpawnSpotLights();
@@ -28,4 +30,7 @@ protected:
 
 	std::shared_ptr<class BravoCamera> Camera;
 	std::shared_ptr<class BravoPlayer> Player;
+
+	std::shared_ptr<class BravoActor> TestActor;
+	std::shared_ptr<class BravoStaticMeshComponent> TestComponent;
 };

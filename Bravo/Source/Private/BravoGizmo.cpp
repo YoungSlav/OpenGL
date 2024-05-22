@@ -283,9 +283,7 @@ const glm::vec3& BravoGizmo::SelectPlane(const glm::vec3& NormalA, const glm::ve
 	const float dotA = std::abs(glm::dot(cameraDirection, NormalA));
 	const float dotB = std::abs(glm::dot(cameraDirection, NormalB));
 
-	const glm::vec3 norm = dotA > dotB ? NormalA : NormalB;
-
-	return norm;
+	return dotA > dotB ? NormalA : NormalB;
 }
 
 void BravoGizmo::OnTransformX(const int32&)

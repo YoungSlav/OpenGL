@@ -132,9 +132,10 @@ private:
 
 	inline void ApplyOnMatrix(glm::mat4& OutMatrix) const
 	{
-		OutMatrix = glm::translate(glm::mat4(1.0f), Location);
-		OutMatrix *= glm::toMat4(Rotation);
-		OutMatrix = glm::scale(OutMatrix, Scale);
+		OutMatrix = glm::recompose(Scale, Rotation, Location, glm::vec3(0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		//OutMatrix = glm::translate(glm::mat4(1.0f), Location);
+		////OutMatrix *= glm::toMat4(Rotation);
+		//OutMatrix = glm::scale(OutMatrix, Scale);
 	}
 
 	inline void DecomposeTransformMatrix()
