@@ -45,6 +45,8 @@ protected:
 private:
 	bool CastRay(glm::vec3& OutIntersection);
 
+	const glm::vec3& SelectPlane(const glm::vec3& NormalA, const glm::vec3& NormalB)const;
+
 protected:
 
 	std::list<std::weak_ptr<class IBravoTransformable>> Attachments;

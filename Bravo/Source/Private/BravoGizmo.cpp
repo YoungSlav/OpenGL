@@ -119,47 +119,78 @@ bool BravoGizmo::Initialize_Internal()
 	auto RotationMesh = AssetManager->FindOrLoad<BravoStaticMeshAsset>("GizmoRotAsset", BravoStaticMeshLoadingParams("Gizmo\\SM_Angle_Smooth.fbx"));
 	{
 	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0, 0.0);
-	glm::vec3 Rotation = glm::vec3(90.0f, -90.0, 90.0f);
 
 	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationX", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
-	Mesh->SetRotation(Rotation);
 	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
 	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnRotationX);
+	
+	Mesh->RemoveAllInstances();
+	BravoTransform transform;
+	transform.SetRotation(glm::vec3(90.0f, 0.0, 90.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(90.0f, 90.0, 90.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(90.0f, 180.0, 90.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(90.0f, 270.0, 90.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+
 	RotationComponents.push_back(Mesh);
 	}
 	{
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 1.0, 0.0);
-	glm::vec3 Rotation = glm::vec3(90.0f, -90.0, 0.0f);
 	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationY", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
-	Mesh->SetRotation(Rotation);
 	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
 	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnRotationY);
+
+	Mesh->RemoveAllInstances();
+	BravoTransform transform;
+	transform.SetRotation(glm::vec3(90.0f, 0.0, 0.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(90.0f, 90.0, 0.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(90.0f, 180.0, 0.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(90.0f, 270.0, 0.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
 	RotationComponents.push_back(Mesh);
 	}
 	{
 	materailLoadingParams.AlbedoColor = glm::vec3(0.0f, 0.0, 1.0);
-	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
+	//glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 90.0f);
 	
 	auto Mesh = NewObject<BravoStaticMeshComponent>("RotationZ", ERenderPriority::Starndart, ERenderGroup::Overlay);
 	Mesh->SetMesh(RotationMesh);
 	Mesh->SetCastShadows(false);
-	Mesh->SetRotation(Rotation);
+	//Mesh->SetRotation(Rotation);
 	Mesh->SetScale(glm::vec3(1.0f));
 	auto material = Mesh->NewObject<BravoMaterialUnlit>();
 	material->Load(materailLoadingParams);
 	Mesh->SetMaterial(material);
 	Mesh->OnObjectClicked.AddSP(Self<BravoGizmo>(), &BravoGizmo::OnRotationZ);
+	
+	Mesh->RemoveAllInstances();
+	BravoTransform transform;
+	transform.SetRotation(glm::vec3(0.0f, 0.0, 0.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(0.0f, 0.0, 90.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(0.0f, 0.0, 180.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	transform.SetRotation(glm::vec3(0.0f, 0.0, 270.0f));
+	Mesh->AddInstance(BravoInstanceData(transform));
+	
 	RotationComponents.push_back(Mesh);
 	}
 
@@ -241,11 +272,27 @@ void BravoGizmo::OnInput_ChangeGizmo(bool ButtonState, float DeltaTime)
 	SetGizmoState(EBravoGizmoState(NewState));
 }
 
+const glm::vec3& BravoGizmo::SelectPlane(const glm::vec3& NormalA, const glm::vec3& NormalB) const
+{
+	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
+	if ( !camera )
+		return NormalA;
+
+	const glm::vec3 cameraDirection = camera->GetForwardVector_World();
+
+	const float dotA = std::abs(glm::dot(cameraDirection, NormalA));
+	const float dotB = std::abs(glm::dot(cameraDirection, NormalB));
+
+	const glm::vec3 norm = dotA > dotB ? NormalA : NormalB;
+
+	return norm;
+}
+
 void BravoGizmo::OnTransformX(const int32&)
 {
 	ResetInput();
 	InputMask = BravoMath::rightV;
-	InputPlane = BravoMath::forwardV;
+	InputPlane = SelectPlane(BravoMath::forwardV, BravoMath::upV);
 	
 	bInputActive = CastRay(OldIntersection);
 }
@@ -253,7 +300,7 @@ void BravoGizmo::OnTransformY(const int32&)
 {
 	ResetInput();
 	InputMask = BravoMath::upV;
-	InputPlane = BravoMath::forwardV;
+	InputPlane = SelectPlane(BravoMath::forwardV, BravoMath::rightV);
 	
 	bInputActive = CastRay(OldIntersection);
 }
@@ -261,7 +308,7 @@ void BravoGizmo::OnTransformZ(const int32&)
 {
 	ResetInput();
 	InputMask = -BravoMath::forwardV;
-	InputPlane = BravoMath::upV;
+	InputPlane = SelectPlane(BravoMath::rightV, BravoMath::upV);
 
 	bInputActive = CastRay(OldIntersection);
 }
@@ -270,7 +317,7 @@ void BravoGizmo::OnScaleX(const int32&)
 {
 	ResetInput();
 	InputMask = BravoMath::rightV;
-	InputPlane = BravoMath::forwardV;
+	InputPlane = SelectPlane(BravoMath::forwardV, BravoMath::upV);
 
 	bInputActive = CastRay(OldIntersection);
 	glm::vec3 InputOffset = GetLocation_World() - OldIntersection;
@@ -282,7 +329,7 @@ void BravoGizmo::OnScaleY(const int32&)
 {
 	ResetInput();
 	InputMask = BravoMath::upV;
-	InputPlane = BravoMath::forwardV;
+	InputPlane = SelectPlane(BravoMath::forwardV, BravoMath::rightV);
 
 	bInputActive = CastRay(OldIntersection);
 	glm::vec3 InputOffset = GetLocation_World() - OldIntersection;
@@ -294,7 +341,7 @@ void BravoGizmo::OnScaleZ(const int32&)
 {
 	ResetInput();
 	InputMask = -BravoMath::forwardV;
-	InputPlane = BravoMath::upV;
+	InputPlane = SelectPlane(BravoMath::rightV, BravoMath::upV);
 
 	bInputActive = CastRay(OldIntersection);
 	glm::vec3 InputOffset = GetLocation_World() - OldIntersection;
@@ -429,6 +476,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 	}
 	else if ( GizmoState == EBravoGizmoState::Rotation )
 	{
+		// TODO something is fucked up
 		glm::vec3 currentOffset = glm::normalize(Intersection - GetLocation());
 		glm::vec3 oldOffset = glm::normalize(OldIntersection - GetLocation());
 
