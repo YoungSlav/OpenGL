@@ -9,13 +9,17 @@ enum EBravoGizmoState : int32
 	Scale = 2,
 };
 
-class BravoGizmo : public BravoActor
+class BravoGizmo : public BravoActor, public IBravoTickable
 {
+public:
+	void UpdateGizmoAttachments(std::list<std::weak_ptr<class IBravoTransformable>> NewAttachments);
 
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void OnDestroy() override;
 	virtual void OnBeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 	void OnInput_ChangeGizmo(bool ButtonState, float DeltaTime);
 
@@ -43,6 +47,8 @@ private:
 
 protected:
 
+	std::list<std::weak_ptr<class IBravoTransformable>> Attachments;
+
 	std::list<std::shared_ptr<class BravoStaticMeshComponent>> TransformComponents;
 	std::list<std::shared_ptr<class BravoStaticMeshComponent>> RotationComponents;
 	std::list<std::shared_ptr<class BravoStaticMeshComponent>> ScaleComponents;
@@ -52,9 +58,8 @@ protected:
 	bool bInputActive = false;
 	glm::vec3 InputPlane = glm::vec3(0.0);
 	glm::vec3 InputMask = glm::vec3(0.0);
-	glm::vec3 InputOffset = glm::vec3(0.0);
+	glm::vec3 OldIntersection = glm::vec3(0.0);
 
 
-	glm::vec3 ScaleOriginal = glm::vec3(0.0f);
-	glm::quat RotationOriginal;
+	const float DesiredScreenSize = 100.0f;
 };

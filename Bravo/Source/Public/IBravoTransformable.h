@@ -2,46 +2,46 @@
 #include "stdafx.h"
 #include "BravoTransform.h"
 
-typedef MulticastDelegate<const class ITransformable*> OnTransformUpdatedSignature;
+typedef MulticastDelegate<const class IBravoTransformable*> OnTransformUpdatedSignature;
 
-class ITransformable
+class IBravoTransformable
 {
 public:
-	ITransformable() = default;
-	ITransformable(const BravoTransform& Transform) : 
+	IBravoTransformable() = default;
+	IBravoTransformable(const BravoTransform& Transform) : 
 		LocalTransform(Transform),
 		WorldTransform()
 	{
 	}
 
-	ITransformable(const BravoTransform& Transform, const std::shared_ptr<ITransformable> _Parent) :
+	IBravoTransformable(const BravoTransform& Transform, const std::shared_ptr<IBravoTransformable> _Parent) :
 		LocalTransform(Transform),
 		WorldTransform()
 	{
 		SetParent(_Parent);
 	}
-	~ITransformable()
+	virtual ~IBravoTransformable()
 	{
-		if ( std::shared_ptr<ITransformable> parent = GetParent() )
+		if ( std::shared_ptr<IBravoTransformable> parent = GetParent() )
 		{
 			parent->OnTransformUpdated.RemoveObject(this);
 		}
 	}
 
-	void SetParent(const std::shared_ptr<ITransformable> _Parent)
+	void SetParent(const std::shared_ptr<IBravoTransformable> _Parent)
 	{
-		if ( std::shared_ptr<ITransformable> oldParent = GetParent() )
+		if ( std::shared_ptr<IBravoTransformable> oldParent = GetParent() )
 		{
 			oldParent->OnTransformUpdated.RemoveObject(this);
 		}
 		ParentPtr = _Parent;
 		if ( _Parent != nullptr )
 		{
-			_Parent->OnTransformUpdated.AddRaw(this, &ITransformable::OnParentTransformUpdated);
+			_Parent->OnTransformUpdated.AddRaw(this, &IBravoTransformable::OnParentTransformUpdated);
 			OnParentTransformUpdated(_Parent.get());
 		}
 	}
-	std::shared_ptr<ITransformable> GetParent() const { return ParentPtr.expired() ? nullptr : ParentPtr.lock(); }
+	std::shared_ptr<IBravoTransformable> GetParent() const { return ParentPtr.expired() ? nullptr : ParentPtr.lock(); }
 
 	const BravoTransform& GetTransform() const { return LocalTransform; }
 	const glm::vec3& GetLocation() const { return LocalTransform.GetLocation(); }
@@ -109,7 +109,7 @@ public:
 
 	void SetTransform_World(const BravoTransform& InTransform)
 	{
-		if ( std::shared_ptr<ITransformable> p = GetParent() )
+		if ( std::shared_ptr<IBravoTransformable> p = GetParent() )
 		{
 			BravoTransform panretTransform = p->GetTransform_World();
 			glm::mat4 parentWorldInverse = glm::inverse(panretTransform.GetTransformMatrix());
@@ -156,7 +156,7 @@ private:
 
 	void UpdateWorldTransform()
 	{
-		if ( std::shared_ptr<ITransformable> p = GetParent() )
+		if ( std::shared_ptr<IBravoTransformable> p = GetParent() )
 		{
 			const BravoTransform& parentTransform = p->GetTransform_World();
 			glm::mat4 parentMat = parentTransform.GetTransformMatrix();
@@ -170,10 +170,12 @@ private:
 		}
 	}
 
-	void OnParentTransformUpdated(const ITransformable* _parent)
+	void OnParentTransformUpdated(const IBravoTransformable* _parent)
 	{
 		UpdateWorldTransform();
 	}
+
+	
 
 public:
 	OnTransformUpdatedSignature OnTransformUpdated;
@@ -182,5 +184,5 @@ private:
 	BravoTransform LocalTransform;
 	BravoTransform WorldTransform;
 
-	std::weak_ptr<ITransformable> ParentPtr;
+	std::weak_ptr<IBravoTransformable> ParentPtr;
 };

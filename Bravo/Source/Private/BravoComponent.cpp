@@ -8,7 +8,7 @@ bool BravoComponent::Initialize_Internal()
 
 	if ( std::shared_ptr<BravoObject> Owner = GetOwner() )
 	{
-		if ( std::shared_ptr<ITransformable> asTranformable = std::dynamic_pointer_cast<ITransformable>(Owner) )
+		if ( std::shared_ptr<IBravoTransformable> asTranformable = std::dynamic_pointer_cast<IBravoTransformable>(Owner) )
 		{
 			SetParent(asTranformable);
 			return true;

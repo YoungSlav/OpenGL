@@ -85,9 +85,9 @@ bool BravoStaticMeshComponent::EnsureReady()
 	return true;
 }
 
-void BravoStaticMeshComponent::OnInstanceTransformUpdated(const ITransformable* inst)
+void BravoStaticMeshComponent::OnInstanceTransformUpdated(const IBravoTransformable* inst)
 {
-	if ( const BravoStaticMeshComponent::Instance* asInst = static_cast<const BravoStaticMeshComponent::Instance*>(inst) )
+	if ( const BravoStaticMeshInstance* asInst = static_cast<const BravoStaticMeshInstance*>(inst) )
 	{
 		UpdateInstance(asInst->InstanceIndex, asInst->GetData());
 	}
@@ -97,8 +97,8 @@ int32 BravoStaticMeshComponent::AddInstance(const BravoInstanceData& InstanceDat
 {
 	int32 index = (int32)Instances.size();
 
-	std::shared_ptr<BravoStaticMeshComponent::Instance> newInstance(
-			new BravoStaticMeshComponent::Instance(
+	std::shared_ptr<BravoStaticMeshInstance> newInstance(
+			new BravoStaticMeshInstance(
 				InstanceData,
 				Self<BravoStaticMeshComponent>(),
 				index));
@@ -135,13 +135,13 @@ void BravoStaticMeshComponent::RemoveInstances(int32 Index, int32 Count)
 	bInstanceStateDirty = true;
 }
 
-BravoInstanceData BravoStaticMeshComponent::GetInstanceData(int32 Index) const
+std::shared_ptr<BravoStaticMeshInstance> BravoStaticMeshComponent::GetInstance(int32 Index) const
 {
 	if ( Index >= 0 && Index < InstanceCount() )
 	{
-		return Instances[Index]->GetData();
+		return Instances[Index];
 	}
-	return BravoInstanceData();
+	return nullptr;
 }
 
 void BravoStaticMeshComponent::UpdateInstanceBuffer()
@@ -160,7 +160,7 @@ void BravoStaticMeshComponent::UpdateInstanceBuffer()
 	bInstanceStateDirty = false;
 }
 
-void BravoStaticMeshComponent::UpdateSelection(const std::vector<int32>& SelectedInstances)
+void BravoStaticMeshComponent::SetSelection(const std::vector<int32>& SelectedInstances)
 {
 	std::vector<BravoInstanceData> SelectedInstanceData;
 	SelectedInstanceData.reserve(SelectedInstances.size());
@@ -168,11 +168,14 @@ void BravoStaticMeshComponent::UpdateSelection(const std::vector<int32>& Selecte
 	{
 		SelectedInstanceData.push_back(Instances[i]->GetData());
 	}
+
+	const std::vector<BravoInstanceData>& selectedData = SelectedInstances.size() ? SelectedInstanceData : InstanceData;
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SelectedInstancesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, SelectedInstanceData.size() * sizeof(BravoInstanceData), SelectedInstanceData.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, selectedData.size() * sizeof(BravoInstanceData), selectedData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	SelectedInstancesCount = (int32)SelectedInstances.size();
+	SelectedInstancesCount = (int32)selectedData.size();
 }
 
 void BravoStaticMeshComponent::ClearSelection()

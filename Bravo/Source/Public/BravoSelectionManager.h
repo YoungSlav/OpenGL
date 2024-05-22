@@ -16,12 +16,10 @@ struct BravoSelection
 	}
 };
 
-typedef MulticastDelegate<const BravoSelection&> OnSelectionSignature;
-
 class BravoSelectionManager : public BravoObject
 {
 public:
-	OnSelectionSignature OnObjectSelected;
+	const std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>>& GetSelections() const { return ActiveSelections; }
 
 protected:
 
@@ -34,9 +32,17 @@ protected:
 	void OnMouseClicked(bool ButtonState, float DeltaTime);
 
 	void ChangeSelection(const BravoSelection& Selection);
-	void ClearSelection();
+	void ClearSelections();
+
+	void SpawnGizmo();
+	void UpdateGizmo();
+	void ClearGizmo();
+
 
 private:
+
+	std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>> ActiveSelections;
+	
 	glm::ivec2 Size;
 	std::shared_ptr<class BravoRenderTarget> SelectionRenderTarget;
 

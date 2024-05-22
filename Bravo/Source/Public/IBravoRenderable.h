@@ -19,8 +19,18 @@ class IBravoRenderable
 {
 public:
 	IBravoRenderable() = default;
-	IBravoRenderable(ERenderPriority _RenderPriority)  : RenderPriority(_RenderPriority), RenderGroup(ERenderGroup::Main) {}
-	IBravoRenderable(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup) : RenderPriority(_RenderPriority), RenderGroup(_RenderGroup) {}
+
+	IBravoRenderable(ERenderPriority _RenderPriority) :
+		RenderPriority(_RenderPriority),
+		RenderGroup(ERenderGroup::Main)
+	{}
+
+	IBravoRenderable(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup) :
+		RenderPriority(_RenderPriority),
+		RenderGroup(_RenderGroup)
+	{}
+
+	virtual ~IBravoRenderable() = default;
 
 	ERenderPriority GetRenderPriority() const { return RenderPriority; }
 	ERenderGroup GetRenderGroup() const { return RenderGroup; }
@@ -37,7 +47,7 @@ public:
 	
 	// selection
 	virtual void ClearSelection() {};
-	virtual void UpdateSelection(const std::vector<int32>& SelectedInstances) {};
+	virtual void SetSelection(const std::vector<int32>& SelectedInstances) {};
 	virtual void RenderSelectionID() {};
 	virtual void RenderOutlineMask() {};
 
@@ -48,12 +58,11 @@ public:
 		OnObjectClicked.Broadcast(InstanceIndex);
 	};
 
-
-	
-private:
-
+protected:
 	const ERenderPriority RenderPriority = Starndart;
 	const ERenderGroup RenderGroup = Main;
+	
+private:
 
 	bool bCastShadows = false;
 	bool bVisible = true;

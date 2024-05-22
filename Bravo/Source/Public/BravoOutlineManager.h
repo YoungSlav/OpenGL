@@ -12,14 +12,13 @@ public:
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void OnBeginPlay() override;
 	virtual void OnDestroy() override;
 
 	void OnViewportResized(const glm::ivec2& _Size);
 	void OnSelectionChanged(const BravoSelection& Selection);
 
 private:
-	std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>> ActiveSelections;
+	
 	
 	std::shared_ptr<class BravoRenderTarget> OutlineRenderTarget;
 

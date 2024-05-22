@@ -10,7 +10,7 @@ class IBravoTickable
 {
 	friend class BravoEngine;
 protected:
-	virtual void Tick(float DeltaTime) {};
+	virtual void Tick(float DeltaTime) = 0;
 
 private:
 	void Update(float DeltaTime)
@@ -28,7 +28,7 @@ class BravoObject : public SharedFromThis
 	friend class BravoEngine;
 public:
 	BravoObject() = default;
-	~BravoObject();
+	virtual ~BravoObject();
 
 	bool Initialize(const BravoHandle& _Handle, const std::string& _Name, std::shared_ptr<class BravoEngine> _Engine, std::shared_ptr<BravoObject> _Owner);
 	

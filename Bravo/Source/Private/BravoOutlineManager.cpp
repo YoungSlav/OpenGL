@@ -49,13 +49,6 @@ bool BravoOutlineManager::Initialize_Internal()
 	return true;
 }
 
-void BravoOutlineManager::OnBeginPlay()
-{
-	if ( auto SelectionManager = Engine->GetSelectionManager() )
-	{
-		SelectionManager->OnObjectSelected.AddSP(Self<BravoOutlineManager>(), &BravoOutlineManager::OnSelectionChanged);
-	}
-}
 
 void BravoOutlineManager::OnDestroy()
 {
@@ -70,32 +63,14 @@ void BravoOutlineManager::OnViewportResized(const glm::ivec2& Size)
 	OutlineRenderTarget->Resize(Size);
 }
 
-void BravoOutlineManager::OnSelectionChanged(const BravoSelection& Selection)
-{
-	if ( Selection.Object->GetRenderGroup() != ERenderGroup::Main )
-		return;
-
-	std::vector<int32>& CurentlySelectedInstanes = ActiveSelections[Selection.Object];
-
-	auto found = std::find(CurentlySelectedInstanes.begin(), CurentlySelectedInstanes.end(), Selection.InstanceIndex);
-	if ( found == CurentlySelectedInstanes.end() )
-	{
-		CurentlySelectedInstanes.push_back(Selection.InstanceIndex);
-		Selection.Object->UpdateSelection(CurentlySelectedInstanes);
-	}
-	else
-	{
-		CurentlySelectedInstanes.erase(found);
-		if ( CurentlySelectedInstanes.empty() )
-		{
-			Selection.Object->ClearSelection();
-			ActiveSelections.erase(Selection.Object);
-		}
-	}
-}
-
 void BravoOutlineManager::RenderSelections()
 {
+	auto SelectionManager = Engine->GetSelectionManager();
+	if ( !SelectionManager )
+		return;
+
+	auto ActiveSelections = SelectionManager->GetSelections();
+
 	if ( !ActiveSelections.size() )
 		return;
 

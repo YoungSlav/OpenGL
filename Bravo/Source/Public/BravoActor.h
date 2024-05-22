@@ -2,10 +2,10 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 #include "BravoMath.h"
-#include "ITransformable.h"
+#include "IBravoTransformable.h"
 #include "BravoComponent.h"
 
-class BravoActor : public BravoObject, public ITransformable
+class BravoActor : public BravoObject, public IBravoTransformable
 {
 public:
 

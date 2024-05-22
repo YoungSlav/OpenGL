@@ -8,7 +8,7 @@ class BravoCamera : public BravoActor
 public:
 
 	const glm::mat4& GetViewMatrix() const { return ViewMatrix; }
-	const glm::mat4 GetProjectionMatrix() const { return ProjectionMatrix; }
+	const glm::mat4 GetProjectionMatrix() const { return PerspectiveMatrix; }
 
 	void SetFOV(float InFOV) { FOV = InFOV; }
 	float GetFOV() const { return FOV; }
@@ -33,6 +33,7 @@ private:
 	float MaxDrawingDistance = 1000.0f;
 	
 	glm::mat4 ViewMatrix;
-	glm::mat4 ProjectionMatrix;
+	glm::mat4 PerspectiveMatrix;
+	glm::mat4 OrthographicMatrix;
 };
 

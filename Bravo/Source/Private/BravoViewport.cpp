@@ -143,9 +143,23 @@ void BravoViewport::RemoveRenderable(std::shared_ptr<IBravoRenderable> Renderabl
 
 void BravoViewport::RenderSelectionIDs() const
 {
-	for ( auto RenderGroup : RenderGroups )
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	if ( auto RenderGroup = GetRenderGroup(ERenderGroup::Main) )
 	{
-		for ( auto& it : RenderGroup.second->Renderables )
+		for ( auto& it : RenderGroup->Renderables )
+		{
+			if ( it->IsVisisble() )
+				it->RenderSelectionID();
+		}
+	}
+
+	if ( auto RenderGroup = GetRenderGroup(ERenderGroup::Overlay) )
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+		for ( auto& it : RenderGroup->Renderables )
 		{
 			if ( it->IsVisisble() )
 				it->RenderSelectionID();
@@ -155,11 +169,13 @@ void BravoViewport::RenderSelectionIDs() const
 
 void BravoViewport::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const
 {
-	auto RenderGroup = GetRenderGroup(ERenderGroup::Main);
-	for ( auto& it : RenderGroup->Renderables )
+	if ( auto RenderGroup = GetRenderGroup(ERenderGroup::Main) )
 	{
-		if ( it->IsVisisble() && it->GetCastShadows() )
-			it->RenderDepthMap(Shader);
+		for ( auto& it : RenderGroup->Renderables )
+		{
+			if ( it->IsVisisble() && it->GetCastShadows() )
+				it->RenderDepthMap(Shader);
+		}
 	}
 }
 
@@ -208,14 +224,16 @@ void BravoViewport::UpdateViewport()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		auto RenderGroup = GetRenderGroup(ERenderGroup::Main);
-		for ( auto& it : RenderGroup->Renderables )
+		if ( auto RenderGroup = GetRenderGroup(ERenderGroup::Main) )
 		{
-			if ( it->IsVisisble() )
-				it->Render();
+			for ( auto& it : RenderGroup->Renderables )
+			{
+				if ( it->IsVisisble() )
+					it->Render();
+			}
 		}
 
-		if ( RenderGroup = GetRenderGroup(ERenderGroup::Overlay) )
+		if ( auto RenderGroup = GetRenderGroup(ERenderGroup::Overlay) )
 		{
 			glClear(GL_DEPTH_BUFFER_BIT);
 			for ( auto& it : RenderGroup->Renderables )
