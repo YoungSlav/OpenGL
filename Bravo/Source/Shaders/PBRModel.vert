@@ -7,7 +7,16 @@ layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBitangent;
 layout (location = 5) in vec4 aColor;
 
-layout (location = 6) in mat4 instanceMatrix;
+
+struct InstanceData
+{
+	mat4 transform;
+};
+
+layout(std430, binding = 0) buffer InstanceBuffer
+{
+	InstanceData instances[];
+};
 
 
 out VS_OUT {
@@ -22,11 +31,11 @@ uniform mat4 projection;
 
 void main()
 {
-	vs_out.FragPos = vec3(model * instanceMatrix * vec4(aPos, 1.0));
+	vs_out.FragPos = vec3(model * instances[gl_InstanceID].transform * vec4(aPos, 1.0));
 	vs_out.TexCoords = aTexCoords;
 
-	vec3 T = normalize(vec3(model * instanceMatrix * vec4(aTangent, 0.0)));
-	vec3 N = normalize(vec3(model * instanceMatrix * vec4(aNormal, 0.0)));
+	vec3 T = normalize(vec3(model * instances[gl_InstanceID].transform * vec4(aTangent, 0.0)));
+	vec3 N = normalize(vec3(model * instances[gl_InstanceID].transform * vec4(aNormal, 0.0)));
 	T = normalize(T - dot(T, N) * N);
 	vec3 B = cross(N, T);
 	vs_out.TBN = mat3(T, B, N);

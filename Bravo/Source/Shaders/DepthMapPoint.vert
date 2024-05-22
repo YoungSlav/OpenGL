@@ -1,11 +1,20 @@
 #version 430 core
 layout (location = 0) in vec3 aPos;
 
-layout (location = 6) in mat4 instanceMatrix;
+struct InstanceData
+{
+	mat4 transform;
+};
+
+layout(std430, binding = 0) buffer InstanceBuffer
+{
+	InstanceData instances[];
+};
+
 
 uniform mat4 model;
 
 void main()
 {
-	gl_Position = model * instanceMatrix * vec4(aPos, 1.0);
+	gl_Position = model * instances[gl_InstanceID].transform * vec4(aPos, 1.0);
 } 

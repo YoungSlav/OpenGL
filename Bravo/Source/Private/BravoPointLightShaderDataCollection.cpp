@@ -61,7 +61,7 @@ void BravoPointLightShaderDataCollection::UseOn(std::shared_ptr<BravoShaderAsset
 		PointDepthMap->Use(Shader);
 	}
 	
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ShaderDataSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ShaderDataSSBO);
 
 	Shader->SetInt("pointLightCount", ShaderData.size());
 }

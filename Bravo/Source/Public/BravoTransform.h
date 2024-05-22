@@ -148,7 +148,7 @@ private:
 
 private:
 	mutable glm::mat4 TransformMatrix = glm::mat4(1.0f);
-	mutable bool bMatrixDirty = false;
+	mutable bool bMatrixDirty = true;
 
 
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);

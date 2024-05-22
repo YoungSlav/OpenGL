@@ -70,24 +70,24 @@ bool BravoGameInstance::Initialize_Internal()
 
 	
 	
-	//if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
-	//{
-	//	std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
-	//	planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
-	//	//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-	//	//planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
-	//	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
-	//	planeMesh->SetMesh(planeAsset);
-	//	planeMesh->SetCastShadows(true);
-	//	//planeMesh->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
-	//	
-	//	BravoPBRMaterialParams materailLoadingParams;
-	//	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	//	materailLoadingParams.AoColor = 1.0f;
-	//	std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
-	//	planeMat->Load(materailLoadingParams);
-	//	planeMesh->SetMaterial(planeMat);
-	//}
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	{
+		std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+		planeActor->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		//planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+		planeMesh->SetMesh(planeAsset);
+		planeMesh->SetCastShadows(true);
+		//planeMesh->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+		
+		BravoPBRMaterialParams materailLoadingParams;
+		materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		materailLoadingParams.AoColor = 1.0f;
+		std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
+		planeMat->Load(materailLoadingParams);
+		planeMesh->SetMaterial(planeMat);
+	}
 
 	
 	SpawnDirLights();
@@ -97,6 +97,7 @@ bool BravoGameInstance::Initialize_Internal()
 	SpawnSpotLights();
 
 	SpawnSpheres();
+	SpawnTestInstances();
 
 	return true;
 }
@@ -309,9 +310,9 @@ void BravoGameInstance::SpawnTestInstances()
 		for ( int32 i = 0; i < count; ++i )
 		{
 			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 5;
-			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 5;
-			//sphereMesh->AddInstance(BravoTransform(newLocation, glm::vec3(BravoMath::RandVector(360.0f)), glm::vec3(0.3f)), false);
+			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 20;
+			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 20;
+			sphereMesh->AddInstance(BravoInstanceData(BravoTransform(newLocation, glm::quat(), glm::vec3(0.3f))));
 		}
 		sphereMesh->UpdateInstanceBuffer();
 		Cubes.push_back(sphereActor);

@@ -20,6 +20,11 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 		OutlineMaskShader = AssetManager->FindOrLoad<BravoShaderAsset>("OutlineMaskShader", BravoShaderLoadingParams("Shaders\\MeshOutlineMask"));
 	}
 
+	glGenBuffers(1, &InstancesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, InstancesSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	AddInstance(BravoInstanceData());
 	return true;
 }
@@ -66,6 +71,7 @@ bool BravoStaticMeshComponent::EnsureReady()
 		glEnableVertexAttribArray(5);
 
 		glBindVertexArray(0);
+
 	}
 
 	if ( bInstanceStateDirty )
@@ -101,12 +107,15 @@ int32 BravoStaticMeshComponent::AddInstance(const BravoInstanceData& InstanceDat
 	return index;
 }
 
-void BravoStaticMeshComponent::UpdateInstance(int32 Index, const BravoInstanceData& InstanceData)
+void BravoStaticMeshComponent::UpdateInstance(int32 Index, const BravoInstanceData& NewData)
 {
 	if (Index < 0 || Index >= Instances.size())
 		return;
-	Instances[Index]->SetData(InstanceData);
-	bInstanceStateDirty = true;
+	Instances[Index]->SetData(NewData);
+	InstanceData[Index] = NewData;
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, InstancesSSBO);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, Index * sizeof(BravoInstanceData), sizeof(BravoInstanceData), &InstanceData[Index]);
 }
 
 void BravoStaticMeshComponent::RemoveAllInstances()
@@ -132,17 +141,25 @@ BravoInstanceData BravoStaticMeshComponent::GetInstanceData(int32 Index) const
 
 void BravoStaticMeshComponent::UpdateInstanceBuffer()
 {
-	// TODO
-	
+	InstanceData.clear();
+	InstanceData.reserve(Instances.size());
+	for ( auto it : Instances )
+	{
+		InstanceData.push_back(it->GetData());
+	}
 
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, InstancesSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, InstanceData.size() * sizeof(BravoInstanceData), InstanceData.data(), GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	bInstanceStateDirty = false;
-	
 }
 
 void BravoStaticMeshComponent::OnDestroy()
 {
-	glDeleteVertexArrays(10, &VAO);
+	glDeleteBuffers(1, &InstancesSSBO);
+	InstancesSSBO = 0;
+	glDeleteVertexArrays(6, &VAO);
 	VAO = 0;
 	Material->Destroy();
 	Mesh->ReleaseFromGPU();
@@ -190,9 +207,12 @@ void BravoStaticMeshComponent::Render()
 		Material->GetShader()->SetVector1d("drawDistance", Engine->GetCamera()->GetMaxDrawingDistance());
 		Engine->GetLightManager()->ApplyLights(Material->GetShader());
 
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
+
 		glBindVertexArray(VAO);
 		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
 		glBindVertexArray(0);
+
 
 
 		Engine->GetLightManager()->ResetLightsUsage();
@@ -221,10 +241,14 @@ void BravoStaticMeshComponent::RenderSelectionID()
 	SelectionIDShader->Use();
 		SelectionIDShader->SetMatrix4d("transform", ModelTranform);
 		SelectionIDShader->SetInt("ObjectHandle", GetHandle());
+
+		
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
 		
 		glBindVertexArray(VAO);
 		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
 		glBindVertexArray(0);
+
 
 	SelectionIDShader->StopUsage();
 }
@@ -254,10 +278,13 @@ void BravoStaticMeshComponent::RenderOutlineMask(int32 InstanceID)
 		
 		OutlineMaskShader->SetVector1d("OutlineColor", (float)(GetHandle()));
 		OutlineMaskShader->SetMatrix4d("transform", InstanceTransorm);
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
 		
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+
 		
 	OutlineMaskShader->StopUsage();
 }
@@ -272,6 +299,9 @@ void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderA
 	_Shader->SetMatrix4d("model", model);
 		
 	glBindVertexArray(VAO);
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
 	glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
+
 
 }

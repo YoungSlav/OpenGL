@@ -57,7 +57,7 @@ void BravoSpotLightShaderDataCollection::UseOn(std::shared_ptr<BravoShaderAsset>
 		SpotDepthMap->Use(Shader);
 	}
 	
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ShaderDataSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ShaderDataSSBO);
 
 	Shader->SetInt("spotLightCount", ShaderData.size());
 }

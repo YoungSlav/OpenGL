@@ -1,5 +1,15 @@
 #version 430 core
 
+struct InstanceData
+{
+	mat4 transform;
+};
+
+layout(std430, binding = 0) buffer InstanceBuffer
+{
+	InstanceData instances[];
+};
+
 struct Material
 {
 	sampler2D albedoTexture;
@@ -36,7 +46,7 @@ struct DirectionalLight
 
 	mat4 lightSpaceMatrix;
 };
-layout(std430, binding = 0) buffer DirectionalLightBuffer
+layout(std430, binding = 1) buffer DirectionalLightBuffer
 {
 	DirectionalLight dirLights[];
 };
@@ -57,7 +67,7 @@ struct SpotLight
 
 	mat4 lightSpaceMatrix;
 };
-layout(std430, binding = 1) buffer SpotLightBuffer
+layout(std430, binding = 2) buffer SpotLightBuffer
 {
 	SpotLight spotLights[];
 };
@@ -72,7 +82,7 @@ struct PointLight
 
 	float farPlane;
 };
-layout(std430, binding = 2) buffer PointLightBuffer
+layout(std430, binding = 3) buffer PointLightBuffer
 {
 	PointLight pointLights[];
 };

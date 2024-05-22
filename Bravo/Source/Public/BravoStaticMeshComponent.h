@@ -12,6 +12,8 @@
 
 struct BravoInstanceData
 {
+	BravoInstanceData() = default;
+	BravoInstanceData(const BravoTransform& transform) : Transform(transform.GetTransformMatrix()) {}
 	alignas(16) glm::mat4 Transform = glm::mat4(1.0f);
 };
 
@@ -76,7 +78,7 @@ private:
 	bool bInstanceStateDirty = true;
 
 	GLuint VAO = 0;
-	GLuint instancesUBO = 0;
+	GLuint InstancesSSBO = 0;
 	std::shared_ptr<BravoStaticMeshAsset> Mesh = nullptr;
 	std::shared_ptr<class BravoMaterial> Material = nullptr;
 	std::shared_ptr<class BravoShaderAsset> SelectionIDShader = nullptr;
