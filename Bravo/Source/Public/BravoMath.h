@@ -33,6 +33,7 @@ public:
 	static bool IsNearlyEqual(const glm::vec3& A, const glm::vec3& B);
 	static bool IsNearlyEqual(const glm::quat& A, const glm::quat& B);
 	static bool IsNearlyEqual(const glm::mat4& A, const glm::mat4& B);
+	static bool IsNearlyEqual(const class BravoTransform& A, const BravoTransform& B);
 
 
 

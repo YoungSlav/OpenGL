@@ -1,4 +1,5 @@
 #include "BravoMath.h"
+#include "BravoTransform.h"
 
 const glm::vec3 BravoMath::forwardV = glm::vec3(0, 0, -1.0);
 const glm::vec3 BravoMath::upV = glm::vec3(0.0, 1.0, 0.0);
@@ -105,6 +106,11 @@ bool BravoMath::IsNearlyEqual(const glm::mat4& A, const glm::mat4& B)
 		}
 	}
 	return true; 
+}
+
+bool BravoMath::IsNearlyEqual(const class BravoTransform& A, const BravoTransform& B)
+{
+	return IsNearlyEqual(A.GetTransformMatrix(), B.GetTransformMatrix());
 }
 
 float BravoMath::MaxComponent(const glm::vec3& Vector)

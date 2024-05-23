@@ -10,7 +10,7 @@ public:
 	IBravoTransformable() = default;
 	IBravoTransformable(const BravoTransform& Transform) : 
 		LocalTransform(Transform),
-		WorldTransform()
+		WorldTransform(Transform)
 	{
 	}
 
@@ -53,56 +53,42 @@ public:
 
 	void SetTransform(const BravoTransform& InTransform)
 	{
-		if ( BravoMath::IsNearlyEqual(LocalTransform.GetTransformMatrix(), InTransform.GetTransformMatrix()) )
-			return;
 		LocalTransform = InTransform;
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetLocation(const glm::vec3& InLocation)
 	{
-		if ( BravoMath::IsNearlyEqual(LocalTransform.GetLocation(), InLocation) )
-			return;
 		LocalTransform.SetLocation(InLocation);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetRotation(const glm::quat& InRotation)
 	{
-		if ( BravoMath::IsNearlyEqual(LocalTransform.GetRotation(), InRotation) )
-			return;
 		LocalTransform.SetRotation(InRotation);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetRotation(const glm::vec3& InRotation)
 	{
-		if ( BravoMath::IsNearlyEqual(LocalTransform.GetRotation(), BravoMath::EulerToQuat(InRotation)) )
-			return;
 		LocalTransform.SetRotation(InRotation);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetDirection(const glm::vec3& Direction)
 	{
-		if ( BravoMath::IsNearlyEqual(LocalTransform.GetRotation(), BravoMath::DirectionToQuaternion(Direction)) )
-			return;
 		LocalTransform.SetDirection(Direction);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void Rotate(const glm::quat& InRotation)
 	{
-		if ( BravoMath::IsNearlyZero(InRotation.w) )
-			return;
 		LocalTransform.Rotate(InRotation);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
 	}
 	void SetScale(const glm::vec3& InScale)
 	{
-		if ( BravoMath::IsNearlyEqual(LocalTransform.GetScale(), InScale) )
-			return;
 		LocalTransform.SetScale(InScale);
 		UpdateWorldTransform();
 		OnTransformUpdated.Broadcast(this);
@@ -111,7 +97,6 @@ public:
 	const BravoTransform& GetTransform_World() const
 	{
 		return WorldTransform;
-		
 	}
 	const glm::vec3& GetLocation_World() const { return WorldTransform.GetLocation(); }
 	const glm::quat& GetRotation_World() const { return WorldTransform.GetRotation(); }

@@ -32,8 +32,9 @@ public:
 
 	void SetData(const BravoInstanceData& data)
 	{
-		SetTransform(BravoTransform(data.Transform));
 		Data = data;
+		if ( !BravoMath::IsNearlyEqual(data.Transform, GetTransform()) )
+			SetTransform(BravoTransform(data.Transform));
 	}
 	const BravoInstanceData& GetData() const
 	{

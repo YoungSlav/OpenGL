@@ -110,8 +110,8 @@ bool BravoGameInstance::Initialize_Internal()
 	//SpawnPointLights();
 	//SpawnSpotLights();
 
-	//SpawnSpheres();
-	//SpawnTestInstances();
+	SpawnSpheres();
+	SpawnTestInstances();
 
 	return true;
 }
