@@ -62,17 +62,49 @@ glm::vec3 BravoMath::RandVector(float MaxDimension)
 	return Result;
 }
 
-bool BravoMath::IsNearlyZero(float Number, double Tolerance)
+bool BravoMath::IsNearlyZero(float Number)
 {
-	return std::abs(Number) <= Tolerance;
+	return std::abs(Number) <= FLT_EPS;
 }
-bool BravoMath::IsNearlyZero(double Number, double Tolerance)
+bool BravoMath::IsNearlyZero(double Number)
 {
-	return std::abs(Number) <= Tolerance;
+	return std::abs(Number) <= FLT_EPS;
 }
-bool BravoMath::IsNearlyZero(const glm::vec3& vector, double Tolerance)
+bool BravoMath::IsNearlyZero(const glm::vec3& vector)
 {
-	return std::abs(vector.length()) <= Tolerance;
+	return std::abs(vector.length()) <= FLT_EPS;
+}
+
+bool BravoMath::IsNearlyEqual(const float& A, const float& B)
+{
+	return glm::abs(A-B) <= FLT_EPS;
+}
+bool BravoMath::IsNearlyEqual(const double& A, const double& B)
+{
+	return glm::abs(A-B) <= FLT_EPS;
+}
+bool BravoMath::IsNearlyEqual(const glm::vec3& A, const glm::vec3& B)
+{
+	return glm::all(glm::epsilonEqual(A,B, glm::vec3(FLT_EPS)));
+}
+bool BravoMath::IsNearlyEqual(const glm::quat& A, const glm::quat& B)
+{
+	float dotProduct = glm::dot(A, B);
+	return glm::abs(dotProduct) > 1.0f - FLT_EPS;
+}
+bool BravoMath::IsNearlyEqual(const glm::mat4& A, const glm::mat4& B)
+{
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			if (!glm::epsilonEqual(A[i][j], B[i][j], FLT_EPS))
+			{
+				return false;
+			}
+		}
+	}
+	return true; 
 }
 
 float BravoMath::MaxComponent(const glm::vec3& Vector)

@@ -141,11 +141,11 @@ void BravoGameInstance::TestTransforms()
 	glm::vec3 worldCDir = childWorld.GetForwardVector();
 	glm::vec3 worldCSc = childWorld.GetScale();
 
-	bool mat = childWorld.IsNearlyEqual(parent);
-	bool loc = !glm::all(glm::epsilonNotEqual(location, worldCLoc, FLT_EPS));
-	bool rot = !glm::all(glm::epsilonNotEqual(rotation, worldCRot, FLT_EPS));
-	bool dir = !glm::all(glm::epsilonNotEqual(direction, worldCDir, FLT_EPS));
-	bool sc = !glm::all(glm::epsilonNotEqual(scale, worldCSc, FLT_EPS));
+	bool mat = BravoMath::IsNearlyEqual(childWorld.GetTransformMatrix(), parent.GetTransformMatrix());
+	bool loc = BravoMath::IsNearlyEqual(location, worldCLoc);
+	bool rot = BravoMath::IsNearlyEqual(rotation, worldCRot);
+	bool dir = BravoMath::IsNearlyEqual(direction, worldCDir);
+	bool sc = BravoMath::IsNearlyEqual(scale, worldCSc);
 
 	if ( !mat )
 	{

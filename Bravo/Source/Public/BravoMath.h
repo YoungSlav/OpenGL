@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#define FLT_EPS 0.001f
+#define FLT_EPS FLT_EPSILON
 
 class BravoMath
 {
@@ -24,9 +24,17 @@ public:
 	}
 	static glm::vec3 RandVector(float MaxDimension);
 
-	static bool IsNearlyZero(float Number, double Tolerance = 1e-5);
-	static bool IsNearlyZero(double Number, double Tolerance = 1e-5);
-	static bool IsNearlyZero(const glm::vec3& vector, double Tolerance = 1e-5);
+	static bool IsNearlyZero(float Number);
+	static bool IsNearlyZero(double Number);
+	static bool IsNearlyZero(const glm::vec3& vector);
+
+	static bool IsNearlyEqual(const float& A, const float& B);
+	static bool IsNearlyEqual(const double& A, const double& B);
+	static bool IsNearlyEqual(const glm::vec3& A, const glm::vec3& B);
+	static bool IsNearlyEqual(const glm::quat& A, const glm::quat& B);
+	static bool IsNearlyEqual(const glm::mat4& A, const glm::mat4& B);
+
+
 
 	static float MaxComponent(const glm::vec3& Vector);
 

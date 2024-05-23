@@ -100,6 +100,7 @@ private:
 	GLuint InstancesSSBO = 0;
 	
 	GLuint SelectedInstancesSSBO = 0;
+	std::vector<int32> SelectedInstances;
 	int32 SelectedInstancesCount = 0;
 
 

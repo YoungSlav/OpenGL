@@ -121,6 +121,11 @@ void BravoStaticMeshComponent::UpdateInstance(int32 Index, const BravoInstanceDa
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, InstancesSSBO);
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, Index * sizeof(BravoInstanceData), sizeof(BravoInstanceData), &InstanceData[Index]);
+
+	if ( !SelectedInstances.empty() )
+	{
+		SetSelection(SelectedInstances);
+	}
 }
 
 void BravoStaticMeshComponent::RemoveAllInstances()
@@ -157,11 +162,17 @@ void BravoStaticMeshComponent::UpdateInstanceBuffer()
 	glBufferData(GL_SHADER_STORAGE_BUFFER, InstanceData.size() * sizeof(BravoInstanceData), InstanceData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+	if ( !SelectedInstances.empty() )
+	{
+		SetSelection(SelectedInstances);
+	}
+
 	bInstanceStateDirty = false;
 }
 
-void BravoStaticMeshComponent::SetSelection(const std::vector<int32>& SelectedInstances)
+void BravoStaticMeshComponent::SetSelection(const std::vector<int32>& _SelectedInstances)
 {
+	SelectedInstances = _SelectedInstances;
 	std::vector<BravoInstanceData> SelectedInstanceData;
 	SelectedInstanceData.reserve(SelectedInstances.size());
 	for ( const int32& i : SelectedInstances )
@@ -175,12 +186,12 @@ void BravoStaticMeshComponent::SetSelection(const std::vector<int32>& SelectedIn
 	glBufferData(GL_SHADER_STORAGE_BUFFER, selectedData.size() * sizeof(BravoInstanceData), selectedData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	SelectedInstancesCount = (int32)selectedData.size();
+	SelectedInstancesCount = int32(selectedData.size());
 }
 
 void BravoStaticMeshComponent::ClearSelection()
 {
-	SelectedInstancesCount = 0;
+	SelectedInstances.clear();
 }
 
 void BravoStaticMeshComponent::OnDestroy()
@@ -288,7 +299,7 @@ void BravoStaticMeshComponent::RenderSelectionID()
 
 void BravoStaticMeshComponent::RenderOutlineMask()
 {
-	if ( SelectedInstancesCount == 0)
+	if ( !SelectedInstancesCount )
 		return;
 
 	if ( !EnsureReady() || !OutlineMaskShader || !OutlineMaskShader->EnsureReady() )

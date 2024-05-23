@@ -7,10 +7,8 @@ class BravoTransform final
 {
 public:
 	BravoTransform()
-	{
-		//UpdateTransformMatrix();
-		//DecomposeTransformMatrix();
-	}
+	{}
+
 	BravoTransform(const glm::vec3& _location, const glm::quat& _rotation, const glm::vec3& _scale) :
 		Location(_location), Rotation(_rotation), Scale(_scale)
 	{
@@ -90,34 +88,6 @@ public:
 	{
 		Scale = _scale;
 		bMatrixDirty = true;
-	}
-
-	bool IsNearlyEqual(const BravoTransform& Other, float Eps = FLT_EPS)
-	{
-		UpdateTransformMatrix();
-		Other.UpdateTransformMatrix();
-		// "Code from hell" material :)
-		return (
-			abs(TransformMatrix[0][0] - Other.TransformMatrix[0][0]) <= Eps &&
-			abs(TransformMatrix[0][1] - Other.TransformMatrix[0][1]) <= Eps &&
-			abs(TransformMatrix[0][2] - Other.TransformMatrix[0][2]) <= Eps &&
-			abs(TransformMatrix[0][3] - Other.TransformMatrix[0][3]) <= Eps &&
-			
-			abs(TransformMatrix[1][0] - Other.TransformMatrix[1][0]) <= Eps &&
-			abs(TransformMatrix[1][1] - Other.TransformMatrix[1][1]) <= Eps &&
-			abs(TransformMatrix[1][2] - Other.TransformMatrix[1][2]) <= Eps &&
-			abs(TransformMatrix[1][3] - Other.TransformMatrix[1][3]) <= Eps &&
-			
-			abs(TransformMatrix[2][0] - Other.TransformMatrix[2][0]) <= Eps &&
-			abs(TransformMatrix[2][1] - Other.TransformMatrix[2][1]) <= Eps &&
-			abs(TransformMatrix[2][2] - Other.TransformMatrix[2][2]) <= Eps &&
-			abs(TransformMatrix[2][3] - Other.TransformMatrix[2][3]) <= Eps &&
-			
-			abs(TransformMatrix[3][0] - Other.TransformMatrix[3][0]) <= Eps &&
-			abs(TransformMatrix[3][1] - Other.TransformMatrix[3][1]) <= Eps &&
-			abs(TransformMatrix[3][2] - Other.TransformMatrix[3][2]) <= Eps &&
-			abs(TransformMatrix[3][3] - Other.TransformMatrix[3][3]) <= Eps
-			);
 	}
 
 private:
