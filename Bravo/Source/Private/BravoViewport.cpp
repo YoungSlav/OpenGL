@@ -6,6 +6,10 @@
 #include "BravoOutlineManager.h"
 #include "BravoHUD.h"
 #include "BravoAssetManager.h"
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+
 
 bool BravoViewport::Initialize_Internal()
 {
@@ -14,6 +18,10 @@ bool BravoViewport::Initialize_Internal()
 
 void BravoViewport::OnDestroy()
 {
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui::DestroyContext();
+
+
 	ViewportRenderTarget.reset();
 	HUD.reset();
 	OutlineManager.reset();
@@ -22,6 +30,17 @@ void BravoViewport::OnDestroy()
 void BravoViewport::Setup()
 {
 	CreateOpenGLWindow();
+
+	// Setup ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(Window, true);
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2(float(ViewportSize.x), float(ViewportSize.y));
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui_ImplOpenGL3_Init("#version 430");
 
 	HUD = NewObject<BravoHUD>("HUD");
 	HUD->SetSize(ViewportSize);
@@ -85,6 +104,8 @@ void BravoViewport::Resize(const glm::ivec2& InViewportSize)
 	PopFramebuffer();
 	ViewportRenderTarget->Resize(ViewportSize*2);	
 	
+	ImGuiIO& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2(float(ViewportSize.x), float(ViewportSize.y));
 
 	OnResizeDelegate.Broadcast(ViewportSize);
 	HUD->SetSize(ViewportSize);
@@ -110,7 +131,7 @@ void BravoViewport::PopFramebuffer()
 	if ( !FramebufferStack.empty() )
 	{
 		uint32 Framebuffer = std::get<0>(FramebufferStack.top());
-		const glm::vec2& Size = std::get<1>(FramebufferStack.top());
+		const glm::ivec2& Size = std::get<1>(FramebufferStack.top());
 		glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
 		glViewport(0, 0, Size.x, Size.y);
 	}
@@ -201,7 +222,7 @@ void BravoViewport::DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, 
 	OutDirection = glm::normalize(farPlane - OutOrigin);
 }
 
-void BravoViewport::UpdateViewport()
+void BravoViewport::UpdateViewport(float DeltaTime)
 {
 	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 	std::shared_ptr<BravoLightManager> lightManager = Engine->GetLightManager();
@@ -258,7 +279,21 @@ void BravoViewport::UpdateViewport()
 		viewportRT->Render();
 		PopFramebuffer();
 	}
-	HUD->Render();
+
+	// HUD
+	glDisable(GL_DEPTH_TEST);
+	
+
+	HUD->Render(DeltaTime);
+
+	//ImGui::Begin("My Interface");
+	//ImGui::Text("Hello, world!");
+	//ImGui::End();
+
+	
+
+
+
 	glEnable(GL_DEPTH_TEST);
 
 	glfwSwapBuffers(Window);

@@ -31,7 +31,6 @@
     <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoDirectionalLightShaderDataCollection.cpp" />
     <ClCompile Include="Source\Private\BravoEngine.cpp" />
-    <ClCompile Include="Source\Private\BravoFontAsset.cpp" />
     <ClCompile Include="Source\Private\BravoGameInstance.cpp" />
     <ClCompile Include="Source\Private\BravoGizmo.cpp" />
     <ClCompile Include="Source\Private\BravoHUD.cpp" />
@@ -48,12 +47,13 @@
     <ClCompile Include="Source\Private\BravoPointLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
     <ClCompile Include="Source\Private\BravoRenderPass.cpp" />
+    <ClCompile Include="Source\Private\BravoScreen.cpp" />
+    <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
     <ClCompile Include="Source\Private\BravoViewport.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
     <ClCompile Include="Source\Private\BravoSelectionManager.cpp" />
     <ClCompile Include="Source\Private\BravoStaticMeshAsset.cpp" />
     <ClCompile Include="Source\Private\BravoPlayer.cpp" />
-    <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
     <ClCompile Include="Source\Private\BravoDepthMap.cpp" />
     <ClCompile Include="Source\Private\BravoSkyboxActor.cpp" />
     <ClCompile Include="Source\Private\BravoSpotDepthMap.cpp" />
@@ -62,16 +62,21 @@
     <ClCompile Include="Source\Private\BravoStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
     <ClCompile Include="Source\Private\BravoWidget.cpp" />
-    <ClCompile Include="Source\Private\BravoWidget_Plane.cpp" />
-    <ClCompile Include="Source\Private\BravoScreen.cpp" />
-    <ClCompile Include="Source\Private\BravoWidget_Text.cpp" />
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShaderAsset.cpp" />
     <ClCompile Include="Source\Private\BravoTextureAsset.cpp" />
-    <ClCompile Include="Source\ThirdParty\Delegates.cpp" />
-    <ClCompile Include="Source\ThirdParty\stb_image.cpp" />
-    <ClCompile Include="Source\ThirdParty\stb_rect_pack.cpp" />
-    <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp" />
+    <ClCompile Include="Source\ThirdParty\delegates\Delegates.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\imgui.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.cpp" />
+    <ClCompile Include="Source\ThirdParty\stb\stb_image.cpp" />
+    <ClCompile Include="Source\ThirdParty\stb\stb_rect_pack.cpp" />
+    <ClCompile Include="Source\ThirdParty\stb\stb_truetype.h.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -101,6 +106,8 @@
     <ClInclude Include="Source\Public\BravoPointDepthMap.h" />
     <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
     <ClInclude Include="Source\Public\BravoRenderPass.h" />
+    <ClInclude Include="Source\Public\BravoScreen.h" />
+    <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoViewport.h" />
     <ClInclude Include="Source\Public\BravoSelectionManager.h" />
     <ClInclude Include="Source\Public\BravoSpotDepthMap.h" />
@@ -110,7 +117,6 @@
     <ClInclude Include="Source\Public\BravoStaticMeshAsset.h" />
     <ClInclude Include="Source\Public\BravoObject.h" />
     <ClInclude Include="Source\Public\BravoPlayer.h" />
-    <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoDepthMap.h" />
     <ClInclude Include="Source\Public\BravoSkyboxActor.h" />
     <ClInclude Include="Source\Public\BravoSpotLightActor.h" />
@@ -121,20 +127,27 @@
     <ClInclude Include="Source\Public\BravoTransform.h" />
     <ClInclude Include="Source\Public\BravoTypes.h" />
     <ClInclude Include="Source\Public\BravoWidget.h" />
-    <ClInclude Include="Source\Public\BravoWidget_Plane.h" />
-    <ClInclude Include="Source\Public\BravoScreen.h" />
-    <ClInclude Include="Source\Public\BravoWidget_Text.h" />
     <ClInclude Include="Source\Public\IBravoTransformable.h" />
     <ClInclude Include="Source\Public\Log.h" />
     <ClInclude Include="Source\Public\BravoShaderAsset.h" />
     <ClInclude Include="Source\Public\BravoTextureAsset.h" />
     <ClInclude Include="Source\Public\SharedFromThis.h" />
     <ClInclude Include="Source\stdafx.h" />
-    <ClInclude Include="Source\ThirdParty\Delegates.h" />
-    <ClInclude Include="Source\ThirdParty\stb_image.h" />
-    <ClInclude Include="Source\ThirdParty\stb_image_write.h" />
-    <ClInclude Include="Source\ThirdParty\stb_rect_pack.h" />
-    <ClInclude Include="Source\ThirdParty\stb_truetype.h" />
+    <ClInclude Include="Source\ThirdParty\delegates\Delegates.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\imconfig.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\imgui.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\imstb_truetype.h" />
+    <ClInclude Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.h" />
+    <ClInclude Include="Source\ThirdParty\stb\stb_image.h" />
+    <ClInclude Include="Source\ThirdParty\stb\stb_image_write.h" />
+    <ClInclude Include="Source\ThirdParty\stb\stb_rect_pack.h" />
+    <ClInclude Include="Source\ThirdParty\stb\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\MeshOutlineMask.frag" />
@@ -166,6 +179,10 @@
     <None Include="Source\Shaders\wText.vert" />
     <None Include="Source\Shaders\wPlane.frag" />
     <None Include="Source\Shaders\wPlane.vert" />
+    <None Include="Source\ThirdParty\imgui\misc\debuggers\imgui.natstepfilter" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Source\ThirdParty\imgui\misc\debuggers\imgui.natvis" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -220,7 +237,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
@@ -230,21 +247,21 @@
     </PublicModuleDirectories>
     <OutDir>$(SolutionDir)\Build\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
     <LinkIncremental>
     </LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\Build\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -252,6 +269,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -275,6 +294,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
       <Command>rmdir ..\Resources\Shaders\ /s /q
@@ -294,6 +315,8 @@ copy ..\ThirdParty\Lib\assimp-vc143-mtd.dll ..\Build\Debug\assimp-vc143-mtd.dll 
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -312,6 +335,8 @@ copy ..\ThirdParty\Lib\assimp-vc143-mtd.dll ..\Build\Debug\assimp-vc143-mtd.dll 
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

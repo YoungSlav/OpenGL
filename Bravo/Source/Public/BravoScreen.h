@@ -1,30 +1,60 @@
 #pragma once
 #include "stdafx.h"
-#include "BravoObject.h"
+#include "BravoWidget.h"
 
-class BravoScreen : public BravoObject
+
+class BravoScreen : public BravoWidget
 {
 public:
-
 	int32 GetRenderPriority() const { return RenderPriority; }
-	void Render();
-
-	void AddWidget(std::shared_ptr<class BravoWidget> _Widget);
-	void RemoveWidget(std::shared_ptr<class BravoWidget> _Widget);
-	void SetRenderPriority(int32 _RenderPriority);
 
 protected:
-	virtual bool Initialize_Internal() override;
+
+	void SetRenderPriority(int32 _RenderPriority) { RenderPriority = _RenderPriority; }
+
+	// Position in normalized coords: [0..1]
+	void SetPosition(const glm::vec2& _Position) { Position = _Position; }
+	const glm::vec2& GetPosition() const { return Position; }
+
+	// Size in normalized coords: [0..1]
+	void SetSize(const glm::vec2& _Size) { Size = _Size; }
+	const glm::vec2& GetSize() const { return Size; }
+
+	// Origin in normalized coords: [0..1]
+	void SetOrigin(const glm::vec2& _Origin) { Origin = _Origin; }
+	const glm::vec2& GetOrigin() const { return Origin; }
+
+	void SetTrueScaling(bool _bTrueScaling) { bTrueScaling = _bTrueScaling; }
+	bool GetTrueScaling() const { return bTrueScaling; }
+
+	void SetFontsScaling(bool _bScaleFonts) { bScaleFonts = _bScaleFonts; }
+	bool GetFontsScaling() const { return bScaleFonts; }
+
+	// Returns actual widget size and position in pixels.
+	glm::vec4 GetBounds() const;
+
+
 	virtual void OnDestroy() override;
 
-	std::shared_ptr<class BravoHUD> GetHUD() const { return HUD.expired() ? nullptr : HUD.lock(); }
+	virtual void Render_Internal(float DeltaTime) override;
 
-	std::weak_ptr<class BravoAssetManager> AssetManager;
-	std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager.expired() ? nullptr : AssetManager.lock(); }
+protected:
+	// Position in normalized coords: [0..1]
+	glm::vec2 Position = glm::vec2(0.0f,0.0f);
+	
+	// Desired size in normalized coords: [0..1]
+	glm::vec2 Size = glm::vec2(0.0f,0.0f);
+
+	// Origin of the screen.
+	glm::vec2 Origin = glm::vec2(0.0f, 0.0f);
+
+	// If true, the screen will be scaled to true HUD size along X. Otherwise only HUD height is scaling the screen.
+	// !! Does not affect text
+	bool bTrueScaling = false;
+
+	bool bScaleFonts = false;
+	float FontScaling = 1.0f;
 
 private:
-	std::vector<std::shared_ptr<class BravoWidget>> Widgets;
-	std::weak_ptr<class BravoHUD> HUD;
-
 	int32 RenderPriority = 0;
 };

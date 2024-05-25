@@ -121,13 +121,25 @@
     <Filter Include="Public\Rendering">
       <UniqueIdentifier>{6eb9f452-6edc-42eb-8e88-e3b4b3d37d80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty\stb">
+      <UniqueIdentifier>{1b6368e4-dc02-479b-ae43-e3c006e374b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\delegates">
+      <UniqueIdentifier>{af719fe0-2ab0-4cfb-b83d-8325aeb3bacd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\imgui">
+      <UniqueIdentifier>{0ddc1541-babe-4b59-b71c-44e40c06943c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\imgui\backend">
+      <UniqueIdentifier>{009c3511-3bd6-4944-993c-060bab6fba39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\imgui\misc">
+      <UniqueIdentifier>{ecef0ad8-6a82-4282-9adf-f9d69520bec9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="..\ThirdParty\Include\glad.c">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ThirdParty\stb_image.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoAsset.cpp">
@@ -154,31 +166,10 @@
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ThirdParty\stb_truetype.h.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ThirdParty\stb_rect_pack.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoHUD.cpp">
       <Filter>Private\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoWidget.cpp">
-      <Filter>Private\HUD</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoWidget_Text.cpp">
-      <Filter>Private\HUD</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ThirdParty\Delegates.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoWidget_Plane.cpp">
-      <Filter>Private\HUD</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoScreen.cpp">
-      <Filter>Private\HUD</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Private\BravoScreen_Debug.cpp">
       <Filter>Private\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Source\Private\BravoLightManager.cpp">
@@ -235,9 +226,6 @@
     <ClCompile Include="Source\Private\BravoDirectionalLightShaderDataCollection.cpp">
       <Filter>Private\Lights\DirectionalLight</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoFontAsset.cpp">
-      <Filter>Private\Assets</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoCubemapAsset.cpp">
       <Filter>Private\Assets</Filter>
     </ClCompile>
@@ -280,13 +268,49 @@
     <ClCompile Include="Source\Private\BravoGizmo.cpp">
       <Filter>Private\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoScreen.cpp">
+      <Filter>Private\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\stb\stb_image.cpp">
+      <Filter>ThirdParty\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\stb\stb_rect_pack.cpp">
+      <Filter>ThirdParty\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\stb\stb_truetype.h.cpp">
+      <Filter>ThirdParty\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\delegates\Delegates.cpp">
+      <Filter>ThirdParty\delegates</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\imgui.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_demo.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_draw.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_tables.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\imgui_widgets.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>ThirdParty\imgui\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>ThirdParty\imgui\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.cpp">
+      <Filter>ThirdParty\imgui\misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
     <ClInclude Include="Source\stdafx.h" />
-    <ClInclude Include="Source\ThirdParty\stb_image.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoAsset.h">
       <Filter>Public\Assets</Filter>
     </ClInclude>
@@ -317,15 +341,6 @@
     <ClInclude Include="Source\Public\BravoTextureUnitManager.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ThirdParty\stb_truetype.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\stb_rect_pack.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\stb_image_write.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoTypes.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
@@ -333,21 +348,6 @@
       <Filter>Public\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoWidget.h">
-      <Filter>Public\HUD</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoWidget_Text.h">
-      <Filter>Public\HUD</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\Delegates.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoWidget_Plane.h">
-      <Filter>Public\HUD</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoScreen.h">
-      <Filter>Public\HUD</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\BravoScreen_Debug.h">
       <Filter>Public\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\BravoLightManager.h">
@@ -461,6 +461,54 @@
     <ClInclude Include="Source\Public\IBravoTransformable.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoScreen.h">
+      <Filter>Public\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\stb\stb_image.h">
+      <Filter>ThirdParty\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\stb\stb_image_write.h">
+      <Filter>ThirdParty\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\stb\stb_rect_pack.h">
+      <Filter>ThirdParty\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\stb\stb_truetype.h">
+      <Filter>ThirdParty\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\delegates\Delegates.h">
+      <Filter>ThirdParty\delegates</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\imconfig.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\imgui.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\imgui_internal.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\imstb_rectpack.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\imstb_textedit.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\imstb_truetype.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>ThirdParty\imgui\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\backends\imgui_impl_opengl3_loader.h">
+      <Filter>ThirdParty\imgui\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\backends\imgui_impl_glfw.h">
+      <Filter>ThirdParty\imgui\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.h">
+      <Filter>ThirdParty\imgui\misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\PhongModel.frag">
@@ -550,5 +598,13 @@
     <None Include="Source\Shaders\OutlinePostProccess.vert">
       <Filter>Shaders\Outline</Filter>
     </None>
+    <None Include="Source\ThirdParty\imgui\misc\debuggers\imgui.natstepfilter">
+      <Filter>ThirdParty\imgui\misc</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Source\ThirdParty\imgui\misc\debuggers\imgui.natvis">
+      <Filter>ThirdParty\imgui\misc</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>

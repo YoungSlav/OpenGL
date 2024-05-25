@@ -4,48 +4,37 @@
 #include "BravoWidget.h"
 #include "BravoHUD.h"
 
-bool BravoScreen::Initialize_Internal()
-{
-	if ( !BravoObject::Initialize_Internal() )
-		return false;
-
-	if ( !Engine || !Engine->GetViewport()->GetHUD() )
-		return false;
-
-	HUD = Engine->GetViewport()->GetHUD();
-	
-	return true;
-}
-
-void BravoScreen::Render()
-{
-	for ( std::shared_ptr<BravoWidget>& w : Widgets )
-		w->Render();
-}
-
-void BravoScreen::SetRenderPriority(int32 _RenderPriority)
-{
-	RenderPriority = _RenderPriority;
-}
-
-void BravoScreen::AddWidget(std::shared_ptr<class BravoWidget> _Widget)
-{
-	_Widget->SetOwnerScreen(Self<BravoScreen>());
-	Widgets.push_back(_Widget);
-}
-
-void BravoScreen::RemoveWidget(std::shared_ptr<class BravoWidget> _Widget)
-{
-	Widgets.erase(std::remove(Widgets.begin(), Widgets.end(), _Widget), Widgets.end());
-}
-
 void BravoScreen::OnDestroy()
 {
 	BravoObject::OnDestroy();
-	Widgets.clear();
 
 	if ( !GetHUD() )
 		return;
 
 	GetHUD()->RemoveScreen(Self<BravoScreen>());
+}
+
+void BravoScreen::Render_Internal(float DeltaTime)
+{
+	const glm::vec4 Bounds = GetBounds();
+	ImGui::SetNextWindowPos(ImVec2(Bounds.x, Bounds.y), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(Bounds.z, Bounds.w), ImGuiCond_Always);
+	//ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(Bounds.z, Bounds.w), ImVec2(Bounds.z, Bounds.w));
+	std::string Label = GetName() + "##" + std::to_string(GetHandle());
+
+	FontScaling = bScaleFonts ? GetHUD()->GetTargetScale().y : 1.0f;
+}
+
+glm::vec4 BravoScreen::GetBounds() const
+{
+	const glm::vec2 hudSize = GetHUD()->GetSize();
+	const glm::vec2 trueSize = bTrueScaling ?
+		Size * GetHUD()->GetSize() :
+		Size * GetHUD()->GetTargetSize() * GetHUD()->GetTargetScale().y;
+
+	
+	const glm::vec2 pos = Position * hudSize - Origin * trueSize;
+	
+	return glm::vec4(pos, trueSize);
 }

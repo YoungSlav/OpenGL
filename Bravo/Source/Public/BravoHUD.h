@@ -4,13 +4,13 @@
 #include "BravoEngine.h"
 #include "BravoObject.h"
 
-
+typedef MulticastDelegate<const glm::ivec2&> OnHUDResizedSignature;
 
 class BravoHUD : public BravoObject
 {
 public:
 
-	void Render();
+	void Render(float DeltaTime);
 	glm::vec2 GetTargetScale() const { return Size / TargetSize; };
 	void SetSize(const glm::vec2& _Size);
 	const glm::vec2& GetSize() const { return Size; }
@@ -19,6 +19,8 @@ public:
 
 	void AddScreen(std::shared_ptr<class BravoScreen> _Screen);
 	void RemoveScreen(std::shared_ptr<class BravoScreen> _Screen);
+
+	OnHUDResizedSignature OnHUDResized;
 
 protected:
 	virtual bool Initialize_Internal() override;

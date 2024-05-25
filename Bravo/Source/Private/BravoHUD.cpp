@@ -1,8 +1,9 @@
 #include "BravoHUD.h"
 
 #include "openGL.h"
-
-
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
 
 #include <algorithm>
 #include "BravoScreen.h"
@@ -34,15 +35,23 @@ void BravoHUD::SetSize(const glm::vec2& _Size)
 {
 	Size = _Size;
 	ModelMatrix = glm::ortho(0.0f, Size.x, Size.y, 0.0f);
+
+	OnHUDResized.Broadcast(Size);
 }
 
-void BravoHUD::Render()
+void BravoHUD::Render(float DeltaTime)
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui::NewFrame();
+
 	for ( auto screen : Screens )
 	{
-		screen->Render();
+		screen->Render(DeltaTime);
 	}
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

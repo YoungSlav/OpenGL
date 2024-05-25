@@ -1,50 +1,62 @@
 #include "BravoScreen_Debug.h"
-#include "BravoEngine.h"
 #include "BravoAssetManager.h"
-#include "BravoFontAsset.h"
-#include "BravoWidget_Text.h"
 
 bool BravoScreen_Debug::Initialize_Internal()
 {
 	if ( !BravoScreen::Initialize_Internal() )
 		return false;
 
-	if ( !Engine )
-		return false;
+	SetTrueScaling(false);
+	SetSize(glm::vec2(0.1f, 0.08f));
+	SetOrigin(glm::vec2(1.0f, 0.0f));
 
-	std::shared_ptr<BravoFontAsset> font = Engine->GetAssetManager()->FindOrLoad<BravoFontAsset>("ArialFontAsset", BravoFontLoadingParams("Fonts\\arial.ttf", {50, 25, 12 }));
-	std::shared_ptr<BravoWidget_Text> _fps = NewObject<BravoWidget_Text>();
-	_fps->SetPosition(glm::vec2(1.0f, 0.0f));
-	_fps->SetOrigin(glm::vec2(1.0f, 0.0f));
-	_fps->SetMargin(glm::vec2(2.0f, 2.0f));
-	_fps->SetTextSize(20);
-	_fps->SetText("FPS: ");
-	_fps->SetFont(font);
-	FPSWidget = _fps;
-	AddWidget(_fps);
+	SetPosition(glm::vec2(1.0f, 0.00f));
 
+
+	Font = ImGui::GetIO().Fonts->AddFontFromFileTTF((GetAssetManager()->GetResourceFolder() + "Fonts\\arial.ttf").c_str(), 30);
+	
+	
 	return true;
 }
 
-void BravoScreen_Debug::Tick(float DeltaTime)
+void BravoScreen_Debug::OnHUDResized(const glm::ivec2& NewSize)
 {
-	std::shared_ptr<BravoWidget_Text> _fpsWidget = FPSWidget.expired() ? nullptr : FPSWidget.lock();
+	BravoScreen::OnHUDResized(NewSize);
+	int32 a = 0;
+	a++;
+}
 
-	if ( !_fpsWidget )
-		return;
+void BravoScreen_Debug::Render_Internal(float DeltaTime)
+{
+	BravoScreen::Render_Internal(DeltaTime);
 
-	FPSUpdateTimer += DeltaTime;
-	if ( FPSUpdateTimer < FPSUpdateRate )
-		return;
-	FPSUpdateTimer = 0.0f;
+	const int32 FPS = (int32)(1.0f / DeltaTime);
+	const std::string FPSStr = "FPS: " + std::to_string(FPS);
 
-	int32 FPS = (int32)(1.0f / DeltaTime);
-	_fpsWidget->SetText("FPS: " + std::to_string(FPS));
-
+	ImVec4 color;
 	if ( FPS >= 59 )
-		_fpsWidget->SetTextColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
 	else if ( FPS >= 29 )
-		_fpsWidget->SetTextColor(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+		color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
 	else
-		_fpsWidget->SetTextColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+
+	ImGui::Begin(GetLabel().c_str(), nullptr,
+		ImGuiWindowFlags_NoBackground |
+		ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoCollapse );
+
+		ImGui::SetWindowFontScale(FontScaling);
+
+		ImGui::PushFont(Font);
+		ImGui::PushStyleColor(ImGuiCol_Text, color);
+			ImGui::Text(FPSStr.c_str());
+		ImGui::PopStyleColor();
+		ImGui::PopFont();
+
+	ImGui::End();
 }

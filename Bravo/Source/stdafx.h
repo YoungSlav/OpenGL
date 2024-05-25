@@ -1,6 +1,5 @@
 #pragma once
 
-#define GLM_ENABLE_EXPERIMENTAL
 
 //std
 #include <memory>
@@ -22,6 +21,7 @@
 #include "openGL.h"
 
 
+#define GLM_ENABLE_EXPERIMENTAL
 // third party
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -32,10 +32,16 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/intersect.hpp"
 #include "glm/gtc/epsilon.hpp"
-#include "Delegates.h"
+#include "delegates/Delegates.h"
 #include <glm/gtx/euler_angles.hpp>
 
 #include "BravoTypes.h"
+
+
+
+
+
+
 
 
 

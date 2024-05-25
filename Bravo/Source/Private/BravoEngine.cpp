@@ -77,7 +77,7 @@ void BravoEngine::GameLoop()
 		if ( GetCamera() )
 			GetCamera()->UpdateCamera();
 
-		Viewport->UpdateViewport();
+		Viewport->UpdateViewport(DeltaTime);
 		
 
 		if ( Input )

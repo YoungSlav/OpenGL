@@ -23,11 +23,12 @@
 #include "BravoInfinitePlaneActor.h"
 #include "BravoMath.h"
 
-#include "BravoScreen_Debug.h"
 #include "BravoHUD.h"
 #include "BravoTransform.h"
 
 #include "BravoGizmo.h"
+
+#include "BravoScreen_Debug.h"
 
 bool BravoGameInstance::Initialize_Internal()
 {
