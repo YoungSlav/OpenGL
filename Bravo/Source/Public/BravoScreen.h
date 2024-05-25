@@ -20,6 +20,10 @@ protected:
 	void SetSize(const glm::vec2& _Size) { Size = _Size; }
 	const glm::vec2& GetSize() const { return Size; }
 
+	// Maxallowed size in normalized coords: [0..1]
+	void SetMaxSize(const glm::vec2& _Size) { MaxSize = _Size; }
+	const glm::vec2& GetMaxSize() const { return MaxSize; }
+
 	// Origin in normalized coords: [0..1]
 	void SetOrigin(const glm::vec2& _Origin) { Origin = _Origin; }
 	const glm::vec2& GetOrigin() const { return Origin; }
@@ -47,6 +51,9 @@ protected:
 
 	// Origin of the screen.
 	glm::vec2 Origin = glm::vec2(0.0f, 0.0f);
+
+	// Max size in normalized coords: [0..1]
+	glm::vec2 MaxSize = glm::vec2(0.0f,0.0f);
 
 	// If true, the screen will be scaled to true HUD size along X. Otherwise only HUD height is scaling the screen.
 	// !! Does not affect text

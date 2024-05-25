@@ -66,8 +66,6 @@ void BravoInput::SCallbackMouseButton(GLFWwindow* window, int32 key, int32 actio
 			Input->PressedKeys.insert(key);
 		else
 			Input->PressedKeys.erase(key);
-
-		Log::LogMessage(ELog::Log, "{} {}", key, action);
 	}
 }
 

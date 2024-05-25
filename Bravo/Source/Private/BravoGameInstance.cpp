@@ -29,6 +29,7 @@
 #include "BravoGizmo.h"
 
 #include "BravoScreen_Debug.h"
+#include "BravoScreen_ObjectHierarchy.h"
 
 bool BravoGameInstance::Initialize_Internal()
 {
@@ -38,8 +39,11 @@ bool BravoGameInstance::Initialize_Internal()
 
 	if ( Engine->GetViewport()->GetHUD() )
 	{
-		auto screen = NewObject<BravoScreen_Debug>("DebugScreen");
-		Engine->GetViewport()->GetHUD()->AddScreen(screen);
+		auto debugScreen = NewObject<BravoScreen_Debug>("DebugScreen");
+		Engine->GetViewport()->GetHUD()->AddScreen(debugScreen);
+
+		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen", Self<BravoGameInstance>());
+		Engine->GetViewport()->GetHUD()->AddScreen(hierarchyScreen);
 	}
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();

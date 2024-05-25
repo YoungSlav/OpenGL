@@ -13,4 +13,10 @@ protected:
 
 private:
 	ImFont* Font;
+	const float UpdateRate = 1.0f;
+
+	float TimeTillUpdate = 0.0f;
+
+	std::string FPSStr;
+	ImVec4 Color;
 };

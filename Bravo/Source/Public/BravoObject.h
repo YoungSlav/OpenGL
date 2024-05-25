@@ -36,6 +36,7 @@ public:
 
 	const BravoHandle& GetHandle() const { return Handle; }
 	const std::shared_ptr<BravoObject> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
+	const std::list<std::weak_ptr<BravoObject>>& GetChildren() const { return OwnedObjects; }
 	const std::string& GetName() const { return Name; }
 
 	template <typename Class, typename... Args>

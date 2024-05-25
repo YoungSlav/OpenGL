@@ -11,9 +11,7 @@ bool BravoScreen_Debug::Initialize_Internal()
 	SetOrigin(glm::vec2(1.0f, 0.0f));
 	SetPosition(glm::vec2(1.0f, 0.00f));
 
-
 	Font = ImGui::GetIO().Fonts->AddFontFromFileTTF((GetAssetManager()->GetResourceFolder() + "Fonts\\arial.ttf").c_str(), 30);
-	
 	
 	return true;
 }
@@ -22,17 +20,22 @@ void BravoScreen_Debug::Render_Internal(float DeltaTime)
 {
 	BravoScreen::Render_Internal(DeltaTime);
 
-	const int32 FPS = (int32)(1.0f / DeltaTime);
-	const std::string FPSStr = "FPS: " + std::to_string(FPS);
+	TimeTillUpdate -= DeltaTime;
+	if ( TimeTillUpdate <= 0.0f )
+	{
+		TimeTillUpdate = UpdateRate;
+		const int32 FPS = (int32)(1.0f / DeltaTime);
+		FPSStr = "FPS: " + std::to_string(FPS);
 
-	ImVec4 color;
-	if ( FPS >= 59 )
-		color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-	else if ( FPS >= 29 )
-		color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-	else
-		color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+		if ( FPS >= 59 )
+			Color = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+		else if ( FPS >= 29 )
+			Color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+		else
+			Color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+	}
 
+	ImGui::SetNextWindowBgAlpha(0.0f);
 	ImGui::Begin(GetLabel().c_str(), nullptr,
 		ImGuiWindowFlags_NoBackground |
 		ImGuiWindowFlags_NoDecoration |
@@ -44,7 +47,7 @@ void BravoScreen_Debug::Render_Internal(float DeltaTime)
 		ImGui::SetWindowFontScale(FontScaling);
 
 		ImGui::PushFont(Font);
-		ImGui::PushStyleColor(ImGuiCol_Text, color);
+		ImGui::PushStyleColor(ImGuiCol_Text, Color);
 			ImGui::Text(FPSStr.c_str());
 		ImGui::PopStyleColor();
 		ImGui::PopFont();

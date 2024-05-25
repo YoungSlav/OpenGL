@@ -18,11 +18,18 @@ void BravoScreen::Render_Internal(float DeltaTime)
 {
 	const glm::vec4 Bounds = GetBounds();
 	ImGui::SetNextWindowPos(ImVec2(Bounds.x, Bounds.y), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(Bounds.z, Bounds.w), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(Bounds.z, Bounds.w), ImGuiCond_Once);
 	//ImGui::SetNextWindowBgAlpha(0.0f);
-	//ImGui::SetNextWindowSizeConstraints(ImVec2(Bounds.z, Bounds.w), ImVec2(Bounds.z, Bounds.w));
-	std::string Label = GetName() + "##" + std::to_string(GetHandle());
 
+	if ( !BravoMath::IsNearlyZero(MaxSize) )
+	{
+		const glm::vec2 maxSize = bTrueScaling ?
+			MaxSize * GetHUD()->GetSize() :
+			MaxSize * GetHUD()->GetTargetSize() * GetHUD()->GetTargetScale().y;
+		ImGui::SetNextWindowSizeConstraints(ImVec2(Bounds.z, Bounds.w), ImVec2(maxSize.x, maxSize.y));
+	}
+	
+	std::string Label = GetName() + "##" + std::to_string(GetHandle());
 	FontScaling = bScaleFonts ? GetHUD()->GetTargetScale().y : 1.0f;
 }
 
