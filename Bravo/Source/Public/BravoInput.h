@@ -21,18 +21,33 @@ struct BravoKeySubscription
 	int32 SubscribedType = EKeySubscriptionType::Any;
 	OnKeyInputSignature Callback;
 
-	bool CheckType(EKeySubscriptionType Type)
+	bool CheckType(EKeySubscriptionType Type) const
 	{
 		return SubscribedType & Type;
 	}
-	bool CheckType(int32 Types)
+	bool CheckType(int32 Types) const
 	{
 		return SubscribedType & Types;
 	}
 };
 
+
+
 class BravoInput : public BravoObject
 {
+	struct KeyEvent
+	{
+		KeyEvent(int32 _Key, EKeySubscriptionType _Event, int32 _Mods) :
+			Key(_Key), EventType(_Event), Mods(_Mods),
+			bPressedNow(_Event == EKeySubscriptionType::Pressed || _Event == EKeySubscriptionType::Hold)
+		{}
+
+		int32 Key = 0;
+		int32 Mods = 0;
+		EKeySubscriptionType EventType;
+		bool bPressedNow;
+	};
+
 public:
 	void SetOwnerWindow(struct GLFWwindow* _Window);
 	void SetMouseEnabled(bool bNewMouseEnabled) const;
@@ -47,17 +62,20 @@ public:
 
 	void UnSubscribeAll(std::shared_ptr<BravoObject> Owner);
 	void UnSubscribeKey(int32 Key, std::shared_ptr<BravoObject> Owner);
-	void UnSubscribeMouseScroll(std::shared_ptr<BravoObject> Owner);
-	void UnSubscribeMousePosition(std::shared_ptr<BravoObject> Owner);
 
 private:
-	static void SCallbackScroll(struct GLFWwindow* window, double xoffset, double yoffset);
-	static void SCallbackMouse(struct GLFWwindow* window, double xpos, double ypos);
+
+	static void SCallbackMouseScroll(struct GLFWwindow* window, double xoffset, double yoffset);
+	static void SCallbackMousePosition(struct GLFWwindow* window, double xpos, double ypos);
+	static void SCallbackMouseButton(GLFWwindow* window, int button, int action, int mods);
+	static void SCallbackKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 private:
 	std::vector<BravoKeySubscription> KeysSubscribers;
+		
+	std::set<int32> PressedKeys;
+	std::set<int32> OldPressedStates;
 
-	std::map<int32, bool> KeyStates;
 
 	struct GLFWwindow* Window = nullptr;
 	glm::vec2 MousePos = glm::vec2(0.0);

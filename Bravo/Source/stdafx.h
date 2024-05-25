@@ -14,6 +14,7 @@
 #include <thread>
 #include <stack>
 #include <format>
+#include <set>
 // utilities
 #include "Log.h"
 

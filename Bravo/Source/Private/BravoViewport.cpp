@@ -34,14 +34,15 @@ void BravoViewport::Setup()
 	// Setup ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+		
 	ImGui_ImplGlfw_InitForOpenGL(Window, true);
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(float(ViewportSize.x), float(ViewportSize.y));
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
 	ImGui_ImplOpenGL3_Init("#version 430");
-
+	
 	HUD = NewObject<BravoHUD>("HUD");
 	HUD->SetSize(ViewportSize);
 
@@ -282,17 +283,8 @@ void BravoViewport::UpdateViewport(float DeltaTime)
 
 	// HUD
 	glDisable(GL_DEPTH_TEST);
-	
 
 	HUD->Render(DeltaTime);
-
-	//ImGui::Begin("My Interface");
-	//ImGui::Text("Hello, world!");
-	//ImGui::End();
-
-	
-
-
 
 	glEnable(GL_DEPTH_TEST);
 

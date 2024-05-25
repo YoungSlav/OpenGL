@@ -1,12 +1,17 @@
 #include "BravoInput.h"
 #include "openGL.h"
 #include "BravoEngine.h"
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
 
 void BravoInput::SetOwnerWindow(GLFWwindow* _Window)
 {
 	Window = _Window;
-	glfwSetCursorPosCallback(Window, BravoInput::SCallbackMouse);
-	glfwSetScrollCallback(Window, BravoInput::SCallbackScroll);
+	glfwSetMouseButtonCallback(Window, BravoInput::SCallbackMouseButton);
+	glfwSetCursorPosCallback(Window, BravoInput::SCallbackMousePosition);
+	glfwSetScrollCallback(Window, BravoInput::SCallbackMouseScroll);
+	glfwSetKeyCallback(Window, BravoInput::SCallbackKeyboard);
 }
 
 void BravoInput::SetMouseEnabled(bool bNewMouseEnabled) const
@@ -17,16 +22,26 @@ void BravoInput::SetMouseEnabled(bool bNewMouseEnabled) const
 		glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void BravoInput::SCallbackScroll(GLFWwindow* window, double xoffset, double yoffset)
+void BravoInput::SCallbackMouseScroll(GLFWwindow* window, double xoffset, double yoffset)
 {
+	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+	if ( ImGui::GetIO().WantCaptureMouse )
+		return;
+
 	std::shared_ptr<BravoEngine> Engine = BravoEngine::GetEngine();
 	std::shared_ptr<BravoInput> Input = Engine ? Engine->GetInput() : nullptr;
 	if ( Input )
-		Input->DeltaMouseScroll += glm::vec2(xoffset, yoffset);
+	{
+		Input->DeltaMouseScroll = glm::vec2(xoffset, yoffset);
+	}
 }
 
-void BravoInput::SCallbackMouse(GLFWwindow* window, double xpos, double ypos)
+void BravoInput::SCallbackMousePosition(GLFWwindow* window, double xpos, double ypos)
 {
+	ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+	if ( ImGui::GetIO().WantCaptureMouse )
+		return;
+
 	std::shared_ptr<BravoEngine> Engine = BravoEngine::GetEngine();
 	std::shared_ptr<BravoInput> Input = Engine ? Engine->GetInput() : nullptr;
 	if ( Input )
@@ -36,59 +51,87 @@ void BravoInput::SCallbackMouse(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
+void BravoInput::SCallbackMouseButton(GLFWwindow* window, int32 key, int32 action, int32 mods)
+{
+	ImGui_ImplGlfw_MouseButtonCallback(window, key, action, mods);
+	if ( ImGui::GetIO().WantCaptureMouse )
+		action = GLFW_RELEASE;
+
+	std::shared_ptr<BravoEngine> Engine = BravoEngine::GetEngine();
+	std::shared_ptr<BravoInput> Input = Engine ? Engine->GetInput() : nullptr;
+	
+	if ( Input )
+	{
+		if ( action == GLFW_PRESS || action == GLFW_REPEAT )
+			Input->PressedKeys.insert(key);
+		else
+			Input->PressedKeys.erase(key);
+
+		Log::LogMessage(ELog::Log, "{} {}", key, action);
+	}
+}
+
+
+
+void BravoInput::SCallbackKeyboard(GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods)
+{
+	ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+	if ( ImGui::GetIO().WantCaptureKeyboard )
+		action = GLFW_RELEASE;
+
+	std::shared_ptr<BravoEngine> Engine = BravoEngine::GetEngine();
+	std::shared_ptr<BravoInput> Input = Engine ? Engine->GetInput() : nullptr;
+	if ( Input )
+	{
+		if ( action == GLFW_PRESS || action == GLFW_REPEAT )
+			Input->PressedKeys.insert(key);
+		else
+			Input->PressedKeys.erase(key);
+
+		Log::LogMessage(ELog::Log, "{} {}", key, action);
+	}
+}
+
 void BravoInput::SubscribeKey(const BravoKeySubscription& NewSubscription)
 {
-	bool bPressed = glfwGetKey(Window, NewSubscription.Key) == GLFW_PRESS || glfwGetMouseButton(Window, NewSubscription.Key) == GLFW_PRESS;
 	KeysSubscribers.push_back(NewSubscription);
-	KeyStates.insert({NewSubscription.Key, bPressed});	
 }
 
 void BravoInput::UnSubscribeAll(std::shared_ptr<BravoObject> Owner)
 {
-	for ( int32 i = (int32)KeysSubscribers.size()-1; i >= 0; --i )
+	for (auto it = KeysSubscribers.begin(); it != KeysSubscribers.end();) 
 	{
-		if ( KeysSubscribers[i].Callback.IsBoundTo(Owner.get()) )
-			KeysSubscribers.erase(KeysSubscribers.begin()+i);
+		if ( it->Callback.IsBoundTo(Owner.get()) )
+			it = KeysSubscribers.erase(it);
+		else 
+			++it;
 	}
+	OnMouseScrollDelegate.RemoveObject(Owner.get());
+	OnMouseMoveDelegate.RemoveObject(Owner.get());
 
-	UnSubscribeMouseScroll(Owner);
-	UnSubscribeMousePosition(Owner);
 }
 void BravoInput::UnSubscribeKey(int32 Key, std::shared_ptr<BravoObject> Owner)
 {
-	for ( int32 i = (int32)KeysSubscribers.size()-1; i >= 0; --i )
+	for (auto it = KeysSubscribers.begin(); it != KeysSubscribers.end();) 
 	{
-		if ( KeysSubscribers[i].Key != Key )
-			continue;
-		if ( KeysSubscribers[i].Callback.IsBoundTo(Owner.get()) )
-			KeysSubscribers.erase(KeysSubscribers.begin()+i);
+		if ( Key == it->Key && it->Callback.IsBoundTo(Owner.get()) ) 
+			it = KeysSubscribers.erase(it);
+		else 
+			++it;
 	}
-}
-void BravoInput::UnSubscribeMouseScroll(std::shared_ptr<BravoObject> Owner)
-{
-	OnMouseScrollDelegate.RemoveObject(Owner.get());
-}
-void BravoInput::UnSubscribeMousePosition(std::shared_ptr<BravoObject> Owner)
-{
-	OnMouseMoveDelegate.RemoveObject(Owner.get());
 }
 
 bool BravoInput::GetKeyState(int32 Key) const
 {
-	return glfwGetKey(Window, Key) == GLFW_PRESS || glfwGetMouseButton(Window, Key) == GLFW_PRESS;
+	return PressedKeys.find(Key) != PressedKeys.end();
 }
 
 void BravoInput::ProcessInput(float DeltaTime)
 {
 	for ( BravoKeySubscription& listener : KeysSubscribers )
 	{
-		bool bPressedNow = GetKeyState(listener.Key);
-		auto stateIt = KeyStates.find(listener.Key);
-		bool bPressedOld = false;
-		if ( stateIt != KeyStates.end() )
-		{
-			bPressedOld = stateIt->second;
-		}
+		bool bPressedNow = PressedKeys.find(listener.Key) != PressedKeys.end();
+		bool bPressedOld = OldPressedStates.find(listener.Key) != OldPressedStates.end();
 
 		if ( !bPressedNow && bPressedOld )
 		{
@@ -118,14 +161,18 @@ void BravoInput::ProcessInput(float DeltaTime)
 			}
 		}
 	}
+	OldPressedStates = PressedKeys;
 
-	for ( auto& stateIt : KeyStates )
+	
+	if ( !BravoMath::IsNearlyZero(DeltaMouseMove) )
 	{
-		stateIt.second = GetKeyState(stateIt.first);
+		OnMouseMoveDelegate.Broadcast(MousePos, DeltaMouseMove, DeltaTime);
 	}
 
-	OnMouseMoveDelegate.Broadcast(MousePos, DeltaMouseMove, DeltaTime);
-	OnMouseScrollDelegate.Broadcast(DeltaMouseScroll, DeltaTime);
+	if ( !BravoMath::IsNearlyZero(DeltaMouseScroll) )
+	{
+		OnMouseScrollDelegate.Broadcast(DeltaMouseScroll, DeltaTime);
+	}
 
 	DeltaMouseScroll = glm::vec2(0.0);
 	DeltaMouseMove = glm::vec2(0.0);

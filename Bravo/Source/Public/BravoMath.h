@@ -26,6 +26,7 @@ public:
 
 	static bool IsNearlyZero(float Number);
 	static bool IsNearlyZero(double Number);
+	static bool IsNearlyZero(const glm::vec2& vector);
 	static bool IsNearlyZero(const glm::vec3& vector);
 
 	static bool IsNearlyEqual(const float& A, const float& B);

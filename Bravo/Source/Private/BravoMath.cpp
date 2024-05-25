@@ -71,6 +71,10 @@ bool BravoMath::IsNearlyZero(double Number)
 {
 	return std::abs(Number) <= FLT_EPS;
 }
+bool BravoMath::IsNearlyZero(const glm::vec2& vector)
+{
+	return std::abs(vector.length()) <= FLT_EPS;
+}
 bool BravoMath::IsNearlyZero(const glm::vec3& vector)
 {
 	return std::abs(vector.length()) <= FLT_EPS;

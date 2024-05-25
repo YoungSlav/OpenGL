@@ -9,7 +9,6 @@ bool BravoScreen_Debug::Initialize_Internal()
 	SetTrueScaling(false);
 	SetSize(glm::vec2(0.1f, 0.08f));
 	SetOrigin(glm::vec2(1.0f, 0.0f));
-
 	SetPosition(glm::vec2(1.0f, 0.00f));
 
 
@@ -17,13 +16,6 @@ bool BravoScreen_Debug::Initialize_Internal()
 	
 	
 	return true;
-}
-
-void BravoScreen_Debug::OnHUDResized(const glm::ivec2& NewSize)
-{
-	BravoScreen::OnHUDResized(NewSize);
-	int32 a = 0;
-	a++;
 }
 
 void BravoScreen_Debug::Render_Internal(float DeltaTime)
@@ -40,7 +32,6 @@ void BravoScreen_Debug::Render_Internal(float DeltaTime)
 		color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
 	else
 		color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-
 
 	ImGui::Begin(GetLabel().c_str(), nullptr,
 		ImGuiWindowFlags_NoBackground |
