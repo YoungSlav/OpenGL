@@ -28,6 +28,11 @@ struct BravoDirectionalLightShaderData
 class BravoDirectionalLightActor : public BravoLightActor
 {
 public:
+	template <typename... Args>
+	BravoDirectionalLightActor(Args&&... args) :
+		BravoLightActor(std::forward<Args>(args)...)
+	{}
+
 
 	void GetShaderData(std::vector<BravoDirectionalLightShaderData>& OutShaderData) const;
 

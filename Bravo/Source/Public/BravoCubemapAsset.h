@@ -14,6 +14,12 @@ struct BravoCubemapLoadingParams
 class BravoCubemapAsset : public BravoAsset
 {
 public:
+	template <typename... Args>
+	BravoCubemapAsset(Args&&... args) :
+		BravoAsset(std::forward<Args>(args)...)
+	{}
+
+
 	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params);
 
 	virtual void Use() override;

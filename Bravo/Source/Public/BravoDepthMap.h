@@ -5,23 +5,11 @@
 class BravoDepthMap : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoDepthMap(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
 
-	virtual void Setup(const uint32 Size) = 0;
-	virtual void Render(std::shared_ptr<class BravoLightActor> Owner) = 0;
-
-	virtual void Apply(std::shared_ptr<BravoShaderAsset> OnShader, const std::string& Path) = 0;
-	virtual void StopUsage() = 0;
-
-protected:
-	virtual void OnDestroy() override;
-
-	uint32 Size;
-	std::shared_ptr<class BravoShaderAsset> DepthMapShader;
-};
-
-class BravoDepthMapNew : public BravoObject
-{
-public:
 	virtual void Setup(const int32 LayersCount, const uint32 TextureSize) = 0;
 	virtual void Use(std::shared_ptr<BravoShaderAsset> OnShader) = 0;
 	virtual void StopUsage() = 0;

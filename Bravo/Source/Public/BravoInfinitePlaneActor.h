@@ -9,11 +9,13 @@
 class BravoInfinitePlaneActor : public BravoActor, public IBravoRenderable
 {
 public:
-	BravoInfinitePlaneActor() :
-		BravoActor(),
+	template <typename... Args>
+	BravoInfinitePlaneActor(Args&&... args) :
+		BravoActor(std::forward<Args>(args)...),
 		IBravoRenderable(ERenderPriority::Late)
-	{
-	}
+	{}
+
+
 
 	bool EnsureReady();
 

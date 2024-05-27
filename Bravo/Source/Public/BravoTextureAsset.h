@@ -18,6 +18,12 @@ struct BravoTextureLoadingParams
 class BravoTextureAsset : public BravoAsset
 {
 public:
+	template <typename... Args>
+	BravoTextureAsset(Args&&... args) :
+		BravoAsset(std::forward<Args>(args)...)
+	{}
+
+
 	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params);
 
 	virtual void Use() override;

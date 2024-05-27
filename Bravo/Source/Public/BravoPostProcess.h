@@ -6,6 +6,12 @@
 class BravoPostProcess : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoPostProcess(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	bool Render();
 
 protected:

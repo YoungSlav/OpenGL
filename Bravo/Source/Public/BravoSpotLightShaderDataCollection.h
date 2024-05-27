@@ -8,6 +8,12 @@
 class BravoSpotLightShaderDataCollection : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoSpotLightShaderDataCollection(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	void Update(const std::vector<std::shared_ptr<class BravoSpotLightActor>>& Casters);
 	void UseOn(std::shared_ptr<class BravoShaderAsset> Shader);
 	void ResetUsage();

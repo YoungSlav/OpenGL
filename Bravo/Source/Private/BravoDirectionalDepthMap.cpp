@@ -9,7 +9,7 @@
 
 bool BravoDirectionalDepthMap::Initialize_Internal()
 {
-	if ( !BravoDepthMapNew::Initialize_Internal() )
+	if ( !BravoDepthMap::Initialize_Internal() )
 		return false;
 
 	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DirectionalDepthMapShader", BravoShaderLoadingParams("Shaders\\DepthMapDir"));
@@ -74,7 +74,7 @@ void BravoDirectionalDepthMap::Render(const std::vector<BravoDirectionalLightSha
 void BravoDirectionalDepthMap::OnDestroy()
 {
 	ClearGPUData();
-	BravoDepthMapNew::OnDestroy();
+	BravoDepthMap::OnDestroy();
 }
 	
 void BravoDirectionalDepthMap::Use(std::shared_ptr<BravoShaderAsset> OnShader)

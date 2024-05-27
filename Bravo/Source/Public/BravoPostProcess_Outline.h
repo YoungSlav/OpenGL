@@ -7,6 +7,12 @@
 class BravoPostProcess_Outline : public BravoPostProcess
 {
 public:
+	template <typename... Args>
+	BravoPostProcess_Outline(Args&&... args) :
+		BravoPostProcess(std::forward<Args>(args)...)
+	{}
+
+
 
 protected:
 	virtual bool Initialize_Internal() override;

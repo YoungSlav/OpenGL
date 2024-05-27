@@ -35,6 +35,12 @@ struct BravoStaticMeshLoadingParams
 class BravoStaticMeshAsset : public BravoAsset
 {
 public:
+	template <typename... Args>
+	BravoStaticMeshAsset(Args&&... args) :
+		BravoAsset(std::forward<Args>(args)...)
+	{}
+
+
 	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params);
 
 	const std::vector<Vertex>& GetVerticies() const { return Vertices; }

@@ -19,24 +19,21 @@
 * landscape rendering (height maps)
 * grass
 * animations
+* splines?
 * frustum culling
 * occlusion culling would be cool AF
 * transparent objects (OIT)
 * 
 * 
-* 
 *	ENGINE:
-* Objects serialization deserialization 
+* Objects serialization deserialization   (cerial?)
 * Physics engine integration (reactphysics3d)
-*
+* refactor class initialization through constructors
 * 
 *	EDITOR:
 * Editor game instance 
 * multiple projects in solution: Engine, Game
-* world editor? (json?)
-* serialization?
-* splines?
-* animations?
+* editor UI
 * */
 
 
@@ -45,6 +42,11 @@ class BravoInput;
 class BravoEngine : public BravoObject
 {
 public:
+
+	BravoEngine(const std::string& _Name) :
+		BravoObject(0, _Name, nullptr, nullptr)
+	{}
+
 	template <typename Class>
 	std::shared_ptr<Class> SpawnGameInstance(const std::string& _Name)
 	{

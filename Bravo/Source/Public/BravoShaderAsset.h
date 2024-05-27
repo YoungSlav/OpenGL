@@ -30,6 +30,12 @@ struct BravoShaderLoadingParams
 class BravoShaderAsset : public BravoAsset
 {
 public:
+	template <typename... Args>
+	BravoShaderAsset(Args&&... args) :
+		BravoAsset(std::forward<Args>(args)...)
+	{}
+
+
 	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
 		
 	virtual void Use() override;

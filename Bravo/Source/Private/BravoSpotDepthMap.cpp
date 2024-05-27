@@ -8,7 +8,7 @@
 
 bool BravoSpotDepthMap::Initialize_Internal()
 {
-	if ( !BravoDepthMapNew::Initialize_Internal() )
+	if ( !BravoDepthMap::Initialize_Internal() )
 		return false;
 
 	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("SpotDepthMapShader", BravoShaderLoadingParams("Shaders\\DepthMapSpot"));
@@ -62,7 +62,7 @@ void BravoSpotDepthMap::ClearGPUData()
 void BravoSpotDepthMap::OnDestroy()
 {
 	ClearGPUData();
-	BravoDepthMapNew::OnDestroy();
+	BravoDepthMap::OnDestroy();
 }
 
 void BravoSpotDepthMap::Render(const std::vector<BravoSpotLightShaderData>& CastersData)

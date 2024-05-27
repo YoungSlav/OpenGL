@@ -86,7 +86,7 @@ void BravoInput::SCallbackKeyboard(GLFWwindow* window, int32 key, int32 scancode
 		else
 			Input->PressedKeys.erase(key);
 
-		Log::LogMessage(ELog::Log, "{} {}", key, action);
+		//Log::LogMessage(ELog::Log, "{} {}", key, action);
 	}
 }
 

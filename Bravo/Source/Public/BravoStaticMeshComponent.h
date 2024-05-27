@@ -52,15 +52,22 @@ class BravoStaticMeshComponent : public BravoComponent, public IBravoRenderable
 {
 
 public:
-	BravoStaticMeshComponent() = default;
+	
+	template <typename... Args>
+	BravoStaticMeshComponent(Args&&... args) :
+		BravoComponent(std::forward<Args>(args)...),
+		IBravoRenderable()
+	{}
 
-	BravoStaticMeshComponent(ERenderPriority _RenderPriority) :
-		BravoComponent(),
+	template <typename... Args>
+	BravoStaticMeshComponent(ERenderPriority _RenderPriority, Args&&... args) :
+		BravoComponent(std::forward<Args>(args)...),
 		IBravoRenderable(_RenderPriority)
 	{}
 
-	BravoStaticMeshComponent(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup) :
-		BravoComponent(),
+	template <typename... Args>
+	BravoStaticMeshComponent(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup, Args&&... args) :
+		BravoComponent(std::forward<Args>(args)...),
 		IBravoRenderable(_RenderPriority, _RenderGroup)
 	{}
 

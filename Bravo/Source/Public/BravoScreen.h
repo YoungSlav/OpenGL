@@ -6,6 +6,12 @@
 class BravoScreen : public BravoWidget
 {
 public:
+	template <typename... Args>
+	BravoScreen(Args&&... args) :
+		BravoWidget(std::forward<Args>(args)...)
+	{}
+
+
 	int32 GetRenderPriority() const { return RenderPriority; }
 
 protected:

@@ -30,7 +30,9 @@ std::shared_ptr<BravoEngine> BravoEngine::GetEngine()
 bool BravoEngine::Initialize_Internal()
 {
 	GlobalEngine::_Engine = Self<BravoEngine>();
+	
 	Engine = Self<BravoEngine>();
+
 	LastUsedHandle = GetHandle();
 
 	AssetManager = NewObject<BravoAssetManager>("AssetManager");

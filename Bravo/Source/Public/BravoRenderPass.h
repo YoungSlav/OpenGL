@@ -5,6 +5,12 @@
 class BravoRenderPass : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoRenderPass(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	void SetRenderTarget(std::shared_ptr<class BravoRenderTarget> _RenderTarget) { RenderTarget = _RenderTarget; }
 	std::shared_ptr<class BravoRenderTarget> GetRenderTarget() const { return RenderTarget; }
 

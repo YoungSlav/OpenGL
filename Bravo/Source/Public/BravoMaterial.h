@@ -7,6 +7,12 @@
 class BravoMaterial : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoMaterial(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	void Load() {};
 	bool EnsureReady()
 	{

@@ -5,6 +5,12 @@
 class BravoRenderTarget : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoRenderTarget(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 
 	void Setup(const glm::ivec2& _Size,
 		GLint _InternalFormat,

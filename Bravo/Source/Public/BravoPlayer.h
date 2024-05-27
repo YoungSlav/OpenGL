@@ -6,6 +6,13 @@
 class BravoPlayer : public BravoActor, public IBravoTickable
 {
 public:
+	template <typename... Args>
+	BravoPlayer(Args&&... args) :
+		BravoActor(std::forward<Args>(args)...),
+		IBravoTickable()
+	{}
+
+
 
 protected:
 	virtual bool Initialize_Internal() override;

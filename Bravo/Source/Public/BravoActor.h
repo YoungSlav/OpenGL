@@ -8,6 +8,11 @@
 class BravoActor : public BravoObject, public IBravoTransformable
 {
 public:
+	template <typename... Args>
+	BravoActor(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...),
+		IBravoTransformable()
+	{}
 
 	const std::vector<std::shared_ptr<BravoComponent>>& GetComponents() const { return Components; }
 

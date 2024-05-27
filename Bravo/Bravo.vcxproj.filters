@@ -310,8 +310,6 @@
     <ClCompile Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.cpp">
       <Filter>ThirdParty\imgui\misc</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
-    <ClCompile Include="Source\Private\BravoScreen_ObjectHierarchy.cpp" />
     <ClCompile Include="Source\Private\BravoPostProcess.cpp">
       <Filter>Private\Rendering\PostProcessing</Filter>
     </ClCompile>
@@ -320,6 +318,12 @@
     </ClCompile>
     <ClCompile Include="Source\Private\BravoPostProcess_Outline.cpp">
       <Filter>Private\Rendering\PostProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoScreen_ObjectHierarchy.cpp">
+      <Filter>Private\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoScreen_Debug.cpp">
+      <Filter>Private\HUD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -520,8 +524,6 @@
     <ClInclude Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.h">
       <Filter>ThirdParty\imgui\misc</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
-    <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h" />
     <ClInclude Include="Source\Public\BravoPostProcess.h">
       <Filter>Public\Rendering\PostProcessing</Filter>
     </ClInclude>
@@ -530,6 +532,12 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoPostProcess_Outline.h">
       <Filter>Public\Rendering\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h">
+      <Filter>Public\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoScreen_Debug.h">
+      <Filter>Public\HUD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,15 +13,9 @@ BravoObject::~BravoObject()
 #endif
 }
 
-bool BravoObject::InitializeNewObject(std::shared_ptr<BravoObject> newObject, const std::string& _Name)
+bool BravoObject::InitializeNewObject(std::shared_ptr<BravoObject> newObject)
 {
-	BravoHandle newHandle = Engine->GenerateNewHandle();
-	if ( !newObject->Initialize(
-					newHandle,
-					_Name.empty() ? std::to_string(newHandle): _Name,
-					Engine, 
-					Self<BravoObject>() )
-		)
+	if ( !newObject->Initialize() )
 		return false;
 
 	AddChildObject(newObject);
@@ -30,13 +24,14 @@ bool BravoObject::InitializeNewObject(std::shared_ptr<BravoObject> newObject, co
 	return true;
 }
 
-
-bool BravoObject::Initialize(const BravoHandle& _Handle, const std::string& _Name, std::shared_ptr<class BravoEngine> _Engine, std::shared_ptr<BravoObject> _Owner)
+BravoHandle BravoObject::NewHandle() const
 {
-	Handle = _Handle;
-	Name = _Name;
-	Engine = _Engine;
-	Owner = _Owner;
+	return Engine->GenerateNewHandle();
+}
+
+
+bool BravoObject::Initialize()
+{
 
 #if	TEST_MEMORY_LEAKS
 	ObjectsSpawned++;

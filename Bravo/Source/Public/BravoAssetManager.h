@@ -7,6 +7,12 @@
 class BravoAssetManager : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoAssetManager(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	template<typename ClassName, typename... Args>
 	std::shared_ptr<ClassName> FindOrLoad(const std::string& Name, Args&&... args)
 	{

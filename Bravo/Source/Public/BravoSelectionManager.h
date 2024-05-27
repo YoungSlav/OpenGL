@@ -19,6 +19,12 @@ struct BravoSelection
 class BravoSelectionManager : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoSelectionManager(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	const std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>>& GetSelections() const { return ActiveSelections; }
 
 protected:

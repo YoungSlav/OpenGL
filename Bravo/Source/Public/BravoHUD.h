@@ -9,6 +9,12 @@ typedef MulticastDelegate<const glm::ivec2&> OnHUDResizedSignature;
 class BravoHUD : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoHUD(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 
 	void Render(float DeltaTime);
 	glm::vec2 GetTargetScale() const { return Size / TargetSize; };

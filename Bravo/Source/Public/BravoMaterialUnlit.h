@@ -11,6 +11,12 @@ struct BravoUnlitMaterialParams
 class BravoMaterialUnlit : public BravoMaterial
 {
 public:
+	template <typename... Args>
+	BravoMaterialUnlit(Args&&... args) :
+		BravoMaterial(std::forward<Args>(args)...)
+	{}
+
+
 	void Load(const BravoUnlitMaterialParams& params);
 	
 	virtual void Use() override;

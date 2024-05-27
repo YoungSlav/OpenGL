@@ -6,9 +6,15 @@
 #include "BravoDepthMap.h"
 #include "BravoPointLightActor.h"
 
-class BravoPointDepthMap : public BravoDepthMapNew
+class BravoPointDepthMap : public BravoDepthMap
 {
 public:
+	template <typename... Args>
+	BravoPointDepthMap(Args&&... args) :
+		BravoDepthMap(std::forward<Args>(args)...)
+	{}
+
+
 	virtual void Setup(const int32 LayersCount, const uint32 TextureSize) override;
 	void Render(const std::vector<BravoPointLightShaderData>& CastersData);
 

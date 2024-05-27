@@ -6,6 +6,11 @@
 class BravoCamera : public BravoActor
 {
 public:
+	template <typename... Args>
+	BravoCamera(Args&&... args) :
+		BravoActor(std::forward<Args>(args)...)
+	{}
+
 
 	const glm::mat4& GetViewMatrix() const { return ViewMatrix; }
 	const glm::mat4 GetProjectionMatrix() const { return PerspectiveMatrix; }

@@ -5,6 +5,12 @@
 class BravoPostProcess_AntiAliasing : public BravoPostProcess
 {
 public:
+	template <typename... Args>
+	BravoPostProcess_AntiAliasing(Args&&... args) :
+		BravoPostProcess(std::forward<Args>(args)...)
+	{}
+
+
 	void Setup(uint32 _Texture) { InputTexture = _Texture; }
 
 protected:

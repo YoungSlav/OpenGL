@@ -21,6 +21,12 @@ struct BravoPBRMaterialParams
 class BravoMaterialPBR : public BravoMaterial
 {
 public:
+	template <typename... Args>
+	BravoMaterialPBR(Args&&... args) :
+		BravoMaterial(std::forward<Args>(args)...)
+	{}
+
+
 	void Load(const BravoPBRMaterialParams& params);
 	
 	virtual void Use() override;

@@ -6,6 +6,12 @@
 class BravoScreen_Debug : public BravoScreen
 {
 public:
+	template <typename... Args>
+	BravoScreen_Debug(Args&&... args) :
+		BravoScreen(std::forward<Args>(args)...)
+	{}
+
+
 
 protected:
 	virtual bool Initialize_Internal() override;

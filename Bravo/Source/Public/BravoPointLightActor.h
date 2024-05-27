@@ -21,6 +21,12 @@ struct BravoPointLightShaderData
 class BravoPointLightActor : public BravoLightActor
 {
 public:
+	template <typename... Args>
+	BravoPointLightActor(Args&&... args) :
+		BravoLightActor(std::forward<Args>(args)...)
+	{}
+
+
 	void SetSettings(BravoPointLightSettings _Settings);
 	inline const BravoPointLightSettings& GetSettings() const { return Settings; }
 

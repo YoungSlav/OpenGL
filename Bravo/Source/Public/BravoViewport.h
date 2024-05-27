@@ -10,6 +10,12 @@ class BravoViewport : public BravoObject
 	friend class BravoEngine;
 
 public:
+	template <typename... Args>
+	BravoViewport(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	void UpdateViewport(float DeltaTime);
 	void RenderSelectionIDs() const;
 	void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) const;

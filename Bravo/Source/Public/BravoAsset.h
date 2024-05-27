@@ -16,7 +16,12 @@ enum EAssetLoadingState : int32
 class BravoAsset : public BravoObject
 {
 public:
-	
+	template <typename... Args>
+	BravoAsset(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	void Load(const std::string& ResourcesPath) { }
 
 	virtual void Use() {};

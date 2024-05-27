@@ -9,6 +9,12 @@
 class BravoLightManager : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoLightManager(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 
 	void RegisterLightActor(std::shared_ptr<BravoLightActor> LightActor);
 	void RemoveLightActor(std::shared_ptr<BravoLightActor> Actor);

@@ -18,7 +18,12 @@ struct BravoLightAttenuationConstants
 class BravoLightActor : public BravoActor
 {
 public:
-	BravoLightActor() = default;
+	template <typename... Args>
+	BravoLightActor(Args&&... args) :
+		BravoActor(std::forward<Args>(args)...)
+	{}
+
+
 
 	virtual void Apply(std::shared_ptr<BravoShaderAsset> OnShader);
 	virtual void StopUsage();

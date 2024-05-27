@@ -7,9 +7,15 @@
 #include "BravoDepthMap.h"
 #include "BravoDirectionalLightActor.h"
 
-class BravoDirectionalDepthMap : public BravoDepthMapNew
+class BravoDirectionalDepthMap : public BravoDepthMap
 {
 public:
+	template <typename... Args>
+	BravoDirectionalDepthMap(Args&&... args) :
+		BravoDepthMap(std::forward<Args>(args)...)
+	{}
+
+
 	void Setup(const int32 LayersCount, const uint32 TextureSize);
 	void Render(const std::vector<BravoDirectionalLightShaderData>& CastersData);
 	

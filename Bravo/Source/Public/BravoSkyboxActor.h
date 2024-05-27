@@ -7,11 +7,13 @@
 class BravoSkyboxActor : public BravoActor, public IBravoRenderable
 {
 public:
-	BravoSkyboxActor() :
-		BravoActor(),
+	template <typename... Args>
+	BravoSkyboxActor(Args&&... args) :
+		BravoActor(std::forward<Args>(args)...),
 		IBravoRenderable(ERenderPriority::Late)
-	{
-	}
+	{}
+
+
 
 	void SetCubemap(std::shared_ptr<BravoCubemapAsset> InCubemap);
 

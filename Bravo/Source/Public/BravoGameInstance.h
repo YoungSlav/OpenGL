@@ -6,7 +6,12 @@
 class BravoGameInstance : public BravoObject, public IBravoTickable
 {
 public:
-	BravoGameInstance() = default;
+	template <typename... Args>
+	BravoGameInstance(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...),
+		IBravoTickable()
+	{}
+
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;

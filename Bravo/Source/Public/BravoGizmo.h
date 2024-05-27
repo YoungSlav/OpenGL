@@ -12,6 +12,13 @@ enum EBravoGizmoState : int32
 class BravoGizmo : public BravoActor, public IBravoTickable
 {
 public:
+	template <typename... Args>
+	BravoGizmo(Args&&... args) :
+		BravoActor(std::forward<Args>(args)...),
+		IBravoTickable()
+	{}
+
+
 	void UpdateGizmoAttachments(std::list<std::weak_ptr<class IBravoTransformable>> NewAttachments);
 
 protected:

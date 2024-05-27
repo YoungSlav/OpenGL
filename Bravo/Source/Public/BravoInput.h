@@ -49,6 +49,12 @@ class BravoInput : public BravoObject
 	};
 
 public:
+	template <typename... Args>
+	BravoInput(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	void SetOwnerWindow(struct GLFWwindow* _Window);
 	void SetMouseEnabled(bool bNewMouseEnabled) const;
 	void ProcessInput(float DeltaTime);

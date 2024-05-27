@@ -6,6 +6,12 @@
 class BravoWidget : public BravoObject
 {
 public:
+	template <typename... Args>
+	BravoWidget(Args&&... args) :
+		BravoObject(std::forward<Args>(args)...)
+	{}
+
+
 	void Render(float DeltaTime);
 
 

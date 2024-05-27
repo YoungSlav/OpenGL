@@ -9,6 +9,9 @@ class BravoEngine;
 class IBravoTickable
 {
 	friend class BravoEngine;
+public:
+	virtual ~IBravoTickable() = default;
+
 protected:
 	virtual void Tick(float DeltaTime) = 0;
 
@@ -27,16 +30,25 @@ class BravoObject : public SharedFromThis
 {
 	friend class BravoEngine;
 public:
-	BravoObject() = default;
+	BravoObject(const BravoHandle& _Handle, const std::string& _Name, const std::shared_ptr<class BravoEngine> _Engine, const std::shared_ptr<BravoObject> _Owner) :
+		SharedFromThis(),
+		Handle(_Handle),
+		Name(_Name),
+		Engine(_Engine),
+		Owner(_Owner)
+	{}
+
 	virtual ~BravoObject();
 
-	bool Initialize(const BravoHandle& _Handle, const std::string& _Name, std::shared_ptr<class BravoEngine> _Engine, std::shared_ptr<BravoObject> _Owner);
 	
+	bool Initialize();
 	void Destroy();
 
 	const BravoHandle& GetHandle() const { return Handle; }
 	const std::shared_ptr<BravoObject> GetOwner() const { return Owner.expired() ? nullptr : Owner.lock(); }
 	const std::list<std::weak_ptr<BravoObject>>& GetChildren() const { return OwnedObjects; }
+
+	void SetName(const std::string& _Name) { Name = _Name; }
 	const std::string& GetName() const { return Name; }
 
 	template <typename Class, typename... Args>
@@ -47,9 +59,16 @@ public:
 		if ( !Engine )
 			return nullptr;
 
-		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(std::forward<Args>(args)...));
+		
+		BravoHandle newHandle = NewHandle();
+		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(std::forward<Args>(args)... ,
+			newHandle,
+			_Name.empty() ? std::to_string(newHandle): _Name,
+			Engine, 
+			Self<BravoObject>())
+		);
 
-		if ( !InitializeNewObject(newObject, _Name) )
+		if ( !InitializeNewObject(newObject) )
 			return nullptr;
 
 		return std::dynamic_pointer_cast<Class>(newObject);
@@ -63,7 +82,8 @@ protected:
 
 private:
 	
-	bool InitializeNewObject(std::shared_ptr<BravoObject> obj, const std::string& _Name);
+	BravoHandle NewHandle() const;
+	bool InitializeNewObject(std::shared_ptr<BravoObject> obj);
 
 	void AddChildObject(std::weak_ptr<BravoObject> _OwnedObject);
 
@@ -71,9 +91,10 @@ protected:
 	std::shared_ptr<class BravoEngine> Engine;
 
 private:
-	std::weak_ptr<BravoObject> Owner;
-	std::list<std::weak_ptr<BravoObject>> OwnedObjects;
 	std::string Name = "";
+	
+	const BravoHandle Handle = 0;
 
-	BravoHandle Handle = 0;
+	const std::weak_ptr<BravoObject> Owner;
+	std::list<std::weak_ptr<BravoObject>> OwnedObjects;
 };
