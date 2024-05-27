@@ -6,17 +6,21 @@ class BravoRenderTarget : public BravoObject
 {
 public:
 	template <typename... Args>
-	BravoRenderTarget(Args&&... args) :
-		BravoObject(std::forward<Args>(args)...)
-	{}
+	BravoRenderTarget(const glm::ivec2& _Size, GLint _InternalFormat, GLenum _Format, GLenum _Type, bool _DepthComponent,
+		Args&&... args) :
+		BravoObject(std::forward<Args>(args)...),
+		Size(_Size),
+		InternalFormat(_InternalFormat),
+		Format(_Format),
+		Type(_Type),
+		DepthComponent(_DepthComponent)
+	{
+		Setup();
+	}
 
 
 
-	void Setup(const glm::ivec2& _Size,
-		GLint _InternalFormat,
-		GLenum _Format,
-		GLenum _Type,
-		bool _DepthComponent);
+	void Setup();
 
 	void Resize(const glm::ivec2& Size);
 	void Clean();
@@ -39,8 +43,8 @@ private:
 
 	glm::ivec2 Size;
 
-	GLint InternalFormat;
-	GLenum Format;
-	GLenum Type;
-	bool DepthComponent = false;
+	const GLint InternalFormat;
+	const GLenum Format;
+	const GLenum Type;
+	const bool DepthComponent = false;
 };

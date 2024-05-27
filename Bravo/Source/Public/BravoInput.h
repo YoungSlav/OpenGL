@@ -50,12 +50,15 @@ class BravoInput : public BravoObject
 
 public:
 	template <typename... Args>
-	BravoInput(Args&&... args) :
-		BravoObject(std::forward<Args>(args)...)
-	{}
+	BravoInput(struct GLFWwindow* _Window, Args&&... args) :
+		BravoObject(std::forward<Args>(args)...),
+		Window(_Window)
+	{
+		SetupCallbacks();
+	}
 
 
-	void SetOwnerWindow(struct GLFWwindow* _Window);
+	
 	void SetMouseEnabled(bool bNewMouseEnabled) const;
 	void ProcessInput(float DeltaTime);
 
@@ -70,6 +73,7 @@ public:
 	void UnSubscribeKey(int32 Key, std::shared_ptr<BravoObject> Owner);
 
 private:
+	void SetupCallbacks();
 
 	static void SCallbackMouseScroll(struct GLFWwindow* window, double xoffset, double yoffset);
 	static void SCallbackMousePosition(struct GLFWwindow* window, double xpos, double ypos);

@@ -180,7 +180,7 @@ void BravoGameInstance::SpawnDirLights()
 	int32 count = 1;
 	for ( int32 i = 0 ; i < count; ++i )
 	{
-		if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight") )
+		if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight", BravoDirectionalLightSettings(), glm::vec3(1.0f)) )
 		{
 			glm::vec3 newLocation = glm::vec3(0.0f);
 			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 100;
@@ -188,7 +188,6 @@ void BravoGameInstance::SpawnDirLights()
 			newLocation.y = 100.0f;
 			dirLightActor->SetLocation(newLocation);
 			dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
-			dirLightActor->SetLightColor(glm::vec3(1.0f));
 		}
 	}
 }
@@ -203,14 +202,10 @@ void BravoGameInstance::SpawnPointLights()
 	};
 	for ( int32 i = 0 ; i < locations.size(); ++i )
 	{
-		if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight") )
-		{
-		//	pointLightActor->SetLocation(locations[i]);
-			pointLightActor->SetLightColor(glm::vec3(1.0f));
-			BravoPointLightSettings PointSettings;
-			PointSettings.Intencity = 700.0f;
-			pointLightActor->SetSettings(PointSettings);
-
+		BravoPointLightSettings PointSettings;
+		PointSettings.Intencity = 700.0f;
+		if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight"+std::to_string(i), PointSettings, glm::vec3(1.0f)) )
+		{			
 			auto sphereMesh = pointLightActor->NewObject<BravoStaticMeshComponent>("SphereStaticMesh");
 			sphereMesh->SetMesh(sphereAsset);
 			sphereMesh->SetScale(glm::vec3(0.25f));
@@ -232,15 +227,13 @@ void BravoGameInstance::SpawnSpotLights()
 	int32 count = 2;
 	for ( int32 i = 0 ; i < count; ++i )
 	{
-		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight") )
+		BravoSpotLightSettings SpotSettings;
+		SpotSettings.CutOff			= 5.0f;
+		SpotSettings.OuterCutOff	= 15.0f;
+		SpotSettings.Intencity = 700;
+		if ( auto spotLightActor = NewObject<BravoSpotLightActor>("SpotLight"+std::to_string(i), SpotSettings, glm::vec3(1.0f)) )
 		{
 			spotLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - spotLightActor->GetLocation());
-			spotLightActor->SetLightColor(glm::vec3(1.0f));
-			BravoSpotLightSettings SpotSettings;
-			SpotSettings.CutOff			= 5.0f;
-			SpotSettings.OuterCutOff	= 15.0f;
-			SpotSettings.Intencity = 700;
-			spotLightActor->SetSettings(SpotSettings);
 
 			auto coneMesh = spotLightActor->NewObject<BravoStaticMeshComponent>("SpotLightStaticMesh");
 			coneMesh->SetMesh(coneAsset);

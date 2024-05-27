@@ -15,8 +15,7 @@ bool BravoPostProcess_Outline::Initialize_Internal()
 		return false;
 
 	glm::ivec2 Size = Engine->GetViewport()->GetViewportSize();
-	OutlineRenderTarget = NewObject<BravoRenderTarget>("OutlineRenderTarget");
-	OutlineRenderTarget->Setup(Size, GL_R32F, GL_RED, GL_FLOAT, true);
+	OutlineRenderTarget = NewObject<BravoRenderTarget>("OutlineRenderTarget", Size, GL_R32F, GL_RED, GL_FLOAT, true);
 
 	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<BravoPostProcess_Outline>(), &BravoPostProcess_Outline::OnViewportResized);
 

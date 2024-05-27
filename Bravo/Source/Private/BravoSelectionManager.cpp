@@ -13,8 +13,7 @@ bool BravoSelectionManager::Initialize_Internal()
 		return false;
 
 	Size = Engine->GetViewport()->GetViewportSize();
-	SelectionRenderTarget = NewObject<BravoRenderTarget>("SelectionRenderTarget");
-	SelectionRenderTarget->Setup(Size, GL_RG32F, GL_RG, GL_FLOAT, true);
+	SelectionRenderTarget = NewObject<BravoRenderTarget>("SelectionRenderTarget", Size, GL_RG32F, GL_RG, GL_FLOAT, true);
 
 	return true;
 }

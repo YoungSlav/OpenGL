@@ -6,7 +6,7 @@
 #include "BravoAssetManager.h"
 #include "BravoTextureUnitManager.h"
 #include "BravoViewport.h"
-
+#include "BravoCamera.h"
 
 
 bool BravoDirectionalLightActor::Initialize_Internal()

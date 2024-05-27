@@ -14,7 +14,7 @@ bool BravoSpotLightActor::Initialize_Internal()
 	return true;
 }
 
-void BravoSpotLightActor::SetSettings(BravoSpotLightSettings _Settings)
+void BravoSpotLightActor::SetSettings(const BravoSpotLightSettings& _Settings)
 {
 	Settings = _Settings;
 }

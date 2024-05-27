@@ -4,19 +4,8 @@
 #include "BravoEngine.h"
 #include "BravoViewport.h"
 
-void BravoRenderTarget::Setup(
-	const glm::ivec2& _Size,
-	GLint _InternalFormat,
-	GLenum _Format,
-	GLenum _Type,
-	bool _DepthComponent)
+void BravoRenderTarget::Setup()
 {
-	Size = _Size;
-	InternalFormat = _InternalFormat;
-	Format = _Format;
-	DepthComponent = _DepthComponent;
-	Type = _Type;
-
 	// framebuffer configuration
 	glGenFramebuffers(1, &FBO);
     Engine->GetViewport()->PushFramebuffer(FBO, Size);
@@ -24,7 +13,7 @@ void BravoRenderTarget::Setup(
 	// create a color attachment texture
 	glGenTextures(1, &TextureColorBuffer);
     glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, _InternalFormat, Size.x, Size.y, 0, _Format, _Type, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Size.x, Size.y, 0, Format, Type, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
@@ -54,13 +43,11 @@ void BravoRenderTarget::Setup(
 void BravoRenderTarget::Resize(const glm::ivec2& InSize)
 {
 	Clean();
-	Setup(InSize, InternalFormat, Format, Type, DepthComponent);
+	Size = InSize;
 }
 
 void BravoRenderTarget::Clean()
-{
-	Unbind();
-	
+{	
 	glDeleteTextures(1, &TextureColorBuffer);
 	glDeleteTextures(1, &TextureDepthBuffer);
 	glDeleteFramebuffers(1, &FBO);

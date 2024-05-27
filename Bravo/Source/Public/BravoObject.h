@@ -58,7 +58,6 @@ public:
 		
 		if ( !Engine )
 			return nullptr;
-
 		
 		BravoHandle newHandle = NewHandle();
 		std::shared_ptr<BravoObject> newObject = std::shared_ptr<BravoObject>(new Class(std::forward<Args>(args)... ,

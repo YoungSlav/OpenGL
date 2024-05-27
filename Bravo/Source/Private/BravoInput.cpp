@@ -5,9 +5,8 @@
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 
-void BravoInput::SetOwnerWindow(GLFWwindow* _Window)
+void BravoInput::SetupCallbacks()
 {
-	Window = _Window;
 	glfwSetMouseButtonCallback(Window, BravoInput::SCallbackMouseButton);
 	glfwSetCursorPosCallback(Window, BravoInput::SCallbackMousePosition);
 	glfwSetScrollCallback(Window, BravoInput::SCallbackMouseScroll);

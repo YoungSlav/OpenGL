@@ -29,14 +29,15 @@ class BravoDirectionalLightActor : public BravoLightActor
 {
 public:
 	template <typename... Args>
-	BravoDirectionalLightActor(Args&&... args) :
-		BravoLightActor(std::forward<Args>(args)...)
+	BravoDirectionalLightActor(const BravoDirectionalLightSettings& _Settings, Args&&... args) :
+		BravoLightActor(std::forward<Args>(args)...),
+		Settings(_Settings)
 	{}
 
 
 	void GetShaderData(std::vector<BravoDirectionalLightShaderData>& OutShaderData) const;
 
-	void SetSettings(BravoDirectionalLightSettings _Settings) { Settings = _Settings; }
+	void SetSettings(const BravoDirectionalLightSettings& _Settings) { Settings = _Settings; }
 	const BravoDirectionalLightSettings& GetSettings() const { return Settings; }
 
 	void SetAmbientLightColor(const glm::vec3& _Color) { AmbientColor = _Color; }

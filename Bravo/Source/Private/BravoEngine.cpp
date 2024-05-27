@@ -42,8 +42,7 @@ bool BravoEngine::Initialize_Internal()
 
 	SelectionManager = NewObject<BravoSelectionManager>("SelectionManager");
 
-	Input = NewObject<BravoInput>("Input");
-	Input->SetOwnerWindow(Viewport->Window);
+	Input = NewObject<BravoInput>("Input", Viewport->Window);
 
 
 

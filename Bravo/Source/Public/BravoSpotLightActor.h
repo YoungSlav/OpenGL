@@ -33,15 +33,14 @@ class BravoSpotLightActor : public BravoLightActor
 {
 public:
 	template <typename... Args>
-	BravoSpotLightActor(Args&&... args) :
-		BravoLightActor(std::forward<Args>(args)...)
+	BravoSpotLightActor(const BravoSpotLightSettings& _Settings, Args&&... args) :
+		BravoLightActor(std::forward<Args>(args)...),
+		Settings(_Settings)
 	{}
 
 
-	void SetSettings(BravoSpotLightSettings _Settings);
+	void SetSettings(const BravoSpotLightSettings& _Settings);
 	inline const BravoSpotLightSettings& GetSettings() const { return Settings; }
-
-	
 
 	void GetShaderData(BravoSpotLightShaderData& OutShaderData) const;
 

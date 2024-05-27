@@ -12,8 +12,6 @@ public:
 		BravoPostProcess(std::forward<Args>(args)...)
 	{}
 
-
-
 protected:
 	virtual bool Initialize_Internal() override;
 

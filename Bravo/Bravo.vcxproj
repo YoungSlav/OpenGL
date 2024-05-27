@@ -48,7 +48,6 @@
     <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
     <ClCompile Include="Source\Private\BravoPostProcess.cpp" />
     <ClCompile Include="Source\Private\BravoPostProcess_AntiAliasing.cpp" />
-    <ClCompile Include="Source\Private\BravoRenderPass.cpp" />
     <ClCompile Include="Source\Private\BravoScreen.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_ObjectHierarchy.cpp" />
@@ -110,7 +109,6 @@
     <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
     <ClInclude Include="Source\Public\BravoPostProcess.h" />
     <ClInclude Include="Source\Public\BravoPostProcess_AntiAliasing.h" />
-    <ClInclude Include="Source\Public\BravoRenderPass.h" />
     <ClInclude Include="Source\Public\BravoScreen.h" />
     <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h" />

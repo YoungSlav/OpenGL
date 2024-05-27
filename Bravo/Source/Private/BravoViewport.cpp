@@ -42,13 +42,11 @@ void BravoViewport::Setup()
 	HUD = NewObject<BravoHUD>("HUD");
 	HUD->SetSize(ViewportSize);
 
-	ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget");
-	ViewportRenderTarget->Setup(ViewportSize*2, GL_RGB16F, GL_RGB, GL_FLOAT, true);
+	ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget", ViewportSize*2, GL_RGB16F, GL_RGB, GL_FLOAT, true);
 
 	OutlinePP = NewObject<BravoPostProcess_Outline>("OutlinePostProcessP");
 
-	AntiAliasingPP = NewObject<BravoPostProcess_AntiAliasing>("AntiAliasingPostProcess");
-	AntiAliasingPP->Setup(ViewportRenderTarget->GetColorTexture());
+	AntiAliasingPP = NewObject<BravoPostProcess_AntiAliasing>("AntiAliasingPostProcess", ViewportRenderTarget->GetColorTexture());
 
 }
 
