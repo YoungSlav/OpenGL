@@ -20,11 +20,10 @@ public:
 	void PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size);
 	void PopFramebuffer();
 
+
 	OnResizeSignature OnResizeDelegate;
 
 	void DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, glm::vec3& OutDirection);
-
-
 	
 protected:
 	bool Initialize_Internal() override;
@@ -65,6 +64,7 @@ private:
 	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);
 
 private:
+
 	glm::ivec2 ViewportSize = glm::vec2(1440.0f, 900.0f);
 
 	struct GLFWwindow* Window = nullptr;
@@ -74,5 +74,8 @@ private:
 	std::map<ERenderGroup, std::shared_ptr<RenderGroup>> RenderGroups;
 
 	std::shared_ptr<class BravoHUD> HUD;
-	std::shared_ptr<class BravoOutlineManager> OutlineManager;
+
+
+	std::shared_ptr<class BravoPostProcess_Outline> OutlinePP;
+	std::shared_ptr<class BravoPostProcess_AntiAliasing> AntiAliasingPP;
 };

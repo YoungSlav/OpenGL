@@ -125,7 +125,6 @@ void BravoSelectionManager::ChangeSelection(const BravoSelection& Selection)
 	else
 	{
 		// object has some active selections
-
 		std::vector<int32>& CurentlySelectedInstanes = foundComp->second;
 		if ( bSelectIndividualInstance && !CurentlySelectedInstanes.empty() )
 		{

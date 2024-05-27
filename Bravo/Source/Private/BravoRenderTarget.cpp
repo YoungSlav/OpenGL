@@ -1,9 +1,6 @@
 #include "BravoRenderTarget.h"
 #include "stdafx.h"
 #include "openGL.h"
-#include "BravoShaderAsset.h"
-#include "BravoTextureAsset.h"
-#include "BravoTextureUnitManager.h"
 #include "BravoEngine.h"
 #include "BravoViewport.h"
 
@@ -12,38 +9,13 @@ void BravoRenderTarget::Setup(
 	GLint _InternalFormat,
 	GLenum _Format,
 	GLenum _Type,
-	bool _DepthComponent,
-	std::shared_ptr<BravoShaderAsset> _Shader)
+	bool _DepthComponent)
 {
-	Shader = _Shader;
 	Size = _Size;
 	InternalFormat = _InternalFormat;
 	Format = _Format;
 	DepthComponent = _DepthComponent;
 	Type = _Type;
-
-	// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-	static float planeVertices[] = {
-        // positions   // texCoords
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-
-    glGenVertexArrays(1, &PlaneVAO);
-    glGenBuffers(1, &PlaneVBO);
-    glBindVertexArray(PlaneVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, PlaneVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
 	// framebuffer configuration
 	glGenFramebuffers(1, &FBO);
@@ -82,14 +54,13 @@ void BravoRenderTarget::Setup(
 void BravoRenderTarget::Resize(const glm::ivec2& InSize)
 {
 	Clean();
-	Setup(InSize, InternalFormat, Format, Type, DepthComponent, Shader);
+	Setup(InSize, InternalFormat, Format, Type, DepthComponent);
 }
 
 void BravoRenderTarget::Clean()
 {
 	Unbind();
-	glDeleteBuffers(1, &PlaneVBO);
-	glDeleteVertexArrays(1, &PlaneVAO);
+	
 	glDeleteTextures(1, &TextureColorBuffer);
 	glDeleteTextures(1, &TextureDepthBuffer);
 	glDeleteFramebuffers(1, &FBO);
@@ -108,38 +79,4 @@ void BravoRenderTarget::Unbind()
 void BravoRenderTarget::OnDestroy()
 {
 	Clean();
-}
-
-void BravoRenderTarget::Render()
-{
-	if ( !Shader )
-		return;
-	if ( !Shader->EnsureReady() )
-		return;
-
-	Shader->Use();
-		int32 ColorTextureUnit = BravoTextureUnitManager::BindTexture();
-		glActiveTexture(GL_TEXTURE0 + ColorTextureUnit);
-		glBindTexture(GL_TEXTURE_2D, TextureColorBuffer);
-		Shader->SetInt("screenTexture", ColorTextureUnit);
-		
-		int32 DepthTextureUnit = 0;
-		if ( DepthComponent )
-		{
-			DepthTextureUnit = BravoTextureUnitManager::BindTexture();
-			glActiveTexture(GL_TEXTURE0 + DepthTextureUnit);
-			glBindTexture(GL_TEXTURE_2D, TextureDepthBuffer);
-		}
-
-	
-		glBindVertexArray(PlaneVAO);
-    
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-	
-		BravoTextureUnitManager::UnbindTexture(ColorTextureUnit);
-		if ( DepthComponent )
-			BravoTextureUnitManager::UnbindTexture(DepthTextureUnit);
-
-		glBindVertexArray(0);
-	Shader->StopUsage();
 }

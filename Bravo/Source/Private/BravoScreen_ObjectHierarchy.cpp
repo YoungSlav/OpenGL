@@ -1,6 +1,8 @@
 #include "BravoScreen_ObjectHierarchy.h"
 #include "BravoActor.h"
 #include "BravoComponent.h"
+#include "BravoInput.h"
+#include "BravoEngine.h"
 
 bool BravoScreen_ObjectHierarchy::Initialize_Internal()
 {
@@ -13,12 +15,29 @@ bool BravoScreen_ObjectHierarchy::Initialize_Internal()
 	SetOrigin(glm::vec2(0.0f, 0.0f));
 	SetPosition(glm::vec2(0.0f, 0.0f));
 
+	if ( Engine->GetInput() )
+	{
+		BravoKeySubscription sub;
+		sub.Key = GLFW_KEY_GRAVE_ACCENT;
+		sub.SubscribedType = EKeySubscriptionType::Released;
+		sub.Callback.BindSP(Self<BravoScreen_ObjectHierarchy>(), &BravoScreen_ObjectHierarchy::OnToggleHUD);
+		Engine->GetInput()->SubscribeKey(sub);
+	}
 	
 	return true;
 }
 
+
+void BravoScreen_ObjectHierarchy::OnToggleHUD(bool ButtonState, float DeltaTime)
+{
+	bShowHUD = !bShowHUD;
+}
+
 void BravoScreen_ObjectHierarchy::Render_Internal(float DeltaTime)
 {
+	if ( !bShowHUD )
+		return;
+
 	BravoScreen::Render_Internal(DeltaTime);
 
 	ImGui::SetNextWindowBgAlpha(1.0f);

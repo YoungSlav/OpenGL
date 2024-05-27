@@ -42,10 +42,12 @@
     <ClCompile Include="Source\Private\BravoMaterialUnlit.cpp" />
     <ClCompile Include="Source\Private\BravoMath.cpp" />
     <ClCompile Include="Source\Private\BravoObject.cpp" />
-    <ClCompile Include="Source\Private\BravoOutlineManager.cpp" />
+    <ClCompile Include="Source\Private\BravoPostProcess_Outline.cpp" />
     <ClCompile Include="Source\Private\BravoPointDepthMap.cpp" />
     <ClCompile Include="Source\Private\BravoPointLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
+    <ClCompile Include="Source\Private\BravoPostProcess.cpp" />
+    <ClCompile Include="Source\Private\BravoPostProcess_AntiAliasing.cpp" />
     <ClCompile Include="Source\Private\BravoRenderPass.cpp" />
     <ClCompile Include="Source\Private\BravoScreen.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
@@ -103,9 +105,11 @@
     <ClInclude Include="Source\Public\BravoMaterialPBR.h" />
     <ClInclude Include="Source\Public\BravoMaterialUnlit.h" />
     <ClInclude Include="Source\Public\BravoMath.h" />
-    <ClInclude Include="Source\Public\BravoOutlineManager.h" />
+    <ClInclude Include="Source\Public\BravoPostProcess_Outline.h" />
     <ClInclude Include="Source\Public\BravoPointDepthMap.h" />
     <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
+    <ClInclude Include="Source\Public\BravoPostProcess.h" />
+    <ClInclude Include="Source\Public\BravoPostProcess_AntiAliasing.h" />
     <ClInclude Include="Source\Public\BravoRenderPass.h" />
     <ClInclude Include="Source\Public\BravoScreen.h" />
     <ClInclude Include="Source\Public\BravoScreen_Debug.h" />

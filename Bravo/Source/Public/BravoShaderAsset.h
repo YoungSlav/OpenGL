@@ -56,7 +56,27 @@ protected:
 
 private:
 
-	std::shared_ptr<BravoTextureAsset> EmptyTexture = nullptr;
+	GLint FindUniformLocation(const std::string& name) const;
+	
+	template<typename T>
+	bool CheckUniformCache(const std::string& name, const T& val) const
+	{
+		auto valueIt = ValueCache.find(name);
+		if (valueIt != ValueCache.end())
+		{
+			const T& cachedValue = std::any_cast<const T&>(valueIt->second);
+            if (cachedValue == val)
+			{
+				return true;
+			}
+		}
+		ValueCache[name] = val;
+		return false;
+	}
 
+	std::shared_ptr<BravoTextureAsset> EmptyTexture = nullptr;
 	GLuint ShaderID = 0;
+
+	mutable std::unordered_map<std::string, GLint> LocationCache;
+	mutable std::unordered_map<std::string, std::any> ValueCache;
 };

@@ -6,6 +6,8 @@
 #include <string>
 #include <math.h>
 #include <map>
+#include <unordered_map>
+#include <variant>
 #include <vector>
 #include <list>
 #include <algorithm>
@@ -15,6 +17,7 @@
 #include <stack>
 #include <format>
 #include <set>
+#include <any>
 // utilities
 #include "Log.h"
 

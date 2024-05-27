@@ -6,7 +6,7 @@ bool BravoScreen_Debug::Initialize_Internal()
 	if ( !BravoScreen::Initialize_Internal() )
 		return false;
 
-	SetTrueScaling(false);
+	SetTrueScaling(true);
 	SetSize(glm::vec2(0.1f, 0.08f));
 	SetOrigin(glm::vec2(1.0f, 0.0f));
 	SetPosition(glm::vec2(1.0f, 0.00f));

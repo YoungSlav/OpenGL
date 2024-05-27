@@ -8,7 +8,6 @@
 #include "BravoHUD.h"
 #include "IBravoRenderable.h"
 #include "BravoSelectionManager.h"
-#include "BravoOutlineManager.h"
 #include "BravoViewport.h"
 
 namespace GlobalEngine

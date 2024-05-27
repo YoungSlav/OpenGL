@@ -64,7 +64,6 @@ void BravoTextureAsset::Use()
 
 void BravoTextureAsset::StopUsage()
 {
-	//glBindTexture(GL_TEXTURE_2D,  0);
 	BravoTextureUnitManager::UnbindTexture(TextureUnit);
 	TextureUnit = -1;
 }

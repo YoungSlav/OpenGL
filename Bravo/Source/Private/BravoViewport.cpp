@@ -3,7 +3,8 @@
 #include "BravoEngine.h"
 #include "BravoLightManager.h"
 #include "BravoRenderTarget.h"
-#include "BravoOutlineManager.h"
+#include "BravoPostProcess_Outline.h"
+#include "BravoPostProcess_AntiAliasing.h"
 #include "BravoHUD.h"
 #include "BravoAssetManager.h"
 #include "imgui/imgui.h"
@@ -20,11 +21,6 @@ void BravoViewport::OnDestroy()
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
-
-
-	ViewportRenderTarget.reset();
-	HUD.reset();
-	OutlineManager.reset();
 }
 
 void BravoViewport::Setup()
@@ -46,7 +42,14 @@ void BravoViewport::Setup()
 	HUD = NewObject<BravoHUD>("HUD");
 	HUD->SetSize(ViewportSize);
 
-	OutlineManager = NewObject<BravoOutlineManager>("OutlineManager");
+	ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget");
+	ViewportRenderTarget->Setup(ViewportSize*2, GL_RGB16F, GL_RGB, GL_FLOAT, true);
+
+	OutlinePP = NewObject<BravoPostProcess_Outline>("OutlinePostProcessP");
+
+	AntiAliasingPP = NewObject<BravoPostProcess_AntiAliasing>("AntiAliasingPostProcess");
+	AntiAliasingPP->Setup(ViewportRenderTarget->GetColorTexture());
+
 }
 
 void BravoViewport::CreateOpenGLWindow()
@@ -80,12 +83,7 @@ void BravoViewport::CreateOpenGLWindow()
     glfwSetFramebufferSizeCallback(Window, BravoViewport::Framebuffer_size_callback);
 
 
-	if ( ViewportRenderTarget = NewObject<BravoRenderTarget>("ViewportRenderTarget") )
-	{
-		ViewportRenderTarget->Setup(ViewportSize*2,
-			GL_RGB16F, GL_RGB, GL_FLOAT, true,
-			Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("PostProccesShaderAsset", BravoShaderLoadingParams("Shaders\\PostProccess")));
-	}
+	
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -111,6 +109,7 @@ void BravoViewport::Resize(const glm::ivec2& InViewportSize)
 	OnResizeDelegate.Broadcast(ViewportSize);
 	HUD->SetSize(ViewportSize);
 }
+
 
 void BravoViewport::PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size)
 {
@@ -265,7 +264,7 @@ void BravoViewport::UpdateViewport(float DeltaTime)
 			}
 		}
 
-		OutlineManager->RenderSelections();
+		OutlinePP->Render();
 
 		viewportRT->Unbind();
 	}
@@ -277,7 +276,7 @@ void BravoViewport::UpdateViewport(float DeltaTime)
 		PushFramebuffer(0, ViewportSize);
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		viewportRT->Render();
+		AntiAliasingPP->Render();
 		PopFramebuffer();
 	}
 

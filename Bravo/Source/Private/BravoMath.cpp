@@ -73,11 +73,11 @@ bool BravoMath::IsNearlyZero(double Number)
 }
 bool BravoMath::IsNearlyZero(const glm::vec2& vector)
 {
-	return std::abs(vector.length()) <= FLT_EPS;
+	return IsNearlyZero(vector.x) && IsNearlyZero(vector.y);
 }
 bool BravoMath::IsNearlyZero(const glm::vec3& vector)
 {
-	return std::abs(vector.length()) <= FLT_EPS;
+	return IsNearlyZero(vector.x) && IsNearlyZero(vector.y) && IsNearlyZero(vector.z);
 }
 
 bool BravoMath::IsNearlyEqual(const float& A, const float& B)

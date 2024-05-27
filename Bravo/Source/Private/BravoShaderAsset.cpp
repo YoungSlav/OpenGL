@@ -35,12 +35,16 @@ EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, cons
 }
 void BravoShaderAsset::Use()
 {
-	glUseProgram(ShaderID);
+	static GLuint CurentShader = 0;
+	if ( CurentShader != ShaderID )
+	{
+		CurentShader = ShaderID;
+		glUseProgram(ShaderID);
+	}
 }
 
 void BravoShaderAsset::StopUsage()
 {
-	glUseProgram(0);
 	if( EmptyTexture )
 		EmptyTexture->StopUsage();
 }
@@ -146,13 +150,12 @@ void BravoShaderAsset::SetTexture(const std::string& name, std::shared_ptr<Bravo
 	if ( val->EnsureReady() )
 	{
 		val->Use();
-		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val->GetTextureUnit());
+		SetInt(name, val->GetTextureUnit());
 	}
 	else if ( EmptyTexture->EnsureReady() )
 	{
-		
 		EmptyTexture->Use();
-		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), EmptyTexture->GetTextureUnit());
+		SetInt(name, EmptyTexture->GetTextureUnit());
 	}
 }
 
@@ -161,7 +164,7 @@ void BravoShaderAsset::SetCubemap(const std::string& name, std::shared_ptr<Bravo
 	if ( val )
 	{
 		val->Use();
-		glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val->GetTextureUnit());
+		SetInt(name, val->GetTextureUnit());
 	}
 	else
 	{
@@ -171,55 +174,84 @@ void BravoShaderAsset::SetCubemap(const std::string& name, std::shared_ptr<Bravo
 
 void BravoShaderAsset::SetBool(const std::string& name, const bool val) const
 {
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val ? 1 : 0); 
+	SetInt(name, GLuint(val ? 1 : 0));
 }
 
 void BravoShaderAsset::SetInt(const std::string& name, const size_t val) const
 {
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int32)val);
+	SetInt(name, (GLuint)val);
 }
 
 void BravoShaderAsset::SetInt(const std::string& name, const int32 val) const
 {
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);
+	SetInt(name, (GLuint)val);
 }
 
 void BravoShaderAsset::SetInt(const std::string& name, const GLuint val) const
 {
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), val);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform1i(FindUniformLocation(name.c_str()), val);
 }
 
 void BravoShaderAsset::SetVector1d(const std::string& name, const float val) const
 {
-	glUniform1f(glGetUniformLocation(ShaderID, name.c_str()), val);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform1f(FindUniformLocation(name.c_str()), val);
 }
 
 void BravoShaderAsset::SetVector2d(const std::string& name, const glm::vec2& val) const
 {
-	glUniform2f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform2f(FindUniformLocation(name.c_str()), val.x, val.y);
 }
 
 void BravoShaderAsset::SetVector3d(const std::string& name, const glm::vec3& val) const
 {
-	glUniform3f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y, val.z);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform3f(FindUniformLocation(name.c_str()), val.x, val.y, val.z);
 }
 
 void BravoShaderAsset::SetVector4d(const std::string& name, const glm::vec4& val) const
 {
-	glUniform4f(glGetUniformLocation(ShaderID, name.c_str()), val.x, val.y, val.z, val.w);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform4f(FindUniformLocation(name.c_str()), val.x, val.y, val.z, val.w);
 }
 
 void BravoShaderAsset::SetMatrix2d(const std::string& name, const glm::mat2& val) const
 {
-	glUniformMatrix2fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
+	if ( CheckUniformCache(name, val) ) return;
+	glUniformMatrix2fv(FindUniformLocation(name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
 void BravoShaderAsset::SetMatrix3d(const std::string& name, const glm::mat3& val) const
 {
-	glUniformMatrix3fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
+	if ( CheckUniformCache(name, val) ) return;
+	glUniformMatrix3fv(FindUniformLocation(name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
 
 void BravoShaderAsset::SetMatrix4d(const std::string& name, const glm::mat4& val) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
+	if ( CheckUniformCache(name, val) ) return;
+	glUniformMatrix4fv(FindUniformLocation(name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
+}
+
+GLint BravoShaderAsset::FindUniformLocation(const std::string& name) const
+{
+	auto locationIt = LocationCache.find(name);
+	GLint location = -1;
+	if (locationIt == LocationCache.end())
+	{
+		location = glGetUniformLocation(ShaderID, name.c_str());
+		if (location == -1)
+		{
+			Log::LogMessage(ELog::Warning, "Could not find param {} in {} shader", name, GetName());
+			return location;
+		}
+		LocationCache[name] = location;
+	}
+	else
+	{
+		location = locationIt->second;
+	}
+	return location;
 }

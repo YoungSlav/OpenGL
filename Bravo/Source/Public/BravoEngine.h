@@ -14,10 +14,11 @@
 *	GRAPHICS:
 * create some cool looking scene. kinda tired and bored looking at fucking cubes
 * billboarding
-* improve outline shader
 * bloom
 * proper anti aliasing
 * landscape rendering (height maps)
+* grass
+* animations
 * frustum culling
 * occlusion culling would be cool AF
 * transparent objects (OIT)
@@ -25,16 +26,7 @@
 * 
 * 
 *	ENGINE:
-* move rendering stuff into separate class
-* refactor render target and create separate object for post process.
-* Multiline text 
-* Widget clicking 
-* Edit text 
-* Buttons 
-* Json integration 
 * Objects serialization deserialization 
-* Outline shader?
-* Gizmo for actor moving 
 * Physics engine integration (reactphysics3d)
 *
 * 

@@ -17,8 +17,13 @@ protected:
 
 private:
 	void RenderNode_Recursive(std::shared_ptr<class BravoObject> obj, int32 Depth);
+	
+	void OnToggleHUD(bool ButtonState, float DeltaTime);
 
 private:
 	std::shared_ptr<class BravoObject> RootObject;
+
+	
+	bool bShowHUD = false;
 };
 

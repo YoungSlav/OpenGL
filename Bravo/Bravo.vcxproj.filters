@@ -112,9 +112,6 @@
     <Filter Include="Shaders\Selection">
       <UniqueIdentifier>{7cff3cb1-50bd-4fa1-bddc-1739f4f603ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Outline">
-      <UniqueIdentifier>{f5768bb3-f2b8-4a5c-86b0-70f5420e5888}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Private\Rendering">
       <UniqueIdentifier>{dc2bc07b-643a-40f8-8ece-6116b22f707e}</UniqueIdentifier>
     </Filter>
@@ -135,6 +132,15 @@
     </Filter>
     <Filter Include="ThirdParty\imgui\misc">
       <UniqueIdentifier>{ecef0ad8-6a82-4282-9adf-f9d69520bec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Rendering\PostProcessing">
+      <UniqueIdentifier>{8f2f47bf-58d0-4330-875e-eb5a562a06cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Rendering\PostProcessing">
+      <UniqueIdentifier>{7669af42-5153-46cd-a5d2-bdd29ed1871c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PostProcess\Outline">
+      <UniqueIdentifier>{f5768bb3-f2b8-4a5c-86b0-70f5420e5888}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -253,9 +259,6 @@
     <ClCompile Include="Source\Private\BravoSelectionManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoOutlineManager.cpp">
-      <Filter>Private\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoRenderPass.cpp">
       <Filter>Private\Rendering</Filter>
     </ClCompile>
@@ -306,6 +309,17 @@
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.cpp">
       <Filter>ThirdParty\imgui\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
+    <ClCompile Include="Source\Private\BravoScreen_ObjectHierarchy.cpp" />
+    <ClCompile Include="Source\Private\BravoPostProcess.cpp">
+      <Filter>Private\Rendering\PostProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoPostProcess_AntiAliasing.cpp">
+      <Filter>Private\Rendering\PostProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoPostProcess_Outline.cpp">
+      <Filter>Private\Rendering\PostProcessing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -440,9 +454,6 @@
     <ClInclude Include="Source\Public\BravoSelectionManager.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoOutlineManager.h">
-      <Filter>Public\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoRenderPass.h">
       <Filter>Public\Rendering</Filter>
     </ClInclude>
@@ -508,6 +519,17 @@
     </ClInclude>
     <ClInclude Include="Source\ThirdParty\imgui\misc\cpp\imgui_stdlib.h">
       <Filter>ThirdParty\imgui\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
+    <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h" />
+    <ClInclude Include="Source\Public\BravoPostProcess.h">
+      <Filter>Public\Rendering\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoPostProcess_AntiAliasing.h">
+      <Filter>Public\Rendering\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoPostProcess_Outline.h">
+      <Filter>Public\Rendering\PostProcessing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -587,16 +609,16 @@
       <Filter>Shaders\Selection</Filter>
     </None>
     <None Include="Source\Shaders\MeshOutlineMask.frag">
-      <Filter>Shaders\Outline</Filter>
+      <Filter>Shaders\PostProcess\Outline</Filter>
     </None>
     <None Include="Source\Shaders\MeshOutlineMask.vert">
-      <Filter>Shaders\Outline</Filter>
+      <Filter>Shaders\PostProcess\Outline</Filter>
     </None>
     <None Include="Source\Shaders\OutlinePostProccess.frag">
-      <Filter>Shaders\Outline</Filter>
+      <Filter>Shaders\PostProcess\Outline</Filter>
     </None>
     <None Include="Source\Shaders\OutlinePostProccess.vert">
-      <Filter>Shaders\Outline</Filter>
+      <Filter>Shaders\PostProcess\Outline</Filter>
     </None>
     <None Include="Source\ThirdParty\imgui\misc\debuggers\imgui.natstepfilter">
       <Filter>ThirdParty\imgui\misc</Filter>
