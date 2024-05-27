@@ -16,7 +16,7 @@ public:
 	void Load() {};
 	bool EnsureReady()
 	{
-		return ShaderAsset != nullptr && ShaderAsset->EnsureReady();
+		return ShaderAsset != nullptr && ShaderAsset->EnsureGPUReady();
 	}
 	
 	virtual void Use() = 0;

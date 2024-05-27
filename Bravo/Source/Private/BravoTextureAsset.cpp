@@ -7,10 +7,11 @@
 
 EAssetLoadingState BravoTextureAsset::Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
 {
-	std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, ResourcesPath, params);
+	//std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, ResourcesPath, params);
+	AsyncLoad(ResourcesPath, params);
 
-	LoadingState = EAssetLoadingState::AsyncLoading;
-	asyncLoadThread.detach();
+	//LoadingState = EAssetLoadingState::AsyncLoading;
+	//asyncLoadThread.detach();
 	return LoadingState;
 }
 

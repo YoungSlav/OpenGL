@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BravoAsset.h"
 
-bool BravoAsset::EnsureReady()
+bool BravoAsset::EnsureGPUReady()
 {
 	if ( LoadingState != EAssetLoadingState::Loaded )
 		return LoadToGPU();

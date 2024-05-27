@@ -30,6 +30,7 @@
 
 #include "BravoScreen_Debug.h"
 #include "BravoScreen_ObjectHierarchy.h"
+#include "BravoTerrainActor.h"
 
 bool BravoGameInstance::Initialize_Internal()
 {
@@ -73,7 +74,10 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 
-	
+	auto Terrain = NewObject<BravoTerrainActor>("InfinitePlane", "Textures\\heightmap.png", 1.0f);
+
+	SpawnDirLights();
+	return true;
 	
 	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
@@ -109,7 +113,7 @@ bool BravoGameInstance::Initialize_Internal()
 	}
 
 	
-	SpawnDirLights();
+	
 
 	
 	SpawnPointLights();
@@ -328,6 +332,7 @@ void BravoGameInstance::SpawnTestInstances()
 
 void BravoGameInstance::Tick(float DeltaTime)
 {	
+	return;
 	for ( int32 i = 0; i < pointLights.size(); ++i )
 	{
 		glm::vec3 newLocation = glm::vec3(0.0f);
@@ -360,19 +365,5 @@ void BravoGameInstance::Tick(float DeltaTime)
 		//Player->SetLocation(newLocation2);
 		//Player->SetDirection(glm::vec3(0.0f) - newLocation2);
 	}
-
-	TestCompTransform(DeltaTime);
 }
 
-
-void BravoGameInstance::TestCompTransform(float DeltaTime)
-{
-	//TestActor->SetScale(glm::vec3(0.5f));
-	//TestComponent->SetScale(glm::vec3(0.5f, 0.75f, 0.9f));
-
-	glm::quat cRotation = TestComponent->GetRotation_World();
-
-	glm::quat aRotation = glm::quat(glm::radians(20.0f * DeltaTime), BravoMath::upV);
-
-	//TestComponent->SetRotation_World(aRotation * cRotation);
-}

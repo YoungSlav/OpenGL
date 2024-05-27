@@ -11,17 +11,7 @@
 #include <assimp/scene.h>
 #include "assimp/color4.h"
 #include <assimp/postprocess.h>
-
-
-struct Vertex
-{
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
-	glm::vec3 Tangent;
-	glm::vec3 Bitangent;
-	glm::vec4 Color;
-};
+#include "BravoVertex.h"
 
 struct BravoStaticMeshLoadingParams
 {

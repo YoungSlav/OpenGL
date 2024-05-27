@@ -27,7 +27,7 @@ public:
 	virtual void Use() {};
 	virtual void StopUsage() {};
 
-	bool EnsureReady();
+	bool EnsureGPUReady();
 	inline EAssetLoadingState GetLoadingState() const { return LoadingState; }
 	 
 	bool LoadToGPU();

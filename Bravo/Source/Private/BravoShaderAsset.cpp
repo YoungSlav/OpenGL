@@ -147,12 +147,12 @@ bool BravoShaderAsset::LinkProgramm()
 
 void BravoShaderAsset::SetTexture(const std::string& name, std::shared_ptr<BravoTextureAsset> val) const
 {
-	if ( val->EnsureReady() )
+	if ( val->EnsureGPUReady() )
 	{
 		val->Use();
 		SetInt(name, val->GetTextureUnit());
 	}
-	else if ( EmptyTexture->EnsureReady() )
+	else if ( EmptyTexture->EnsureGPUReady() )
 	{
 		EmptyTexture->Use();
 		SetInt(name, EmptyTexture->GetTextureUnit());

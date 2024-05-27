@@ -46,7 +46,7 @@ bool BravoStaticMeshComponent::EnsureReady()
 		VAO = 0;
 	}
 
-	if ( !Mesh->EnsureReady() )
+	if ( !Mesh->EnsureGPUReady() )
 		return false;
 
 	if ( VAO == 0 )
@@ -268,7 +268,7 @@ void BravoStaticMeshComponent::RenderSelectionID()
 	if ( !Instances.size() )
 		return;
 
-	if ( !EnsureReady() || !SelectionIDShader || !SelectionIDShader->EnsureReady() )
+	if ( !EnsureReady() || !SelectionIDShader || !SelectionIDShader->EnsureGPUReady() )
 		return;
 
 	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -302,7 +302,7 @@ void BravoStaticMeshComponent::RenderOutlineMask()
 	if ( !SelectedInstancesCount )
 		return;
 
-	if ( !EnsureReady() || !OutlineMaskShader || !OutlineMaskShader->EnsureReady() )
+	if ( !EnsureReady() || !OutlineMaskShader || !OutlineMaskShader->EnsureGPUReady() )
 		return;
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();

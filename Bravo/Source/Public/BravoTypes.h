@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-
+				
 // 8-bit unsigned integer
 typedef unsigned char 		uint8;
 	

@@ -33,14 +33,14 @@ void BravoMaterialUnlit::Use()
 	if ( !ShaderAsset )
 		return;
 
-	if ( !ShaderAsset->EnsureReady() )
+	if ( !ShaderAsset->EnsureGPUReady() )
 		return;
 
 	ShaderAsset->Use();
 	
 	ShaderAsset->SetTexture("material.Texture", AlbedoTexture);
 
-	ShaderAsset->SetBool("material.useTexture", AlbedoTexture != nullptr && AlbedoTexture->EnsureReady() );
+	ShaderAsset->SetBool("material.useTexture", AlbedoTexture != nullptr && AlbedoTexture->EnsureGPUReady() );
 	ShaderAsset->SetBool("material.useVertexColor", bUseVertexColor);
 
 	ShaderAsset->SetVector3d("material.Color", AlbedoColor);

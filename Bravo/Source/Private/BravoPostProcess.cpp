@@ -41,7 +41,7 @@ bool BravoPostProcess::EnsureReady()
 {
 	if ( !Shader )
 		return false;
-	if ( !Shader->EnsureReady() )
+	if ( !Shader->EnsureGPUReady() )
 		return false;
 
 	return true;

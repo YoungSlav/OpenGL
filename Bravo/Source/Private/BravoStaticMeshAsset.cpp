@@ -141,9 +141,6 @@ bool BravoStaticMeshAsset::LoadToGPU_Internal()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(uint32), &Indices[0], GL_STATIC_DRAW);
 
-	
-
-
 	return true;
 }
 

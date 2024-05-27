@@ -41,7 +41,7 @@ void BravoMaterialPBR::Use()
 	if ( !ShaderAsset )
 		return;
 
-	if ( !ShaderAsset->EnsureReady() )
+	if ( !ShaderAsset->EnsureGPUReady() )
 		return;
 
 	ShaderAsset->Use();
@@ -52,11 +52,11 @@ void BravoMaterialPBR::Use()
 	ShaderAsset->SetTexture("material.aoTexture", AoTexture);
 	ShaderAsset->SetTexture("material.normalTexture", NormalTexture);
 
-	ShaderAsset->SetBool("material.useAlbedoTexture", AlbedoTexture != nullptr && AlbedoTexture->EnsureReady() );
-	ShaderAsset->SetBool("material.useMetallicTexture", MetallicTexture != nullptr && MetallicTexture->EnsureReady());
-	ShaderAsset->SetBool("material.useRoughnessTexture", RoughnessTexture != nullptr && RoughnessTexture->EnsureReady());
-	ShaderAsset->SetBool("material.useAoTexture", AoTexture != nullptr && AoTexture->EnsureReady());
-	ShaderAsset->SetBool("material.useNormalTexture", NormalTexture != nullptr && NormalTexture->EnsureReady());
+	ShaderAsset->SetBool("material.useAlbedoTexture", AlbedoTexture != nullptr && AlbedoTexture->EnsureGPUReady() );
+	ShaderAsset->SetBool("material.useMetallicTexture", MetallicTexture != nullptr && MetallicTexture->EnsureGPUReady());
+	ShaderAsset->SetBool("material.useRoughnessTexture", RoughnessTexture != nullptr && RoughnessTexture->EnsureGPUReady());
+	ShaderAsset->SetBool("material.useAoTexture", AoTexture != nullptr && AoTexture->EnsureGPUReady());
+	ShaderAsset->SetBool("material.useNormalTexture", NormalTexture != nullptr && NormalTexture->EnsureGPUReady());
 
 	ShaderAsset->SetVector3d("material.albedoColor", AlbedoColor);
 	ShaderAsset->SetVector1d("material.metallicColor", MetallicColor);

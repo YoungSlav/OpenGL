@@ -29,7 +29,7 @@ bool BravoInfinitePlaneActor::EnsureReady()
 			glDeleteVertexArrays(5, &VAO);
 		VAO = 0;
 	}
-	if ( !Mesh->EnsureReady() )
+	if ( !Mesh->EnsureGPUReady() )
 		return false;
 
 	if ( VAO == 0 )

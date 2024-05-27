@@ -10,7 +10,6 @@ void BravoSkyboxActor::SetCubemap(std::shared_ptr<BravoCubemapAsset> InCubemap)
 
 bool BravoSkyboxActor::Initialize_Internal()
 {
-	
 	const float skyboxVertices[] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,
