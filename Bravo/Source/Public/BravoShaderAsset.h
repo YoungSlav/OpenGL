@@ -10,6 +10,8 @@ namespace ShaderProgrammConstancts
 	const std::string VertexShaderExtension = ".vert";
 	const std::string FragmentShaderExtension = ".frag";
 	const std::string GeometryShaderExtension = ".geom";
+	const std::string TessellationControllShaderExtension = ".tesc";
+	const std::string TessellationEvaluationShaderExtension = ".tese";
 }
 
 struct BravoShaderLoadingParams

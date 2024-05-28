@@ -13,6 +13,8 @@ enum EAssetLoadingState : int32
 	Loaded = 3
 };
 
+typedef MulticastDelegate<std::shared_ptr<class BravoAsset>> OnAssetLoadedSignature;
+
 class BravoAsset : public BravoObject
 {
 public:
@@ -32,6 +34,8 @@ public:
 	 
 	bool LoadToGPU();
 	void ReleaseFromGPU();
+
+	OnAssetLoadedSignature OnAssetLoaded;
 
 protected:
 

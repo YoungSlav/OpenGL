@@ -28,22 +28,20 @@ public:
 		{
 			LoadedAssets.insert({Name, asset});
 			EAssetLoadingState LoadingState = asset->Load(ResourcesFolderPath, std::forward<Args>(args)...);
-			if ( LoadingState == EAssetLoadingState::Loaded )
-			{
-				return asset;
-			}
-			else if ( LoadingState == EAssetLoadingState::InRAM )
-			{
-				if ( asset->LoadToGPU() )
-				{
-					return asset;
-				}
-			}
-			else if ( LoadingState == EAssetLoadingState::AsyncLoading )
+			assert(LoadingState != EAssetLoadingState::Failed);
+
+			if ( LoadingState == EAssetLoadingState::AsyncLoading )
 			{
 				PendingLoadingAssets.push_back(asset);
-				return asset;
 			}
+			else if ( LoadingState != EAssetLoadingState::Failed )
+			{
+				if ( LoadingState != EAssetLoadingState::Loaded )
+					asset->LoadToGPU();
+
+				asset->OnAssetLoaded.Broadcast(asset);
+			}
+			return asset;
 		}
 
 		return nullptr;
@@ -58,11 +56,24 @@ public:
 	{
 		for ( int32 i = (int32)PendingLoadingAssets.size()-1; i >= 0; --i )
 		{
-			if ( PendingLoadingAssets[i]->GetLoadingState() == EAssetLoadingState::InRAM )
-				PendingLoadingAssets[i]->LoadToGPU();
+			//if ( PendingLoadingAssets[i]->GetLoadingState() == EAssetLoadingState::InRAM )
+			//{
+			//	PendingLoadingAssets[i]->LoadToGPU();
+			//}
 
-			if ( PendingLoadingAssets[i]->GetLoadingState() != EAssetLoadingState::AsyncLoading )
+			auto asset = PendingLoadingAssets[i];
+			EAssetLoadingState LoadingState = asset->GetLoadingState();
+			if (LoadingState != EAssetLoadingState::AsyncLoading )
+			{
+				if ( LoadingState != EAssetLoadingState::Failed )
+				{
+					if ( LoadingState != EAssetLoadingState::Loaded )
+						asset->LoadToGPU();
+					asset->OnAssetLoaded.Broadcast(asset);
+				}
+
 				PendingLoadingAssets.erase(PendingLoadingAssets.begin()+i);
+			}
 		}
 	}
 

@@ -24,7 +24,7 @@ void BravoCubemapAsset::AsyncLoad(const std::string& ResourcesPath, const BravoC
 	bool success = true;
 	for (uint32 i = 0; i < 6; i++)
 	{
-		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturesPaths[i]));
+		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturesPaths[i], false));
 
 		success = success && Textures[i] != nullptr && Textures[i]->bInitialized;
 	}

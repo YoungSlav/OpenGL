@@ -20,6 +20,8 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void ToggleWireframe(bool ButtonState, float DeltaTime);
+
 	void OnInput_W(bool ButtonState, float DeltaTime);
 	void OnInput_S(bool ButtonState, float DeltaTime);
 	void OnInput_A(bool ButtonState, float DeltaTime);
@@ -37,7 +39,7 @@ protected:
 private:
 	glm::vec3 Velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	float MinMoveSpeed = 0.10f;
-	float MaxMoveSpeed = 20.00;
+	float MaxMoveSpeed = 100.00;
 
 	const float InputMoveSensitivity = 2.5f;
 	const float InputMouseMoveSensitivity = 0.1f;

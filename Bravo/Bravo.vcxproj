@@ -163,6 +163,10 @@
     <None Include="Source\Shaders\MeshSelectionID.vert" />
     <None Include="Source\Shaders\OutlinePostProccess.frag" />
     <None Include="Source\Shaders\OutlinePostProccess.vert" />
+    <None Include="Source\Shaders\Terrain.frag" />
+    <None Include="Source\Shaders\Terrain.tesc" />
+    <None Include="Source\Shaders\Terrain.tese" />
+    <None Include="Source\Shaders\Terrain.vert" />
     <None Include="Source\Shaders\Unlit.frag" />
     <None Include="Source\Shaders\Unlit.vert" />
     <None Include="Source\Shaders\PBRModel.frag" />

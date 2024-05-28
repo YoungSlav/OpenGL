@@ -142,6 +142,9 @@
     <Filter Include="Shaders\PostProcess\Outline">
       <UniqueIdentifier>{f5768bb3-f2b8-4a5c-86b0-70f5420e5888}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Terrain">
+      <UniqueIdentifier>{b5a63771-545b-46ee-8982-9d8dd0c4cd5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -259,9 +262,6 @@
     <ClCompile Include="Source\Private\BravoSelectionManager.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\BravoRenderPass.cpp">
-      <Filter>Private\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp">
       <Filter>Private\Rendering</Filter>
     </ClCompile>
@@ -325,6 +325,7 @@
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp">
       <Filter>Private\HUD</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoTerrainActor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -458,9 +459,6 @@
     <ClInclude Include="Source\Public\BravoSelectionManager.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Public\BravoRenderPass.h">
-      <Filter>Public\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Public\BravoRenderTarget.h">
       <Filter>Public\Rendering</Filter>
     </ClInclude>
@@ -539,6 +537,8 @@
     <ClInclude Include="Source\Public\BravoScreen_Debug.h">
       <Filter>Public\HUD</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoTerrainActor.h" />
+    <ClInclude Include="Source\Public\BravoVertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\PhongModel.frag">
@@ -630,6 +630,18 @@
     </None>
     <None Include="Source\ThirdParty\imgui\misc\debuggers\imgui.natstepfilter">
       <Filter>ThirdParty\imgui\misc</Filter>
+    </None>
+    <None Include="Source\Shaders\Terrain.frag">
+      <Filter>Shaders\Terrain</Filter>
+    </None>
+    <None Include="Source\Shaders\Terrain.vert">
+      <Filter>Shaders\Terrain</Filter>
+    </None>
+    <None Include="Source\Shaders\Terrain.tesc">
+      <Filter>Shaders\Terrain</Filter>
+    </None>
+    <None Include="Source\Shaders\Terrain.tese">
+      <Filter>Shaders\Terrain</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -8,9 +8,9 @@ class BravoTerrainActor : public BravoActor, public IBravoRenderable
 {
 public:
 	template <typename... Args>
-	BravoTerrainActor(const std::string& _TerrainTexturePath, float _Resolution, Args&&... args) :
+	BravoTerrainActor(const std::string& _TerrainTexturePath, uint32 _Resolution, Args&&... args) :
 		BravoActor(std::forward<Args>(args)...),
-		IBravoRenderable(),
+		IBravoRenderable(ERenderPriority::Early),
 		TerrainTexturePath(_TerrainTexturePath),
 		Resolution(_Resolution)
 	{}
@@ -22,17 +22,24 @@ public:
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) override;
 
 protected:
-	bool GenerateMesh(const std::shared_ptr<class BravoTextureAsset> Hightmap, std::vector<Vertex>& OutVerticies, std::vector<uint32>& OutIndices);
+	bool EnsureReady() const;
+	void OnHeightmapLoaded(std::shared_ptr<class BravoAsset> Heightmap);
+	bool GenerateMesh(std::vector<Vertex>& OutVerticies);
 
 private:
 	std::shared_ptr<class BravoShaderAsset> TerrainShader = nullptr;
+	std::shared_ptr<class BravoTextureAsset> HeightmapTexture = nullptr;
 
-	const float Resolution = 1.0f;
-	glm::ivec2 Size;
+
+	uint32 IndiciesNum = 0;
+	
+	glm::ivec2 Size = glm::ivec2(0);;
 	const std::string TerrainTexturePath = "";
+	const uint32 Resolution = 20;
 
 
 	GLuint VAO = 0;
 	GLuint VBO = 0;
-	GLuint EBO = 0;
+
+	const uint32 nPatchParts = 4;
 };

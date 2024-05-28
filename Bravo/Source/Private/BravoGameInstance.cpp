@@ -34,7 +34,6 @@
 
 bool BravoGameInstance::Initialize_Internal()
 {
-
 	if ( !Engine )
 		return false;
 
@@ -72,9 +71,9 @@ bool BravoGameInstance::Initialize_Internal()
 			"Cubemaps\\skybox\\front.jpg",
 			"Cubemaps\\skybox\\back.jpg", })));
 	}
-	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
+	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 
-	auto Terrain = NewObject<BravoTerrainActor>("InfinitePlane", "Textures\\heightmap.png", 1.0f);
+	auto Terrain = NewObject<BravoTerrainActor>("InfinitePlane", "Textures\\heightmap.png", 20);
 
 	SpawnDirLights();
 	return true;

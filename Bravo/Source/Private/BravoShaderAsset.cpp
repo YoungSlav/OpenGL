@@ -14,6 +14,8 @@ EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, cons
 	int32 VertShader = 0;
 	int32 GeomShader = 0;
 	int32 FragShader = 0;
+	int32 TessContrShader = 0;
+	int32 TessEvalShader = 0;
 	
 
 	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
@@ -21,11 +23,15 @@ EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, cons
 	if ( LoadShader(GL_VERTEX_SHADER, VertShader, ResourcesPath, params) &&
 		LoadShader(GL_FRAGMENT_SHADER, FragShader, ResourcesPath, params) &&
 		LoadShader(GL_GEOMETRY_SHADER, GeomShader, ResourcesPath, params) &&
+		LoadShader(GL_TESS_CONTROL_SHADER, TessContrShader, ResourcesPath, params) &&
+		LoadShader(GL_TESS_EVALUATION_SHADER, TessEvalShader, ResourcesPath, params) &&
 		LinkProgramm() )
 	{
 		if ( VertShader ) glDeleteShader(VertShader);
 		if ( GeomShader ) glDeleteShader(GeomShader);
 		if ( FragShader ) glDeleteShader(FragShader);
+		if ( TessContrShader ) glDeleteShader(TessContrShader);
+		if ( TessEvalShader ) glDeleteShader(TessEvalShader);
 
 		LoadingState = EAssetLoadingState::Loaded;
 		return LoadingState;
@@ -66,12 +72,20 @@ bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const std
 	{
 		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::GeometryShaderExtension;
 	}
+	else if ( ShaderType == GL_TESS_CONTROL_SHADER )
+	{
+		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::TessellationControllShaderExtension;
+	}
+	else if ( ShaderType == GL_TESS_EVALUATION_SHADER )
+	{
+		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::TessellationEvaluationShaderExtension;
+	}
 	
 	
 	std::ifstream shaderFile(RealShaderName.c_str());
 	if ( !shaderFile.is_open() )
 	{
-		if ( ShaderType == GL_GEOMETRY_SHADER )
+		if ( ShaderType == GL_GEOMETRY_SHADER || ShaderType == GL_TESS_CONTROL_SHADER || ShaderType == GL_TESS_EVALUATION_SHADER)
 		{
 			return true;
 		}
@@ -121,7 +135,9 @@ bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const std
 		glDeleteShader(Shader);
 		return false;
 	}
-		
+
+	Log::LogMessage(ELog::Log, "Loaded shader: {}", RealShaderName);
+	
 	glAttachShader(ShaderID, Shader);
 	OutShader = Shader;
 

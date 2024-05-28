@@ -44,6 +44,7 @@ void BravoRenderTarget::Resize(const glm::ivec2& InSize)
 {
 	Clean();
 	Size = InSize;
+	Setup();
 }
 
 void BravoRenderTarget::Clean()

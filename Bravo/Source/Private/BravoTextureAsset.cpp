@@ -7,17 +7,17 @@
 
 EAssetLoadingState BravoTextureAsset::Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
 {
-	//std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, ResourcesPath, params);
-	AsyncLoad(ResourcesPath, params);
+	std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, ResourcesPath, params);
+	//AsyncLoad(ResourcesPath, params);
 
-	//LoadingState = EAssetLoadingState::AsyncLoading;
-	//asyncLoadThread.detach();
+	LoadingState = EAssetLoadingState::AsyncLoading;
+	asyncLoadThread.detach();
 	return LoadingState;
 }
 
 void BravoTextureAsset::AsyncLoad(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
 {
-	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturePath, params.sRGB));
+	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturePath, params.bFloat, params.sRGB));
 	if ( TextureData != nullptr && TextureData->bInitialized )
 		LoadingState = EAssetLoadingState::InRAM;
 	else
@@ -39,6 +39,8 @@ bool BravoTextureAsset::LoadToGPU_Internal()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, TextureData->TextureInnerFormat, TextureData->SizeX, TextureData->SizeY, 0, TextureData->TextureFormat, GL_UNSIGNED_BYTE, TextureData->TextureData);
 		glGenerateMipmap(GL_TEXTURE_2D);

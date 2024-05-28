@@ -5,24 +5,28 @@
 class BravoTextureData
 {
 public:
-	BravoTextureData(const std::string& _Path, bool sRGB = false)
+	BravoTextureData(const std::string& _Path, bool bFloat = false, bool sRGB = false)
 	{
-		int32 nrChannels;
-		if ( TextureData = stbi_loadf(_Path.c_str(), &SizeX, &SizeY, &nrChannels, 0) )
+		if ( sRGB ) bFloat = false;
+
+		TextureData = bFloat ?
+			(void*)stbi_loadf(_Path.c_str(), &SizeX, &SizeY, &nrChannels, 0) :
+			(void*)stbi_load(_Path.c_str(), &SizeX, &SizeY, &nrChannels, 0);
+		if ( TextureData )
 		{
 			if (nrChannels == 1)
 			{
 				TextureFormat = GL_RED;
-				TextureInnerFormat = GL_R32F;
+				TextureInnerFormat = bFloat ? GL_R32F : GL_RED;
 			}
 			else if (nrChannels == 3)
 			{
-				TextureInnerFormat = sRGB ? GL_SRGB8 : GL_RGB32F;
+				TextureInnerFormat = sRGB ? GL_SRGB8 : bFloat ? GL_RGB32F : GL_RGB;
 				TextureFormat = GL_RGB;
 			}
 			else if (nrChannels == 4)
 			{
-				TextureInnerFormat = sRGB ? GL_SRGB8_ALPHA8 : GL_RGBA32F;
+				TextureInnerFormat = sRGB ? GL_SRGB8_ALPHA8 : bFloat ? GL_RGBA32F : GL_RGBA;
 				TextureFormat = GL_RGBA;
 			}
 			else
@@ -43,10 +47,11 @@ public:
 
 	bool bInitialized = false;
 
+	int32 nrChannels = 0;
 	int32 SizeX = 0;
 	int32 SizeY = 0;
 	GLenum TextureFormat = GL_RED;
 	GLenum TextureInnerFormat = GL_R32F;
-	float* TextureData = nullptr;
+	void* TextureData = nullptr;
 };
 

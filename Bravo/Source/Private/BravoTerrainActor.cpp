@@ -4,6 +4,7 @@
 #include "BravoShaderAsset.h"
 #include "BravoTextureAsset.h"
 #include "BravoTextureData.h"
+#include "BravoCamera.h"
 
 
 
@@ -17,81 +18,100 @@ bool BravoTerrainActor::Initialize_Internal()
 	if ( !AssetManager )
 		return false;
 
-	TerrainShader = AssetManager->FindOrLoad<BravoShaderAsset>("TerrainShader", BravoShaderLoadingParams("Shaders\\Unlit"));
+	TerrainShader = AssetManager->FindOrLoad<BravoShaderAsset>("TerrainShader", BravoShaderLoadingParams("Shaders\\Terrain"));
 	if ( !TerrainShader )
 		return false;
 
-	auto HeightmapTexture = AssetManager->FindOrLoad<BravoTextureAsset>(TerrainTexturePath, BravoTextureLoadingParams(TerrainTexturePath));
+	HeightmapTexture = AssetManager->FindOrLoad<BravoTextureAsset>("TerrainTexture", BravoTextureLoadingParams(TerrainTexturePath));
 	if ( !HeightmapTexture )
 		return false;
-
-	std::vector<Vertex> Vertices;
-	std::vector<uint32> Indices;
-
-
-	if ( !GenerateMesh(HeightmapTexture, Vertices, Indices) )
-		return false;
-
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	// load data into vertex buffers
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW);  
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(uint32), &Indices[0], GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-		
-		glBindBuffer(GL_ARRAY_BUFFER,  VBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-		// vertex Positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-		glEnableVertexAttribArray(0);
-		// vertex normals
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Normal));
-		glEnableVertexAttribArray(1);
-		// vertex texture coords
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::TexCoords));
-		glEnableVertexAttribArray(2);
-		// vertex tangent
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Tangent));
-		glEnableVertexAttribArray(3);
-		// vertex bitangent
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Bitangent));
-		glEnableVertexAttribArray(4);
-		// vertex colors
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
-		glEnableVertexAttribArray(5);
-
-	glBindVertexArray(0);
-
+	if ( HeightmapTexture->GetLoadingState() == AsyncLoading )
+	{
+		HeightmapTexture->OnAssetLoaded.AddSP(Self<BravoTerrainActor>(), &BravoTerrainActor::OnHeightmapLoaded);
+	}
+	else
+	{
+		BravoTerrainActor::OnHeightmapLoaded(HeightmapTexture);
+	}
 
 	return true;
 }
 
-bool BravoTerrainActor::GenerateMesh(const std::shared_ptr<class BravoTextureAsset> Hightmap, std::vector<Vertex>& OutVerticies, std::vector<uint32>& OutIndices)
+void BravoTerrainActor::OnHeightmapLoaded(std::shared_ptr<BravoAsset> )
 {
-	const std::shared_ptr<BravoTextureData> TextureData = Hightmap->GetTextureData();
-	OutVerticies.resize(TextureData->SizeX * TextureData->SizeY);
-	OutIndices.resize(3);
+	if ( !HeightmapTexture )
+		return;
 
+	std::vector<Vertex> Vertices;
+
+	if ( !GenerateMesh(Vertices) )
+		return;
+
+	// load data into vertex buffers
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+		
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW);  
+
+		// vertex Positions
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glEnableVertexAttribArray(0);
+		// vertex texture coords
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::TexCoords));
+		glEnableVertexAttribArray(1);
+
+		glPatchParameteri(GL_PATCH_VERTICES, nPatchParts);
+		
+	glBindVertexArray(0);
+}
+
+bool BravoTerrainActor::GenerateMesh(std::vector<Vertex>& OutVerticies)
+{
+	const std::shared_ptr<BravoTextureData> TextureData = HeightmapTexture->GetTextureData();
 	Size = glm::ivec2(TextureData->SizeX, TextureData->SizeY);
+	
+	OutVerticies.resize(Resolution * Resolution * 4);
+	uint32 vIndex = 0;
 
-	int32 Index = 0;
-
-	for ( int32 x = 0; x < TextureData->SizeX; ++x )
+	const float width = (float)Size.y;
+	const float height = (float)Size.y;
+	float fRez = (float)Resolution;
+	float x, y, z;
+	for(uint32 i = 0; i <= Resolution-1; i++)
 	{
-		for ( int32 z = 0; z < TextureData->SizeY; ++z )
+		for(uint32 j = 0; j <= Resolution-1; j++)
 		{
-			assert(Index < OutVerticies.size());
-			float y = TextureData->TextureData[Index];
-			OutVerticies[Index++].Position = glm::vec3(x, y, z);
+			x = -width/2.0f + width * i / fRez;
+			y = 0.0f;
+			z = -height/2.0f + height * j / fRez;
+			OutVerticies[vIndex].Position = glm::vec3(z, y, x);
+			OutVerticies[vIndex].TexCoords = glm::vec2(i / fRez, j / fRez);
+			vIndex++;
+
+			x = -width/2.0f + width*(i+1)/fRez;
+			y = 0.0f;
+			z = -height/2.0f + height*j/fRez;
+			OutVerticies[vIndex].Position = glm::vec3(z, y, x);
+			OutVerticies[vIndex].TexCoords = glm::vec2((i+1) / fRez, j / fRez);
+			vIndex++;
+
+			x = -width/2.0f + width*i/fRez;
+			y = 0.0f;
+			z = -height/2.0f + height*(j+1)/fRez;
+			OutVerticies[vIndex].Position = glm::vec3(z, y, x);
+			OutVerticies[vIndex].TexCoords = glm::vec2(i / fRez, (j+1) / fRez);
+			vIndex++;
+
+			x = -width/2.0f + width*(i+1)/fRez;
+			y = 0.0f;
+			z = -height/2.0f + height*(j+1)/fRez;
+			OutVerticies[vIndex].Position = glm::vec3(z, y, x);
+			OutVerticies[vIndex].TexCoords = glm::vec2((i+1) / fRez, (j+1) / fRez);
+			vIndex++;
 		}
-	}
+	}	
 
 	return true;
 }
@@ -99,15 +119,53 @@ bool BravoTerrainActor::GenerateMesh(const std::shared_ptr<class BravoTextureAss
 void BravoTerrainActor::OnDestroy()
 {
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glDeleteVertexArrays(6, &VAO);
+	glDeleteVertexArrays(1, &VAO);
 }
+
+bool BravoTerrainActor::EnsureReady() const 
+{
+	if ( VAO == 0 || VBO == 0 )
+		return false;
+	if ( !TerrainShader )
+		return false;
+
+	return true;
+}
+
 
 void BravoTerrainActor::Render()
 {
-	glBindVertexArray(VAO);
-		glDrawArrays(GL_POINT, 0, Size.x * Size.y);
-	glBindVertexArray(0);
+
+	SetScale(glm::vec3(2.0f));
+	
+	if ( !EnsureReady() )
+		return;
+
+	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
+	if ( !camera )
+		return;
+
+	const glm::mat4 CameraProjection = camera->GetProjectionMatrix();
+	const glm::mat4 CameraView = camera->GetViewMatrix();
+	const glm::vec3 CameraLocation = camera->GetLocation();
+	
+	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
+
+	TerrainShader->Use();
+	HeightmapTexture->Use();
+
+		TerrainShader->SetTexture("heightMap", HeightmapTexture);
+
+		TerrainShader->SetMatrix4d("projection", CameraProjection);
+		TerrainShader->SetMatrix4d("view", CameraView);
+		TerrainShader->SetMatrix4d("model", model);
+			
+		glBindVertexArray(VAO);
+			glDrawArrays(GL_PATCHES, 0, nPatchParts*Resolution*Resolution);
+		glBindVertexArray(0);
+
+	HeightmapTexture->StopUsage();
+	TerrainShader->StopUsage();
 }
 
 void BravoTerrainActor::RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader)

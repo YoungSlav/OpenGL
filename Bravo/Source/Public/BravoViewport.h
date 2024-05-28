@@ -26,6 +26,8 @@ public:
 	void PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size);
 	void PopFramebuffer();
 
+	void ToggleWireframe() { bWireframe = !bWireframe; }
+
 
 	OnResizeSignature OnResizeDelegate;
 
@@ -70,6 +72,8 @@ private:
 	static void Framebuffer_size_callback(struct GLFWwindow* window, int32 width, int32 height);
 
 private:
+
+	bool bWireframe = false;
 
 	glm::ivec2 ViewportSize = glm::vec2(1440.0f, 900.0f);
 

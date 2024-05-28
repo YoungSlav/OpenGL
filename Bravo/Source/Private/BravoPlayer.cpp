@@ -2,6 +2,7 @@
 #include "BravoEngine.h"
 #include "BravoInput.h"
 #include "openGL.h"
+#include "BravoViewport.h"
 
 bool BravoPlayer::Initialize_Internal()
 {
@@ -64,6 +65,13 @@ bool BravoPlayer::Initialize_Internal()
 		Input->SubscribeKey(subscription);
 		}
 		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_F2;
+		subscription.SubscribedType = EKeySubscriptionType::Released;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::ToggleWireframe);
+		Input->SubscribeKey(subscription);
+		}
+		{
 			Input->OnMouseMoveDelegate.AddSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseMove);
 		}
 		{
@@ -71,6 +79,11 @@ bool BravoPlayer::Initialize_Internal()
 		}
 	}
 	return true;
+}
+
+void BravoPlayer::ToggleWireframe(bool ButtonState, float DeltaTime)
+{
+	Engine->GetViewport()->ToggleWireframe();
 }
 
 void BravoPlayer::OnDestroy()

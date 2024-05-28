@@ -23,6 +23,9 @@ bool BravoInfinitePlaneActor::EnsureReady()
 	if ( !Mesh || !Shader )
 		return false;
 
+	if ( !Shader->EnsureGPUReady() )
+		return false;
+
 	if ( Mesh->GetLoadingState() == EAssetLoadingState::InRAM )
 	{
 		if ( VAO != 0 )

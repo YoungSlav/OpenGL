@@ -239,6 +239,9 @@ void BravoViewport::UpdateViewport(float DeltaTime)
 	
 	// we want to draw into PP texture first
 	{
+		if ( bWireframe )
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 		viewportRT->Bind();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -251,6 +254,9 @@ void BravoViewport::UpdateViewport(float DeltaTime)
 					it->Render();
 			}
 		}
+
+		if ( bWireframe )
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		if ( auto RenderGroup = GetRenderGroup(ERenderGroup::Overlay) )
 		{
