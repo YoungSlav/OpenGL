@@ -40,7 +40,7 @@ bool BravoCubemapAsset::LoadToGPU_Internal()
 		for (uint32 i = 0; i < 6; i++)
 		{
 			if ( Textures[i] && Textures[i]->TextureData )
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, Textures[i]->TextureFormat, Textures[i]->SizeX, Textures[i]->SizeY, 0, Textures[i]->TextureFormat, GL_UNSIGNED_BYTE, Textures[i]->TextureData);
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, Textures[i]->TextureFormat, Textures[i]->SizeX, Textures[i]->SizeY, 0, Textures[i]->TextureFormat, GL_UNSIGNED_SHORT, Textures[i]->TextureData);
 		}
 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

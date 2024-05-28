@@ -20,7 +20,7 @@ void main()
         const float MIN_DISTANCE = 20;
         const float MAX_DISTANCE = 800;
 
-        const float scale = length(vec3(model[0][0], model[1][1], model[2][2]));
+        const float scale = 1.0f;//length(vec3(model[0][0], model[1][1], model[2][2]));
 
         vec4 eyeSpacePos00 = view * model * gl_in[0].gl_Position;
         vec4 eyeSpacePos01 = view * model * gl_in[1].gl_Position;
