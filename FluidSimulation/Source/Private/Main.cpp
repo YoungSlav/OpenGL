@@ -5,10 +5,8 @@
 #include "BravoGameInstance.h"
 
 
-
 int main()
 {
-	return 1;
     std::shared_ptr<BravoEngine> Engine(new BravoEngine("BravoEngine"));
 	Engine->Initialize();
 

@@ -204,26 +204,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -248,32 +248,32 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\Bravo\;$(SolutionDir)\Bravo\Source\;$(SolutionDir)\Bravo\Source\Public;$(SolutionDir)\Bravo\Source\ThirdParty;$(SolutionDir)\Bravo\Source\ThirdParty\imgui;$(SolutionDir)\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PublicModuleDirectories>
     </PublicModuleDirectories>
-    <OutDir>$(SolutionDir)\Build\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(SolutionDir)\Bravo\;$(SolutionDir)\Bravo\Source\;$(SolutionDir)\Bravo\Source\Public;$(SolutionDir)\Bravo\Source\ThirdParty;$(SolutionDir)\Bravo\Source\ThirdParty\imgui;$(SolutionDir)\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\Bravo\;$(SolutionDir)\Bravo\Source\;$(SolutionDir)\Bravo\Source\Public;$(SolutionDir)\Bravo\Source\ThirdParty;$(SolutionDir)\Bravo\Source\ThirdParty\imgui;$(SolutionDir)\ThirdParty\Include\;$(IncludePath)</IncludePath>
     <LinkIncremental>
     </LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\Build\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>.\Source\ThirdParty;.\Source;.\Source\Public;D:\Work\OpenGL\Bravo\Source\ThirdParty\imgui;..\ThirdParty\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>..\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(SolutionDir)\Bravo\;$(SolutionDir)\Bravo\Source\;$(SolutionDir)\Bravo\Source\Public;$(SolutionDir)\Bravo\Source\ThirdParty;$(SolutionDir)\Bravo\Source\ThirdParty\imgui;$(SolutionDir)\ThirdParty\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\ThirdParty\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -282,13 +282,16 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
+
+xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -309,14 +312,13 @@
       </AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
-      <Command>rmdir ..\Resources\Shaders\ /s /q
+      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
 
-xcopy Source\Shaders ..\Resources\Shaders /e /i /h
-
-copy ..\ThirdParty\Lib\assimp-vc143-mtd.dll ..\Build\Debug\assimp-vc143-mtd.dll  /Y</Command>
+xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -328,15 +330,18 @@ copy ..\ThirdParty\Lib\assimp-vc143-mtd.dll ..\Build\Debug\assimp-vc143-mtd.dll 
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>assimp-vc143-mt.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
+
+xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -348,18 +353,18 @@ copy ..\ThirdParty\Lib\assimp-vc143-mtd.dll ..\Build\Debug\assimp-vc143-mtd.dll 
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>assimp-vc143-mt.lib;opengl32.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>rmdir ..\Resources\Shaders\ /s /q
+      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
 
-xcopy Source\Shaders ..\Resources\Shaders /e /i /h
-
-copy ..\ThirdParty\Lib\assimp-vc143-mt.dll ..\Build\Release\assimp-vc143-mt.dll  /Y</Command>
+xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -3,22 +3,30 @@
 #include "BravoObject.h"
 #include "BravoActor.h"
 
+enum EBravoCameraType
+{
+	Perspective,
+	Orthographic
+};
+
 class BravoCamera : public BravoActor
 {
 public:
 	template <typename... Args>
-	BravoCamera(Args&&... args) :
-		BravoActor(std::forward<Args>(args)...)
+	BravoCamera(EBravoCameraType _CameraType, Args&&... args) :
+		BravoActor(std::forward<Args>(args)...),
+		CameraType(_CameraType)
 	{}
 
-
 	const glm::mat4& GetViewMatrix() const { return ViewMatrix; }
-	const glm::mat4 GetProjectionMatrix() const { return PerspectiveMatrix; }
+	const glm::mat4 GetProjectionMatrix() const { return ProjectionMatrix; }
 
 	void SetFOV(float InFOV) { FOV = InFOV; }
 	float GetFOV() const { return FOV; }
 	void SetDrawingDistance(float InMin, float InMax) { MinDrawingDistance = InMin; MaxDrawingDistance = InMax; }
 	
+	void SetCameraType(EBravoCameraType NewType) { CameraType = NewType; }
+	EBravoCameraType GetCameraType() const  { return CameraType; }
 	
 	float GetMinDrawingDistance() const { return MinDrawingDistance; }
 	float GetMaxDrawingDistance() const { return MaxDrawingDistance; }
@@ -38,7 +46,8 @@ private:
 	float MaxDrawingDistance = 100000.0f;
 	
 	glm::mat4 ViewMatrix;
-	glm::mat4 PerspectiveMatrix;
-	glm::mat4 OrthographicMatrix;
+	glm::mat4 ProjectionMatrix;
+
+	EBravoCameraType CameraType = EBravoCameraType::Perspective;
 };
 

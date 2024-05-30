@@ -72,6 +72,13 @@ bool BravoPlayer::Initialize_Internal()
 		Input->SubscribeKey(subscription);
 		}
 		{
+		BravoKeySubscription subscription;
+		subscription.Key = GLFW_KEY_F3;
+		subscription.SubscribedType = EKeySubscriptionType::Released;
+		subscription.Callback.BindSP(Self<BravoPlayer>(), &BravoPlayer::ToggleCameraMode);
+		Input->SubscribeKey(subscription);
+		}
+		{
 			Input->OnMouseMoveDelegate.AddSP(Self<BravoPlayer>(), &BravoPlayer::OnMouseMove);
 		}
 		{
@@ -84,6 +91,14 @@ bool BravoPlayer::Initialize_Internal()
 void BravoPlayer::ToggleWireframe(bool ButtonState, float DeltaTime)
 {
 	Engine->GetViewport()->ToggleWireframe();
+}
+
+void BravoPlayer::ToggleCameraMode(bool ButtonState, float DeltaTime)
+{
+	EBravoCameraType NewCameraType = Engine->GetCamera()->GetCameraType() == EBravoCameraType::Orthographic ? 
+		EBravoCameraType::Perspective : 
+		EBravoCameraType::Orthographic;
+	Engine->GetCamera()->SetCameraType(NewCameraType);
 }
 
 void BravoPlayer::OnDestroy()

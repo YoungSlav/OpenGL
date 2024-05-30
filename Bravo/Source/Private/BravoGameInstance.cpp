@@ -49,7 +49,7 @@ bool BravoGameInstance::Initialize_Internal()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
 		
-	Camera = NewObject<BravoCamera>("Camera");
+	Camera = NewObject<BravoCamera>("Camera", EBravoCameraType::Orthographic);
 	Engine->SetCamera(Camera);
 	//Camera->SetLocation(glm::vec3(0.0f, 30.0f, -30.0));
 	//Camera->SetDirection(glm::vec3(0.0f) - Camera->GetLocation_World());

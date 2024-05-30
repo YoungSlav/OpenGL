@@ -74,6 +74,44 @@ public:
 
 	static std::shared_ptr<BravoEngine> GetEngine();
 
+	template<typename Class>
+	int32 GetAllObjects(std::list<std::shared_ptr<Class>>& OutList) const
+	{
+		int32 count = 0;
+		OutList.clear();
+		for ( auto it : Objects )
+		{
+			if ( std::shared_ptr<Class> asDesired = std::dynamic_pointer_cast<Class>(it) )
+			{
+				OutList.push_back(asDesired);
+				++count;
+			}
+		}
+
+		return count;
+	}
+
+	template<typename Class>
+	int32 ActorsInRadius(const glm::vec3& AtLocation, float Radius, std::list<std::shared_ptr<Class>>& OutList) const
+	{
+		int32 count = 0;
+		float Radius2 = Radius * Radius;
+		OutList.clear();
+		for ( auto it : Actors )
+		{
+			if ( std::shared_ptr<Class> asDesired = std::dynamic_pointer_cast<Class>(it) )
+			{
+				if ( glm::distance2(asDesired->GetLocation() - AtLocation) <= Radius2 )
+				{
+					OutList.push_back(asDesired);
+					++count;
+				}
+			}
+		}
+
+		return count;
+	}
+
 	inline bool IsShutingDown() const { return bRequestExit; }
 	void ShutDown() { bRequestExit = true; }
 
@@ -110,5 +148,5 @@ private:
 	float GameTime = 0.0f;
 	bool bRequestExit = false;
 
-	float FPSLimit = 60.0f;
+	float FPSLimit = 100.0f;
 };

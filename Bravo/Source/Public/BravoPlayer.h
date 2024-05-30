@@ -21,6 +21,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	void ToggleWireframe(bool ButtonState, float DeltaTime);
+	void ToggleCameraMode(bool ButtonState, float DeltaTime);
 
 	void OnInput_W(bool ButtonState, float DeltaTime);
 	void OnInput_S(bool ButtonState, float DeltaTime);

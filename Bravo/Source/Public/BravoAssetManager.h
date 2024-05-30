@@ -102,6 +102,6 @@ private:
 	std::vector<std::shared_ptr<class BravoAsset>> PendingLoadingAssets;
 	std::map<std::string, std::shared_ptr<class BravoAsset>> LoadedAssets;
 
-	const std::string ResourcesFolderRelativePath = "..\\..\\Resources\\";
+	const std::string ResourcesFolderRelativePath = "..\\..\\..\\Resources\\";
 	std::string ResourcesFolderPath;
 };

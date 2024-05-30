@@ -36,6 +36,8 @@ void BravoViewport::Setup()
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(float(ViewportSize.x), float(ViewportSize.y));
+	io.IniFilename = NULL;
+	io.LogFilename = NULL;
 
 	ImGui_ImplOpenGL3_Init("#version 430");
 	
