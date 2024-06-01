@@ -4,7 +4,7 @@
 
 BravoTextureUnitManager::BravoTextureUnitManager()
 {
-	int32 TextureUnitCount = 0;
+	GLint TextureUnitCount = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &(TextureUnitCount));
 	TextureUnits.resize(TextureUnitCount, false);
 }

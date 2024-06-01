@@ -114,6 +114,7 @@
     <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h" />
     <ClInclude Include="Source\Public\BravoTerrainActor.h" />
+    <ClInclude Include="Source\Public\BravoTransform2D.h" />
     <ClInclude Include="Source\Public\BravoVertex.h" />
     <ClInclude Include="Source\Public\BravoViewport.h" />
     <ClInclude Include="Source\Public\BravoSelectionManager.h" />

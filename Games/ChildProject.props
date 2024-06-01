@@ -3,9 +3,12 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>.\Source\Public;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)Build\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)\ThirdParty\Lib\;$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
     <ExternalIncludePath>$(SolutionDir)\Bravo\;$(SolutionDir)\Bravo\Source\;$(SolutionDir)\Bravo\Source\Public;$(SolutionDir)\Bravo\Source\ThirdParty;$(SolutionDir)\Bravo\Source\ThirdParty\imgui;$(SolutionDir)\ThirdParty\Include\;$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <SourcePath>$(VC_SourcePath);</SourcePath>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>

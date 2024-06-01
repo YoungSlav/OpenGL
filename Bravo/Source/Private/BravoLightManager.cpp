@@ -44,25 +44,34 @@ void BravoLightManager::RemoveLightActor(std::shared_ptr<BravoLightActor> lightA
 
 void BravoLightManager::UpdateLightsShaderData()
 {	
-	DirectionalLightsDataCollection->Update(DirectionalLights);
-	SpotLightsDataCollection->Update(SpotLights);
-	PointLightsDataCollection->Update(PointLights);
+	if ( DirectionalLights.size() )
+		DirectionalLightsDataCollection->Update(DirectionalLights);
+	if ( SpotLights.size() )
+		SpotLightsDataCollection->Update(SpotLights);
+	if ( PointLights.size() )
+		PointLightsDataCollection->Update(PointLights);
 }
 
 void BravoLightManager::ApplyLights(std::shared_ptr<class BravoShaderAsset> Shader)
 {
-	DirectionalLightsDataCollection->UseOn(Shader);
+	if ( DirectionalLights.size() )
+		DirectionalLightsDataCollection->UseOn(Shader);
 	
-	SpotLightsDataCollection->UseOn(Shader);
+	if ( SpotLights.size() )
+		SpotLightsDataCollection->UseOn(Shader);
 
-	PointLightsDataCollection->UseOn(Shader);
+	if ( PointLights.size() )
+		PointLightsDataCollection->UseOn(Shader);
 }
 
 void BravoLightManager::ResetLightsUsage()
 {
-	DirectionalLightsDataCollection->ResetUsage();
+	if ( DirectionalLights.size() )
+		DirectionalLightsDataCollection->ResetUsage();
 
-	SpotLightsDataCollection->ResetUsage();
+	if ( SpotLights.size() )
+		SpotLightsDataCollection->ResetUsage();
 	
-	PointLightsDataCollection->ResetUsage();
+	if ( PointLights.size() )
+		PointLightsDataCollection->ResetUsage();
 }

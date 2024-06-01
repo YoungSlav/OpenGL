@@ -2,7 +2,7 @@
 
 
 #include "BravoEngine.h"
-#include "BravoGameInstance.h"
+#include "FluidGameInstance.h"
 
 
 int main()
@@ -10,7 +10,7 @@ int main()
     std::shared_ptr<BravoEngine> Engine(new BravoEngine("BravoEngine"));
 	Engine->Initialize();
 
-	std::shared_ptr<BravoGameInstance> inst = Engine->SpawnGameInstance<BravoGameInstance>("Debug Game");
+	std::shared_ptr<FluidGameInstance> GameInstance = Engine->NewObject<FluidGameInstance>("FluidGameInstance");
 
 	Engine->GameLoop();
 

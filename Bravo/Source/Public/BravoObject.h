@@ -68,7 +68,10 @@ public:
 		);
 
 		if ( !InitializeNewObject(newObject) )
+		{
+			assert(false);
 			return nullptr;
+		}
 
 		return std::dynamic_pointer_cast<Class>(newObject);
 	}

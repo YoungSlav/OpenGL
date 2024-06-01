@@ -48,13 +48,6 @@ public:
 		BravoObject(0, _Name, nullptr, nullptr)
 	{}
 
-	template <typename Class>
-	std::shared_ptr<Class> SpawnGameInstance(const std::string& _Name)
-	{
-		static_assert(std::is_base_of_v<BravoGameInstance, Class>);
-		return NewObject<Class>(_Name);
-	}
-
 	void GameLoop();
 	void StopGame();
 		

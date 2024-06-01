@@ -230,6 +230,7 @@ void BravoViewport::UpdateViewport(float DeltaTime)
 
 	if ( !lightManager || !viewportRT || !camera )
 	{
+		assert(false);
 		Engine->ShutDown();
 		return;
 	}

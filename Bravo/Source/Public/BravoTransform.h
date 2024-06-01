@@ -94,18 +94,10 @@ private:
 	inline void UpdateTransformMatrix() const
 	{
 		if ( !bMatrixDirty ) return;
-		glm::mat4 transform;
-		ApplyOnMatrix(transform);
-		TransformMatrix = transform;
-		bMatrixDirty = false;
-	}
+		
+		TransformMatrix = glm::recompose(Scale, Rotation, Location, glm::vec3(0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-	inline void ApplyOnMatrix(glm::mat4& OutMatrix) const
-	{
-		OutMatrix = glm::recompose(Scale, Rotation, Location, glm::vec3(0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		//OutMatrix = glm::translate(glm::mat4(1.0f), Location);
-		////OutMatrix *= glm::toMat4(Rotation);
-		//OutMatrix = glm::scale(OutMatrix, Scale);
+		bMatrixDirty = false;
 	}
 
 	inline void DecomposeTransformMatrix()

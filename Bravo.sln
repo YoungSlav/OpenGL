@@ -5,10 +5,7 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bravo", "Bravo\Bravo.vcxproj", "{45E1E911-48A3-448E-A660-E941554D1A5C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidSimulation", "FluidSimulation\FluidSimulation.vcxproj", "{EA4B5B1B-9539-414E-9EBA-BC6B96321476}"
-	ProjectSection(ProjectDependencies) = postProject
-		{45E1E911-48A3-448E-A660-E941554D1A5C} = {45E1E911-48A3-448E-A660-E941554D1A5C}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidSimulation", "Games\FluidSimulation\FluidSimulation.vcxproj", "{EA4B5B1B-9539-414E-9EBA-BC6B96321476}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -543,6 +543,9 @@
     <ClInclude Include="Source\Public\BravoTerrainActor.h">
       <Filter>Public\Actors</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoTransform2D.h">
+      <Filter>Public\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\PhongModel.frag">
