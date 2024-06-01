@@ -17,24 +17,27 @@ public:
 	FluidSimulation(std::shared_ptr<class FluidContainer> _ParentContainer, Args&&... args) :
 		BravoObject(std::forward<Args>(args)...),
 		IBravoTickable(),
-		IBravoRenderable(ERenderPriority::Late),
+		IBravoRenderable(ERenderPriority::Early),
 		ParentContainer(_ParentContainer)
 	{}
 
 	// SIMULATION PROPERTIES
+	 
+	float ParticleMass = 1.0f;
 
-	float ParticleSize = 1.0f;
+	float ParticleSize = 5.0f; 
 
-	float CollisionDampling = 0.5f;
+	float CollisionDampling = 0.3f;
 
 	float Gravity = 9.8f;
+
+	float MaxVelocity = 100.0f;
 
 	// END SIMULATION PROPERTIES
 
 	void SpawnParticles(int32 Count);
 	void ClearParticles();
-	void UpdateScale(float _pScale) { Scale = _pScale; }
-	
+		
 
 private:
 	virtual bool Initialize_Internal() override;
@@ -51,8 +54,6 @@ private:
 	GLuint VBO = 0;
 	GLuint ParticlesSSBO = 0;
 	int32 ParticlesCount = 0;
-
-	float Scale = 1.0f;
 
 	std::shared_ptr<class BravoShaderAsset> Shader;
 };

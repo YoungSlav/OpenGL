@@ -71,7 +71,8 @@ void FluidSimulation::Render()
 	Shader->Use();
 
 		Shader->SetMatrix4d("viewProj", ViewProj);
-		Shader->SetVector1d("particleSize", ParticleSize*Scale);
+		Shader->SetVector1d("particleSize", ParticleSize);
+		Shader->SetVector1d("maxSpeed", MaxVelocity);
 		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
 
@@ -84,11 +85,11 @@ void FluidSimulation::Render()
 
 void FluidSimulation::SpawnParticles(int32 Count)
 {
-	const float particleSpacing = 2.5f * Scale;
+	const float particleSpacing = 2.5f;
 
 	int32 particlesPerRow = (int32)glm::sqrt(Count);
 	int32 particlesPerCol = (Count-1) / particlesPerRow + 1;
-	float spacing = ParticleSize * 2.0f * Scale + particleSpacing;
+	float spacing = ParticleSize * 2.0f + particleSpacing;
 
 	Particles.clear();
 	Particles.resize(Count);
@@ -115,13 +116,17 @@ void FluidSimulation::UpdateParticle(int32 i, float DeltaTime)
 {
 	Particle& p = Particles[i];
 	
-	glm::vec2 gravityAcceleration = glm::vec2(0.0f, -Gravity*Scale) * DeltaTime;
+	glm::vec2 gravityAcceleration = glm::vec2(0.0f, -Gravity) * DeltaTime;
 
-	p.Velocity += (p.Acceleration * DeltaTime) + gravityAcceleration;
+	p.Velocity = p.Velocity + ((p.Acceleration * DeltaTime) + gravityAcceleration);
+	glm::vec2 vDir = glm::normalize(p.Velocity);
+	float speed = glm::length(p.Velocity);
+	float clampedSpeed = glm::fclamp(speed, 0.0f, MaxVelocity);
+	p.Velocity = vDir * clampedSpeed;
 	
 	glm::vec2 CollisionVelocity(0.0);
 
-	if ( ParentContainer->CheckRoundCollision(p.Position, ParticleSize*Scale, CollisionVelocity) )
+	if ( ParentContainer->CheckRoundCollision(p.Position, ParticleSize, CollisionVelocity) )
 	{
 		p.Velocity *= (CollisionVelocity * CollisionDampling);
 	}

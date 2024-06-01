@@ -27,16 +27,18 @@ void BravoCamera::UpdateCamera_Internal()
 {
 	ViewMatrix = glm::lookAt(GetLocation_World(), GetLocation_World() + GetForwardVector_World(), BravoMath::upV);
 
-	const glm::ivec2 ViewportSize = Engine->GetViewport()->GetViewportSize();
-	const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;
-	
-	float orthoLeft = -ViewportSize.x / 2.0f;
-	float orthoRight = ViewportSize.x / 2.0f;
-	float orthoBottom = -ViewportSize.y / 2.0f;
-	float orthoTop = ViewportSize.y / 2.0f;
-
 	if ( CameraType == EBravoCameraType::Perspective )
+	{
+		const glm::ivec2 ViewportSize = Engine->GetViewport()->GetViewportSize();
+		const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;
 		ProjectionMatrix = glm::perspective(glm::radians(FOV), AspectRatio, MinDrawingDistance, MaxDrawingDistance);
+	}
 	else
+	{
+		float orthoLeft = -WorldSize2D.x / 2.0f;
+		float orthoRight = WorldSize2D.x / 2.0f;
+		float orthoBottom = -WorldSize2D.y / 2.0f;
+		float orthoTop = WorldSize2D.y / 2.0f;
 		ProjectionMatrix = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, MinDrawingDistance, MaxDrawingDistance);
+	}
 }

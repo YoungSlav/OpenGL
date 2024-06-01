@@ -25,19 +25,17 @@ class Log
 {
 public:
 	template<typename... Args>
-	static void LogMessage(const std::string& format_str, const Args&... args)
+	static void LogMessage(ELog Type, const std::string& format_str, Args&&... args)
 	{
-		Print(std::vformat(format_str, std::make_format_args(Log::to_string(args)...)), ELog::Log);
-	}
-
-	template<typename... Args>
-	static void LogMessage(ELog Type, const std::string& format_str, const Args&... args)
-	{
-		Print(std::vformat(format_str, std::make_format_args(Log::to_string(args)...)), Type);
+		auto tuple_args = std::make_tuple(Log::to_string(std::forward<Args>(args))...);
+		auto format_args = std::apply(
+			[&](auto&... args) { return std::make_format_args(args...); },
+			tuple_args
+		);
+		Print(std::vformat(format_str, format_args), Type);
 	}
 private:
 
-	// TODO: deprecated
 	static void Print(const std::string& Message, ELog Type = ELog::Log);
 	static void Print(const char* const Message, ELog Type = ELog::Log);
 

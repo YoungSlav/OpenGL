@@ -24,7 +24,7 @@ bool FluidGameInstance::Initialize_Internal()
 		Camera->SetDirection(NewDirection);
 	}
 	{
-		Container = NewObject<FluidContainer>("FluidContainer", true);
+		Container = NewObject<FluidContainer>("FluidContainer");
 	}
 	{
 		// spawn fluid
@@ -39,9 +39,13 @@ bool FluidGameInstance::Initialize_Internal()
 
 void FluidGameInstance::OnViewportResize(const glm::ivec2& NewSize)
 {
-	const float particleScale = 0.02;
-	Container->SetSize(glm::vec2(float(NewSize.x-10), float(NewSize.y-10)));
-	Simulation->UpdateScale(float(NewSize.y)*particleScale);
+	float vWidth = float(NewSize.x);
+	float vHeight = float(NewSize.y);
+
+	float WorldWidth = WorldHeight * vWidth / vHeight;
+	glm::vec2 WorldSize = glm::vec2(WorldWidth, WorldHeight);
+	Container->SetSize(WorldSize);
+	Camera->SetWorld2DSize(WorldSize);
 }
 
 void FluidGameInstance::Tick(float DeltaTime)

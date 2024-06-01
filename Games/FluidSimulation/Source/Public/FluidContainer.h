@@ -8,11 +8,9 @@ class FluidContainer : public BravoObject, public IBravoRenderable
 {
 public:
 	template <typename... Args>
-	FluidContainer(bool _bKeepInside, Args&&... args) :
+	FluidContainer(Args&&... args) :
 		BravoObject(std::forward<Args>(args)...),
-		IBravoRenderable(ERenderPriority::Early),
-		Transform(),
-		bKeepInside(_bKeepInside)
+		IBravoRenderable(ERenderPriority::Late)
 	{}
 
 	void SetLocation(const glm::vec2& Location) { Transform.SetLocation(Location); }
@@ -32,9 +30,6 @@ protected:
 protected:
 
 	BravoTransform2D Transform;
-
-	// whether we want objects to stay in or out for collision
-	const bool bKeepInside = true;
 
 	glm::vec3 Color = glm::vec3(0.0f);
 	glm::vec3 OutlineColor = glm::vec3(1.0f);

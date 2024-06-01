@@ -21,8 +21,13 @@ public:
 	const glm::mat4& GetViewMatrix() const { return ViewMatrix; }
 	const glm::mat4 GetProjectionMatrix() const { return ProjectionMatrix; }
 
+	// 3d camera
 	void SetFOV(float InFOV) { FOV = InFOV; }
 	float GetFOV() const { return FOV; }
+
+	// 2d camera
+	void SetWorld2DSize(const glm::vec2& _Size) { WorldSize2D = _Size; }
+
 	void SetDrawingDistance(float InMin, float InMax) { MinDrawingDistance = InMin; MaxDrawingDistance = InMax; }
 	
 	void SetCameraType(EBravoCameraType NewType) { CameraType = NewType; }
@@ -44,6 +49,8 @@ private:
 	float FOV = 45.0f;
 	float MinDrawingDistance = 0.1f;
 	float MaxDrawingDistance = 100000.0f;
+
+	glm::vec2 WorldSize2D;
 	
 	glm::mat4 ViewMatrix;
 	glm::mat4 ProjectionMatrix;
