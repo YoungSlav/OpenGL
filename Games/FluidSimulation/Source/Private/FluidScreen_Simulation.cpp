@@ -2,7 +2,6 @@
 #include "BravoInput.h"
 #include "BravoEngine.h"
 #include "FluidSimulation.h"
-#include "FluidContainer.h"
 
 
 bool FluidScreen_Simulation::Initialize_Internal()
@@ -11,7 +10,7 @@ bool FluidScreen_Simulation::Initialize_Internal()
 		return false;
 
 	SetTrueScaling(false);
-	SetSize(glm::vec2(0.3f, 0.5f));
+	SetSize(glm::vec2(0.3f, 0.7f));
 	SetOrigin(glm::vec2(0.0f, 0.0f));
 	SetPosition(glm::vec2(0.0f, 0.0f));
 
@@ -23,8 +22,42 @@ bool FluidScreen_Simulation::Initialize_Internal()
 		sub.Callback.BindSP(Self<FluidScreen_Simulation>(), &FluidScreen_Simulation::OnToggleHUD);
 		Engine->GetInput()->SubscribeKey(sub);
 	}
+
+
+	glm::vec2 trueSize = GetTrueSize();
+	SliderWidth = trueSize.x;
+	BtnWidth = trueSize.x;
 	
 	return true;
+}
+
+void FluidScreen_Simulation::Spacing()
+{
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+}
+
+bool FluidScreen_Simulation::Slider(const std::string& Label, int32* value, int32 min, int32 max)
+{
+	ImGui::SetNextItemWidth(SliderWidth);
+	ImGui::Text(Label.c_str());
+
+	ImGui::SetNextItemWidth(SliderWidth);
+	std::string inputName = "##" + Label;
+	bool ret = ImGui::SliderInt(inputName.c_str(), value, min, max);
+
+	return ret;
+}
+
+bool FluidScreen_Simulation::Slider(const std::string& Label, float* value, float min, float max)
+{
+	ImGui::SetNextItemWidth(SliderWidth);
+	ImGui::Text(Label.c_str());
+	
+	ImGui::SetNextItemWidth(SliderWidth);
+	std::string inputName = "##" + Label;
+	bool ret = ImGui::SliderFloat(inputName.c_str(), value, min, max);
+
+	return ret;
 }
 
 void FluidScreen_Simulation::Render_Internal(float DeltaTime)
@@ -32,11 +65,9 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 	if ( !bShowHUD )
 		return;
 
-	assert(Simulation != nullptr);
+	assert(Simulation != nullptr );
 
-	glm::vec2 trueSize = GetTrueSize();
-	const float sliderWidth = trueSize.x * 0.4f;
-	const float btnWidth = trueSize.x;
+	
 
 	ImGui::GetStyle().ScaleAllSizes(0.5f);
 	BravoScreen::Render_Internal(DeltaTime);
@@ -46,49 +77,42 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoCollapse );
 
-		ImGui::SetNextItemWidth(sliderWidth);
-		if ( ImGui::SliderInt("Particle count", &Simulation->ParticleCount, 0, 100) )
+		if ( Slider("Particle count", &Simulation->ParticleCount, 0, 500) )
 		{
 			Simulation->SpawnParticles(Simulation->ParticleCount, Simulation->bRandomPositions);
 		}
-		ImGui::Spacing();
-		if ( ImGui::Checkbox("Random Spawn", &Simulation->bRandomPositions) )
+		
+		if ( ImGui::Checkbox("Random", &Simulation->bRandomPositions) )
 		{
 			Simulation->SpawnParticles(Simulation->ParticleCount, Simulation->bRandomPositions);
 		}
 
-		ImGui::SetNextItemWidth(sliderWidth);
-		ImGui::SliderFloat("Mass", &Simulation->ParticleMass, 0.0f, 10.0f);
-		ImGui::Spacing();
+		Spacing();
+		Slider("Mass", &Simulation->ParticleMass, 0.0f, 10.0f);
+		
+		Spacing();
+		Slider("Size", &Simulation->ParticleSize, 0.0f, Simulation->CalcMaxParticleSize());
 
-		ImGui::SetNextItemWidth(sliderWidth);
-		ImGui::SliderFloat("Size", &Simulation->ParticleSize, 0.0f, 20.0f);
-		ImGui::Spacing();
+		Spacing();
+		Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
 
-		ImGui::SetNextItemWidth(sliderWidth);
-		ImGui::SliderFloat("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
-		ImGui::Spacing();
+		Spacing();
+		Slider("Gravity", &Simulation->Gravity, -100.0f, 100.0f);
 
-		ImGui::SetNextItemWidth(sliderWidth);
-		ImGui::SliderFloat("Gravity", &Simulation->Gravity, -100.0f, 100.0f);
-		ImGui::Spacing();
-
-		ImGui::SetNextItemWidth(sliderWidth);
-		ImGui::SliderFloat("Max Velocity", &Simulation->MaxVelocity, 0.0f, 100.0f);
-		ImGui::Spacing();
+		Spacing();
+		Slider("Max Velocity", &Simulation->MaxVelocity, 0.0f, 100.0f);
 
 		
-		ImGui::SetNextItemWidth(btnWidth);
+		Spacing();
+		Spacing();
 		std::string pauseText = Simulation->IsPaused() ? "Play" : "Pause";
-		if (ImGui::Button(pauseText.c_str(), ImVec2(btnWidth, 0)))
+		if (ImGui::Button(pauseText.c_str(), ImVec2(BtnWidth, 0)))
 		{
 			Simulation->TogglePause();
 		}
-		ImGui::Spacing();
 
-
-		ImGui::SetNextItemWidth(btnWidth);
-		if (ImGui::Button("Restart", ImVec2(btnWidth, 0)))
+		Spacing();
+		if (ImGui::Button("Restart", ImVec2(BtnWidth, 0)))
 		{
 			Simulation->Restart();
 		}

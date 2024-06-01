@@ -43,7 +43,8 @@ public:
 	void Restart();
 	void TogglePause() { bPaused = !bPaused; }
 	bool IsPaused() const { return bPaused; }
-		
+
+	float CalcMaxParticleSize() const;
 
 private:
 	virtual bool Initialize_Internal() override;

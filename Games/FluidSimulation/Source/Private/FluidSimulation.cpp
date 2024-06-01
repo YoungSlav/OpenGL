@@ -83,6 +83,13 @@ void FluidSimulation::Render()
 	Shader->StopUsage();
 }
 
+float FluidSimulation::CalcMaxParticleSize() const
+{
+	glm::vec2 alailableArea = ParentContainer->GetSize();
+	float minDimention = glm::min(alailableArea.x, alailableArea.y);
+	return minDimention;
+}
+
 void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 {
 	assert( ParentContainer != nullptr );
@@ -97,11 +104,14 @@ void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 	if ( Count == 0 )
 		return;
 
+	ParticleSize = glm::min(ParticleSize, CalcMaxParticleSize());
+
+
 	if ( bRandomPos )
 	{
 		for ( int32 i = 0; i < Count; ++i )
 		{
-			glm::vec2 Range = ParentContainer->GetSize() - glm::vec2(ParticleSize);
+			glm::vec2 Range = ParentContainer->GetSize() - glm::vec2(ParticleSize*2.0f);
 			float x = BravoMath::Rand(-Range.x, Range.x);
 			float y = BravoMath::Rand(-Range.y, Range.y);
 			Particles[i].Position = glm::vec2(x, y);
@@ -113,7 +123,7 @@ void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 		const float particleSpacing = 0.0f;
 		int32 particlesPerRow = (int32)glm::sqrt(Count);
 		int32 particlesPerCol = (Count-1) / particlesPerRow + 1;
-		float spacing = ParticleSize + particleSpacing;
+		float spacing = ParticleSize*2.0f + particleSpacing;
 		
 		for ( int32 i = 0; i < Count; ++i )
 		{

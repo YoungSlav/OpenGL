@@ -40,7 +40,7 @@ bool FluidContainer::Initialize_Internal()
 bool FluidContainer::CheckRoundCollision(glm::vec2& Location, float Radius, glm::vec2& OutVelocityModify) const
 {
 	bool bResult = false;
-	glm::vec2 Bounds = GetSize() - glm::vec2(Radius)*0.5f;
+	glm::vec2 Bounds = GetSize() - glm::vec2(Radius);
 	if ( glm::abs(Location.x) > Bounds.x )
 	{
 		Location.x = Bounds.x * glm::sign(Location.x);

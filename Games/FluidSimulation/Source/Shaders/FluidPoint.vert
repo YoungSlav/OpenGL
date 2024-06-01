@@ -25,7 +25,7 @@ void main()
 {
     InstanceID = gl_InstanceID;
     TexCoords = aTexCoords;
-    vec3 scaledVertex = vec3(aPos * particleSize, 0.2);
+    vec3 scaledVertex = vec3(aPos * particleSize*2.0f, 0.2);
     vec3 tranformedVertex = vec3(particles[gl_InstanceID].Position, 0.0) + scaledVertex;
     gl_Position = viewProj * vec4(tranformedVertex, 1.0);
 }

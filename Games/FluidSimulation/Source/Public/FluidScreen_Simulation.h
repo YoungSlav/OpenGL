@@ -19,8 +19,16 @@ protected:
 private:
 	void OnToggleHUD(bool ButtonState, float DeltaTime);
 
+	bool Slider(const std::string& Label, float* value, float min, float max);
+	bool Slider(const std::string& Label, int32* value, int32 min, int32 max);
+	void Spacing();
+
 private:
 	std::shared_ptr<class FluidSimulation> Simulation = nullptr;
 
+	
 	bool bShowHUD = true;
+
+	float SliderWidth = 1.0f;
+	float BtnWidth = 1.0f;
 };
