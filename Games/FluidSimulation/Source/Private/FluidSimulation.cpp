@@ -95,6 +95,7 @@ void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 	assert( ParentContainer != nullptr );
 	ParticleCount = Count;
 	bPaused = true;
+	bHasStarted = false;
 	bRandomPositions = bRandomPos;
 
 	Particles.clear();
@@ -120,10 +121,24 @@ void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 	}
 	else
 	{
+		const glm::vec2 AvaliableSpace = ParentContainer->GetSize()*2.0f - glm::vec2(ParticleSize*2.0f);
 		const float particleSpacing = 0.0f;
-		int32 particlesPerRow = (int32)glm::sqrt(Count);
-		int32 particlesPerCol = (Count-1) / particlesPerRow + 1;
-		float spacing = ParticleSize*2.0f + particleSpacing;
+		const float spacing = ParticleSize*2.0f + particleSpacing;
+
+		int32 particlesPerRow;
+		int32 particlesPerCol;
+
+		if (Count * ParticleSize > ParentContainer->GetSize().y * 0.5f)
+		{
+			particlesPerRow = (int32)glm::sqrt(Count * 2);
+			particlesPerCol = (Count - 1) / particlesPerRow + 1;
+		}
+		else
+		{
+			particlesPerRow = (int32)glm::sqrt(Count);
+			particlesPerCol = (Count - 1) / particlesPerRow + 1;
+		}
+
 		
 		for ( int32 i = 0; i < Count; ++i )
 		{
@@ -135,7 +150,7 @@ void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 	}
 }
 
-void FluidSimulation::Restart()
+void FluidSimulation::Reset()
 {
 	assert( OriginalPositions.size() == Particles.size() );
 	for ( int32 i = 0; i < OriginalPositions.size(); ++i )
@@ -143,7 +158,15 @@ void FluidSimulation::Restart()
 		Particles[i] = Particle();
 		Particles[i].Position = OriginalPositions[i];
 	}
+	bHasStarted = false;
 	bPaused = true;
+}
+
+void FluidSimulation::TogglePause()
+{
+	bPaused = !bPaused;
+	if ( !bPaused )
+		bHasStarted = true;
 }
 
 

@@ -28,7 +28,7 @@ public:
 
 	float ParticleMass = 1.0f;
 
-	float ParticleSize = 5.0f; 
+	float ParticleSize = 1.0f; 
 
 	float CollisionDamping = 0.3f;
 
@@ -40,9 +40,10 @@ public:
 
 	void SpawnParticles(int32 Count, bool bRandomPos);
 	
-	void Restart();
-	void TogglePause() { bPaused = !bPaused; }
+	void Reset();
+	void TogglePause();
 	bool IsPaused() const { return bPaused; }
+	bool HasStarted() const { return bHasStarted; }
 
 	float CalcMaxParticleSize() const;
 
@@ -64,6 +65,8 @@ private:
 
 	std::shared_ptr<class BravoShaderAsset> Shader;
 
+
+	bool bHasStarted = false;
 	bool bPaused = true;
 	std::vector<glm::vec2> OriginalPositions;
 };

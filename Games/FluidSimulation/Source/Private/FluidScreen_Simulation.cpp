@@ -77,7 +77,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoCollapse );
 
-		if ( Slider("Particle count", &Simulation->ParticleCount, 0, 500) )
+		if ( Slider("Particle count", &Simulation->ParticleCount, 0, 2000) )
 		{
 			Simulation->SpawnParticles(Simulation->ParticleCount, Simulation->bRandomPositions);
 		}
@@ -91,7 +91,13 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		Slider("Mass", &Simulation->ParticleMass, 0.0f, 10.0f);
 		
 		Spacing();
-		Slider("Size", &Simulation->ParticleSize, 0.0f, Simulation->CalcMaxParticleSize());
+		if ( Slider("Size", &Simulation->ParticleSize, 0.0f, Simulation->CalcMaxParticleSize()) )
+		{
+			if ( !Simulation->HasStarted() )
+			{
+				Simulation->SpawnParticles(Simulation->ParticleCount, Simulation->bRandomPositions);
+			}
+		}
 
 		Spacing();
 		Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
@@ -112,9 +118,9 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		}
 
 		Spacing();
-		if (ImGui::Button("Restart", ImVec2(BtnWidth, 0)))
+		if (ImGui::Button("Reset", ImVec2(BtnWidth, 0)))
 		{
-			Simulation->Restart();
+			Simulation->Reset();
 		}
 
 	ImGui::End();
