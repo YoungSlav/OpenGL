@@ -24,6 +24,9 @@
     <ClCompile Include="Source\Private\FluidSimulation.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\FluidScreen_Simulation.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidGameInstance.h">
@@ -33,6 +36,9 @@
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\FluidSimulation.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\FluidScreen_Simulation.h">
       <Filter>Public</Filter>
     </ClInclude>
   </ItemGroup>

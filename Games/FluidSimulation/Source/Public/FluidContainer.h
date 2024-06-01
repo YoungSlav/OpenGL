@@ -16,6 +16,7 @@ public:
 	void SetLocation(const glm::vec2& Location) { Transform.SetLocation(Location); }
 	void SetRotation(const float Rotation) { Transform.SetRotation(Rotation); }
 	void SetSize(const glm::vec2& Size) { Transform.SetScale(Size); }
+	const glm::vec2& GetSize(bool Inside = true) const;
 
 	void SetTransform(const BravoTransform2D& _Transform) { Transform = _Transform; }
 	bool CheckRoundCollision(glm::vec2& Location, float Radius, glm::vec2& OutVelocityModify) const;
@@ -38,4 +39,6 @@ private:
 	std::shared_ptr<class BravoShaderAsset> Shader;
 	GLuint VAO = 0;
 	GLuint VBO = 0;
+
+	const float BorderWidth = 1.0f;
 };

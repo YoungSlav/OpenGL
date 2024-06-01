@@ -83,31 +83,64 @@ void FluidSimulation::Render()
 	Shader->StopUsage();
 }
 
-void FluidSimulation::SpawnParticles(int32 Count)
+void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 {
-	const float particleSpacing = 2.5f;
-
-	int32 particlesPerRow = (int32)glm::sqrt(Count);
-	int32 particlesPerCol = (Count-1) / particlesPerRow + 1;
-	float spacing = ParticleSize * 2.0f + particleSpacing;
+	assert( ParentContainer != nullptr );
+	ParticleCount = Count;
+	bPaused = true;
+	bRandomPositions = bRandomPos;
 
 	Particles.clear();
 	Particles.resize(Count);
-	for ( int32 i = 0; i < Count; ++i )
+	OriginalPositions.clear();
+	OriginalPositions.resize(Count);
+	if ( Count == 0 )
+		return;
+
+	if ( bRandomPos )
 	{
-		float x = (i % particlesPerRow - particlesPerRow / 2.0f + 0.5f) * spacing;
-		float y = (i / particlesPerRow - particlesPerCol / 2.0f + 0.5f) * spacing;
-		Particles[i].Position = glm::vec2(x, y);
+		for ( int32 i = 0; i < Count; ++i )
+		{
+			glm::vec2 Range = ParentContainer->GetSize() - glm::vec2(ParticleSize);
+			float x = BravoMath::Rand(-Range.x, Range.x);
+			float y = BravoMath::Rand(-Range.y, Range.y);
+			Particles[i].Position = glm::vec2(x, y);
+			OriginalPositions[i] = Particles[i].Position;
+		}
+	}
+	else
+	{
+		const float particleSpacing = 0.0f;
+		int32 particlesPerRow = (int32)glm::sqrt(Count);
+		int32 particlesPerCol = (Count-1) / particlesPerRow + 1;
+		float spacing = ParticleSize + particleSpacing;
+		
+		for ( int32 i = 0; i < Count; ++i )
+		{
+			float x = (i % particlesPerRow - particlesPerRow / 2.0f + 0.5f) * spacing;
+			float y = (i / particlesPerRow - particlesPerCol / 2.0f + 0.5f) * spacing;
+			Particles[i].Position = glm::vec2(x, y);
+			OriginalPositions[i] = Particles[i].Position;
+		}
 	}
 }
 
-void FluidSimulation::ClearParticles()
+void FluidSimulation::Restart()
 {
-	Particles.clear();
+	assert( OriginalPositions.size() == Particles.size() );
+	for ( int32 i = 0; i < OriginalPositions.size(); ++i )
+	{
+		Particles[i] = Particle();
+		Particles[i].Position = OriginalPositions[i];
+	}
+	bPaused = true;
 }
+
 
 void FluidSimulation::Tick(float DeltaTime)
 {
+	if ( bPaused ) return;
+
 	for ( int32 i = 0; i < Particles.size(); ++i )
 		UpdateParticle(i, DeltaTime);
 }
@@ -128,7 +161,7 @@ void FluidSimulation::UpdateParticle(int32 i, float DeltaTime)
 
 	if ( ParentContainer->CheckRoundCollision(p.Position, ParticleSize, CollisionVelocity) )
 	{
-		p.Velocity *= (CollisionVelocity * CollisionDampling);
+		p.Velocity *= (CollisionVelocity * CollisionDamping);
 	}
 
 	p.Position += p.Velocity * DeltaTime;

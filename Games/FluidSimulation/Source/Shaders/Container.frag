@@ -8,11 +8,11 @@ in vec2 TexCoords;
 
 out vec4 FragColor;
 
-const float borderWidth = 2.0;
+uniform float borderWidth;
 
 void main()
 {
-	vec2 borderWidthUV = vec2(borderWidth) / containerSize;
+	vec2 borderWidthUV = vec2(borderWidth*2.0) / containerSize;
 
 	
 	vec2 distToCenter = abs(TexCoords - vec2(0.5)) * 2.0;

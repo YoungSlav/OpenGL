@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClCompile Include="Source\Private\FluidContainer.cpp" />
     <ClCompile Include="Source\Private\FluidGameInstance.cpp" />
+    <ClCompile Include="Source\Private\FluidScreen_Simulation.cpp" />
     <ClCompile Include="Source\Private\FluidSimulation.cpp" />
     <ClCompile Include="Source\Private\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidContainer.h" />
     <ClInclude Include="Source\Public\FluidGameInstance.h" />
+    <ClInclude Include="Source\Public\FluidScreen_Simulation.h" />
     <ClInclude Include="Source\Public\FluidSimulation.h" />
   </ItemGroup>
   <ItemGroup>

@@ -40,7 +40,7 @@ bool FluidContainer::Initialize_Internal()
 bool FluidContainer::CheckRoundCollision(glm::vec2& Location, float Radius, glm::vec2& OutVelocityModify) const
 {
 	bool bResult = false;
-	glm::vec2 Bounds = Transform.GetScale()/2.0f - glm::vec2(Radius);
+	glm::vec2 Bounds = GetSize() - glm::vec2(Radius)*0.5f;
 	if ( glm::abs(Location.x) > Bounds.x )
 	{
 		Location.x = Bounds.x * glm::sign(Location.x);
@@ -54,6 +54,13 @@ bool FluidContainer::CheckRoundCollision(glm::vec2& Location, float Radius, glm:
 		bResult = true;
 	}
 	return bResult;
+}
+
+const glm::vec2& FluidContainer::GetSize(bool Inside) const
+{
+	if ( !Inside )
+		return Transform.GetScale()*0.5f;
+	return Transform.GetScale()*0.5f - glm::vec2(BorderWidth);
 }
 
 void FluidContainer::Render()
@@ -73,6 +80,7 @@ void FluidContainer::Render()
 		Shader->SetVector2d("containerSize", Transform.GetScale());
 		Shader->SetVector3d("color", Color);
 		Shader->SetVector3d("outlineColor", OutlineColor);
+		Shader->SetVector1d("borderWidth", BorderWidth);
 	
 		glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);

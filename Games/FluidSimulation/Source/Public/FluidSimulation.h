@@ -23,11 +23,14 @@ public:
 
 	// SIMULATION PROPERTIES
 	 
+	int32 ParticleCount = 0;
+	bool bRandomPositions = false;
+
 	float ParticleMass = 1.0f;
 
 	float ParticleSize = 5.0f; 
 
-	float CollisionDampling = 0.3f;
+	float CollisionDamping = 0.3f;
 
 	float Gravity = 9.8f;
 
@@ -35,8 +38,11 @@ public:
 
 	// END SIMULATION PROPERTIES
 
-	void SpawnParticles(int32 Count);
-	void ClearParticles();
+	void SpawnParticles(int32 Count, bool bRandomPos);
+	
+	void Restart();
+	void TogglePause() { bPaused = !bPaused; }
+	bool IsPaused() const { return bPaused; }
 		
 
 private:
@@ -48,7 +54,7 @@ private:
 
 private:
 	std::vector<Particle> Particles;
-	std::shared_ptr<class FluidContainer> ParentContainer;
+	std::shared_ptr<class FluidContainer> ParentContainer = nullptr;
 
 	GLuint VAO = 0;
 	GLuint VBO = 0;
@@ -56,4 +62,7 @@ private:
 	int32 ParticlesCount = 0;
 
 	std::shared_ptr<class BravoShaderAsset> Shader;
+
+	bool bPaused = true;
+	std::vector<glm::vec2> OriginalPositions;
 };

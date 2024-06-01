@@ -35,13 +35,20 @@ void BravoScreen::Render_Internal(float DeltaTime)
 
 glm::vec4 BravoScreen::GetBounds() const
 {
+	return glm::vec4(GetTruePos(), GetTrueSize());
+}
+
+glm::vec2 BravoScreen::GetTruePos() const
+{
+	const glm::vec2 trueSize = GetTrueSize();
 	const glm::vec2 hudSize = GetHUD()->GetSize();
+	const glm::vec2 pos = Position * hudSize - Origin * trueSize;
+	return pos;
+}
+glm::vec2 BravoScreen::GetTrueSize() const
+{
 	const glm::vec2 trueSize = bTrueScaling ?
 		Size * GetHUD()->GetSize() :
 		Size * GetHUD()->GetTargetSize() * GetHUD()->GetTargetScale().y;
-
-	
-	const glm::vec2 pos = Position * hudSize - Origin * trueSize;
-	
-	return glm::vec4(pos, trueSize);
+	return trueSize;
 }

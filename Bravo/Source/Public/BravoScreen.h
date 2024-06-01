@@ -43,6 +43,9 @@ protected:
 	// Returns actual widget size and position in pixels.
 	glm::vec4 GetBounds() const;
 
+	glm::vec2 GetTruePos() const;
+	glm::vec2 GetTrueSize() const;
+
 
 	virtual void OnDestroy() override;
 
