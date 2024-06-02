@@ -222,6 +222,11 @@ void BravoViewport::DeProject(const glm::vec2& ScreenPos, glm::vec3& OutOrigin, 
 	OutDirection = glm::normalize(farPlane - OutOrigin);
 }
 
+void BravoViewport::AddPostProcess(std::shared_ptr<class BravoPostProcess> PP)
+{
+	PostProcesses.push_back(PP);
+}
+
 void BravoViewport::UpdateViewport(float DeltaTime)
 {
 	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -269,6 +274,11 @@ void BravoViewport::UpdateViewport(float DeltaTime)
 				if ( it->IsVisisble() )
 					it->Render();
 			}
+		}
+
+		for ( auto it : PostProcesses )
+		{
+			it->Render();
 		}
 
 		OutlinePP->Render();

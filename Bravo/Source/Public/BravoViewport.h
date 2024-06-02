@@ -26,6 +26,8 @@ public:
 	void PushFramebuffer(uint32 Framebuffer, const glm::ivec2& Size);
 	void PopFramebuffer();
 
+	void AddPostProcess(std::shared_ptr<class BravoPostProcess> PP);
+
 	void ToggleWireframe() { bWireframe = !bWireframe; }
 
 
@@ -86,6 +88,7 @@ private:
 	std::shared_ptr<class BravoHUD> HUD;
 
 
+	std::list<std::shared_ptr<class BravoPostProcess>> PostProcesses;
 	std::shared_ptr<class BravoPostProcess_Outline> OutlinePP;
 	std::shared_ptr<class BravoPostProcess_AntiAliasing> AntiAliasingPP;
 };

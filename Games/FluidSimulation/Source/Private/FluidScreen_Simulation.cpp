@@ -10,7 +10,7 @@ bool FluidScreen_Simulation::Initialize_Internal()
 		return false;
 
 	SetTrueScaling(false);
-	SetSize(glm::vec2(0.3f, 0.7f));
+	SetSize(glm::vec2(0.3f, 1.0f));
 	SetOrigin(glm::vec2(0.0f, 0.0f));
 	SetPosition(glm::vec2(0.0f, 0.0f));
 
@@ -91,7 +91,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		Slider("Mass", &Simulation->ParticleMass, 0.0f, 10.0f);
 		
 		Spacing();
-		if ( Slider("Size", &Simulation->ParticleSize, 0.0f, Simulation->CalcMaxParticleSize()) )
+		if ( Slider("Size", &Simulation->ParticleSize, 0.5f, 5) )
 		{
 			if ( !Simulation->HasStarted() )
 			{
@@ -103,10 +103,20 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
 
 		Spacing();
-		Slider("Gravity", &Simulation->Gravity, -100.0f, 100.0f);
+		Slider("Gravity", &Simulation->Gravity, 0.0f, 100.0f);
 
 		Spacing();
 		Slider("Max Velocity", &Simulation->MaxVelocity, 0.0f, 100.0f);
+
+		Spacing();
+		Slider("Smoothing radius", &Simulation->SmoothingRadius, Simulation->ParticleSize, 50);
+
+		Spacing();
+		Slider("Target density", &Simulation->TargetDensity, 0.0f, 0.02);
+
+		Spacing();
+		Slider("Preassure", &Simulation->Preassure, 0.0f, 1000.0f);
+
 
 		
 		Spacing();

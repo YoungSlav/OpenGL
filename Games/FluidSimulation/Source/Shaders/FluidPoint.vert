@@ -6,7 +6,6 @@ struct Particle
 {
     vec2 Position;
     vec2 Velocity;
-    vec2 Acceleration;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer

@@ -65,6 +65,7 @@ const glm::vec2& FluidContainer::GetSize(bool Inside) const
 
 void FluidContainer::Render()
 {
+	return;
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 	if ( !camera )
 		return;

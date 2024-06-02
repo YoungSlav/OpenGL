@@ -7,6 +7,7 @@
 #include "BravoHUD.h"
 #include "BravoScreen_Debug.h"
 #include "FluidScreen_Simulation.h"
+#include "FluidPostProcess_Density.h"
 
 bool FluidGameInstance::Initialize_Internal()
 {
@@ -30,11 +31,15 @@ bool FluidGameInstance::Initialize_Internal()
 	}
 	{
 		Container = NewObject<FluidContainer>("FluidContainer");
+		OnViewportResize(Engine->GetViewport()->GetViewportSize());
 	}
 	{
 		// spawn fluid
 		Simulation = NewObject<FluidSimulation>("FluidSimulation", Container);
 	}
+
+	auto PP = NewObject<FluidPostProcess_Density>("SimulationPP", Simulation, Container);
+	Engine->GetViewport()->AddPostProcess(PP);
 
 	if ( Engine->GetViewport()->GetHUD() )
 	{
@@ -45,8 +50,6 @@ bool FluidGameInstance::Initialize_Internal()
 		Engine->GetViewport()->GetHUD()->AddScreen(simulationSettings);
 	}
 
-	
-	OnViewportResize(Engine->GetViewport()->GetViewportSize());
 
 	return true;
 }
@@ -58,7 +61,7 @@ void FluidGameInstance::OnViewportResize(const glm::ivec2& NewSize)
 
 	float WorldWidth = WorldHeight * vWidth / vHeight;
 	glm::vec2 WorldSize = glm::vec2(WorldWidth, WorldHeight);
-	Container->SetSize(WorldSize - glm::vec2(10.0f));
+	Container->SetSize(WorldSize/* - glm::vec2(10.0f)*/);
 	Camera->SetWorld2DSize(WorldSize);
 }
 

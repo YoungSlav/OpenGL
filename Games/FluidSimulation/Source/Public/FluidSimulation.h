@@ -7,7 +7,6 @@ struct Particle
 {
 	alignas(8) glm::vec2 Position = glm::vec2(0.0f);
 	alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
-	alignas(8) glm::vec2 Acceleration = glm::vec2(0.0f);
 };
 
 class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
@@ -23,7 +22,7 @@ public:
 
 	// SIMULATION PROPERTIES
 	 
-	int32 ParticleCount = 0;
+	int32 ParticleCount = 500;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
@@ -32,9 +31,15 @@ public:
 
 	float CollisionDamping = 0.3f;
 
-	float Gravity = 9.8f;
+	float Gravity = 0.0f;
 
 	float MaxVelocity = 100.0f;
+
+	float SmoothingRadius = 5.0f;
+
+	float TargetDensity = 1.0f;
+
+	float Preassure = 50.0f;
 
 	// END SIMULATION PROPERTIES
 
@@ -45,14 +50,23 @@ public:
 	bool IsPaused() const { return bPaused; }
 	bool HasStarted() const { return bHasStarted; }
 
-	float CalcMaxParticleSize() const;
+	GLuint GetParticlesSSBO() const { return ParticlesSSBO; }
 
 private:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void Render() override;
 
-	void UpdateParticle(int32 index, float DeltaTime);
+
+	void SimulationStep(float DeltaTime);
+
+	glm::vec2 CalcPressureForce(int32 i) const;
+	float CalcDensity(const glm::vec2& samplePoint) const;
+	float SmoothingKernel(float radius, float distance) const;
+	float SmoothingKernelDerivative(float radius, float distance) const;
+
+	float CalcSharedPressure(float densityA, float densityB) const;
+	float DensityToPeassure(float density) const;
 
 private:
 	std::vector<Particle> Particles;
@@ -69,4 +83,7 @@ private:
 	bool bHasStarted = false;
 	bool bPaused = true;
 	std::vector<glm::vec2> OriginalPositions;
+
+	std::vector<int32> ParticleIndicies;
+	std::vector<float> ParticleDensities;
 };
