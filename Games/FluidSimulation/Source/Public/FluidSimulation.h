@@ -10,6 +10,21 @@ struct Particle
 	int32 Hightligh = 0;
 };
 
+struct CellHash
+{
+	// index of a cell normalized to particle count
+	int32 CellIndexP = -1;
+	// index of a cell
+	int32 CellIndex = -1;
+};
+
+struct SpacialLookup
+{
+	CellHash cHash;
+	int32 pIndex = -1;
+};
+
+
 class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
 {
 public:
@@ -23,24 +38,25 @@ public:
 
 	// SIMULATION PROPERTIES
 	 
-	int32 ParticlesCount = 4000;
+	int32 ParticlesCount = 20;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
+	float ParticleSize = 0.1f; 
 
-	float ParticleSize = 1.0f; 
+
 
 	float CollisionDamping = 0.3f;
-
 	float Gravity = 100.0f;
 
+	float SmoothingRadius = 0.5f;
+	float TargetDensity = 0.25f;
+	float Preassure = 0.7f;
+
+
+
 	float MaxVelocity = 100.0f;
-
-	float SmoothingRadius = 3.0f;
-
-	float TargetDensity = 0.02f;
-
-	float Preassure = 100.0f;
+	int32 StepsPerTick = 1;
 
 	// END SIMULATION PROPERTIES
 
@@ -52,8 +68,6 @@ public:
 	bool HasStarted() const { return bHasStarted; }
 
 	GLuint GetParticlesSSBO() const { return ParticlesSSBO; }
-
-	void SetWorldSize(const glm::vec2& _worldSize) { WorldSize = _worldSize; }
 
 private:
 	virtual bool Initialize_Internal() override;
@@ -77,7 +91,7 @@ private:
 	void GetParticlesInCell(const glm::ivec2& CellIndex, std::list<int32>& OutParticles) const;
 	void UpdateSpacialLookup();
 	glm::ivec2 GetCellCoord(const glm::vec2& Position) const;
-	bool GetCellHash(const glm::ivec2& Coords, std::pair<int32, int32>& OutHash) const;
+	bool GetCellHash(const glm::ivec2& Coords, CellHash& OutHash) const;
 
 private:
 	std::vector<Particle> Particles;
@@ -100,13 +114,16 @@ private:
 	std::vector<int32> ParticleIndicies;
 	std::vector<float> ParticleDensities;
 
+	
+
+
 	// cell hash <-> particle index
-	std::vector<std::pair<int32, int32>> SpacialLookup;
+	std::vector<SpacialLookup> Lookup;
 	// index = cell hash, value = start index in SpacialLookup
 	std::vector<int32> StartIndices;
 	// index = cell hash, value - occupation
 	std::vector<bool> CellOccupied;
 	
-
-	glm::ivec2 GridSize;
+	glm::ivec2 SmoothingGridSize;
+	glm::ivec2 ParticleGridSize;
 };

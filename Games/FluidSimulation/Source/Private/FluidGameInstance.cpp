@@ -52,7 +52,7 @@ bool FluidGameInstance::Initialize_Internal()
 	}
 
 	OnViewportResize(Engine->GetViewport()->GetViewportSize());
-	Simulation->SpawnParticles();
+	
 
 
 	return true;
@@ -65,9 +65,9 @@ void FluidGameInstance::OnViewportResize(const glm::ivec2& NewSize)
 
 	float WorldWidth = WorldHeight * vWidth / vHeight;
 	glm::vec2 WorldSize = glm::vec2(WorldWidth, WorldHeight);
-	Simulation->SetWorldSize(WorldSize);
 
 	Container->SetSize(WorldSize);
+	Simulation->SpawnParticles();
 
 	Camera->SetWorld2DSize(WorldSize);
 }

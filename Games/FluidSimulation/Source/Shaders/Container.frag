@@ -37,8 +37,9 @@ float SmoothingKernel(float radius, float distance)
 {
 	if ( distance >= radius ) return 0.0f;
 
-	float volume = pi * pow(radius, 4) / 6.0f;
-	return (radius - distance) * (radius - distance) / volume;
+	float volume = (315.0f / (64.0f * pi)) * pow(smoothingRadius, 9);
+	float value = (radius * radius - distance * distance);
+	return value * value * value / volume;
 }
 
 float CalcDensity(vec2 samplePoint)
@@ -61,30 +62,6 @@ const vec3 Hot = vec3(1.0f, 0.0f, 0.0f);
 
 void main()
 {
-	//vec2 containerCoords = (TexCoords) * containerSize*2.0f;
-	//vec2 worldPos = containerCoords * 1.0f;
-	//
-	//float cellSize = smoothingRadius*2.0f;
-	//
-    //vec2 gridPos = mod(worldPos, cellSize) - vec2(cellSize);
-    //
-    //// Calculate the distance to the nearest grid line in both x and y directions
-    //float distToXLine = min(abs(gridPos.x), abs(cellSize - abs(gridPos.x)));
-    //float distToYLine = min(abs(gridPos.y), abs(cellSize - abs(gridPos.y)));
-    //
-    //// Find the minimum distance to either the vertical or horizontal grid line
-    //float minDistToLine = min(distToXLine, distToYLine);
-	//
-    //// Determine if the pixel is on a grid line
-    //bool isGridPixel = minDistToLine < 0.1 * 0.5;
-	//
-	//if ( isGridPixel )
-	//{
-	//	//FragColor = vec4(outlineColor, 1.0);
-	//	//return;
-	//}
-	
-	
 	// border
 	vec2 borderWidthUV = vec2(borderWidth) / containerSize;
 	vec2 distToCenter = abs(vs_out.TexCoords - vec2(0.5)) * 2.0f;
@@ -99,37 +76,35 @@ void main()
 	// grid
 	float cellSize = smoothingRadius*2.0f;
 	vec2 normilizedPos = vs_out.WorldPos + containerSize * 0.5f;
+	normilizedPos.y = containerSize.y - normilizedPos.y;
 	vec2 gridPos = mod(normilizedPos, cellSize);
 	float distToXLine = min(abs(gridPos.x), abs(cellSize - abs(gridPos.x)));
 	float distToYLine = min(abs(gridPos.y), abs(cellSize - abs(gridPos.y)));
 	float minDistToLine = min(distToXLine, distToYLine);
-	bool isGridPixel = minDistToLine < 0.1 * 0.5;
+	bool isGridPixel = minDistToLine < 0.001f * containerSize.y;
 	if ( isGridPixel )
 	{
 		FragColor = vec4(outlineColor, 1.0);
 		return;
 	}
 
+	normilizedPos -= containerSize * 0.5f;
+	float density = CalcDensity(normilizedPos);
+	float minDensity = 0.0f;
+	float maxDensity = targetDensity * 2.0f;
 
-	//else
-	//{
-	//	float density = CalcDensity(worldPos);
-	//	float minDensity = 0.0f;
-	//	float maxDensity = targetDensity * 4.0f;
-	//
-	//	vec3 Color;
-	//	if ( density < targetDensity )
-	//	{
-	//		float alpha = (density - minDensity) / (targetDensity - minDensity);
-	//		Color = mix(Cold, Middle, alpha);
-	//	}
-	//	else
-	//	{
-	//		float alpha = (density - targetDensity) / (maxDensity - targetDensity);
-	//		Color = mix(Middle, Hot, alpha);
-	//	}
-	//
-	//	FragColor = vec4(Color, 1.0);
-	//	return;
-	//}
+
+	vec3 Color;
+	if ( density < targetDensity )
+	{
+		float alpha = (density - minDensity) / (targetDensity - minDensity);
+		Color = mix(Cold, Middle, alpha);
+	}
+	else
+	{
+		float alpha = (density - targetDensity) / (maxDensity - targetDensity);
+		Color = mix(Middle, Hot, alpha);
+	}
+	
+	FragColor = vec4(Color, 1.0);
 }
