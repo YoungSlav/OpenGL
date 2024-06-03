@@ -6,6 +6,7 @@ struct Particle
 {
     vec2 Position;
     vec2 Velocity;
+    int Highlight;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer
@@ -25,6 +26,8 @@ void main()
     InstanceID = gl_InstanceID;
     TexCoords = aTexCoords;
     vec3 scaledVertex = vec3(aPos * particleSize*2.0f, 0.2);
-    vec3 tranformedVertex = vec3(particles[gl_InstanceID].Position, 0.0) + scaledVertex;
+    vec3 particlePosition = vec3(particles[gl_InstanceID].Position, 0.0);
+    particlePosition.y *= -1.0f;
+    vec3 tranformedVertex = particlePosition + scaledVertex;
     gl_Position = viewProj * vec4(tranformedVertex, 1.0);
 }

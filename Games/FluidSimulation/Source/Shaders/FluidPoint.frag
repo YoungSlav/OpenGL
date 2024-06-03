@@ -4,6 +4,7 @@ struct Particle
 {
     vec2 Position;
     vec2 Velocity;
+	int Highlight;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer
@@ -35,5 +36,5 @@ void main()
         Color = mix(Middle, Hot, (speed-midSpeed) / (maxSpeed-midSpeed));
 
     
-    FragColor = vec4(0.0,0.0,0.0, 1.0);
+    FragColor = particles[InstanceID].Highlight == 1 ? vec4(1.0, 0.0, 0.0, 1.0) : vec4(1.0,1.0,1.0, 1.0);
 }

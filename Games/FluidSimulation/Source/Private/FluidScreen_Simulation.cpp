@@ -79,12 +79,12 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 
 		if ( Slider("Particle count", &Simulation->ParticlesCount, 0, 2000) )
 		{
-			Simulation->SpawnParticles(Simulation->ParticlesCount, Simulation->bRandomPositions);
+			Simulation->SpawnParticles();
 		}
 		
 		if ( ImGui::Checkbox("Random", &Simulation->bRandomPositions) )
 		{
-			Simulation->SpawnParticles(Simulation->ParticlesCount, Simulation->bRandomPositions);
+			Simulation->SpawnParticles();
 		}
 
 		Spacing();
@@ -95,7 +95,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		{
 			if ( !Simulation->HasStarted() )
 			{
-				Simulation->SpawnParticles(Simulation->ParticlesCount, Simulation->bRandomPositions);
+				Simulation->SpawnParticles();
 			}
 		}
 

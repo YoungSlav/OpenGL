@@ -7,9 +7,10 @@ struct Particle
 {
     vec2 Position;
     vec2 Velocity;
+    int Hightligh;
 };
 
-layout(std430, binding = 0) buffer InstanceBuffer
+layout(std430, binding = 0) buffer Part
 {
 	Particle particles[];
 };

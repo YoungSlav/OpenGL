@@ -61,7 +61,7 @@ const glm::vec2& FluidContainer::GetSize(bool Inside) const
 {
 	if ( !Inside )
 		return Transform.GetScale()*0.5f;
-	return Transform.GetScale()*0.5f - glm::vec2(BorderWidth*2.0f);
+	return Transform.GetScale()*0.5f - glm::vec2(BorderWidth);
 }
 
 void FluidContainer::Render()
@@ -77,9 +77,11 @@ void FluidContainer::Render()
 		glm::mat4 CameraProjection = camera->GetProjectionMatrix();
 		glm::mat4 CameraView = camera->GetViewMatrix();
 
-		glm::mat4 ModelTranform = CameraProjection * CameraView * Transform.GetTransformMatrix();
+		glm::mat4 mCamera = CameraProjection * CameraView;
+		glm::mat4 model  = Transform.GetTransformMatrix();
 
-		Shader->SetMatrix4d("modelViewProjection", ModelTranform);
+		Shader->SetMatrix4d("model", model);
+		Shader->SetMatrix4d("camera", mCamera);
 		Shader->SetVector2d("containerSize", Transform.GetScale());
 		Shader->SetVector3d("outlineColor", OutlineColor);
 		Shader->SetVector1d("borderWidth", BorderWidth);

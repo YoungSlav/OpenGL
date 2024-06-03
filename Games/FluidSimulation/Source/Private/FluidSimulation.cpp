@@ -4,6 +4,8 @@
 #include "BravoAssetManager.h"
 #include "BravoShaderAsset.h"
 #include "BravoCamera.h"
+#include "BravoInput.h"
+#include "BravoViewport.h"
 
 bool FluidSimulation::Initialize_Internal()
 {
@@ -40,7 +42,9 @@ bool FluidSimulation::Initialize_Internal()
 	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("FluidPoint", BravoShaderLoadingParams("Shaders\\FluidPoint"));
 
 
-	SpawnParticles(ParticlesCount, true);
+	Engine->GetInput()->OnMouseMoveDelegate.AddSP(Self<FluidSimulation>(), &FluidSimulation::OnMouseMove);
+
+
 	return true;
 }
 
@@ -87,35 +91,33 @@ void FluidSimulation::Render()
 
 
 
-void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
+void FluidSimulation::SpawnParticles()
 {
 	assert( ParentContainer != nullptr );
-	ParticlesCount = Count;
+	
 	bPaused = true;
 	bHasStarted = false;
-	bRandomPositions = bRandomPos;
 
 	Particles.clear();
-	Particles.resize(Count);
+	Particles.resize(ParticlesCount);
 	
 	OriginalPositions.clear();
-	OriginalPositions.resize(Count);
+	OriginalPositions.resize(ParticlesCount);
 	
 	ParticleIndicies.clear();
-	ParticleIndicies.resize(Count);
+	ParticleIndicies.resize(ParticlesCount);
 
 	ParticleDensities.clear();
-	ParticleDensities.resize(Count);
+	ParticleDensities.resize(ParticlesCount);
 
-	if ( Count == 0 )
+	if ( ParticlesCount == 0 )
 		return;
 
-	ParticleSize = ParticleSize;
 
 
-	if ( bRandomPos )
+	if ( bRandomPositions )
 	{
-		for ( int32 i = 0; i < Count; ++i )
+		for ( int32 i = 0; i < ParticlesCount; ++i )
 		{
 			glm::vec2 Range = ParentContainer->GetSize() - glm::vec2(ParticleSize*2.0f);
 			float x = BravoMath::Rand(-Range.x, Range.x);
@@ -135,19 +137,19 @@ void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 		int32 particlesPerRow;
 		int32 particlesPerCol;
 
-		if (Count * ParticleSize > ParentContainer->GetSize().y * 0.5f)
+		if (ParticlesCount * ParticleSize > ParentContainer->GetSize().y * 0.5f)
 		{
-			particlesPerRow = (int32)glm::sqrt(Count * 2);
-			particlesPerCol = (Count - 1) / particlesPerRow + 1;
+			particlesPerRow = (int32)glm::sqrt(ParticlesCount * 2);
+			particlesPerCol = (ParticlesCount - 1) / particlesPerRow + 1;
 		}
 		else
 		{
-			particlesPerRow = (int32)glm::sqrt(Count);
-			particlesPerCol = (Count - 1) / particlesPerRow + 1;
+			particlesPerRow = (int32)glm::sqrt(ParticlesCount);
+			particlesPerCol = (ParticlesCount - 1) / particlesPerRow + 1;
 		}
 
 		
-		for ( int32 i = 0; i < Count; ++i )
+		for ( int32 i = 0; i < ParticlesCount; ++i )
 		{
 			float x = (i % particlesPerRow - particlesPerRow / 2.0f + 0.5f) * spacing;
 			float y = (i / particlesPerRow - particlesPerCol / 2.0f + 0.5f) * spacing;
@@ -158,7 +160,7 @@ void FluidSimulation::SpawnParticles(int32 Count, bool bRandomPos)
 		}
 	}
 
-	//UpdateSpacialLookup();
+	UpdateSpacialLookup();
 }
 
 void FluidSimulation::Reset()
@@ -169,6 +171,7 @@ void FluidSimulation::Reset()
 		Particles[i] = Particle();
 		Particles[i].Position = OriginalPositions[i];
 	}
+	UpdateSpacialLookup();
 	bHasStarted = false;
 	bPaused = true;
 }
@@ -180,53 +183,103 @@ void FluidSimulation::TogglePause()
 		bHasStarted = true;
 }
 
+void FluidSimulation::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
+{
+	const glm::ivec2 vSize = Engine->GetViewport()->GetViewportSize();
+	const glm::vec2 rPos = (glm::vec2(CurrentPosition.x / vSize.x, CurrentPosition.y / vSize.y ) * 2.0f) - glm::vec2(1.0f);
+
+	glm::vec2 halfWorldSize = WorldSize * 0.5f;
+
+	const glm::vec2 mWorldPos = rPos * halfWorldSize;
+
+	float Density = CalcDensity(mWorldPos);
+	Log::LogMessage(ELog::Log, "density: {}", Density);
+	
+
+	std::pair<int32, int32> CellHash;
+	if ( GetCellHash(GetCellCoord(mWorldPos), CellHash) )
+		Log::LogMessage(ELog::Log, "cell coords: {}, Cell index: {}, {}...... {}", GetCellCoord(mWorldPos), CellHash.first, CellOccupied[CellHash.first] ? "occupied"  : "empty", CellHash.second);
+
+	std::list<int32> HighlightParticles;
+	GetRelatedParticles(mWorldPos, HighlightParticles);
+	
+	std::for_each(std::execution::par,
+		ParticleIndicies.begin(),
+		ParticleIndicies.end(),
+		[this, HighlightParticles](int32 i)
+		{
+			bool h = std::find(HighlightParticles.begin(), HighlightParticles.end(), i) != HighlightParticles.end();
+			Particles[i].Hightligh = h ? 1 : 0;
+		});
+	
+}
+
 
 ///////////////////////////////////////////////
 
 void FluidSimulation::Tick(float DeltaTime)
 {
-	float density = CalcDensity(glm::vec2(0.0f));
-	Log::LogMessage(ELog::Log, "density: {}", density);
 	if ( bPaused ) return;
-	for ( int32 i = 0; i < 4; ++i )
+	for ( int32 i = 0; i < 1; ++i )
 		SimulationStep(DeltaTime / 4.0f);
 }
 
 glm::ivec2 FluidSimulation::GetCellCoord(const glm::vec2& Position) const
 {
-	int32 cellX = static_cast<int32>(std::floor(Position.x / SmoothingRadius));
-    int32 cellY = static_cast<int32>(std::floor(Position.y / SmoothingRadius));
+	glm::vec2 normilizedPos = Position + WorldSize * 0.5f;
+	int32 cellX = static_cast<int32>(std::floor(normilizedPos.x / SmoothingRadius*0.5f));
+    int32 cellY = static_cast<int32>(std::floor(normilizedPos.y / SmoothingRadius*0.5f));
 	return glm::ivec2(cellX, cellY);
 }
 
-uint32 FluidSimulation::GetCellHash(const glm::ivec2& Coords) const
+ bool FluidSimulation::GetCellHash(const glm::ivec2& Coords, std::pair<int32, int32>& OutHash) const
 {
-	int32 hash = (Coords.x * 65537 + Coords.y * 7919) % Particles.size();
-	return hash;
+	if (Coords.x < 0 || Coords.y < 0 || Coords.x >= GridSize.x || Coords.y >= GridSize.y)
+	{
+		OutHash = std::pair<int32, int32>(-1,-1);
+		return false;
+	}
+	int32 hash = Coords.y * GridSize.x + Coords.x;
+	int32 cellIndex = hash % CellOccupied.size();
+	int32 pIndex = hash % ParticleIndicies.size();
+
+	OutHash = std::pair<int32, int32>(cellIndex, pIndex);
+	return true;
 }
 
 void FluidSimulation::UpdateSpacialLookup()
 {
 	SpacialLookup.clear();
-	SpacialLookup.resize(ParticleIndicies.size(), std::pair<uint32, int32>(0, 0));
+	SpacialLookup.resize(ParticleIndicies.size(), std::pair<int32, int32>(0, 0));
 
 	StartIndices.clear();
 	StartIndices.resize(ParticleIndicies.size(), -1);
+	
+
+	float cellSize = SmoothingRadius * 2.0f;
+    GridSize.x = glm::ceil(WorldSize.x / cellSize);
+    GridSize.y = glm::ceil(WorldSize.y / cellSize);
+	
+	CellOccupied.clear();
+	CellOccupied.resize( GridSize.x * GridSize.y, false);
 
 	std::for_each(std::execution::par,
 		ParticleIndicies.begin(),
 		ParticleIndicies.end(),
 		[this](int32 i)
 		{
-			uint32 CellKey = GetCellHash(GetCellCoord(Particles[i].Position));
-			SpacialLookup[i] = std::pair<uint32, int32>(CellKey, i);
+			std::pair<int32, int32> CellHash;
+			if ( !GetCellHash(GetCellCoord(Particles[i].Position), CellHash) )
+				return;
+			CellOccupied[CellHash.first] = true;
+			SpacialLookup[i] = std::pair<int32, int32>(CellHash.second, i);
 		});
-	
+
 	std::sort(
 		SpacialLookup.begin(),
 		SpacialLookup.end(),
-		[](const std::pair<uint32, int32>& left, const std::pair<uint32, int32>& right)
-		{
+		[this](const std::pair<int32, int32>& left, const std::pair<int32, int32>& right)
+		{	
 			return left.first < right.first;
 		});
 
@@ -235,11 +288,11 @@ void FluidSimulation::UpdateSpacialLookup()
 		ParticleIndicies.end(),
 		[this](int32 lookupIndex)
 		{
-			int32 Key = SpacialLookup[lookupIndex].first;
-			int32 prevKey = lookupIndex != 0 ? SpacialLookup[lookupIndex-1].first : -1;
-			if ( Key != prevKey )
+			int32 CellHash = SpacialLookup[lookupIndex].first;
+			int32 prevCellHash = lookupIndex != 0 ? SpacialLookup[lookupIndex-1].first : -1;
+			if ( CellHash != prevCellHash )
 			{
-				StartIndices[Key] = lookupIndex;
+				StartIndices[CellHash] = lookupIndex;
 			}
 		});
 }
@@ -265,19 +318,28 @@ void FluidSimulation::GetRelatedParticles(const glm::vec2& Position, std::list<i
 		GetParticlesInCell(CellCoord+it, OutParticles);
 }
 
-void FluidSimulation::GetParticlesInCell(const glm::ivec2& CellIndex, std::list<int32>& OutParticles) const
+void FluidSimulation::GetParticlesInCell(const glm::ivec2& CellCoords, std::list<int32>& OutParticles) const
 {
-	int32 CellHash = GetCellHash(CellIndex);
-	if ( StartIndices.size() <= CellHash || CellHash < 0 )
+	std::pair<int32, int32> CellHash;
+	if ( !GetCellHash(CellCoords, CellHash) )
 		return;
-	int32 StartIndex = StartIndices[CellHash];
+
+	if ( !CellOccupied[CellHash.first] )
+		return;
+
+	int32 CellKey = CellHash.second;
+
+	if ( StartIndices.size() <= CellKey || CellKey < 0 )
+		return;
+
+	int32 StartIndex = StartIndices[CellKey];
 
 	if ( StartIndex < 0 )
 		return;
 	
 	for (  uint32 i = StartIndex; i < SpacialLookup.size(); ++i)
 	{
-		if ( SpacialLookup[i].first != CellHash )
+		if ( SpacialLookup[i].first != CellKey )
 			return;
 
 		OutParticles.push_back(SpacialLookup[i].second);
@@ -288,8 +350,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 {
 	assert(ParticleDensities.size() == Particles.size() && ParticleDensities.size() == ParticleIndicies.size() );
 
-	glm::vec2 gravityAcceleration = glm::vec2(0.0f, -Gravity) * DeltaTime;
-
+	glm::vec2 gravityAcceleration = glm::vec2(0.0f, Gravity) * DeltaTime;
 
 	// gravity and density
 	std::for_each(std::execution::par,
@@ -300,7 +361,6 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 			Particles[i].Velocity += gravityAcceleration;
 			ParticleDensities[i] = CalcDensity(Particles[i].Position);
 		});
-
 
 	// pressure
 	std::for_each(std::execution::par,
@@ -342,18 +402,20 @@ glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
 
 	glm::vec2 randDir = glm::normalize(glm::vec2((float)(rand()) / (float)(RAND_MAX), (float)(rand()) / (float)(RAND_MAX)));
 
-	for ( int32 i = 0; i < Particles.size(); ++i )
+	std::list<int32> RelatedParticles;
+	GetRelatedParticles(Particles[pIndex].Position, RelatedParticles);
+	for ( int32 otherIndex : RelatedParticles )
 	{
-		if ( pIndex == i ) continue;
+		if ( pIndex == otherIndex ) continue;
 
-		glm::vec2 offset = Particles[pIndex].Position - Particles[i].Position;
+		glm::vec2 offset = Particles[pIndex].Position - Particles[otherIndex].Position;
 		float dst = glm::length(offset);
 
 		glm::vec2 dir = dst != 0.0f ? offset / dst : randDir;
 		float slope =  SmoothingKernelDerivative(dst, SmoothingRadius);
-		float density = ParticleDensities[i];
+		float density = ParticleDensities[otherIndex];
 
-		float sharedPressure = CalcSharedPressure(ParticleDensities[pIndex], ParticleDensities[i]);
+		float sharedPressure = CalcSharedPressure(ParticleDensities[pIndex], ParticleDensities[otherIndex]);
 
 		pressure += sharedPressure * dir * slope * ParticleMass / density;
 	}

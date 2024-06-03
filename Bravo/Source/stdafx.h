@@ -19,6 +19,7 @@
 #include <set>
 #include <any>
 #include <execution>
+#include <cmath>
 // utilities
 #include "Log.h"
 

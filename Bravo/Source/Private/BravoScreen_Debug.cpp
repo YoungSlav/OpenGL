@@ -35,10 +35,10 @@ void BravoScreen_Debug::Render_Internal(float DeltaTime)
 			Color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	ImGui::SetNextWindowBgAlpha(0.0f);
+	//ImGui::SetNextWindowBgAlpha(0.0f);
 	ImGui::Begin(GetLabel().c_str(), nullptr,
-		ImGuiWindowFlags_NoBackground |
-		ImGuiWindowFlags_NoDecoration |
+		//ImGuiWindowFlags_NoBackground |
+		//ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoMove |
