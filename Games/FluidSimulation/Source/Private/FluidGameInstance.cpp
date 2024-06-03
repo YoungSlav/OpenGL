@@ -36,6 +36,8 @@ bool FluidGameInstance::Initialize_Internal()
 	{
 		// spawn fluid
 		Simulation = NewObject<FluidSimulation>("FluidSimulation", Container);
+
+		Container->SetSimulation(Simulation);
 	}
 
 	auto PP = NewObject<FluidPostProcess_Density>("SimulationPP", Simulation, Container);

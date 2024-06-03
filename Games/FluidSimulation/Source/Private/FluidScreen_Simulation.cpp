@@ -43,7 +43,7 @@ bool FluidScreen_Simulation::Slider(const std::string& Label, int32* value, int3
 
 	ImGui::SetNextItemWidth(SliderWidth);
 	std::string inputName = "##" + Label;
-	bool ret = ImGui::SliderInt(inputName.c_str(), value, min, max);
+	bool ret = ImGui::InputInt(inputName.c_str(), value, 1, 10);
 
 	return ret;
 }
@@ -55,7 +55,7 @@ bool FluidScreen_Simulation::Slider(const std::string& Label, float* value, floa
 	
 	ImGui::SetNextItemWidth(SliderWidth);
 	std::string inputName = "##" + Label;
-	bool ret = ImGui::SliderFloat(inputName.c_str(), value, min, max);
+	bool ret = ImGui::InputFloat(inputName.c_str(), value, 0.0001, 1.0f);
 
 	return ret;
 }
@@ -77,14 +77,14 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoCollapse );
 
-		if ( Slider("Particle count", &Simulation->ParticleCount, 0, 2000) )
+		if ( Slider("Particle count", &Simulation->ParticlesCount, 0, 2000) )
 		{
-			Simulation->SpawnParticles(Simulation->ParticleCount, Simulation->bRandomPositions);
+			Simulation->SpawnParticles(Simulation->ParticlesCount, Simulation->bRandomPositions);
 		}
 		
 		if ( ImGui::Checkbox("Random", &Simulation->bRandomPositions) )
 		{
-			Simulation->SpawnParticles(Simulation->ParticleCount, Simulation->bRandomPositions);
+			Simulation->SpawnParticles(Simulation->ParticlesCount, Simulation->bRandomPositions);
 		}
 
 		Spacing();
@@ -95,7 +95,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		{
 			if ( !Simulation->HasStarted() )
 			{
-				Simulation->SpawnParticles(Simulation->ParticleCount, Simulation->bRandomPositions);
+				Simulation->SpawnParticles(Simulation->ParticlesCount, Simulation->bRandomPositions);
 			}
 		}
 
@@ -109,10 +109,10 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		Slider("Max Velocity", &Simulation->MaxVelocity, 0.0f, 100.0f);
 
 		Spacing();
-		Slider("Smoothing radius", &Simulation->SmoothingRadius, Simulation->ParticleSize, 50);
+		Slider("Smoothing radius", &Simulation->SmoothingRadius, 0.1f, 4.0f);
 
 		Spacing();
-		Slider("Target density", &Simulation->TargetDensity, 0.0f, 0.02);
+		Slider("Target density", &Simulation->TargetDensity, 0.0f, 10.0f);
 
 		Spacing();
 		Slider("Preassure", &Simulation->Preassure, 0.0f, 1000.0f);

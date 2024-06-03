@@ -3,6 +3,7 @@
 #include "BravoEngine.h"
 #include "BravoShaderAsset.h"
 #include "BravoCamera.h"
+#include "FluidSimulation.h"
 
 
 bool FluidContainer::Initialize_Internal()
@@ -60,15 +61,16 @@ const glm::vec2& FluidContainer::GetSize(bool Inside) const
 {
 	if ( !Inside )
 		return Transform.GetScale()*0.5f;
-	return Transform.GetScale()*0.5f - glm::vec2(BorderWidth);
+	return Transform.GetScale()*0.5f - glm::vec2(BorderWidth*2.0f);
 }
 
 void FluidContainer::Render()
 {
-	return;
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 	if ( !camera )
 		return;
+
+	assert( Simulation != nullptr );
 	
 	Shader->Use();
 
@@ -79,9 +81,15 @@ void FluidContainer::Render()
 
 		Shader->SetMatrix4d("modelViewProjection", ModelTranform);
 		Shader->SetVector2d("containerSize", Transform.GetScale());
-		Shader->SetVector3d("color", Color);
 		Shader->SetVector3d("outlineColor", OutlineColor);
 		Shader->SetVector1d("borderWidth", BorderWidth);
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, Simulation->GetParticlesSSBO());
+
+		Shader->SetInt("particleCount", Simulation->ParticlesCount);
+		Shader->SetVector1d("targetDensity", Simulation->TargetDensity);
+		Shader->SetVector1d("particleMass", Simulation->ParticleMass);
+		Shader->SetVector1d("smoothingRadius", Simulation->SmoothingRadius);
 	
 		glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);

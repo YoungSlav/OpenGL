@@ -21,8 +21,12 @@ public:
 	void SetTransform(const BravoTransform2D& _Transform) { Transform = _Transform; }
 	bool CheckRoundCollision(glm::vec2& Location, float Radius, glm::vec2& OutVelocityModify) const;
 
-	void SetColor(const glm::vec3& _color) { Color = _color; }
+
 	void SetOutlineColor(const glm::vec3& _color) { OutlineColor = _color; }
+
+	void SetSimulation(std::shared_ptr<class FluidSimulation> _Simulation) { Simulation = _Simulation; }
+
+
 
 protected:
 	virtual bool Initialize_Internal() override;
@@ -37,6 +41,7 @@ protected:
 
 private:
 	std::shared_ptr<class BravoShaderAsset> Shader;
+	std::shared_ptr<class FluidSimulation> Simulation;
 	GLuint VAO = 0;
 	GLuint VBO = 0;
 

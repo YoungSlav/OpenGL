@@ -22,7 +22,7 @@ public:
 
 	// SIMULATION PROPERTIES
 	 
-	int32 ParticleCount = 500;
+	int32 ParticlesCount = 500;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
@@ -35,9 +35,9 @@ public:
 
 	float MaxVelocity = 100.0f;
 
-	float SmoothingRadius = 5.0f;
+	float SmoothingRadius = 1.5f;
 
-	float TargetDensity = 1.0f;
+	float TargetDensity = 2.5f;
 
 	float Preassure = 50.0f;
 
@@ -68,6 +68,12 @@ private:
 	float CalcSharedPressure(float densityA, float densityB) const;
 	float DensityToPeassure(float density) const;
 
+	void GetRelatedParticles(const glm::vec2& Position, std::list<int32>& OutParticles) const;
+	void GetParticlesInCell(const glm::ivec2& CellIndex, std::list<int32>& OutParticles) const;
+	void UpdateSpacialLookup();
+	glm::ivec2 GetCellCoord(const glm::vec2& Position) const;
+	uint32 GetCellHash(const glm::ivec2& Coords) const;
+
 private:
 	std::vector<Particle> Particles;
 	std::shared_ptr<class FluidContainer> ParentContainer = nullptr;
@@ -75,7 +81,7 @@ private:
 	GLuint VAO = 0;
 	GLuint VBO = 0;
 	GLuint ParticlesSSBO = 0;
-	int32 ParticlesCount = 0;
+	int32 CachedCount = 0;
 
 	std::shared_ptr<class BravoShaderAsset> Shader;
 
@@ -86,4 +92,9 @@ private:
 
 	std::vector<int32> ParticleIndicies;
 	std::vector<float> ParticleDensities;
+	// cell hash <-> particle index
+	std::vector<std::pair<uint32, int32>> SpacialLookup;
+	// index = cell hash, value = start index in SpacialLookup
+	std::vector<int32> StartIndices;
+
 };
