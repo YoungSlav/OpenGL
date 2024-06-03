@@ -377,7 +377,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		{
 			glm::vec2 preassureForce = CalcPressureForce(i);
 			glm::vec2 preassureAcceleration = preassureForce;
-			Particles[i].Velocity = preassureAcceleration * DeltaTime;
+			Particles[i].Velocity += preassureAcceleration * DeltaTime;
 		});
 
 	std::for_each(std::execution::par,
