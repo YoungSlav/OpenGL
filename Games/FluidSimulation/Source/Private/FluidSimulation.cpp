@@ -386,6 +386,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		[this, DeltaTime](int32 i)
 		{
 			Particles[i].Position += Particles[i].Velocity * DeltaTime;
+			//CheckParticleCollision(i);
 			glm::vec2 CollisionVelocity(0.0);
 			if ( ParentContainer->CheckRoundCollision(Particles[i].Position, ParticleSize, CollisionVelocity) )
 			{
@@ -394,6 +395,32 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		});
 
 	UpdateSpacialLookup();
+}
+
+glm::vec2 FluidSimulation::CheckParticleCollision(int32 pIndex)
+{
+	glm::vec2 samplePoint = Particles[pIndex].Position;
+	std::list<int32> RelatedParticles;
+	GetRelatedParticles(samplePoint, RelatedParticles);
+	const float pDiam = (ParticleSize * 2);
+	const float minDist2 = pDiam*pDiam;
+	for ( int32 otherIndex : RelatedParticles )
+	{
+		if ( pIndex == otherIndex ) continue;
+		
+		glm::vec2 otherPos = Particles[otherIndex].Position;
+
+		glm::vec2 offset = Particles[pIndex].Position - otherPos;
+		float dst = glm::length2(offset);
+		if ( dst < minDist2 )
+		{
+			float rDistance = glm::sqrt(dst);
+			glm::vec2 dir = offset / rDistance;
+			Particles[pIndex].Position = otherPos + (dir * pDiam);
+			Particles[pIndex].Velocity *= -CollisionDamping;
+		}
+	}
+	return Particles[pIndex].Velocity;
 }
 
 float FluidSimulation::DensityToPeassure(float density) const

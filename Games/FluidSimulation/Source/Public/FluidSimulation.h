@@ -81,6 +81,9 @@ private:
 
 	glm::vec2 CalcPressureForce(int32 i) const;
 	float CalcDensity(const glm::vec2& samplePoint) const;
+
+	glm::vec2 CheckParticleCollision(int32 pIndex);
+
 	float SmoothingKernel(float radius, float distance) const;
 	float SmoothingKernelDerivative(float radius, float distance) const;
 
