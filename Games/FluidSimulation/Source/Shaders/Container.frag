@@ -36,6 +36,8 @@ const float pi = 3.14159265359f;
 float SmoothingKernel(float radius, float distance)
 {
 	if ( distance >= radius ) return 0.0f;
+	distance = distance / radius;
+	radius = 1.0f;
 
 	float volume = (315.0f / (64.0f * pi)) * pow(smoothingRadius, 9);
 	float value = (radius * radius - distance * distance);

@@ -456,7 +456,10 @@ float FluidSimulation::SmoothingKernel(float radius, float distance) const
 {
 	if ( distance >= radius ) return 0.0f;
 
-	float volume = (315.0f / (64.0f * glm::pi<float>())) * std::pow(SmoothingRadius, 9);
+	distance = distance / radius;
+	radius = 1.0f;
+
+	float volume = (315.0f / (64.0f * glm::pi<float>())) * std::pow(radius, 9);
 	float value = (radius * radius - distance * distance);
 	return value * value * value / volume;
 }
@@ -464,8 +467,10 @@ float FluidSimulation::SmoothingKernel(float radius, float distance) const
 float FluidSimulation::SmoothingKernelDerivative(float radius, float distance) const
 {
 	if ( distance >= radius ) return 0.0f;
+	distance = distance / radius;
+	radius = 1.0f;
 	
 	float scale = 15 / (glm::pi<float>() * glm::pow(radius, 6));
 	float value = glm::pow((distance - radius), 3);
-	return (distance - radius) * scale;
+	return value * scale;
 }
