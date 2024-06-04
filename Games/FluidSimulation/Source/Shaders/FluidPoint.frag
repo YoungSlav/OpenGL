@@ -19,9 +19,9 @@ out vec4 FragColor;
 
 uniform float maxSpeed;
 
-const vec3 Cold = vec3(0.0f, 0.0f, 1.0f);
-const vec3 Middle = vec3(1.0f, 1.0f, 0.0f);
-const vec3 Hot = vec3(1.0f, 0.0f, 0.0f);
+uniform vec3 Cold;
+uniform vec3 Middle;
+uniform vec3 Hot;
 
 void main()
 {
@@ -36,5 +36,5 @@ void main()
         Color = mix(Middle, Hot, (speed-midSpeed) / (maxSpeed-midSpeed));
 
     
-    FragColor = particles[InstanceID].Highlight == 1 ? vec4(1.0, 0.0, 0.0, 1.0) : vec4(1.0,1.0,1.0, 1.0);
+    FragColor = vec4(Color, 1.0);
 }

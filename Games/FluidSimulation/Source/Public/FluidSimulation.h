@@ -39,25 +39,36 @@ public:
 
 	// SIMULATION PROPERTIES
 	 
-	int32 ParticlesCount = 20;
-	bool bRandomPositions = false;
+	int32 ParticlesCount = 6000;
+	bool bRandomPositions = true;
 
-	float ParticleMass = 1.0f;
-	float ParticleSize = 10.0f; 
+	float ParticleMass = 50.0f;
+	float ParticleSize = 5.0f; 
+	float SmoothingRadius = 15.0f;
 
 
 
 	float CollisionDamping = 0.3f;
-	float Gravity = 100.0f;
+	float Gravity = 200.0f;
 
-	float SmoothingRadius = 30.0f;
-	float TargetDensity = 0.25f;
-	float Preassure = 0.0f;
-	float NearPressureMultiplier = 0.0f;
+	float TargetDensity = 0.5f;
+	float Preassure = 200.0f;
+	float NearPressureMultiplier = 15.0f;
+
+	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
+	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
+	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
 
+	glm::vec2 InteractionLocation;
+	float InteractionForce = 0.0f;
 
-	float MaxVelocity = 100.0f;
+	float ViscosityFactor = 1.0f;
+
+	float InteractionAcceleration = 500.0f;
+	float InteractionStep = 10.0f;
+	float InteractionRadius = 100000.0f;
+	float MaxVelocity = 300.0f;
 	int32 StepsPerTick = 1;
 
 	// END SIMULATION PROPERTIES
@@ -79,14 +90,17 @@ private:
 	virtual void Render() override;
 
 	void OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime);
+	void OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime);
+	void OnInput_MOUSERIGHT(bool ButtonState, float DeltaTime);
+	void OnInput_MOUSELEFT(bool ButtonState, float DeltaTime);
+	void OnInput_Space(bool ButtonState, float DeltaTime);
 
 
 	void SimulationStep(float DeltaTime);
 
-	glm::vec2 CalcPressureForce(int32 i) const;
 	void CalcDensity(const glm::vec2& samplePoint, float& Density, float& NearDensity) const;
-
-	glm::vec2 CheckParticleCollision(int32 pIndex);
+	glm::vec2 CalcPressureForce(int32 i) const;
+	glm::vec2 CalcViscosity(int32 i) const;
 
 	float DensityToPessure(float density) const;
 	float NearDensityToPessure(float density) const;
@@ -122,10 +136,14 @@ private:
 	std::vector<glm::vec2> OriginalPositions;
 
 	std::vector<int32> ParticleIndicies;
+	std::vector<glm::vec2> PredictedPositions;
 	std::vector<float> Densities;
 	std::vector<float> NearDensities;
 
 	FluidMath math;
+
+	bool bMouseLeft = false;
+	bool bMouseRight = false;
 
 
 	// cell hash <-> particle index

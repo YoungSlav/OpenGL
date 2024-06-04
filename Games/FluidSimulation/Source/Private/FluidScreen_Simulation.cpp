@@ -12,7 +12,7 @@ bool FluidScreen_Simulation::Initialize_Internal()
 	SetTrueScaling(true);
 	SetSize(glm::vec2(0.3f, 2.0f));
 	SetOrigin(glm::vec2(0.0f, 0.0f));
-	SetPosition(glm::vec2(0.0f, 0.0f));
+	SetPosition(glm::vec2(0.01f, 0.0f));
 
 	if ( Engine->GetInput() )
 	{
@@ -99,6 +99,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		Spacing();
 		Spacing();
 
+
 		if ( Slider("Particle count", &Simulation->ParticlesCount, 1, 4000) )
 		{
 			if ( !Simulation->HasStarted() )
@@ -116,10 +117,10 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		}
 
 		Spacing();
-		Slider("Mass", &Simulation->ParticleMass, 0.001f, 10.0f);
+		Slider("Mass", &Simulation->ParticleMass, 50.0f, 200.0f);
 		
 		Spacing();
-		if ( Slider("Size", &Simulation->ParticleSize, 10.0f, 100.0) )
+		if ( Slider("Size", &Simulation->ParticleSize, 1.0f, 100.0) )
 		{
 			if ( !Simulation->HasStarted() )
 			{
@@ -128,7 +129,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		}
 
 		Spacing();
-		if ( Slider("Smoothing radius", &Simulation->SmoothingRadius, 10.0f, 100.0f) )
+		if ( Slider("Smoothing radius", &Simulation->SmoothingRadius, 1.0f, 100.0f) )
 		{
 			if ( !Simulation->HasStarted() )
 			{
@@ -138,25 +139,34 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		}
 
 		Spacing();
-		Slider("Target density", &Simulation->TargetDensity, 0.0f, 1.0f);
+		Slider("Target density", &Simulation->TargetDensity, 0.0f, 2.0f);
 
 		Spacing();
-		Slider("Preassure", &Simulation->Preassure, 0.0f, 1000.0f);
+		Slider("Preassure", &Simulation->Preassure, 0.0f, 100000.0f);
 
 		Spacing();
-		Slider("Near Pressure", &Simulation->NearPressureMultiplier, 0.0f, 1000.0f);
+		Slider("Near Pressure", &Simulation->NearPressureMultiplier, 0.0f, 10000.0f);
+
+		Spacing();
+		Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 100000.0f);
 
 		Spacing();
 		Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
 
 		Spacing();
-		Slider("Gravity", &Simulation->Gravity, 0.0f, 100.0f);
+		Slider("Gravity", &Simulation->Gravity, -100.0f, 100.0f);
+
+		Spacing();
+		Slider("Interaction force", &Simulation->InteractionAcceleration, -100000.0f, 100000.0f);
+
+		Spacing();
+		Slider("Interaction radius", &Simulation->InteractionRadius, 10.0f, 1000.0f);
 
 		Spacing();
 		Slider("Max Velocity", &Simulation->MaxVelocity, 0.0f, 100.0f);
 
 		Spacing();
-		Slider("Steps per tick", &Simulation->StepsPerTick, 1, 4);
+		Slider("Steps per tick", &Simulation->StepsPerTick, 1, 10);
 
 	ImGui::End();
 	ImGui::GetStyle().ScaleAllSizes(2.0f);
