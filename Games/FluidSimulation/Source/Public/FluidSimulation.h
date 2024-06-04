@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 #include "IBravoRenderable.h"
+#include "FluidMath.h"
 
 struct Particle
 {
@@ -42,16 +43,17 @@ public:
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
-	float ParticleSize = 0.1f; 
+	float ParticleSize = 10.0f; 
 
 
 
 	float CollisionDamping = 0.3f;
 	float Gravity = 100.0f;
 
-	float SmoothingRadius = 0.5f;
+	float SmoothingRadius = 30.0f;
 	float TargetDensity = 0.25f;
-	float Preassure = 0.7f;
+	float Preassure = 0.0f;
+	float NearPressureMultiplier = 0.0f;
 
 
 
@@ -65,9 +67,11 @@ public:
 	void Reset();
 	void TogglePause();
 	bool IsPaused() const { return bPaused; }
-	bool HasStarted() const { return bHasStarted; }
+	void UpdateMath();
 
+	bool HasStarted() const { return bHasStarted; }
 	GLuint GetParticlesSSBO() const { return ParticlesSSBO; }
+
 
 private:
 	virtual bool Initialize_Internal() override;
@@ -80,21 +84,24 @@ private:
 	void SimulationStep(float DeltaTime);
 
 	glm::vec2 CalcPressureForce(int32 i) const;
-	float CalcDensity(const glm::vec2& samplePoint) const;
+	void CalcDensity(const glm::vec2& samplePoint, float& Density, float& NearDensity) const;
 
 	glm::vec2 CheckParticleCollision(int32 pIndex);
 
-	float SmoothingKernel(float radius, float distance) const;
-	float SmoothingKernelDerivative(float radius, float distance) const;
-
-	float CalcSharedPressure(float densityA, float densityB) const;
-	float DensityToPeassure(float density) const;
+	float DensityToPessure(float density) const;
+	float NearDensityToPessure(float density) const;
 
 	void GetRelatedParticles(const glm::vec2& Position, std::list<int32>& OutParticles) const;
 	void GetParticlesInCell(const glm::ivec2& CellIndex, std::list<int32>& OutParticles) const;
 	void UpdateSpacialLookup();
 	glm::ivec2 GetCellCoord(const glm::vec2& Position) const;
 	bool GetCellHash(const glm::ivec2& Coords, CellHash& OutHash) const;
+
+	float DensityKernel(float dst) const;
+	float NearDensityKernel(float dst) const;
+	float DensityDerivative(float dst) const;
+	float NearDensityDerivative(float dst) const;
+	float ViscosityKernel(float dst) const;
 
 private:
 	std::vector<Particle> Particles;
@@ -115,9 +122,10 @@ private:
 	std::vector<glm::vec2> OriginalPositions;
 
 	std::vector<int32> ParticleIndicies;
-	std::vector<float> ParticleDensities;
+	std::vector<float> Densities;
+	std::vector<float> NearDensities;
 
-	
+	FluidMath math;
 
 
 	// cell hash <-> particle index

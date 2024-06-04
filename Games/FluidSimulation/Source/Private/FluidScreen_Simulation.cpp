@@ -119,7 +119,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		Slider("Mass", &Simulation->ParticleMass, 0.001f, 10.0f);
 		
 		Spacing();
-		if ( Slider("Size", &Simulation->ParticleSize, 0.5f, 5) )
+		if ( Slider("Size", &Simulation->ParticleSize, 10.0f, 100.0) )
 		{
 			if ( !Simulation->HasStarted() )
 			{
@@ -128,19 +128,23 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		}
 
 		Spacing();
-		if ( Slider("Smoothing radius", &Simulation->SmoothingRadius, 0.1f, 4.0f) )
+		if ( Slider("Smoothing radius", &Simulation->SmoothingRadius, 10.0f, 100.0f) )
 		{
 			if ( !Simulation->HasStarted() )
 			{
 				Simulation->SpawnParticles();
 			}
+			Simulation->UpdateMath();
 		}
 
 		Spacing();
-		Slider("Target density", &Simulation->TargetDensity, 0.0f, 3.0f);
+		Slider("Target density", &Simulation->TargetDensity, 0.0f, 1.0f);
 
 		Spacing();
-		Slider("Preassure", &Simulation->Preassure, 0.0f, 10.0f);
+		Slider("Preassure", &Simulation->Preassure, 0.0f, 1000.0f);
+
+		Spacing();
+		Slider("Near Pressure", &Simulation->NearPressureMultiplier, 0.0f, 1000.0f);
 
 		Spacing();
 		Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);

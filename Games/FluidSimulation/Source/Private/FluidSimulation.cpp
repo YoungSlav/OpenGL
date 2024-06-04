@@ -89,9 +89,18 @@ void FluidSimulation::Render()
 	Shader->StopUsage();
 }
 
+
+
+void FluidSimulation::UpdateMath()
+{
+	math.SetRadius(SmoothingRadius);
+}
+
 void FluidSimulation::SpawnParticles()
 {
 	assert( ParentContainer != nullptr );
+
+	UpdateMath();
 	
 	bPaused = true;
 	bHasStarted = false;
@@ -105,8 +114,11 @@ void FluidSimulation::SpawnParticles()
 	ParticleIndicies.clear();
 	ParticleIndicies.resize(ParticlesCount);
 
-	ParticleDensities.clear();
-	ParticleDensities.resize(ParticlesCount);
+	Densities.clear();
+	Densities.resize(ParticlesCount);
+
+	NearDensities.clear();
+	NearDensities.resize(ParticlesCount);
 
 	WorldSize = ParentContainer->GetSize() * 2.0f;
 
@@ -198,10 +210,12 @@ void FluidSimulation::OnMouseMove(const glm::vec2& CurrentPosition, const glm::v
 
 	const glm::vec2 mWorldPos = rPos * halfWorldSize;
 
-	float Density = CalcDensity(mWorldPos);
-	Log::LogMessage(ELog::Log, "density: {}", Density);
+	float Density;
+	float NearDensity;
+	CalcDensity(mWorldPos, Density, NearDensity);
+	Log::LogMessage(ELog::Log, "density: {}, near density: {}", Density, NearDensity);
 	
-
+	return;
 	CellHash cHash;
 	if ( GetCellHash(GetCellCoord(mWorldPos), cHash) )
 		Log::LogMessage(ELog::Log, "cell coords: {}, Cell index: {}, {}...... {}", GetCellCoord(mWorldPos), cHash.CellIndex, CellOccupied[cHash.CellIndex] ? "occupied"  : "empty", cHash.CellIndexP);
@@ -355,7 +369,7 @@ void FluidSimulation::GetParticlesInCell(const glm::ivec2& CellCoords, std::list
 
 void FluidSimulation::SimulationStep(float DeltaTime)
 {
-	assert(ParticleDensities.size() == Particles.size() && ParticleDensities.size() == ParticleIndicies.size() );
+	assert(Densities.size() == Particles.size() && Densities.size() == ParticleIndicies.size() );
 
 	glm::vec2 gravityAcceleration = glm::vec2(0.0f, Gravity) * DeltaTime;
 
@@ -366,7 +380,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		[this, gravityAcceleration](int32 i)
 		{
 			Particles[i].Velocity += gravityAcceleration;
-			ParticleDensities[i] = CalcDensity(Particles[i].Position);
+			CalcDensity(Particles[i].Position, Densities[i], NearDensities[i]);
 		});
 
 	// pressure
@@ -423,24 +437,29 @@ glm::vec2 FluidSimulation::CheckParticleCollision(int32 pIndex)
 	return Particles[pIndex].Velocity;
 }
 
-float FluidSimulation::DensityToPeassure(float density) const
+float FluidSimulation::DensityToPessure(float density) const
 {
-	float densityError = TargetDensity - density;
-	float pressure = densityError * Preassure;
-	return pressure;
+	return (density - TargetDensity) * Preassure*10000.0f;
+}
+float FluidSimulation::NearDensityToPessure(float density) const
+{
+	return density * -NearPressureMultiplier*10000.0f;
 }
 
 glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
 {
-	glm::vec2 pressure = glm::vec2(0.0f);
+	glm::vec2 pressureForce = glm::vec2(0.0f);
 
 	glm::vec2 randDir = glm::normalize(glm::vec2((float)(rand()) / (float)(RAND_MAX), (float)(rand()) / (float)(RAND_MAX)));
 
 	std::list<int32> RelatedParticles;
 	GetRelatedParticles(Particles[pIndex].Position, RelatedParticles);
 
-	const float myDensity = ParticleDensities[pIndex];
-	const float myPreassure = DensityToPeassure(myDensity);
+	const float myDensity = Densities[pIndex];
+	const float myPressure = DensityToPessure(myDensity);
+
+	const float myNearDensity = NearDensities[pIndex];
+	const float myNearPressure = NearDensityToPessure(myNearDensity);
 	
 	for ( int32 otherIndex : RelatedParticles )
 	{
@@ -449,29 +468,25 @@ glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
 		glm::vec2 offset = Particles[pIndex].Position - Particles[otherIndex].Position;
 		float dst = glm::length(offset);
 		glm::vec2 dir = dst != 0.0f ? offset / dst : randDir;
-		float slope =  SmoothingKernelDerivative(dst, SmoothingRadius);
 
-		float otherDensity = ParticleDensities[otherIndex];
+		float otherDensity = Densities[otherIndex];
+		float otherPressure = DensityToPessure(otherDensity);
+		float sharedPressure = (myPressure + otherPressure)  / (2.0f*otherDensity);
+		
+		float otherNearDensity = NearDensities[otherIndex];
+		float otherNearPressure = NearDensityToPessure(otherDensity);
+		float sharedNearPressure = (myNearPressure + otherNearPressure)  / (2.0f*otherNearDensity);
 
-		float otherPressure = DensityToPeassure(otherDensity);
-
-		float sharedPressure = (myPreassure + otherPressure) / (2.0f * otherDensity) * slope;
-
-		pressure -= sharedPressure * dir;
+		pressureForce += dir * DensityDerivative(dst) * sharedPressure;
+		pressureForce += dir * NearDensityDerivative(dst) * sharedNearPressure;
 	}
-	return pressure;
+	return pressureForce;
 }
 
-float FluidSimulation::CalcSharedPressure(float densityA, float densityB) const
+void FluidSimulation::CalcDensity(const glm::vec2& samplePoint, float& Density, float& NearDensity) const
 {
-	float pressureA = DensityToPeassure(densityA);
-	float pressureB = DensityToPeassure(densityB);
-	return (pressureA + pressureB) / 2.0f;
-}
-
-float FluidSimulation::CalcDensity(const glm::vec2& samplePoint) const
-{
-	float density = 0.0f;
+	Density = 0.0f;
+	NearDensity = 0.0f;
 
 	std::list<int32> RelatedParticles;
 	GetRelatedParticles(samplePoint, RelatedParticles);
@@ -479,31 +494,32 @@ float FluidSimulation::CalcDensity(const glm::vec2& samplePoint) const
 	for ( int32& i : RelatedParticles )
 	{
 		float dst = glm::length(Particles[i].Position - samplePoint);
-		float influence = SmoothingKernel(SmoothingRadius, dst);
-		density += ParticleMass * influence;
+		Density += ParticleMass * DensityKernel(dst);
+		NearDensity += ParticleMass * NearDensityKernel(dst);
 	}
-	return density;
 }
 
-float FluidSimulation::SmoothingKernel(float radius, float distance) const
+float FluidSimulation::DensityKernel(float dst) const
 {
-	if ( distance >= radius ) return 0.0f;
-
-	distance = distance / radius;
-	radius = 1.0f;
-
-	float scale = (315.0f / (64.0f * glm::pi<float>())) * std::pow(radius, 9);
-	float value = glm::pow((radius * radius - distance * distance), 3);
-	return value * scale;
+	return math.SpikyKernelPow2(dst)*100.0f;
 }
 
-float FluidSimulation::SmoothingKernelDerivative(float radius, float distance) const
+float FluidSimulation::NearDensityKernel(float dst) const
 {
-	if ( distance >= radius ) return 0.0f;
-	distance = distance / radius;
-	radius = 1.0f;
-	
-	float scale = 15 / (glm::pi<float>() * glm::pow(radius, 6));
-	float value = glm::pow((radius - distance), 3);
-	return value * scale;
+	return math.SpikyKernelPow3(dst)*100.0f;
+}
+
+float FluidSimulation::DensityDerivative(float dst) const
+{
+	return math.DerivativeSpikyPow2(dst)*100.0f;
+}
+
+float FluidSimulation::NearDensityDerivative(float dst) const
+{
+	return math.DerivativeSpikyPow3(dst)*100.0f;
+}
+
+float FluidSimulation::ViscosityKernel(float dst) const
+{
+	return math.SmoothingKernelPoly6(dst)*100.0f;
 }

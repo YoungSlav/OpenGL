@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidContainer.h" />
     <ClInclude Include="Source\Public\FluidGameInstance.h" />
+    <ClInclude Include="Source\Public\FluidMath.h" />
     <ClInclude Include="Source\Public\FluidPostProcess_Density.h" />
     <ClInclude Include="Source\Public\FluidScreen_Simulation.h" />
     <ClInclude Include="Source\Public\FluidSimulation.h" />

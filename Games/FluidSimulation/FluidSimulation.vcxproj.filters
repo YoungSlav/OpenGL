@@ -47,6 +47,9 @@
     <ClInclude Include="Source\Public\FluidPostProcess_Density.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\FluidMath.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\Container.frag">
