@@ -420,7 +420,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 	
 	UpdateSpacialLookup();
 
-	glm::vec2 gravityAcceleration = glm::vec2(BravoMath::Rand(-Gravity*0.5f, Gravity*0.5f), Gravity);
+	glm::vec2 gravityAcceleration = glm::vec2(BravoMath::Rand(-Gravity*0.2f, Gravity*0.2f), Gravity);
 
 	// gravity position prediction
 	std::for_each(std::execution::par,
@@ -440,9 +440,9 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 
 					float nDistance = (1.0f - distance / InteractionRadius);
 
-					float gravityW = 1.0f - (nDistance * glm::saturate(InteractionAcceleration / 10.0f));
+					float gravityW = (nDistance * glm::saturate(InteractionAcceleration / 10.0f));
 					acceleration = gravityAcceleration * gravityW + direction * nDistance * InteractionAcceleration;
-					acceleration -= Particles[i].Velocity * nDistance;
+					acceleration += Particles[i].Velocity * nDistance;
 					acceleration *= InteractionForce;
 				}
 			}
@@ -477,6 +477,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		[this, DeltaTime](int32 i)
 		{
 			Particles[i].Velocity += CalcViscosity(i) * DeltaTime;
+
 			if ( glm::length2(Particles[i].Velocity) > MaxVelocity*MaxVelocity )
 				Particles[i].Velocity = glm::normalize(Particles[i].Velocity) * MaxVelocity;
 
@@ -491,11 +492,11 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 
 float FluidSimulation::DensityToPessure(float density) const
 {
-	return (density - TargetDensity) * Preassure * 10.0f;
+	return (density - TargetDensity) * Preassure;
 }
 float FluidSimulation::NearDensityToPessure(float density) const
 {
-	return density * -NearPressureMultiplier * 1000000.0f;
+	return density * -NearPressureMultiplier;
 }
 
 glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
@@ -536,7 +537,7 @@ glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
 		pressureForce += dir * DensityDerivative(dst) * sharedPressure;
 		pressureForce += dir * NearDensityDerivative(dst) * sharedNearPressure;
 	}
-	return pressureForce;
+	return pressureForce * 10000.0f / myDensity;
 }
 
 glm::vec2 FluidSimulation::CalcViscosity(int32 pIndex) const
@@ -558,9 +559,9 @@ glm::vec2 FluidSimulation::CalcViscosity(int32 pIndex) const
 
 		float dst = glm::length(offset);
 
-		viscosityForce += (otherVelocity - myVelocity) * ViscosityKernel(dst) * ViscosityFactor;
+		viscosityForce += (otherVelocity - myVelocity) * ViscosityKernel(dst);
 	}
-	return viscosityForce;
+	return viscosityForce * ViscosityFactor;
 }
 
 void FluidSimulation::CalcDensity(const glm::vec2& samplePoint, float& Density, float& NearDensity) const

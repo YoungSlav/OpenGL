@@ -139,17 +139,20 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		}
 
 		Spacing();
+		Spacing();
 		Slider("Target density", &Simulation->TargetDensity, 0.0f, 2.0f);
 
 		Spacing();
-		Slider("Preassure", &Simulation->Preassure, 0.0f, 100000.0f);
+		Slider("Preassure", &Simulation->Preassure, 0.0f, 5000.0f);
 
 		Spacing();
-		Slider("Near Pressure", &Simulation->NearPressureMultiplier, 0.0f, 10000.0f);
+		Slider("Near Pressure", &Simulation->NearPressureMultiplier, 0.0f, 5000.0f);
 
 		Spacing();
 		Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 100000.0f);
 
+
+		Spacing();
 		Spacing();
 		Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
 

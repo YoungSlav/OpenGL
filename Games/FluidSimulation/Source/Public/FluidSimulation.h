@@ -39,7 +39,7 @@ public:
 
 	// SIMULATION PROPERTIES
 	 
-	int32 ParticlesCount = 6000;
+	int32 ParticlesCount = 8000;
 	bool bRandomPositions = true;
 
 	float ParticleMass = 50.0f;
@@ -52,8 +52,8 @@ public:
 	float Gravity = 200.0f;
 
 	float TargetDensity = 0.5f;
-	float Preassure = 200.0f;
-	float NearPressureMultiplier = 15.0f;
+	float Preassure = 300.0f;
+	float NearPressureMultiplier = 1500.0f;
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
@@ -63,9 +63,9 @@ public:
 	glm::vec2 InteractionLocation;
 	float InteractionForce = 0.0f;
 
-	float ViscosityFactor = 1.0f;
+	float ViscosityFactor = 3000.0f;
 
-	float InteractionAcceleration = 500.0f;
+	float InteractionAcceleration = 1500.0f;
 	float InteractionStep = 10.0f;
 	float InteractionRadius = 100000.0f;
 	float MaxVelocity = 300.0f;
