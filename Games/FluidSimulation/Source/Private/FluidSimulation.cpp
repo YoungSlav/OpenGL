@@ -438,20 +438,26 @@ glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
 
 	std::list<int32> RelatedParticles;
 	GetRelatedParticles(Particles[pIndex].Position, RelatedParticles);
+
+	const float myDensity = ParticleDensities[pIndex];
+	const float myPreassure = DensityToPeassure(myDensity);
+	
 	for ( int32 otherIndex : RelatedParticles )
 	{
 		if ( pIndex == otherIndex ) continue;
 
 		glm::vec2 offset = Particles[pIndex].Position - Particles[otherIndex].Position;
 		float dst = glm::length(offset);
-
 		glm::vec2 dir = dst != 0.0f ? offset / dst : randDir;
 		float slope =  SmoothingKernelDerivative(dst, SmoothingRadius);
-		float density = ParticleDensities[otherIndex];
 
-		float sharedPressure = CalcSharedPressure(ParticleDensities[pIndex], ParticleDensities[otherIndex]);
+		float otherDensity = ParticleDensities[otherIndex];
 
-		pressure += sharedPressure * dir * slope * ParticleMass / density;
+		float otherPressure = DensityToPeassure(otherDensity);
+
+		float sharedPressure = (myPreassure + otherPressure) / (2.0f * otherDensity) * slope;
+
+		pressure -= sharedPressure * dir;
 	}
 	return pressure;
 }
@@ -486,9 +492,9 @@ float FluidSimulation::SmoothingKernel(float radius, float distance) const
 	distance = distance / radius;
 	radius = 1.0f;
 
-	float volume = (315.0f / (64.0f * glm::pi<float>())) * std::pow(radius, 9);
-	float value = (radius * radius - distance * distance);
-	return value * value * value / volume;
+	float scale = (315.0f / (64.0f * glm::pi<float>())) * std::pow(radius, 9);
+	float value = glm::pow((radius * radius - distance * distance), 3);
+	return value * scale;
 }
 
 float FluidSimulation::SmoothingKernelDerivative(float radius, float distance) const
@@ -498,6 +504,6 @@ float FluidSimulation::SmoothingKernelDerivative(float radius, float distance) c
 	radius = 1.0f;
 	
 	float scale = 15 / (glm::pi<float>() * glm::pow(radius, 6));
-	float value = glm::pow((distance - radius), 3);
+	float value = glm::pow((radius - distance), 3);
 	return value * scale;
 }

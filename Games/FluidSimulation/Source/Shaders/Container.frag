@@ -39,9 +39,9 @@ float SmoothingKernel(float radius, float distance)
 	distance = distance / radius;
 	radius = 1.0f;
 
-	float volume = (315.0f / (64.0f * pi)) * pow(smoothingRadius, 9);
-	float value = (radius * radius - distance * distance);
-	return value * value * value / volume;
+	float scale = (315.0f / (64.0f * pi)) * pow(radius, 9);
+	float value = pow((radius * radius - distance * distance), 3);
+	return value * scale;
 }
 
 float CalcDensity(vec2 samplePoint)
