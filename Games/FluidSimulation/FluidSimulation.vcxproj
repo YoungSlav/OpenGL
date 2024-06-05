@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Private\FluidContainer.cpp" />
     <ClCompile Include="Source\Private\FluidGameInstance.cpp" />
+    <ClCompile Include="Source\Private\FluidGrid.cpp" />
     <ClCompile Include="Source\Private\FluidPostProcess_Density.cpp" />
     <ClCompile Include="Source\Private\FluidScreen_Simulation.cpp" />
     <ClCompile Include="Source\Private\FluidSimulation.cpp" />
@@ -29,6 +30,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidContainer.h" />
     <ClInclude Include="Source\Public\FluidGameInstance.h" />
+    <ClInclude Include="Source\Public\FluidGrid.h" />
     <ClInclude Include="Source\Public\FluidMath.h" />
     <ClInclude Include="Source\Public\FluidPostProcess_Density.h" />
     <ClInclude Include="Source\Public\FluidScreen_Simulation.h" />

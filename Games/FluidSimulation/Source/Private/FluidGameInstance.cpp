@@ -71,8 +71,3 @@ void FluidGameInstance::OnViewportResize(const glm::ivec2& NewSize)
 
 	Camera->SetWorld2DSize(WorldSize);
 }
-
-void FluidGameInstance::Tick(float DeltaTime)
-{
-	
-}

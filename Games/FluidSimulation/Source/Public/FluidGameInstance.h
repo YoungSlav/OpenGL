@@ -2,20 +2,18 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 
-class FluidGameInstance : public BravoObject, public IBravoTickable
+class FluidGameInstance : public BravoObject
 {
 public:
 	template <typename... Args>
 	FluidGameInstance(Args&&... args) :
-		BravoObject(std::forward<Args>(args)...),
-		IBravoTickable()
+		BravoObject(std::forward<Args>(args)...)
 	{}
 
 	
 
 protected:
 	virtual bool Initialize_Internal() override;
-	virtual void Tick(float DeltaTime) override;
 
 private:
 	void OnViewportResize(const glm::ivec2& NewSize);

@@ -3,26 +3,13 @@
 #include "BravoObject.h"
 #include "IBravoRenderable.h"
 #include "FluidMath.h"
+#include "FluidGrid.h"
 
 struct Particle
 {
 	alignas(8) glm::vec2 Position = glm::vec2(0.0f);
 	alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
 	int32 Hightligh = 0;
-};
-
-struct CellHash
-{
-	// index of a cell normalized to particle count
-	int32 CellIndexP = -1;
-	// index of a cell
-	int32 CellIndex = -1;
-};
-
-struct SpacialLookup
-{
-	CellHash cHash;
-	int32 pIndex = -1;
 };
 
 
@@ -78,7 +65,10 @@ public:
 	void Reset();
 	void TogglePause();
 	bool IsPaused() const { return bPaused; }
-	void UpdateMath();
+	void UpdateMath()
+	{
+		math.SetRadius(SmoothingRadius);
+	}
 
 	bool HasStarted() const { return bHasStarted; }
 	GLuint GetParticlesSSBO() const { return ParticlesSSBO; }
@@ -99,17 +89,12 @@ private:
 	void SimulationStep(float DeltaTime);
 
 	void CalcDensity(const glm::vec2& samplePoint, float& Density, float& NearDensity) const;
+	glm::vec2 CalcExternalForces(int32 i) const;
 	glm::vec2 CalcPressureForce(int32 i) const;
 	glm::vec2 CalcViscosity(int32 i) const;
 
 	float DensityToPessure(float density) const;
 	float NearDensityToPessure(float density) const;
-
-	void GetRelatedParticles(const glm::vec2& Position, std::list<int32>& OutParticles) const;
-	void GetParticlesInCell(const glm::ivec2& CellIndex, std::list<int32>& OutParticles) const;
-	void UpdateSpacialLookup();
-	glm::ivec2 GetCellCoord(const glm::vec2& Position) const;
-	bool GetCellHash(const glm::ivec2& Coords, CellHash& OutHash) const;
 
 	float DensityKernel(float dst) const;
 	float NearDensityKernel(float dst) const;
@@ -141,18 +126,11 @@ private:
 	std::vector<float> NearDensities;
 
 	FluidMath math;
+	FluidGrid Grid;
 
 	bool bMouseLeft = false;
 	bool bMouseRight = false;
 
-
-	// cell hash <-> particle index
-	std::vector<SpacialLookup> Lookup;
-	// index = cell hash, value = start index in SpacialLookup
-	std::vector<int32> StartIndices;
-	// index = cell hash, value - occupation
-	std::vector<bool> CellOccupied;
-	
 	glm::ivec2 SmoothingGridSize;
 	glm::ivec2 ParticleGridSize;
 };

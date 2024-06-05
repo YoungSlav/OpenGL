@@ -30,6 +30,9 @@
     <ClCompile Include="Source\Private\FluidPostProcess_Density.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\FluidGrid.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidGameInstance.h">
@@ -48,6 +51,9 @@
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\FluidMath.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\FluidGrid.h">
       <Filter>Public</Filter>
     </ClInclude>
   </ItemGroup>
