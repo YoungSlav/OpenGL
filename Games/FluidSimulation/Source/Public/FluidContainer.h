@@ -45,5 +45,5 @@ private:
 	GLuint VAO = 0;
 	GLuint VBO = 0;
 
-	const float BorderWidth = 1.0f;
+	const float BorderWidth = 0.01f;
 };

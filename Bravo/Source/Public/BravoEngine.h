@@ -58,6 +58,8 @@ public:
 
 	void SetCamera(std::shared_ptr<class BravoCamera> _Camera);
 
+	void LimitFPS(uint32 MaxFPS) { FPSLimit = MaxFPS > 0 ? static_cast<float>(MaxFPS) : 100000.0f; }
+
 	inline std::shared_ptr<class BravoViewport> GetViewport() const { return Viewport; }
 	inline std::shared_ptr<class BravoInput> GetInput() const { return Input; }
 	inline std::shared_ptr<class BravoLightManager> GetLightManager() const { return LightManager; }
@@ -141,5 +143,5 @@ private:
 	float GameTime = 0.0f;
 	bool bRequestExit = false;
 
-	float FPSLimit = 100.0f;
+	float FPSLimit = 100000.0f;
 };

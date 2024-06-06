@@ -25,38 +25,39 @@ public:
 	{}
 
 	// SIMULATION PROPERTIES
-	 
-	int32 ParticlesCount = 8000;
-	bool bRandomPositions = true;
 
-	float ParticleMass = 50.0f;
-	float ParticleSize = 5.0f; 
-	float SmoothingRadius = 15.0f;
+	int32 ParticlesCount = 1500;
+	bool bRandomPositions = false;
+
+	float ParticleMass = 1.0f;
+	float ParticleSize = 0.1f; 
+	float SmoothingRadius = 0.2f;
 
 
 
 	float CollisionDamping = 0.3f;
-	float Gravity = 200.0f;
+	float Gravity = 10.0f;
 
-	float TargetDensity = 0.5f;
-	float Preassure = 300.0f;
-	float NearPressureMultiplier = 1500.0f;
+	float TargetDensity = 100.0f;
+	float Preassure = 0.0f;
+	float NearPressureMultiplier = 20.0f;
+	float ViscosityFactor = 0.10f;
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-
 	glm::vec2 InteractionLocation;
 	float InteractionForce = 0.0f;
 
-	float ViscosityFactor = 3000.0f;
 
-	float InteractionAcceleration = 1500.0f;
-	float InteractionStep = 10.0f;
-	float InteractionRadius = 100000.0f;
-	float MaxVelocity = 300.0f;
-	int32 StepsPerTick = 1;
+	float InteractionAcceleration = 20.0f;
+	float InteractionRadius = 2.5f;
+	float MaxVelocity = 5.0f;
+
+	int32 StepsPerTick = 7;
+
+	float DesiredFrames = 1000.0f;
 
 	// END SIMULATION PROPERTIES
 
@@ -80,6 +81,7 @@ private:
 	virtual void Render() override;
 
 	void OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime);
+	void HightlightRelativeParticles(const glm::vec2& Position);
 	void OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime);
 	void OnInput_MOUSERIGHT(bool ButtonState, float DeltaTime);
 	void OnInput_MOUSELEFT(bool ButtonState, float DeltaTime);

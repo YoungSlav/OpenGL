@@ -1,20 +1,21 @@
 #include "FluidGrid.h"
 
-void FluidGrid::UpdateSize(const glm::vec2& _WorldSize, float _ParticleRadius)
+void FluidGrid::UpdateSize(const glm::vec2& _WorldSize, float Radius)
 {
 	WorldSize = _WorldSize;
-	ParticleRadius = _ParticleRadius;
-	GridSize.x = glm::ceil(WorldSize.x / ParticleRadius * 2.0f);
-    GridSize.y = glm::ceil(WorldSize.y / ParticleRadius * 2.0f);
+	Size = Radius * 2.0f;
+	GridSize.x = glm::ceil(WorldSize.x / Size);
+    GridSize.y = glm::ceil(WorldSize.y / Size);
 }
 
 void FluidGrid::UpdateGrid(const std::vector<int32>& ParticleIndicies, const std::vector<glm::vec2>& Positions)
 {
 	ParticleCount = ParticleIndicies.size();
+	if ( !ParticleCount )
+		return;
 
 	Lookup.resize(ParticleCount, SpacialLookup());
-	StartIndices.resize(ParticleCount, -1);
-	CellOccupied.resize( GridSize.x * GridSize.y, false);
+	StartIndices.resize(ParticleCount, Lookup.size());
 
 	std::for_each(std::execution::par,
 		ParticleIndicies.begin(),
@@ -24,24 +25,19 @@ void FluidGrid::UpdateGrid(const std::vector<int32>& ParticleIndicies, const std
 			CellHash cHash;
 			glm::ivec2 CellCoords;
 			GetCellCoord(Positions[i], CellCoords);
-			if ( !GetCellHash(CellCoords, cHash) )
-				return;
+			GetCellHash(CellCoords, cHash);
 			Lookup[i].cHash = cHash;
 			Lookup[i].pIndex = i;
+			StartIndices[i] = StartIndices.size();
 		});
 
-	for ( const SpacialLookup& l : Lookup )
-	{
-		if ( l.cHash.CellIndex < 0 ) continue;
-		CellOccupied[l.cHash.CellIndex] = true;
-	}
 
 	std::sort(
 		Lookup.begin(),
 		Lookup.end(),
 		[this](const SpacialLookup& left, const SpacialLookup& right)
 		{	
-			return left.cHash.CellIndexP < right.cHash.CellIndexP;
+			return left.cHash.CellIndex < right.cHash.CellIndex;
 		});
 
 	std::for_each(std::execution::par,
@@ -49,11 +45,11 @@ void FluidGrid::UpdateGrid(const std::vector<int32>& ParticleIndicies, const std
 		ParticleIndicies.end(),
 		[this](int32 lookupIndex)
 		{
-			int32 CellHash = Lookup[lookupIndex].cHash.CellIndexP;
-			int32 prevCellHash = lookupIndex != 0 ? Lookup[lookupIndex-1].cHash.CellIndexP : -1;
-			if ( CellHash != prevCellHash )
+			uint32 CellIndex = Lookup[lookupIndex].cHash.CellIndex;
+			uint32 prevCellIndex = lookupIndex != 0 ? Lookup[lookupIndex-1].cHash.CellIndex : -1;
+			if ( CellIndex != prevCellIndex )
 			{
-				StartIndices[CellHash] = lookupIndex;
+				StartIndices[CellIndex] = lookupIndex;
 			}
 		});
 }
@@ -61,6 +57,9 @@ void FluidGrid::UpdateGrid(const std::vector<int32>& ParticleIndicies, const std
 void FluidGrid::GetRelatedParticles(const glm::vec2& Position, std::list<int32>& OutParticles) const
 {
 	OutParticles.clear();
+
+	if ( !ParticleCount )
+		return;
 
 	std::list<glm::ivec2> offsets {
 		glm::ivec2(0, 0),
@@ -76,6 +75,8 @@ void FluidGrid::GetRelatedParticles(const glm::vec2& Position, std::list<int32>&
 	
 	glm::ivec2 CellCoord;
 	GetCellCoord(Position, CellCoord);
+
+	//assert(CellCoord.x >= 0 && CellCoord.y >= 0 && CellCoord.x < GridSize.x && CellCoord.y < GridSize.y);
 	for ( auto it : offsets )
 		GetParticlesInCell(CellCoord+it, OutParticles);
 }
@@ -83,26 +84,19 @@ void FluidGrid::GetRelatedParticles(const glm::vec2& Position, std::list<int32>&
 void FluidGrid::GetParticlesInCell(const glm::ivec2& CellCoords, std::list<int32>& OutParticles) const
 {
 	CellHash cHash;
-	if ( !GetCellHash(CellCoords, cHash) )
+	GetCellHash(CellCoords, cHash);
+
+	if ( StartIndices.size() <= cHash.CellIndex || cHash.CellIndex < 0 )
 		return;
 
-	if ( !CellOccupied[cHash.CellIndex] )
-		return;
-
-	int32 CellKey = cHash.CellIndexP;
-
-	if ( StartIndices.size() <= CellKey || CellKey < 0 )
-		return;
-
-	int32 StartIndex = StartIndices[CellKey];
-
-	if ( StartIndex < 0 )
-		return;
-	
+	int32 StartIndex = StartIndices[cHash.CellIndex];
+		
 	for (  uint32 i = StartIndex; i < Lookup.size(); ++i)
 	{
-		if ( Lookup[i].cHash.CellIndexP != CellKey )
+		if ( Lookup[i].cHash.CellIndex != cHash.CellIndex )
 			return;
+		if ( Lookup[i].cHash.Hash != cHash.Hash )
+			continue;
 
 		OutParticles.push_back(Lookup[i].pIndex);
 	}
@@ -111,22 +105,16 @@ void FluidGrid::GetParticlesInCell(const glm::ivec2& CellCoords, std::list<int32
 void FluidGrid::GetCellCoord(const glm::vec2& Position, glm::ivec2& OutCoords) const
 {
 	glm::vec2 normilizedPos = Position + WorldSize * 0.5f;
-	int32 cellX = static_cast<int32>(std::floor(normilizedPos.x / ParticleRadius*0.5f));
-    int32 cellY = static_cast<int32>(std::floor(normilizedPos.y / ParticleRadius*0.5f));
+	int32 cellX = static_cast<int32>(std::floor(normilizedPos.x / Size));
+    int32 cellY = static_cast<int32>(std::floor(normilizedPos.y / Size));
 	OutCoords = glm::ivec2(cellX, cellY);
 }
 
-bool FluidGrid::GetCellHash(const glm::ivec2& Coords, CellHash& OutHash) const
-{
-	if (Coords.x < 0 || Coords.y < 0 || Coords.x >= GridSize.x || Coords.y >= GridSize.y)
-	{
-		return false;
-	}
-	int32 hash = Coords.y * GridSize.x + Coords.x;
-	int32 cellIndex = hash % CellOccupied.size();
-	int32 pIndex = hash % ParticleCount;
+void FluidGrid::GetCellHash(const glm::ivec2& Coords, CellHash& OutHash) const
+{	
+	const uint32 PRIME1 = 0x9e3779b1;
+    const uint32 PRIME2 = 0x85ebca6b;
 
-	OutHash.CellIndex = cellIndex;
-	OutHash.CellIndexP = pIndex;
-	return true;
+	OutHash.Hash = Coords.y * PRIME1 + Coords.x * PRIME2;;
+	OutHash.CellIndex = OutHash.Hash % ParticleCount;
 }

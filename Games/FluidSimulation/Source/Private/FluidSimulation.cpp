@@ -108,19 +108,23 @@ void FluidSimulation::Render()
 		Shader->SetVector3d("Middle", Middle);
 		Shader->SetVector3d("Hot", Hot);
 
-		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
 
 		glBindVertexArray(VAO);
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, Particles.size());
 		glBindVertexArray(0);
-
 	Shader->StopUsage();
 }
 
 void FluidSimulation::SpawnParticles()
 {
 	assert( ParentContainer != nullptr );
+
+	ParticleGridSize.x = glm::ceil(WorldSize.x / ParticleSize * 2.0f);
+    ParticleGridSize.y = glm::ceil(WorldSize.y / ParticleSize * 2.0f);
+
+	if ( ParticleGridSize.x * ParticleGridSize.y < ParticlesCount )
+		ParticlesCount = ParticleGridSize.x * ParticleGridSize.y;
 
 	math.SetRadius(SmoothingRadius);
 	
@@ -148,12 +152,6 @@ void FluidSimulation::SpawnParticles()
 	WorldSize = ParentContainer->GetSize() * 2.0f;
 	Grid.UpdateSize(WorldSize, ParticleSize);
 
-    ParticleGridSize.x = glm::ceil(WorldSize.x / ParticleSize * 2.0f);
-    ParticleGridSize.y = glm::ceil(WorldSize.y / ParticleSize * 2.0f);
-
-	if ( ParticleGridSize.x * ParticleGridSize.y < ParticlesCount )
-		ParticlesCount = ParticleGridSize.x * ParticleGridSize.y;
-
 	if ( ParticlesCount == 0 )
 		return;
 
@@ -175,7 +173,7 @@ void FluidSimulation::SpawnParticles()
 	{
 		float ParticleDiameter = 2 * ParticleSize;
 		float aspectRatio = WorldSize.x / WorldSize.y;
-		int32 gridWidth = static_cast<int32>(sqrt(ParticlesCount * aspectRatio));
+		int32 gridWidth = static_cast<int32>(glm::ceil(sqrt(ParticlesCount * aspectRatio)));
 		int32 gridHeight = (ParticlesCount + gridWidth - 1) / gridWidth;
 
 		// Adjust ParticleCount if it exceeds the capacity of the grid
@@ -248,22 +246,43 @@ void FluidSimulation::OnInput_Space(bool ButtonState, float DeltaTime)
 
 void FluidSimulation::OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime)
 {
-	InteractionRadius = glm::min(InteractionRadius + InteractionStep * DeltaScroll.y, 0.0f);
+	
+}
+
+void FluidSimulation::HightlightRelativeParticles(const glm::vec2& samplePoint)
+{
+	for ( int32 i : ParticleIndicies )
+	{
+		Particles[i].Hightligh = 0;
+	}
+
+	std::list<int32> RelatedParticles;
+	Grid.GetRelatedParticles(samplePoint, RelatedParticles);
+	for ( int32 i : RelatedParticles )
+	{
+		Particles[i].Hightligh = 1;
+	}
 }
 
 void FluidSimulation::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
 {
-	if ( bPaused || (!bMouseLeft && !bMouseRight) || (bMouseLeft && bMouseRight))
-	{
-		return;
-	}
-
 	const glm::ivec2 vSize = Engine->GetViewport()->GetViewportSize();
 	const glm::vec2 rPos = (glm::vec2(CurrentPosition.x / vSize.x, CurrentPosition.y / vSize.y ) * 2.0f) - glm::vec2(1.0f);
 
 	const glm::vec2 halfWorldSize = WorldSize * 0.5f;
 
 	const glm::vec2 mWorldPos = rPos * halfWorldSize;
+
+	//float d, nd;
+	//CalcDensity(mWorldPos, d, nd);
+	//Log::LogMessage(ELog::Log, "{}, {}", d, nd);
+	//HightlightRelativeParticles(mWorldPos);
+	
+	if ( bPaused || (!bMouseLeft && !bMouseRight) || (bMouseLeft && bMouseRight))
+	{
+		return;
+	}
+
 	InteractionLocation = mWorldPos;
 	InteractionForce = bMouseLeft ? 1.0f : -1.0f;	
 }
@@ -281,10 +300,6 @@ void FluidSimulation::Tick(float DeltaTime)
 void FluidSimulation::SimulationStep(float DeltaTime)
 {
 	assert(Densities.size() == Particles.size() && Densities.size() == ParticleIndicies.size() && Particles.size() == PredictedPositions.size() );
-
-	
-	Grid.UpdateGrid(ParticleIndicies, PredictedPositions);
-
 	
 
 	// gravity position prediction
@@ -294,8 +309,10 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		[this, DeltaTime](int32 i)
 		{
 			Particles[i].Velocity += CalcExternalForces(i) * DeltaTime;
-			PredictedPositions[i] = Particles[i].Position + (Particles[i].Velocity * 1.0f / 120.0f);
+			PredictedPositions[i] = Particles[i].Position + (Particles[i].Velocity * 1.0f / DesiredFrames);
 		});
+
+	Grid.UpdateGrid(ParticleIndicies, PredictedPositions);
 
 	// density
 	std::for_each(std::execution::par,
@@ -324,8 +341,8 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		{
 			Particles[i].Velocity += CalcViscosity(i) * DeltaTime;
 
-			if ( glm::length2(Particles[i].Velocity) > MaxVelocity*MaxVelocity )
-				Particles[i].Velocity = glm::normalize(Particles[i].Velocity) * MaxVelocity;
+			//if ( glm::length2(Particles[i].Velocity) > MaxVelocity*MaxVelocity )
+//				Particles[i].Velocity = glm::normalize(Particles[i].Velocity) * MaxVelocity;
 
 			Particles[i].Position += Particles[i].Velocity * DeltaTime;
 			glm::vec2 CollisionVelocity(0.0);
@@ -343,8 +360,12 @@ void FluidSimulation::CalcDensity(const glm::vec2& samplePoint, float& Density, 
 
 	std::list<int32> RelatedParticles;
 	Grid.GetRelatedParticles(samplePoint, RelatedParticles);
+	if ( RelatedParticles.size() == 0 )
+	{
+		Grid.GetRelatedParticles(samplePoint, RelatedParticles);;
+	}
 
-	for ( int32& i : RelatedParticles )
+	for ( int32 i : RelatedParticles )
 	{
 		float dst = glm::length(PredictedPositions[i] - samplePoint);
 		Density += ParticleMass * DensityKernel(dst);
@@ -354,33 +375,32 @@ void FluidSimulation::CalcDensity(const glm::vec2& samplePoint, float& Density, 
 
 glm::vec2 FluidSimulation::CalcExternalForces(int32 i) const
 {
-	glm::vec2 gravityAcceleration = glm::vec2(BravoMath::Rand(-Gravity*0.2f, Gravity*0.2f), Gravity);
-	glm::vec2 acceleration = gravityAcceleration;
+	glm::vec2 gravityAcceleration = glm::vec2(BravoMath::Rand(-Gravity*0.02f, Gravity*0.02f), Gravity);
 	if ( InteractionForce != 0.0f )
 	{
 		glm::vec2 offset = InteractionLocation - Particles[i].Position;
 		float dst2 = glm::length2(offset);
-		if ( dst2 < InteractionRadius )
+		if ( dst2 < InteractionRadius*InteractionRadius )
 		{
 			float distance = glm::sqrt(dst2);
-			glm::vec2 direction = offset / distance;
+			float edgeT = (distance / InteractionRadius);
+			float centreT = 1 - edgeT;
+			glm::vec2 dirToCentre = offset / distance;
 
-			float nDistance = (1.0f - distance / InteractionRadius);
-
-			float gravityW = (nDistance * glm::saturate(InteractionAcceleration / 10.0f));
-			acceleration = gravityAcceleration * gravityW + direction * nDistance * InteractionAcceleration;
-			acceleration += Particles[i].Velocity * nDistance;
-			acceleration *= InteractionForce;
+			float gravityWeight = 1 - (centreT * glm::saturate(InteractionAcceleration / 10));
+			glm::vec2 acceleration = InteractionForce * gravityAcceleration * gravityWeight + dirToCentre * centreT * InteractionAcceleration;
+			acceleration -= Particles[i].Velocity * centreT;
+			return acceleration;
 		}
 	}
-	return acceleration;
+	return gravityAcceleration;
 }
 
 glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
 {
 	glm::vec2 pressureForce = glm::vec2(0.0f);
 
-	glm::vec2 randDir = glm::normalize(glm::vec2((float)(rand()) / (float)(RAND_MAX), (float)(rand()) / (float)(RAND_MAX)));
+	glm::vec2 randDir = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
 
 	std::list<int32> RelatedParticles;
 	Grid.GetRelatedParticles(PredictedPositions[pIndex], RelatedParticles);
@@ -404,17 +424,23 @@ glm::vec2 FluidSimulation::CalcPressureForce(int32 pIndex) const
 		glm::vec2 dir = dst != 0.0f ? offset / dst : randDir;
 
 		float otherDensity = Densities[otherIndex];
-		float otherPressure = DensityToPessure(otherDensity);
-		float sharedPressure = (myPressure + otherPressure)  / (2.0f*otherDensity);
-		
 		float otherNearDensity = NearDensities[otherIndex];
+		
+		float otherPressure = DensityToPessure(otherDensity);
 		float otherNearPressure = NearDensityToPessure(otherDensity);
-		float sharedNearPressure = (myNearPressure + otherNearPressure)  / (2.0f*otherNearDensity);
+		
+		float sharedPressure = (myPressure + otherPressure) * 0.5f;
+		
+		float sharedNearPressure = (myNearPressure + otherNearPressure) * 0.5f;
 
-		pressureForce += dir * DensityDerivative(dst) * sharedPressure;
-		pressureForce += dir * NearDensityDerivative(dst) * sharedNearPressure;
+		pressureForce += dir * DensityDerivative(dst) * sharedPressure / otherDensity;
+		pressureForce += dir * NearDensityDerivative(dst) * sharedNearPressure / otherNearDensity;
 	}
-	return pressureForce * 10000.0f / myDensity;
+	if ( myDensity == 0.0f )
+	{
+		assert(false);
+	}
+	return pressureForce / myDensity;
 }
 
 glm::vec2 FluidSimulation::CalcViscosity(int32 pIndex) const
@@ -449,7 +475,7 @@ float FluidSimulation::DensityToPessure(float density) const
 }
 float FluidSimulation::NearDensityToPessure(float density) const
 {
-	return density * -NearPressureMultiplier;
+	return density * NearPressureMultiplier;
 }
 
 float FluidSimulation::DensityKernel(float dst) const

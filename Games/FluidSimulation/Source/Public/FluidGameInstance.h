@@ -24,5 +24,5 @@ private:
 	std::shared_ptr<class FluidContainer> Container = nullptr;
 	std::shared_ptr<class FluidSimulation> Simulation = nullptr;
 
-	const float WorldHeight = 1000.0f;
+	const float WorldHeight = 10.0f;
 };

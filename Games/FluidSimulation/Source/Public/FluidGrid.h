@@ -4,9 +4,9 @@
 struct CellHash
 {
 	// index of a cell normalized to particle count
-	int32 CellIndexP = -1;
+	uint32 Hash = 0;
 	// index of a cell
-	int32 CellIndex = -1;
+	uint32 CellIndex = 1;
 };
 
 struct SpacialLookup
@@ -26,7 +26,7 @@ public:
 private:
 	void GetParticlesInCell(const glm::ivec2& CellIndex, std::list<int32>& OutParticles) const;
 	void GetCellCoord(const glm::vec2& Position, glm::ivec2& OutCoords) const;
-	bool GetCellHash(const glm::ivec2& Coords, CellHash& OutHash) const;
+	void GetCellHash(const glm::ivec2& Coords, CellHash& OutHash) const;
 
 private:
 	int32 ParticleCount;
@@ -34,10 +34,8 @@ private:
 	std::vector<SpacialLookup> Lookup;
 	// index = cell hash, value = start index in SpacialLookup
 	std::vector<int32> StartIndices;
-	// index = cell hash, value - occupation
-	std::vector<bool> CellOccupied;
 
 	glm::vec2 WorldSize;
-	float ParticleRadius;
+	float Size;
 	glm::ivec2 GridSize;
 };

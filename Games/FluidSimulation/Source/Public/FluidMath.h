@@ -59,7 +59,7 @@ public:
 		if (dst <= Radius)
 		{
 			float v = Radius - dst;
-			return -v * v * SpikyPow3DerivativeScalingFactor;
+			return v * v * SpikyPow3DerivativeScalingFactor;
 		}
 		return 0;
 	}
