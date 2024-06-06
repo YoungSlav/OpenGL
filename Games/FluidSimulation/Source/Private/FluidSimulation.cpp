@@ -309,7 +309,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		[this, DeltaTime](int32 i)
 		{
 			Particles[i].Velocity += CalcExternalForces(i) * DeltaTime;
-			PredictedPositions[i] = Particles[i].Position + (Particles[i].Velocity * 1.0f / DesiredFrames);
+			PredictedPositions[i] = Particles[i].Position + (Particles[i].Velocity * 1.0f / 120.0f);
 		});
 
 	Grid.UpdateGrid(ParticleIndicies, PredictedPositions);
@@ -341,8 +341,8 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		{
 			Particles[i].Velocity += CalcViscosity(i) * DeltaTime;
 
-			//if ( glm::length2(Particles[i].Velocity) > MaxVelocity*MaxVelocity )
-//				Particles[i].Velocity = glm::normalize(Particles[i].Velocity) * MaxVelocity;
+			if ( glm::length2(Particles[i].Velocity) > MaxVelocity*MaxVelocity )
+				Particles[i].Velocity = glm::normalize(Particles[i].Velocity) * MaxVelocity;
 
 			Particles[i].Position += Particles[i].Velocity * DeltaTime;
 			glm::vec2 CollisionVelocity(0.0);
@@ -388,9 +388,9 @@ glm::vec2 FluidSimulation::CalcExternalForces(int32 i) const
 			glm::vec2 dirToCentre = offset / distance;
 
 			float gravityWeight = 1 - (centreT * glm::saturate(InteractionAcceleration / 10));
-			glm::vec2 acceleration = InteractionForce * gravityAcceleration * gravityWeight + dirToCentre * centreT * InteractionAcceleration;
+			glm::vec2 acceleration = gravityAcceleration * gravityWeight + dirToCentre * centreT * InteractionAcceleration;
 			acceleration -= Particles[i].Velocity * centreT;
-			return acceleration;
+			return acceleration * InteractionForce;
 		}
 	}
 	return gravityAcceleration;
