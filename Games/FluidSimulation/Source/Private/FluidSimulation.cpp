@@ -309,7 +309,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		[this, DeltaTime](int32 i)
 		{
 			Particles[i].Velocity += CalcExternalForces(i) * DeltaTime;
-			PredictedPositions[i] = Particles[i].Position + (Particles[i].Velocity * 1.0f / 120.0f);
+			Particles[i].PredictedPosition = Particles[i].Position + (Particles[i].Velocity * 1.0f / 120.0f);
 		});
 
 	Grid.UpdateGrid(ParticleIndicies, PredictedPositions);

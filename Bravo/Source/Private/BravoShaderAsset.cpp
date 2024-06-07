@@ -11,14 +11,22 @@
 EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params)
 {
 	ShaderID = glCreateProgram();
+
+	int32 ComputeShader = 0;
+	if ( LoadShader(GL_COMPUTE_SHADER, ComputeShader, ResourcesPath, params) )
+	{
+		if ( LinkProgramm() )
+		{
+			LoadingState = EAssetLoadingState::Loaded;
+			return LoadingState;
+		}
+	}
+
 	int32 VertShader = 0;
 	int32 GeomShader = 0;
 	int32 FragShader = 0;
 	int32 TessContrShader = 0;
 	int32 TessEvalShader = 0;
-	
-
-	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
 
 	if ( LoadShader(GL_VERTEX_SHADER, VertShader, ResourcesPath, params) &&
 		LoadShader(GL_FRAGMENT_SHADER, FragShader, ResourcesPath, params) &&
@@ -33,9 +41,12 @@ EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, cons
 		if ( TessContrShader ) glDeleteShader(TessContrShader);
 		if ( TessEvalShader ) glDeleteShader(TessEvalShader);
 
+		EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
+
 		LoadingState = EAssetLoadingState::Loaded;
 		return LoadingState;
 	}
+	glDeleteProgram(ShaderID);
 	LoadingState = EAssetLoadingState::Failed;
 	return LoadingState;
 }
@@ -80,18 +91,23 @@ bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const std
 	{
 		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::TessellationEvaluationShaderExtension;
 	}
+	else if ( ShaderType == GL_COMPUTE_SHADER )
+	{
+		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::ComputeShaderExtension;
+	}
 	
 	
 	std::ifstream shaderFile(RealShaderName.c_str());
 	if ( !shaderFile.is_open() )
 	{
-		if ( ShaderType == GL_GEOMETRY_SHADER || ShaderType == GL_TESS_CONTROL_SHADER || ShaderType == GL_TESS_EVALUATION_SHADER)
+		if ( ShaderType == GL_GEOMETRY_SHADER || ShaderType == GL_TESS_CONTROL_SHADER || ShaderType == GL_TESS_EVALUATION_SHADER )
 		{
 			return true;
 		}
 		else
 		{
-			Log::LogMessage(ELog::Error, "Failed to load shader: {}, no such file", RealShaderName);
+			if ( ShaderType != GL_COMPUTE_SHADER )
+				Log::LogMessage(ELog::Error, "Failed to load shader: {}, no such file", RealShaderName);
 			return false;
 		}
 	}

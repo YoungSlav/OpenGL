@@ -12,6 +12,7 @@ namespace ShaderProgrammConstancts
 	const std::string GeometryShaderExtension = ".geom";
 	const std::string TessellationControllShaderExtension = ".tesc";
 	const std::string TessellationEvaluationShaderExtension = ".tese";
+	const std::string ComputeShaderExtension = ".comp";
 }
 
 struct BravoShaderLoadingParams
@@ -28,6 +29,8 @@ struct BravoShaderLoadingParams
 	std::string ShaderPath;
 	std::map<std::string, std::string> ShaderDefines;
 };
+
+// TODO: refactor this asset. don't like the loading algo
 
 class BravoShaderAsset : public BravoAsset
 {
