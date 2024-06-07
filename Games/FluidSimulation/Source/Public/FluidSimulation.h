@@ -38,7 +38,7 @@ public:
 	float CollisionDamping = 0.3f;
 	float Gravity = 10.0f;
 
-	float TargetDensity = 236.0f;
+	float TargetDensity = 100.0f;
 	float Preassure = 0.0f;
 	float NearPressureMultiplier = 100.0f;
 	float ViscosityFactor = 0.10f;
