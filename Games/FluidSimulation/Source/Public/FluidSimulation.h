@@ -8,10 +8,13 @@
 struct Particle
 {
 	alignas(8) glm::vec2 Position = glm::vec2(0.0f);
-	alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
+    alignas(8) glm::vec2 PredictedPosition = glm::vec2(0.0f);
+    alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
+    int Highlight;
+    float Density;
+    float NearDensity;
 	int32 Hightligh = 0;
 };
-
 
 class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
 {
@@ -29,33 +32,28 @@ public:
 	int32 ParticlesCount = 8000;
 	bool bRandomPositions = false;
 
-	float ParticleMass = 2.0f;
-	float ParticleSize = 0.1f; 
+	float ParticleMass = 1.0f;
+	float ParticleRadius = 0.1f; 
 	float SmoothingRadius = 0.2f;
 
-
-
-	float CollisionDamping = 0.3f;
-	float Gravity = 10.0f;
-
-	float TargetDensity = 100.0f;
+	float TargetDensity = 236.0f;
 	float Preassure = 0.0f;
-	float NearPressureMultiplier = 100.0f;
-	float ViscosityFactor = 0.10f;
+	float NearPressureMultiplier = 230.0f;
+	float ViscosityFactor = 0.18f;
+
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	glm::vec2 InteractionLocation;
-	float InteractionForce = 0.0f;
-
-
 	float InteractionAcceleration = 20.0f;
 	float InteractionRadius = 50.0f;
-	float MaxVelocity = 15.0f;
+	float CollisionDamping = 0.3f;
+	float Gravity = 10.0f;
 
-	int32 StepsPerTick = 1;
+	float MaxVelocity = 15.0;
+
+	uint32 StepsPerTick = 8;
 
 	// END SIMULATION PROPERTIES
 
@@ -64,43 +62,27 @@ public:
 	void Reset();
 	void TogglePause();
 	bool IsPaused() const { return bPaused; }
-	void UpdateMath()
-	{
-		math.SetRadius(SmoothingRadius);
-	}
 
 	bool HasStarted() const { return bHasStarted; }
+	void UpdateShaderUniformParams();
 	GLuint GetParticlesSSBO() const { return ParticlesSSBO; }
-
 
 private:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
+	void SimulationStep(float DeltaTime);
 	virtual void Render() override;
 
 	void OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime);
-	void HightlightRelativeParticles(const glm::vec2& Position);
-	void OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime);
 	void OnInput_MOUSERIGHT(bool ButtonState, float DeltaTime);
 	void OnInput_MOUSELEFT(bool ButtonState, float DeltaTime);
 	void OnInput_Space(bool ButtonState, float DeltaTime);
+	void OnInput_R(bool ButtonState, float DeltaTime);
 
+	void SetMouseForce(const glm::vec2& MouseLocation, float Dir);
 
-	void SimulationStep(float DeltaTime);
-
-	void CalcDensity(const glm::vec2& samplePoint, float& Density, float& NearDensity) const;
-	glm::vec2 CalcExternalForces(int32 i) const;
-	glm::vec2 CalcPressureForce(int32 i) const;
-	glm::vec2 CalcViscosity(int32 i) const;
-
-	float DensityToPessure(float density) const;
-	float NearDensityToPessure(float density) const;
-
-	float DensityKernel(float dst) const;
-	float NearDensityKernel(float dst) const;
-	float DensityDerivative(float dst) const;
-	float NearDensityDerivative(float dst) const;
-	float ViscosityKernel(float dst) const;
+	
+	void FillBuffers();
 
 private:
 	std::vector<Particle> Particles;
@@ -109,9 +91,17 @@ private:
 	GLuint VAO = 0;
 	GLuint VBO = 0;
 	GLuint ParticlesSSBO = 0;
-	int32 CachedCount = 0;
+	GLuint SortedParticlesSSBO = 0;
+	GLuint StartIndicesSSBO = 0;
+	int32 CachedParticlesCount = 0;
+	GLuint NumWorkGroups;
 
-	std::shared_ptr<class BravoShaderAsset> Shader;
+	std::shared_ptr<class BravoShaderAsset> RenderShader;
+
+	std::shared_ptr<class BravoShaderAsset> ExternalForcesCompute;
+	std::shared_ptr<class BravoShaderAsset> GridHashingCompute;
+	std::shared_ptr<class BravoShaderAsset> GridSortingCompute;
+	std::shared_ptr<class BravoShaderAsset> PressureCompute;
 
 
 	glm::vec2 WorldSize = glm::vec2(0.0f);
@@ -120,17 +110,12 @@ private:
 	bool bPaused = true;
 	std::vector<glm::vec2> OriginalPositions;
 
-	std::vector<int32> ParticleIndicies;
-	std::vector<glm::vec2> PredictedPositions;
-	std::vector<float> Densities;
-	std::vector<float> NearDensities;
-
-	FluidMath math;
-	FluidGrid Grid;
 
 	bool bMouseLeft = false;
 	bool bMouseRight = false;
+	glm::vec2 InteractionLocation;
+	float InteractionForce = 0.0f;
 
-	glm::ivec2 SmoothingGridSize;
-	glm::ivec2 ParticleGridSize;
+	int32 CurrentSimulationStep = 0;
+	int32 SimulationTarget = 0;
 };

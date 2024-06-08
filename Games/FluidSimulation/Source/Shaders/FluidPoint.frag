@@ -3,8 +3,11 @@
 struct Particle
 {
     vec2 Position;
+    vec2 PredictedPosition;
     vec2 Velocity;
-	int Highlight;
+    int Highlight;
+    float Density;
+    float NearDensity;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer

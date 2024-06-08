@@ -76,5 +76,9 @@
     <None Include="Source\Shaders\Density.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Source\Shaders\Compute\FluidExternalForces.comp" />
+    <None Include="Source\Shaders\Compute\FluidGridHashing.comp" />
+    <None Include="Source\Shaders\Compute\FluidGridSorting.comp" />
+    <None Include="Source\Shaders\Compute\FluidPressure.comp" />
   </ItemGroup>
 </Project>

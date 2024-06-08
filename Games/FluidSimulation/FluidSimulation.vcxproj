@@ -37,15 +37,16 @@
     <ClInclude Include="Source\Public\FluidSimulation.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Shaders\Compute\FluidExternalForces.comp" />
+    <None Include="Source\Shaders\Compute\FluidGridHashing.comp" />
+    <None Include="Source\Shaders\Compute\FluidGridSorting.comp" />
+    <None Include="Source\Shaders\Compute\FluidPressure.comp" />
     <None Include="Source\Shaders\Container.frag" />
     <None Include="Source\Shaders\Container.vert" />
     <None Include="Source\Shaders\Density.frag" />
     <None Include="Source\Shaders\Density.vert" />
     <None Include="Source\Shaders\FluidPoint.frag" />
     <None Include="Source\Shaders\FluidPoint.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Source\Shaders\Compute\FluidExternalForces.comp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -146,7 +147,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"</Command>
+      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
+</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -169,7 +171,8 @@
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"</Command>
+      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
+</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -195,7 +198,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"</Command>
+      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -217,7 +221,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"</Command>
+      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,0 +1,80 @@
+#version 430
+
+layout(local_size_x = 1024) in;
+
+struct Particle
+{
+    vec2 Position;
+    vec2 PredictedPosition;
+    vec2 Velocity;
+    int Highlight;
+    float Density;
+    float NearDensity;
+};
+layout(std430, binding = 0) buffer ParticlesBuffer
+{
+	Particle Particles[];
+};
+
+struct SortedParticle
+{
+    uint CellHash;
+    uint CellIndex;
+    uint pIndex;
+};
+layout(std430, binding = 1) buffer SortedParticlesBuffer
+{
+	SortedParticle SortedParticles[];
+};
+
+layout(std430, binding = 2) buffer StartIndicesBuffer
+{
+	uint StartIndices[];
+};
+
+uniform vec2 WorldSize;
+uniform float SmoothingRadius;
+
+
+void PrepareHash(uint i);
+ivec2 GetCellCoord(vec2 Position);
+uint GetCellHash(ivec2 Coords);
+uint CellIndexFromHash(uint Hash);
+
+void main()
+{
+    uint i = gl_GlobalInvocationID.x;
+    if ( i >= Particles.length() ) return;
+
+    PrepareHash(i);
+};
+
+void PrepareHash(uint i)
+{
+    ivec2 CellCord = GetCellCoord(Particles[i].PredictedPosition);
+    SortedParticles[i].CellHash = GetCellHash(CellCord);
+    SortedParticles[i].CellIndex = CellIndexFromHash(SortedParticles[i].CellHash);
+    SortedParticles[i].pIndex = i;
+    StartIndices[i] = Particles.length();
+}
+
+ivec2 GetCellCoord(vec2 Position)
+{
+	vec2 normilizedPos = Position + WorldSize * 0.5f;
+	int cellX = int(floor(normilizedPos.x / SmoothingRadius*2.0f));
+    int cellY = int(floor(normilizedPos.y / SmoothingRadius*2.0f));
+	return ivec2(cellX, cellY);
+}
+
+uint GetCellHash(ivec2 Coords)
+{	
+	const uint PRIME1 = 0x9e3779b1;
+    const uint PRIME2 = 0x85ebca6b;
+
+	return Coords.y * PRIME1 + Coords.x * PRIME2;
+}
+
+uint CellIndexFromHash(uint Hash)
+{
+    return Hash % Particles.length();
+}

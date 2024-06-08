@@ -7,15 +7,16 @@ struct Particle
     vec2 Position;
     vec2 PredictedPosition;
     vec2 Velocity;
-    vec2 Acceleration;
     int Highlight;
+    float Density;
+    float NearDensity;
 };
 layout(std430, binding = 0) buffer ParticlesBuffer
 {
 	Particle Particles[];
 };
 
-uniform float PredictionScope;
+uniform float SimulationTimeStep;
 
 uniform float GravityForce;
 uniform float InteractionForce;
@@ -23,23 +24,23 @@ uniform vec2 InteractionLocation;
 uniform float InteractionRadius;
 
 
-uint i;
-vec2 CalcExternalForces();
+
+vec2 CalcExternalForces(uint i);
 
 void main()
 {
-    i = gl_GlobalInvocationID.x;
+    uint i = gl_GlobalInvocationID.x;
     if ( i >= Particles.length() ) return;
 
-    Particles[i].Acceleration += CalcExternalForces();
-    Particles[i].PredictedPosition = Particles[i].Position + Particles[i].Velocity * PredictionScope;
+    Particles[i].Velocity += CalcExternalForces(i) * SimulationTimeStep;
+    Particles[i].PredictedPosition = Particles[i].Position + Particles[i].Velocity * SimulationTimeStep;
 };
 
 
-vec2 CalcExternalForces(int index)
+vec2 CalcExternalForces(uint i)
 {
     vec2 gravityAcceleration = vec2(0.0f, GravityForce);
-    if ( InteractionForce == 0.0f )
+    if ( InteractionForce != 0.0f )
     {
         vec2 offset = InteractionLocation - Particles[i].Position;
         float dst = length(offset);

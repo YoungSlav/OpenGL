@@ -5,8 +5,11 @@ layout(location = 1) in vec2 aTexCoords;
 struct Particle
 {
     vec2 Position;
+    vec2 PredictedPosition;
     vec2 Velocity;
     int Highlight;
+    float Density;
+    float NearDensity;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer
