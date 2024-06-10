@@ -140,20 +140,15 @@ void FluidSimulation::UpdateShaderUniformParams()
 		PressureCompute->SetVector1d("TargetDensity", TargetDensity);
 	
 		PressureCompute->SetVector1d("Preassure", Preassure);
-		PressureCompute->SetVector1d("NearPressureMultiplier", NearPressureMultiplier);
 		PressureCompute->SetVector1d("ViscosityFactor", ViscosityFactor);
 		PressureCompute->SetVector1d("CollisionDamping", CollisionDamping);
 
-		const float ViscosityScale		= 4.0f  / (glm::pi<float>() * glm::pow(SmoothingRadius, 8));
-		const float NearDensityScale	= 10.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 5));
-		const float DensityScale		= 6.0f  / (glm::pi<float>() * glm::pow(SmoothingRadius, 4));
-		const float NearPressureScale	= 30.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 5));
-		const float PressureScale		= 12.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 4));
-
+		const float DensityScale	= 315.0f / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
+		const float PressureScale	= -15.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 3));
+		const float ViscosityScale	= 45.0f  / (glm::pi<float>() * glm::pow(SmoothingRadius, 5));
+		
 		PressureCompute->SetVector1d("DensityScale", DensityScale);
-		PressureCompute->SetVector1d("NearDensityScale", NearDensityScale);
 		PressureCompute->SetVector1d("PressureScale", PressureScale);
-		PressureCompute->SetVector1d("NearPressureScale", NearPressureScale);
 		PressureCompute->SetVector1d("ViscosityScale", ViscosityScale);
 	PressureCompute->StopUsage();
 }
@@ -194,6 +189,8 @@ void FluidSimulation::SpawnParticles()
 {
 	assert( ParentContainer != nullptr );
 
+	WorldSize = ParentContainer->GetSize() * 2.0f;
+
 	glm::ivec2 ParticleGridSize;
 	ParticleGridSize.x = glm::ceil(WorldSize.x / ParticleRadius * 2.0f);
     ParticleGridSize.y = glm::ceil(WorldSize.y / ParticleRadius * 2.0f);
@@ -211,7 +208,7 @@ void FluidSimulation::SpawnParticles()
 	OriginalPositions.clear();
 	OriginalPositions.resize(ParticlesCount);
 	
-	WorldSize = ParentContainer->GetSize() * 2.0f;
+	
 
 	if ( ParticlesCount == 0 )
 		return;
@@ -303,8 +300,7 @@ void FluidSimulation::OnInput_MOUSELEFT(bool ButtonState, float DeltaTime)
 
 void FluidSimulation::OnInput_Space(bool ButtonState, float DeltaTime)
 {
-//	TogglePause();
-	SimulationTarget++;
+	TogglePause();	
 }
 void FluidSimulation::OnInput_R(bool ButtonState, float DeltaTime)
 {
@@ -336,15 +332,11 @@ void FluidSimulation::Tick(float DeltaTime)
 
 void FluidSimulation::SimulationStep(float DeltaTime)
 {
-	//if ( SimulationTarget <= CurrentSimulationStep )
-	//	return;
-	//CurrentSimulationStep++;
-
 	if ( bPaused ) return;
 
 	ExternalForcesCompute->Use();
 		// update time step
-		ExternalForcesCompute->SetVector1d("SimulationTimeStep", DeltaTime);
+		ExternalForcesCompute->SetVector1d("SimulationTimeStep", 1.0f / (120.0f * StepsPerTick));
 		ExternalForcesCompute->SetVector1d("InteractionForce", InteractionForce);
 		ExternalForcesCompute->SetVector2d("InteractionLocation", InteractionLocation);
 		ExternalForcesCompute->SetVector1d("InteractionRadius", InteractionRadius);
@@ -397,6 +389,9 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 	PressureCompute->Use();
 		// update time step
 		PressureCompute->SetVector1d("SimulationTimeStep", DeltaTime);
+
+		glm::vec2 RandomVector = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
+		PressureCompute->SetVector2d("RandomVector", RandomVector);
 
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		

@@ -149,9 +149,6 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		UpdateSettings |= Slider("Preassure", &Simulation->Preassure, 0.0f, 5000.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Near Pressure", &Simulation->NearPressureMultiplier, 0.0f, 5000.0f);
-
-		Spacing();
 		UpdateSettings |= Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 100000.0f);
 
 

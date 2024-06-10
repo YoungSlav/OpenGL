@@ -5,9 +5,7 @@ struct Particle
     vec2 Position;
     vec2 PredictedPosition;
     vec2 Velocity;
-    int Highlight;
     float Density;
-    float NearDensity;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer
@@ -41,5 +39,5 @@ void main()
         Color = mix(Middle, Hot, (speed-midSpeed) / (maxSpeed-midSpeed));
 
     
-    FragColor = vec4(particles[InstanceID].Highlight == 0 ? Color : HighlightColor, 1.0);
+    FragColor = vec4(Color, 1.0);
 }

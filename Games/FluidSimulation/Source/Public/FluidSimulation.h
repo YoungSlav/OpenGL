@@ -10,10 +10,7 @@ struct Particle
 	alignas(8) glm::vec2 Position = glm::vec2(0.0f);
     alignas(8) glm::vec2 PredictedPosition = glm::vec2(0.0f);
     alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
-    int Highlight;
     float Density;
-    float NearDensity;
-	int32 Hightligh = 0;
 };
 
 class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
@@ -33,13 +30,12 @@ public:
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
-	float ParticleRadius = 0.1f; 
+	float ParticleRadius = 0.05f; 
 	float SmoothingRadius = 0.2f;
 
-	float TargetDensity = 236.0f;
-	float Preassure = 0.0f;
-	float NearPressureMultiplier = 230.0f;
-	float ViscosityFactor = 0.18f;
+	float TargetDensity = 1000.0f;
+	float Preassure = 1000.0f;
+	float ViscosityFactor = 0.2f;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
@@ -47,11 +43,11 @@ public:
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
 	float InteractionAcceleration = 20.0f;
-	float InteractionRadius = 50.0f;
+	float InteractionRadius = 2.0f;
 	float CollisionDamping = 0.3f;
-	float Gravity = 10.0f;
+	float Gravity = 9.8f;
 
-	float MaxVelocity = 15.0;
+	float MaxVelocity = 10.0;
 
 	uint32 StepsPerTick = 8;
 
@@ -115,7 +111,4 @@ private:
 	bool bMouseRight = false;
 	glm::vec2 InteractionLocation;
 	float InteractionForce = 0.0f;
-
-	int32 CurrentSimulationStep = 0;
-	int32 SimulationTarget = 0;
 };
