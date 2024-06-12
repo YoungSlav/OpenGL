@@ -49,7 +49,7 @@ bool BravoGameInstance::Initialize_Internal()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 	
 		
-	Camera = NewObject<BravoCamera>("Camera", EBravoCameraType::Orthographic);
+	Camera = NewObject<BravoCamera>("Camera", EBravoCameraType::Perspective);
 	Engine->SetCamera(Camera);
 	//Camera->SetLocation(glm::vec3(0.0f, 30.0f, -30.0));
 	//Camera->SetDirection(glm::vec3(0.0f) - Camera->GetLocation_World());
@@ -76,7 +76,7 @@ bool BravoGameInstance::Initialize_Internal()
 	auto Terrain = NewObject<BravoTerrainActor>("InfinitePlane", "Textures\\heightmap.png", 20);
 
 	SpawnDirLights();
-	return true;
+	//return true;
 	
 	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
 	{
@@ -110,9 +110,6 @@ bool BravoGameInstance::Initialize_Internal()
 	material->Load(materailLoadingParams);
 	TestComponent->SetMaterial(material);
 	}
-
-	
-	
 
 	
 	SpawnPointLights();

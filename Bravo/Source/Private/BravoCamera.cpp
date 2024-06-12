@@ -27,7 +27,7 @@ void BravoCamera::UpdateCamera_Internal()
 {
 	ViewMatrix = glm::lookAt(GetLocation_World(), GetLocation_World() + GetForwardVector_World(), BravoMath::upV);
 
-	if ( CameraType == EBravoCameraType::Perspective )
+	if ( CameraType == EBravoCameraType::Perspective)
 	{
 		const glm::ivec2 ViewportSize = Engine->GetViewport()->GetViewportSize();
 		const float AspectRatio = ViewportSize.y > 0.0f ? float(ViewportSize.x) / float(ViewportSize.y) : 0.0f;
