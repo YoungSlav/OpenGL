@@ -67,6 +67,10 @@ private:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 	void SimulationStep(float DeltaTime);
+	
+	void ExecuteRadixSort();
+	void UpdateRadixIteration(int32 i);
+
 	virtual void Render() override;
 
 	void OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime);
@@ -87,7 +91,11 @@ private:
 	GLuint VAO = 0;
 	GLuint VBO = 0;
 	GLuint ParticlesSSBO = 0;
+	
 	GLuint SortedParticlesSSBO = 0;
+	GLuint RadixTmpSSBO = 0;
+	GLuint RadixHistogramSSBO = 0;
+
 	GLuint StartIndicesSSBO = 0;
 	int32 CachedParticlesCount = 0;
 	GLuint NumWorkGroups;
@@ -96,7 +104,20 @@ private:
 
 	std::shared_ptr<class BravoShaderAsset> ExternalForcesCompute;
 	std::shared_ptr<class BravoShaderAsset> GridHashingCompute;
-	std::shared_ptr<class BravoShaderAsset> GridSortingCompute;
+	
+	struct RadixSortConstants
+	{
+		uint32 g_num_elements;
+		uint32 g_shift;
+		uint32 g_num_workgroups;
+		uint32 g_num_blocks_per_workgroup;
+	} RadixSortPushConstants;
+	GLuint RadixSortConstantsUBO;
+
+	std::shared_ptr<class BravoShaderAsset> RadixSortCompute;
+	std::shared_ptr<class BravoShaderAsset> RadixSortHistogramCompute;
+
+	std::shared_ptr<class BravoShaderAsset> FluidStartingIndiciesCompute;
 	std::shared_ptr<class BravoShaderAsset> PressureCompute;
 
 

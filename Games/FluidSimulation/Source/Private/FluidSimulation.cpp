@@ -44,11 +44,26 @@ bool FluidSimulation::Initialize_Internal()
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	glGenBuffers(1, &RadixTmpSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixTmpSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	glGenBuffers(1, &RadixHistogramSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixHistogramSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	
 	glGenBuffers(1, &StartIndicesSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, StartIndicesSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	glGenBuffers(1, &RadixSortConstantsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, RadixSortConstantsUBO);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(RadixSortConstantsUBO), NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	auto AssetManager = Engine->GetAssetManager();
 
@@ -56,7 +71,11 @@ bool FluidSimulation::Initialize_Internal()
 
 	ExternalForcesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidExternalForces", BravoShaderLoadingParams("Shaders\\Compute\\FluidExternalForces"));
 	GridHashingCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGridHashing", BravoShaderLoadingParams("Shaders\\Compute\\FluidGridHashing"));
-	GridSortingCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGridSorting", BravoShaderLoadingParams("Shaders\\Compute\\FluidGridSorting"));
+	
+	RadixSortCompute = AssetManager->FindOrLoad<BravoShaderAsset>("RadixSort", BravoShaderLoadingParams("Shaders\\Compute\\ThirdParty\\multi_radixsort"));
+	RadixSortHistogramCompute = AssetManager->FindOrLoad<BravoShaderAsset>("RadixSortHistogram", BravoShaderLoadingParams("Shaders\\Compute\\ThirdParty\\multi_radixsort_histograms"));
+
+	FluidStartingIndiciesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidStartingIndicies", BravoShaderLoadingParams("Shaders\\Compute\\FluidStartingIndicies"));
 	PressureCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidPressure", BravoShaderLoadingParams("Shaders\\Compute\\FluidPressure"));
 
 	{
@@ -98,6 +117,7 @@ void FluidSimulation::FillBuffers()
 {
 	NumWorkGroups = (Particles.size() + 1023) / 1024;
 
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(Particle), Particles.data(), GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
@@ -106,9 +126,24 @@ void FluidSimulation::FillBuffers()
 	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
 
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixTmpSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, RadixTmpSSBO);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixHistogramSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, NumWorkGroups * 256 * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, RadixHistogramSSBO);
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, StartIndicesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, StartIndicesSSBO);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, RadixSortConstantsUBO);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, RadixSortConstantsUBO);
+
+	RadixSortPushConstants.g_num_elements = Particles.size();
+	RadixSortPushConstants.g_num_workgroups = NumWorkGroups;
+	RadixSortPushConstants.g_num_blocks_per_workgroup = 1024;
 }
 
 void FluidSimulation::UpdateShaderUniformParams()
@@ -126,7 +161,6 @@ void FluidSimulation::UpdateShaderUniformParams()
 		GridHashingCompute->SetVector2d("WorldSize", WorldSize);
 		GridHashingCompute->SetVector1d("SmoothingRadius", SmoothingRadius);
 	GridHashingCompute->StopUsage();
-	// sorting
 	
 	// pressure
 	PressureCompute->Use();
@@ -360,31 +394,40 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		uint32 pIndex;
 	};
 
-	// TODO: move sorting to compute shader
-	{
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-		std::vector<SortedParticle> sortedParticles(CachedParticlesCount);
-		void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-		if (ptr)
-		{
-			memcpy(sortedParticles.data(), ptr, CachedParticlesCount * sizeof(SortedParticle));
-
-			std::sort(sortedParticles.begin(), sortedParticles.end(),
-				[](const SortedParticle& a, const SortedParticle& b)
-				{
-					return a.CellIndex < b.CellIndex;
-				});
-			memcpy(ptr, sortedParticles.data(), CachedParticlesCount * sizeof(SortedParticle));
-			glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		}
+	std::vector<SortedParticle> unsortedParticlesGPU(CachedParticlesCount);
+	void* ptr2 = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	if (ptr2)
+	{
+		memcpy(unsortedParticlesGPU.data(), ptr2, CachedParticlesCount * sizeof(SortedParticle));
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	}
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	ExecuteRadixSort();
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
+	std::vector<SortedParticle> sortedParticlesGPU(CachedParticlesCount);
+	void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	if (ptr)
+	{
+		memcpy(sortedParticlesGPU.data(), ptr, CachedParticlesCount * sizeof(SortedParticle));
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	}
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	for ( int32 i = 0; i < sortedParticlesGPU.size()-1; ++i )
+	{
+		assert(sortedParticlesGPU[i].CellIndex <= sortedParticlesGPU[i+1].CellIndex);
+		assert(unsortedParticlesGPU[sortedParticlesGPU[i].pIndex].pIndex == sortedParticlesGPU[i].pIndex);
+
 	}
 	
-	GridSortingCompute->Use();
+	FluidStartingIndiciesCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-	GridSortingCompute->StopUsage();
+	FluidStartingIndiciesCompute->StopUsage();
 
 	PressureCompute->Use();
 		// update time step
@@ -397,4 +440,43 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	PressureCompute->StopUsage();
+}
+
+void FluidSimulation::ExecuteRadixSort()
+{
+	for ( int32 iteration = 0; iteration < 4; ++iteration )
+	{
+		UpdateRadixIteration(iteration);
+
+		RadixSortHistogramCompute->Use();
+			glDispatchCompute(NumWorkGroups, 1, 1);
+			glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		RadixSortHistogramCompute->StopUsage();
+
+		RadixSortCompute->Use();
+			glDispatchCompute(NumWorkGroups, 1, 1);
+			glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		RadixSortCompute->StopUsage();
+	}
+}
+
+void FluidSimulation::UpdateRadixIteration(int32 iteration)
+{
+	if (iteration == 0 || iteration == 2)
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, RadixTmpSSBO);
+		
+		RadixSortPushConstants.g_shift = iteration == 0 ? 0 : 16;
+	}
+	else if (iteration == 1 || iteration == 3)
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, SortedParticlesSSBO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, RadixTmpSSBO);
+
+		RadixSortPushConstants.g_shift = iteration == 1 ? 8 : 24;
+	}
+
+	glBindBuffer(GL_UNIFORM_BUFFER, RadixSortConstantsUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(FluidSimulation::RadixSortConstants), &RadixSortPushConstants, GL_STATIC_DRAW);
 }

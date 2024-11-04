@@ -78,7 +78,10 @@
     </None>
     <None Include="Source\Shaders\Compute\FluidExternalForces.comp" />
     <None Include="Source\Shaders\Compute\FluidGridHashing.comp" />
-    <None Include="Source\Shaders\Compute\FluidGridSorting.comp" />
+    <None Include="Source\Shaders\Compute\FluidStartingIndicies.comp" />
     <None Include="Source\Shaders\Compute\FluidPressure.comp" />
+    <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort.comp" />
+    <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort_histograms.comp" />
+    <None Include="Source\Shaders\Compute\ThirdParty\single_radixsort.comp" />
   </ItemGroup>
 </Project>
