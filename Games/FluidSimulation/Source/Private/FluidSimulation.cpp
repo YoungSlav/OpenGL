@@ -387,46 +387,8 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	GridHashingCompute->StopUsage();
 
-	struct SortedParticle
-	{
-		uint32 CellHash;
-		uint32 CellIndex;
-		uint32 pIndex;
-	};
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-		std::vector<SortedParticle> sortedParticlesCPU(CachedParticlesCount);
-		void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-		if (ptr)
-		{
-			memcpy(sortedParticlesCPU.data(), ptr, CachedParticlesCount * sizeof(SortedParticle));
-			
-			std::sort(sortedParticlesCPU.begin(), sortedParticlesCPU.end(),
-				[](const SortedParticle& a, const SortedParticle& b)
-				{
-					return a.CellIndex < b.CellIndex;
-				});
-			glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		}
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	ExecuteRadixSort();
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-	std::vector<SortedParticle> sortedParticlesGPU(CachedParticlesCount);
-	void* ptr3 = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-	if (ptr3)
-	{
-		memcpy(sortedParticlesGPU.data(), ptr3, CachedParticlesCount * sizeof(SortedParticle));
-		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-	}
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	for ( int32 i = 0; i < sortedParticlesGPU.size(); ++i )
-	{
-		//assert(sortedParticlesGPU[i].CellIndex <= sortedParticlesGPU[i+1].CellIndex);
-		assert(sortedParticlesCPU[i].CellIndex == sortedParticlesGPU[i].CellIndex);
-	}
 	
 	FluidStartingIndiciesCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
@@ -463,6 +425,7 @@ void FluidSimulation::ExecuteRadixSort()
 			glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 		RadixSortCompute->StopUsage();
 	}
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
 }
 
 void FluidSimulation::UpdateRadixIteration(int32 iteration)

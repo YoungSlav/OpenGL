@@ -45,18 +45,18 @@ void main()
 	}
 
 	// grid
-	float cellSize = smoothingRadius*2.0f;
-	vec2 normilizedPos = vs_out.WorldPos + containerSize * 0.5f;
-	normilizedPos.y = containerSize.y - normilizedPos.y;
-	vec2 gridPos = mod(normilizedPos, cellSize);
-	float distToXLine = min(abs(gridPos.x), abs(cellSize - abs(gridPos.x)));
-	float distToYLine = min(abs(gridPos.y), abs(cellSize - abs(gridPos.y)));
-	float minDistToLine = min(distToXLine, distToYLine);
-	bool isGridPixel = minDistToLine < 0.001f * containerSize.y;
-	if ( isGridPixel )
-	{
-		FragColor = vec4(outlineColor, 1.0);
-		return;
-	}
-	FragColor = vec4(vec3(0.0f), 1.0);
+	//float cellSize = smoothingRadius*2.0f;
+	//vec2 normilizedPos = vs_out.WorldPos + containerSize * 0.5f;
+	//normilizedPos.y = containerSize.y - normilizedPos.y;
+	//vec2 gridPos = mod(normilizedPos, cellSize);
+	//float distToXLine = min(abs(gridPos.x), abs(cellSize - abs(gridPos.x)));
+	//float distToYLine = min(abs(gridPos.y), abs(cellSize - abs(gridPos.y)));
+	//float minDistToLine = min(distToXLine, distToYLine);
+	//bool isGridPixel = minDistToLine < 0.001f * containerSize.y;
+	//if ( isGridPixel )
+	//{
+	//	FragColor = vec4(outlineColor, 1.0);
+	//	return;
+	//}
+	//FragColor = vec4(vec3(0.0f), 1.0);
 }

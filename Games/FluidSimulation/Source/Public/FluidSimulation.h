@@ -26,15 +26,15 @@ public:
 
 	// SIMULATION PROPERTIES
 
-	int32 ParticlesCount = 100;
+	int32 ParticlesCount = 40000;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
 	float ParticleRadius = 0.05f; 
 	float SmoothingRadius = 0.2f;
 
-	float TargetDensity = 1000.0f;
-	float Preassure = 1000.0f;
+	float TargetDensity = 100.0f;
+	float Preassure = 100.0f;
 	float ViscosityFactor = 0.2f;
 
 
