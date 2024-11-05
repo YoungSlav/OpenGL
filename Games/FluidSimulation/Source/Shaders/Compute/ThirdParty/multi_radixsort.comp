@@ -122,6 +122,7 @@ void main() {
                 prefix += (i == flags_bin) ? partial_count : 0U;
                 count += full_count;
             }
+            
             g_elements_out[binOffset + prefix] = element_in;
             if (prefix == count - 1) {
                 atomicAdd(global_offsets[binID], count);

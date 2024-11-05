@@ -26,7 +26,7 @@ public:
 
 	// SIMULATION PROPERTIES
 
-	int32 ParticlesCount = 8000;
+	int32 ParticlesCount = 100;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
@@ -49,7 +49,7 @@ public:
 
 	float MaxVelocity = 10.0;
 
-	uint32 StepsPerTick = 8;
+	uint32 StepsPerTick = 1;
 
 	// END SIMULATION PROPERTIES
 

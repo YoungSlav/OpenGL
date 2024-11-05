@@ -395,32 +395,37 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 	};
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-	std::vector<SortedParticle> unsortedParticlesGPU(CachedParticlesCount);
-	void* ptr2 = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-	if (ptr2)
-	{
-		memcpy(unsortedParticlesGPU.data(), ptr2, CachedParticlesCount * sizeof(SortedParticle));
-		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-	}
+		std::vector<SortedParticle> sortedParticlesCPU(CachedParticlesCount);
+		void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+		if (ptr)
+		{
+			memcpy(sortedParticlesCPU.data(), ptr, CachedParticlesCount * sizeof(SortedParticle));
+			
+			std::sort(sortedParticlesCPU.begin(), sortedParticlesCPU.end(),
+				[](const SortedParticle& a, const SortedParticle& b)
+				{
+					return a.CellIndex < b.CellIndex;
+				});
+			glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+		}
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	ExecuteRadixSort();
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
 	std::vector<SortedParticle> sortedParticlesGPU(CachedParticlesCount);
-	void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-	if (ptr)
+	void* ptr3 = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	if (ptr3)
 	{
-		memcpy(sortedParticlesGPU.data(), ptr, CachedParticlesCount * sizeof(SortedParticle));
+		memcpy(sortedParticlesGPU.data(), ptr3, CachedParticlesCount * sizeof(SortedParticle));
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	}
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	for ( int32 i = 0; i < sortedParticlesGPU.size()-1; ++i )
+	for ( int32 i = 0; i < sortedParticlesGPU.size(); ++i )
 	{
-		assert(sortedParticlesGPU[i].CellIndex <= sortedParticlesGPU[i+1].CellIndex);
-		assert(unsortedParticlesGPU[sortedParticlesGPU[i].pIndex].pIndex == sortedParticlesGPU[i].pIndex);
-
+		//assert(sortedParticlesGPU[i].CellIndex <= sortedParticlesGPU[i+1].CellIndex);
+		assert(sortedParticlesCPU[i].CellIndex == sortedParticlesGPU[i].CellIndex);
 	}
 	
 	FluidStartingIndiciesCompute->Use();
