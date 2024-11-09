@@ -52,10 +52,15 @@ public:
 	void SetInt(const std::string& name, const int32 val) const;
 	void SetInt(const std::string& name, const size_t val) const;
 	void SetInt(const std::string& name, const GLuint val) const;
-	void SetVector1d(const std::string& name, const float val) const;
-	void SetVector2d(const std::string& name, const glm::vec2& val) const;
-	void SetVector3d(const std::string& name, const glm::vec3& val) const;
-	void SetVector4d(const std::string& name, const glm::vec4& val) const;
+	void SetFloat1(const std::string& name, const float val) const;
+	void SetFloat2(const std::string& name, const glm::vec2& val) const;
+	void SetFloat3(const std::string& name, const glm::vec3& val) const;
+	void SetFloat4(const std::string& name, const glm::vec4& val) const;
+
+	void SetFloat1v(const std::string& name, uint32 count, const float* val) const;
+	void SetFloat2v(const std::string& name, uint32 count, const float* val) const;
+	void SetFloat3v(const std::string& name, uint32 count, const float* val) const;
+	void SetFloat4v(const std::string& name, uint32 count, const float* val) const;
 
 	void SetMatrix2d(const std::string& name, const glm::mat2& val) const;
 	void SetMatrix3d(const std::string& name, const glm::mat3& val) const;

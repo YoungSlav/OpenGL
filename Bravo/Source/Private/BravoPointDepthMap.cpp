@@ -100,8 +100,8 @@ void BravoPointDepthMap::Render(const std::vector<BravoPointLightShaderData>& Ca
 				DepthMapShader->SetMatrix4d("lightSpaceMatricies[" + std::to_string(i) + "]", lightSpaceMatricies[i]);
 
 			DepthMapShader->SetInt("layerOffset", cIdx);
-			DepthMapShader->SetVector1d("farPlane", FarPlane);
-			DepthMapShader->SetVector3d("position", LightPosition);
+			DepthMapShader->SetFloat1("farPlane", FarPlane);
+			DepthMapShader->SetFloat3("position", LightPosition);
 	
 			Engine->GetViewport()->RenderDepthMap(DepthMapShader);
 		}

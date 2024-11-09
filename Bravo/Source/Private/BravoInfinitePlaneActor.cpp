@@ -28,39 +28,11 @@ bool BravoInfinitePlaneActor::EnsureReady()
 
 	if ( Mesh->GetLoadingState() == EAssetLoadingState::InRAM )
 	{
-		if ( VAO != 0 )
-			glDeleteVertexArrays(5, &VAO);
-		VAO = 0;
+		Mesh->LoadToGPU();
 	}
 	if ( !Mesh->EnsureGPUReady() )
 		return false;
 
-	if ( VAO == 0 )
-	{
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, Mesh->GetVBO());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->GetEBO());
-
-		// vertex Positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-		glEnableVertexAttribArray(0);
-		// vertex normals
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Normal));
-		glEnableVertexAttribArray(1);
-		// vertex texture coords
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::TexCoords));
-		glEnableVertexAttribArray(2);
-		// vertex tangent
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Tangent));
-		glEnableVertexAttribArray(3);
-		// vertex bitangent
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Bitangent));
-		glEnableVertexAttribArray(4);
-		// vertex colors
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
-		glEnableVertexAttribArray(5);
-	}
 	return true;
 }
 
@@ -89,20 +61,17 @@ void BravoInfinitePlaneActor::Render()
 	Shader->Use();
 		Shader->SetMatrix4d("projection", CameraProjection);
 		Shader->SetMatrix4d("view", CameraView);
-		Shader->SetVector1d("near", MinDrawingDistance);
-		Shader->SetVector1d("far", MaxDrawingDistance);
+		Shader->SetFloat1("near", MinDrawingDistance);
+		Shader->SetFloat1("far", MaxDrawingDistance);
 
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0);
+		
+		Mesh->Render(1);
 
 	Shader->StopUsage();
 }
 
 void BravoInfinitePlaneActor::OnDestroy()
 {
-	glDeleteBuffers(5, &VAO);
-	VAO = 0;
-
 	Shader->ReleaseFromGPU();
 	Mesh->ReleaseFromGPU();
 }

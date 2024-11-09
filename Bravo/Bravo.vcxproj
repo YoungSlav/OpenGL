@@ -24,6 +24,7 @@
     <ClCompile Include="Source\Private\BravoActor.cpp" />
     <ClCompile Include="Source\Private\BravoAsset.cpp" />
     <ClCompile Include="Source\Private\BravoAssetManager.cpp" />
+    <ClCompile Include="Source\Private\BravoBoundingBox.cpp" />
     <ClCompile Include="Source\Private\BravoCamera.cpp" />
     <ClCompile Include="Source\Private\BravoComponent.cpp" />
     <ClCompile Include="Source\Private\BravoCubemapAsset.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="Source\Public\BravoActor.h" />
     <ClInclude Include="Source\Public\BravoAsset.h" />
     <ClInclude Include="Source\Public\BravoAssetManager.h" />
+    <ClInclude Include="Source\Public\BravoBoundingBox.h" />
     <ClInclude Include="Source\Public\BravoCamera.h" />
     <ClInclude Include="Source\Public\BravoComponent.h" />
     <ClInclude Include="Source\Public\BravoCubemapAsset.h" />
@@ -158,6 +160,8 @@
     <ClInclude Include="Source\ThirdParty\stb\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Shaders\BoundingBox.frag" />
+    <None Include="Source\Shaders\BoundingBox.vert" />
     <None Include="Source\Shaders\MeshOutlineMask.frag" />
     <None Include="Source\Shaders\MeshOutlineMask.vert" />
     <None Include="Source\Shaders\MeshSelectionID.frag" />

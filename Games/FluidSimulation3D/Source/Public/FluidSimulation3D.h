@@ -1,40 +1,38 @@
 #pragma once
 #include "stdafx.h"
-#include "BravoObject.h"
+#include "BravoActor.h"
 #include "IBravoRenderable.h"
-#include "FluidMath.h"
-#include "FluidGrid.h"
+#include "FluidMath3D.h"
+#include "FluidGrid3D.h"
 
 struct Particle
 {
-	alignas(8) glm::vec2 Position = glm::vec2(0.0f);
-    alignas(8) glm::vec2 PredictedPosition = glm::vec2(0.0f);
-    alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
+	alignas(8) glm::vec3 Position = glm::vec3(0.0f);
+    alignas(8) glm::vec3 PredictedPosition = glm::vec3(0.0f);
+    alignas(8) glm::vec3 Velocity = glm::vec3(0.0f);
     float Density;
 };
 
-class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
+class FluidSimulation3D : public BravoActor, public IBravoTickable, public IBravoRenderable
 {
 public:
 	template <typename... Args>
-	FluidSimulation(std::shared_ptr<class FluidContainer> _ParentContainer, Args&&... args) :
-		BravoObject(std::forward<Args>(args)...),
+	FluidSimulation3D(Args&&... args) :
+		BravoActor(std::forward<Args>(args)...),
 		IBravoTickable(),
-		IBravoRenderable(ERenderPriority::Early),
-		ParentContainer(_ParentContainer)
+		IBravoRenderable()
 	{}
 
 	// SIMULATION PROPERTIES
 
-	int32 ParticlesCount = 1025;
-	bool bRandomPositions = false;
-
+	int32 ParticlesCount = 40000;
+	
 	float ParticleMass = 1.0f;
-	float ParticleRadius = 0.05f; 
-	float SmoothingRadius = 1.0f;
+	float ParticleRadius = 10.0f; 
+	float SmoothingRadius = 0.2f;
 
-	float TargetDensity = 100.0f;
-	float Preassure = 100.0f;
+	float TargetDensity = 10.0f;
+	float Preassure = 10000.0f;
 	float ViscosityFactor = 0.2f;
 
 
@@ -42,29 +40,26 @@ public:
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	float InteractionAcceleration = 20.0f;
-	float InteractionRadius = 2000.0f;
 	float CollisionDamping = 0.3f;
-	float Gravity = 0.0f;
+	float Gravity = 9.8f;
 
 	float MaxVelocity = 10.0;
 
 	uint32 StepsPerTick = 1;
 
 	// END SIMULATION PROPERTIES
-
-	void SpawnParticles();
-	
+		
 	void Reset();
 	void TogglePause();
 	bool IsPaused() const { return bPaused; }
 
-	bool HasStarted() const { return bHasStarted; }
-	void UpdateShaderUniformParams();
-	GLuint GetParticlesSSBO() const { return ParticlesSSBO; }
-
-private:
+protected:
 	virtual bool Initialize_Internal() override;
+
+	void OnBoundingBoxTransofrmUpdated(const class IBravoTransformable*);
+
+	void UpdateShaderUniformParams();
+
 	virtual void Tick(float DeltaTime) override;
 	void SimulationStep(float DeltaTime);
 	
@@ -73,23 +68,16 @@ private:
 
 	virtual void Render() override;
 
-	void OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime);
-	void OnInput_MOUSERIGHT(bool ButtonState, float DeltaTime);
-	void OnInput_MOUSELEFT(bool ButtonState, float DeltaTime);
+	
 	void OnInput_Space(bool ButtonState, float DeltaTime);
 	void OnInput_R(bool ButtonState, float DeltaTime);
-
-	void SetMouseForce(const glm::vec2& MouseLocation, float Dir);
 
 	
 	void FillBuffers();
 
 private:
-	std::vector<Particle> Particles;
-	std::shared_ptr<class FluidContainer> ParentContainer = nullptr;
+	BravoTransform ContainerTransform;
 
-	GLuint VAO = 0;
-	GLuint VBO = 0;
 	GLuint ParticlesSSBO = 0;
 	
 	GLuint SortedParticlesSSBO = 0;
@@ -97,11 +85,11 @@ private:
 	GLuint RadixHistogramSSBO = 0;
 
 	GLuint StartIndicesSSBO = 0;
-	int32 CachedParticlesCount = 0;
 	GLuint NumWorkGroups;
 
 	std::shared_ptr<class BravoShaderAsset> RenderShader;
 
+	std::shared_ptr<class BravoShaderAsset> ParticleGenerationCompute;
 	std::shared_ptr<class BravoShaderAsset> ExternalForcesCompute;
 	std::shared_ptr<class BravoShaderAsset> GridHashingCompute;
 	
@@ -121,15 +109,11 @@ private:
 	std::shared_ptr<class BravoShaderAsset> PressureCompute;
 
 
-	glm::vec2 WorldSize = glm::vec2(0.0f);
-
-	bool bHasStarted = false;
 	bool bPaused = true;
-	std::vector<glm::vec2> OriginalPositions;
+	bool bReadyToRender = false;
 
+	std::shared_ptr<class BravoBoundingBox> BoundingBox;
 
-	bool bMouseLeft = false;
-	bool bMouseRight = false;
-	glm::vec2 InteractionLocation;
-	float InteractionForce = 0.0f;
+	// particle
+	GLuint ParticleVAO;
 };

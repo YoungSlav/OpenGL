@@ -82,16 +82,16 @@ void FluidContainer::Render()
 
 		Shader->SetMatrix4d("model", model);
 		Shader->SetMatrix4d("camera", mCamera);
-		Shader->SetVector2d("containerSize", Transform.GetScale());
-		Shader->SetVector3d("outlineColor", OutlineColor);
-		Shader->SetVector1d("borderWidth", BorderWidth);
+		Shader->SetFloat2("containerSize", Transform.GetScale());
+		Shader->SetFloat3("outlineColor", OutlineColor);
+		Shader->SetFloat1("borderWidth", BorderWidth);
 
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, Simulation->GetParticlesSSBO());
 
 		Shader->SetInt("particleCount", Simulation->ParticlesCount);
-		Shader->SetVector1d("targetDensity", Simulation->TargetDensity);
-		Shader->SetVector1d("particleMass", Simulation->ParticleMass);
-		Shader->SetVector1d("smoothingRadius", Simulation->SmoothingRadius);
+		Shader->SetFloat1("targetDensity", Simulation->TargetDensity);
+		Shader->SetFloat1("particleMass", Simulation->ParticleMass);
+		Shader->SetFloat1("smoothingRadius", Simulation->SmoothingRadius);
 	
 		glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);

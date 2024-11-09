@@ -76,7 +76,7 @@ void BravoPostProcess_Outline::Render_Internal()
 		glActiveTexture(GL_TEXTURE0 + OutlineColorMask);
 		glBindTexture(GL_TEXTURE_2D, OutlineRenderTarget->GetColorTexture());
 		Shader->SetInt("OutlineColorMask", OutlineColorMask);
-		Shader->SetVector3d("OutlineColor", OutlineColor);
+		Shader->SetFloat3("OutlineColor", OutlineColor);
 				
 		Draw();
 

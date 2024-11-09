@@ -328,6 +328,9 @@
     <ClCompile Include="Source\Private\BravoTerrainActor.cpp">
       <Filter>Private\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoBoundingBox.cpp">
+      <Filter>Private\Actors\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -546,6 +549,9 @@
     <ClInclude Include="Source\Public\BravoTransform2D.h">
       <Filter>Public\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\BravoBoundingBox.h">
+      <Filter>Public\Actors\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\PhongModel.frag">
@@ -649,6 +655,12 @@
     </None>
     <None Include="Source\Shaders\Terrain.tese">
       <Filter>Shaders\Terrain</Filter>
+    </None>
+    <None Include="Source\Shaders\BoundingBox.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\BoundingBox.vert">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

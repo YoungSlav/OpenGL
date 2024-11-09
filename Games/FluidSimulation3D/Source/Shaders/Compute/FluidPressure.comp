@@ -4,9 +4,9 @@ layout(local_size_x = 1024) in;
 
 struct Particle
 {
-    vec2 Position;
-    vec2 PredictedPosition;
-    vec2 Velocity;
+    vec3 Position;
+    vec3 PredictedPosition;
+    vec3 Velocity;
     float Density;
 };
 struct SortedParticle
@@ -31,10 +31,9 @@ layout(std430, binding = 2) buffer StartIndicesBuffer
 };
 
 // world params
-uniform vec2 WorldSize;
-uniform vec2 ContainerSize;
-uniform float MaxVelocity;
-uniform vec2 RandomVector;
+uniform vec3 WorldSize;
+uniform mat4 BoundingBoxModel;
+uniform vec3 RandomVector;
 
 // particle params
 uniform float ParticleMass;
@@ -57,8 +56,8 @@ uniform float ViscosityScale;
 
 // forces
 void CalcDensity(uint i);
-vec2 CalcPressure(uint i);
-vec2 CalcViscosity(uint i);
+vec3 CalcPressure(uint i);
+vec3 CalcViscosity(uint i);
 void ResolveCollisions(uint i);
 
 // conversion helpers
@@ -70,22 +69,40 @@ float PressureKernel(float dst);
 float ViscosityKernel(float dst);
 
 // grid helpers
-ivec2 GetCellCoord(vec2 Position);
-uint GetCellHash(ivec2 Coords);
+ivec3 GetCellCoord(vec3 Position);
+uint GetCellHash(ivec3 Coords);
 uint CellIndexFromHash(uint Hash);
 
 
-const uint GridLookupCount = 9;
-const ivec2 GridOffsets[GridLookupCount] = ivec2[](
-    ivec2(0, 0),
-	ivec2(1, 0),
-	ivec2(-1, 0),
-	ivec2(0, 1),
-	ivec2(0, -1),
-	ivec2(1, 1),
-	ivec2(1, -1),
-	ivec2(-1, 1),
-	ivec2(-1, -1)
+const uint GridLookupCount = 27;
+const ivec3 GridOffsets[GridLookupCount] = ivec3[](
+    ivec3(0, 0, 0),
+    ivec3(1, 0, 0),
+    ivec3(-1, 0, 0),
+    ivec3(0, 1, 0),
+    ivec3(0, -1, 0),
+    ivec3(0, 0, 1),
+    ivec3(0, 0, -1),
+    ivec3(1, 1, 0),
+    ivec3(1, -1, 0),
+    ivec3(-1, 1, 0),
+    ivec3(-1, -1, 0),
+    ivec3(1, 0, 1),
+    ivec3(1, 0, -1),
+    ivec3(-1, 0, 1),
+    ivec3(-1, 0, -1),
+    ivec3(0, 1, 1),
+    ivec3(0, 1, -1),
+    ivec3(0, -1, 1),
+    ivec3(0, -1, -1),
+    ivec3(1, 1, 1),
+    ivec3(1, 1, -1),
+    ivec3(1, -1, 1),
+    ivec3(1, -1, -1),
+    ivec3(-1, 1, 1),
+    ivec3(-1, 1, -1),
+    ivec3(-1, -1, 1),
+    ivec3(-1, -1, -1)
 );
 
 void main()
@@ -97,23 +114,11 @@ void main()
 
     barrier();
 
-    vec2 viscosityForce = CalcViscosity(i);
+    vec3 viscosityForce = CalcViscosity(i);
+    vec3 pressureForce = CalcPressure(i);
 
-    Particles[i].Velocity += viscosityForce * SimulationTimeStep;
-    
-    barrier();
 
-    vec2 pressureForce = CalcPressure(i);
-
-    Particles[i].Velocity += pressureForce * SimulationTimeStep;
-    
-    
-    
-    //float velocity = length(Particles[i].Velocity);
-    //if ( velocity > MaxVelocity )
-    //{
-    //    Particles[i].Velocity = normalize(Particles[i].Velocity) * MaxVelocity;
-    //}
+    Particles[i].Velocity += (viscosityForce + pressureForce) * SimulationTimeStep;
     
     Particles[i].Position += Particles[i].Velocity * SimulationTimeStep;
 
@@ -124,11 +129,11 @@ void CalcDensity(uint i)
 {
     float Density = 0.0f;
 
-    vec2 myPosition = Particles[i].PredictedPosition;
-    ivec2 myCell = GetCellCoord(myPosition);
+    vec3 myPosition = Particles[i].PredictedPosition;
+    ivec3 myCell = GetCellCoord(myPosition);
     for ( uint gr = 0; gr < GridLookupCount; ++gr )
     {
-        ivec2 lookupCell = myCell + GridOffsets[gr];
+        ivec3 lookupCell = myCell + GridOffsets[gr];
         uint CellHash = GetCellHash(lookupCell);
         uint CellIndex = CellIndexFromHash(CellHash);
         for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < SortedParticles.length(); ++lookupIndex )
@@ -140,8 +145,8 @@ void CalcDensity(uint i)
             uint otherP = SortedParticles[lookupIndex].pIndex;
 
             // now we got all the indices
-            vec2 otherPosition = Particles[otherP].PredictedPosition;
-            vec2 offset = myPosition - otherPosition;
+            vec3 otherPosition = Particles[otherP].PredictedPosition;
+            vec3 offset = myPosition - otherPosition;
             float dst = length(offset);
             if ( dst > SmoothingRadius ) continue;
             
@@ -153,19 +158,19 @@ void CalcDensity(uint i)
     Particles[i].Density = Density;
 }
 
-vec2 CalcPressure(uint i)
+vec3 CalcPressure(uint i)
 {
-    vec2 pressureForce = vec2(0.0f, 0.0f);
+    vec3 pressureForce = vec3(0.0f);
 
     float myDensity = Particles[i].Density;
 
     float myPressure = DensityToPressure(myDensity);
 
-    vec2 myPosition = Particles[i].PredictedPosition;
-    ivec2 myCell = GetCellCoord(myPosition);
+    vec3 myPosition = Particles[i].PredictedPosition;
+    ivec3 myCell = GetCellCoord(myPosition);
     for ( uint gr = 0; gr < GridLookupCount; ++gr )
     {
-        ivec2 lookupCell = myCell + GridOffsets[gr];
+        ivec3 lookupCell = myCell + GridOffsets[gr];
         uint CellHash = GetCellHash(lookupCell);
         uint CellIndex = CellIndexFromHash(CellHash);
         for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < SortedParticles.length(); ++lookupIndex )
@@ -179,14 +184,14 @@ vec2 CalcPressure(uint i)
 
             // now we got all the indices
 
-            vec2 otherPosition = Particles[otherP].PredictedPosition;
-            vec2 offset = myPosition - otherPosition;
+            vec3 otherPosition = Particles[otherP].PredictedPosition;
+            vec3 offset = myPosition - otherPosition;
             float dst = length(offset);
             if ( dst > SmoothingRadius ) continue;
             
             // now we have all the data
 
-            vec2 dir = dst != 0.0f ? offset / dst : RandomVector;
+            vec3 dir = dst != 0.0f ? offset / dst : RandomVector;
 
             float otherDensity = Particles[otherP].Density;
 
@@ -199,17 +204,17 @@ vec2 CalcPressure(uint i)
     return -pressureForce;
 }
 
-vec2 CalcViscosity(uint i)
+vec3 CalcViscosity(uint i)
 {
-    vec2 viscosityForce = vec2(0.0f);
-    vec2 myVelocity = Particles[i].Velocity;
+    vec3 viscosityForce = vec3(0.0f);
+    vec3 myVelocity = Particles[i].Velocity;
     float myDensity = Particles[i].Density;
-    vec2 myPosition = Particles[i].PredictedPosition;
+    vec3 myPosition = Particles[i].PredictedPosition;
 
-    ivec2 myCell = GetCellCoord(myPosition);
+    ivec3 myCell = GetCellCoord(myPosition);
     for ( uint gr = 0; gr < GridLookupCount; ++gr )
     {
-        ivec2 lookupCell = myCell + GridOffsets[gr];
+        ivec3 lookupCell = myCell + GridOffsets[gr];
         uint CellHash = GetCellHash(lookupCell);
         uint CellIndex = CellIndexFromHash(CellHash);
         for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < SortedParticles.length(); ++lookupIndex )
@@ -223,17 +228,17 @@ vec2 CalcViscosity(uint i)
             if ( otherP == i ) continue;
 
             // now we got all the indices
-            vec2 otherPosition = Particles[otherP].PredictedPosition;
+            vec3 otherPosition = Particles[otherP].PredictedPosition;
             float otherDensity = Particles[otherP].Density;
-            vec2 offset = myPosition - otherPosition;
+            vec3 offset = myPosition - otherPosition;
             float dst = length(offset);
             if ( dst > SmoothingRadius ) continue;
             
-            vec2 dir = dst != 0.0f ? offset / dst : RandomVector;
+            vec3 dir = dst != 0.0f ? offset / dst : RandomVector;
 
             // now we have all the data
 
-            vec2 otherVelocity = Particles[otherP].Velocity;
+            vec3 otherVelocity = Particles[otherP].Velocity;
             viscosityForce += ((otherVelocity - myVelocity) / otherDensity) * ViscosityKernel(dst);
         }
     }
@@ -242,26 +247,34 @@ vec2 CalcViscosity(uint i)
 
 void ResolveCollisions(uint i)
 {
-    vec2 Bounds = ContainerSize - vec2(ParticleRadius);
-    bool bResult = false;
-    vec2 myPosition = Particles[i].Position;
-    vec2 VelocityModifyDir = vec2(0.0f);
-	if ( abs(myPosition.x) > Bounds.x )
-	{
-		myPosition.x = Bounds.x * sign(myPosition.x);
-		VelocityModifyDir.x = -1;
-		bResult = true;
-	}
-	if ( abs(myPosition.y) > Bounds.y )
-	{
-		myPosition.y = Bounds.y * sign(myPosition.y);
-		VelocityModifyDir.y = -1;
-		bResult = true;
-	}
-    if ( bResult )
+
+    vec4 localPoint = inverse(BoundingBoxModel) * vec4(Particles[i].Position, 1.0);
+
+
+    bool bOutside = (  localPoint.x < -0.5 || localPoint.x > 0.5 ||
+                        localPoint.y < -0.5 || localPoint.y > 0.5 ||
+                        localPoint.z < -0.5 || localPoint.z > 0.5);
+
+    if ( bOutside )
     {
-        Particles[i].Position = myPosition;
-        Particles[i].Velocity *= (VelocityModifyDir * CollisionDamping);
+        localPoint.x = clamp(localPoint.x, -0.5, 0.5);
+        localPoint.y = clamp(localPoint.y, -0.5, 0.5);
+        localPoint.z = clamp(localPoint.z, -0.5, 0.5);
+
+        Particles[i].Position = vec3(BoundingBoxModel * localPoint);
+
+        vec3 localCollisionNormal = vec3(0.0);
+        if (localPoint.x <= -0.5) localCollisionNormal = vec3(-1.0, 0.0, 0.0);
+        else if (localPoint.x >= 0.5) localCollisionNormal = vec3(1.0, 0.0, 0.0);
+        else if (localPoint.y <= -0.5) localCollisionNormal = vec3(0.0, -1.0, 0.0);
+        else if (localPoint.y >= 0.5) localCollisionNormal = vec3(0.0, 1.0, 0.0);
+        else if (localPoint.z <= -0.5) localCollisionNormal = vec3(0.0, 0.0, -1.0);
+        else if (localPoint.z >= 0.5) localCollisionNormal = vec3(0.0, 0.0, 1.0);
+        
+        vec3 worldNormal = normalize(vec3(BoundingBoxModel * vec4(localCollisionNormal, 0.0f)));
+        vec3 reflectedVelocity = Particles[i].Velocity - (1.0f + CollisionDamping) * dot(Particles[i].Velocity, worldNormal) * worldNormal;
+        
+        Particles[i].Velocity = reflectedVelocity;
     }
 }
 
@@ -290,20 +303,22 @@ float DensityToPressure(float density)
 
 // GRID
 
-ivec2 GetCellCoord(vec2 Position)
+ivec3 GetCellCoord(vec3 Position)
 {
-	vec2 normilizedPos = Position + WorldSize;
+	vec3 normilizedPos = Position + WorldSize;
 	int cellX = int(floor(normilizedPos.x / SmoothingRadius*2.0f));
     int cellY = int(floor(normilizedPos.y / SmoothingRadius*2.0f));
-	return ivec2(cellX, cellY);
+    int cellZ = int(floor(normilizedPos.z / SmoothingRadius*2.0f));
+	return ivec3(cellX, cellY, cellZ);
 }
 
-uint GetCellHash(ivec2 Coords)
+uint GetCellHash(ivec3 Coords)
 {	
 	const uint PRIME1 = 0x9e3779b1;
     const uint PRIME2 = 0x85ebca6b;
+    const uint PRIME3 = 0xc2b2ae35;
 
-	return Coords.y * PRIME1 + Coords.x * PRIME2;
+	return Coords.y * PRIME1 + Coords.x * PRIME2 + Coords.z * PRIME3;
 }
 
 uint CellIndexFromHash(uint Hash)

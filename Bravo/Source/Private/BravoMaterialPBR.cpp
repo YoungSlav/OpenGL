@@ -58,10 +58,10 @@ void BravoMaterialPBR::Use()
 	ShaderAsset->SetBool("material.useAoTexture", AoTexture != nullptr && AoTexture->EnsureGPUReady());
 	ShaderAsset->SetBool("material.useNormalTexture", NormalTexture != nullptr && NormalTexture->EnsureGPUReady());
 
-	ShaderAsset->SetVector3d("material.albedoColor", AlbedoColor);
-	ShaderAsset->SetVector1d("material.metallicColor", MetallicColor);
-	ShaderAsset->SetVector1d("material.roughnessColor", RoughnessColor);
-	ShaderAsset->SetVector1d("material.aoColor", AoColor);
+	ShaderAsset->SetFloat3("material.albedoColor", AlbedoColor);
+	ShaderAsset->SetFloat1("material.metallicColor", MetallicColor);
+	ShaderAsset->SetFloat1("material.roughnessColor", RoughnessColor);
+	ShaderAsset->SetFloat1("material.aoColor", AoColor);
 }
 
 void BravoMaterialPBR::StopUsage()

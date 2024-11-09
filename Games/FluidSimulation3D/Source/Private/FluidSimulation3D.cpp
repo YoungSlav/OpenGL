@@ -1,40 +1,40 @@
-#include "FluidSimulation.h"
-#include "FluidContainer.h"
+#include "FluidSimulation3D.h"
+#include "BravoBoundingBox.h"
 #include "BravoEngine.h"
 #include "BravoAssetManager.h"
 #include "BravoShaderAsset.h"
 #include "BravoCamera.h"
 #include "BravoInput.h"
 #include "BravoViewport.h"
+#include "BravoStaticMeshAsset.h"
 
-bool FluidSimulation::Initialize_Internal()
+bool FluidSimulation3D::Initialize_Internal()
 {
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
-
-	static float vertices[] = {
-        // positions   // texCoords
-        -0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  1.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  1.0f, 1.0f
-    };
-
 	
-	glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
+	glGenVertexArrays(1, &ParticleVAO);
+	glBindVertexArray(ParticleVAO);
 	glGenBuffers(1, &ParticlesSSBO);
+	glBindBuffer(GL_ARRAY_BUFFER, ParticlesSSBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, Position));
+    // PredictedPosition
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, PredictedPosition));
+    // Velocity
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, Velocity));
+    // Density
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, Density));
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 		
@@ -67,7 +67,13 @@ bool FluidSimulation::Initialize_Internal()
 
 	auto AssetManager = Engine->GetAssetManager();
 
-	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidPoint", BravoShaderLoadingParams("Shaders\\FluidPoint"));
+	BoundingBox = NewObject<BravoBoundingBox>("SimulationBoundingBox");
+	BoundingBox->SetScale(glm::vec3(10.0f, 20.0f, 10.0f));
+	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
+	
+	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("Shaders\\FluidParticle3D"));
+
+	ParticleGenerationCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGenerateParticles", BravoShaderLoadingParams("Shaders\\Compute\\FluidGenerateParticles"));
 
 	ExternalForcesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidExternalForces", BravoShaderLoadingParams("Shaders\\Compute\\FluidExternalForces"));
 	GridHashingCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGridHashing", BravoShaderLoadingParams("Shaders\\Compute\\FluidGridHashing"));
@@ -79,55 +85,39 @@ bool FluidSimulation::Initialize_Internal()
 	PressureCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidPressure", BravoShaderLoadingParams("Shaders\\Compute\\FluidPressure"));
 
 	{
-		Engine->GetInput()->OnMouseMoveDelegate.AddSP(Self<FluidSimulation>(), &FluidSimulation::OnMouseMove);
-	{
-		BravoKeySubscription subscription;
-		subscription.Key = GLFW_MOUSE_BUTTON_RIGHT;
-		subscription.SubscribedType = EKeySubscriptionType::Hold | EKeySubscriptionType::Released;
-		subscription.Callback.BindSP(Self<FluidSimulation>(), &FluidSimulation::OnInput_MOUSERIGHT);
-		Engine->GetInput()->SubscribeKey(subscription);
-	}
-	{
-		BravoKeySubscription subscription;
-		subscription.Key = GLFW_MOUSE_BUTTON_LEFT;
-		subscription.SubscribedType = EKeySubscriptionType::Hold | EKeySubscriptionType::Released;
-		subscription.Callback.BindSP(Self<FluidSimulation>(), &FluidSimulation::OnInput_MOUSELEFT);
-		Engine->GetInput()->SubscribeKey(subscription);
-	}
-	{
 		BravoKeySubscription subscription;
 		subscription.Key = GLFW_KEY_SPACE;
 		subscription.SubscribedType = EKeySubscriptionType::Released;
-		subscription.Callback.BindSP(Self<FluidSimulation>(), &FluidSimulation::OnInput_Space);
+		subscription.Callback.BindSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnInput_Space);
 		Engine->GetInput()->SubscribeKey(subscription);
 	}
 	{
 		BravoKeySubscription subscription;
 		subscription.Key = GLFW_KEY_R;
 		subscription.SubscribedType = EKeySubscriptionType::Released;
-		subscription.Callback.BindSP(Self<FluidSimulation>(), &FluidSimulation::OnInput_R);
+		subscription.Callback.BindSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnInput_R);
 		Engine->GetInput()->SubscribeKey(subscription);
 	}
-	}
+
+	Reset();
 
 	return true;
 }
 
-void FluidSimulation::FillBuffers()
+void FluidSimulation3D::FillBuffers()
 {
-	NumWorkGroups = (Particles.size() + 1023) / 1024;
-
+	NumWorkGroups = (ParticlesCount + 1023) / 1024;
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(Particle), Particles.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixTmpSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, RadixTmpSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixHistogramSSBO);
@@ -135,37 +125,51 @@ void FluidSimulation::FillBuffers()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, RadixHistogramSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, StartIndicesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, StartIndicesSSBO);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, RadixSortConstantsUBO);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, RadixSortConstantsUBO);
 
-	RadixSortPushConstants.g_num_elements = Particles.size();
+	RadixSortPushConstants.g_num_elements = ParticlesCount;
 	RadixSortPushConstants.g_num_workgroups = NumWorkGroups;
 	RadixSortPushConstants.g_num_blocks_per_workgroup = 1024;
 }
 
-void FluidSimulation::UpdateShaderUniformParams()
+void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransformable*)
 {
+	glm::vec3 ContainerSize = BoundingBox->GetScale();
+
+	GridHashingCompute->Use();
+		GridHashingCompute->SetFloat2("WorldSize", ContainerSize);
+	GridHashingCompute->StopUsage();
+
+	PressureCompute->Use();
+		PressureCompute->SetFloat2("WorldSize", ContainerSize);
+		PressureCompute->SetMatrix4d("BoundingBoxModel",
+			BoundingBox->GetTransform().GetTransformMatrix());
+	PressureCompute->StopUsage();
+}
+
+void FluidSimulation3D::UpdateShaderUniformParams()
+{
+	glm::vec3 ContainerSize = BoundingBox->GetScale();
 	// external force
 	ExternalForcesCompute->Use();
 		ExternalForcesCompute->SetFloat1("GravityForce", Gravity);
-		ExternalForcesCompute->SetFloat1("InteractionForce", InteractionForce);
-		ExternalForcesCompute->SetFloat2("InteractionLocation", InteractionLocation);
-		ExternalForcesCompute->SetFloat1("InteractionRadius", InteractionRadius);
 	ExternalForcesCompute->StopUsage();
 
 	// hashing
 	GridHashingCompute->Use();
-		GridHashingCompute->SetFloat2("WorldSize", WorldSize);
+		GridHashingCompute->SetFloat2("WorldSize", ContainerSize);
 		GridHashingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
 	GridHashingCompute->StopUsage();
 	
 	// pressure
 	PressureCompute->Use();
-		PressureCompute->SetFloat2("WorldSize", WorldSize);
-		PressureCompute->SetFloat2("ContainerSize", ParentContainer->GetSize());
+		PressureCompute->SetFloat2("WorldSize", ContainerSize);
+		PressureCompute->SetMatrix4d("BoundingBoxModel",
+			BoundingBox->GetTransform().GetTransformMatrix());
 		PressureCompute->SetFloat1("MaxVelocity", MaxVelocity);
 
 		PressureCompute->SetFloat1("ParticleMass", ParticleMass);
@@ -187,21 +191,24 @@ void FluidSimulation::UpdateShaderUniformParams()
 	PressureCompute->StopUsage();
 }
 
-void FluidSimulation::Render()
+void FluidSimulation3D::Render()
 {
-	if ( !Particles.size() )
+	if ( ParticlesCount <= 0 && bReadyToRender)
 		return;
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 	if ( !camera )
 		return;
 	
-	glm::mat4 CameraProjection = camera->GetProjectionMatrix();
-	glm::mat4 CameraView = camera->GetViewMatrix();
+	const glm::mat4 CameraProjection = camera->GetProjectionMatrix();
+	const glm::mat4 CameraView = camera->GetViewMatrix();
+	const glm::mat4 model = GetTransform_World().GetTransformMatrix();
 
-	glm::mat4 ViewProj = CameraProjection * CameraView;
+	const glm::mat4 ViewProj = CameraProjection * CameraView;
 	
 	RenderShader->Use();
+
+		RenderShader->SetMatrix4d("model", model);
 
 		RenderShader->SetMatrix4d("viewProj", ViewProj);
 		RenderShader->SetFloat1("particleSize", ParticleRadius);
@@ -211,169 +218,68 @@ void FluidSimulation::Render()
 		RenderShader->SetFloat3("Middle", Middle);
 		RenderShader->SetFloat3("Hot", Hot);
 				
-
-		glBindVertexArray(VAO);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, Particles.size());
+		glBindVertexArray(ParticleVAO);
+			glDrawArrays(GL_POINTS, 0, ParticlesCount);
 		glBindVertexArray(0);
 
 	RenderShader->StopUsage();
 }
 
-void FluidSimulation::SpawnParticles()
+void FluidSimulation3D::Reset()
 {
-	assert( ParentContainer != nullptr );
-
-	WorldSize = ParentContainer->GetSize() * 2.0f;
-
-	glm::ivec2 ParticleGridSize;
-	ParticleGridSize.x = glm::ceil(WorldSize.x / ParticleRadius * 2.0f);
-    ParticleGridSize.y = glm::ceil(WorldSize.y / ParticleRadius * 2.0f);
-
-	if ( ParticleGridSize.x * ParticleGridSize.y < ParticlesCount )
-		ParticlesCount = ParticleGridSize.x * ParticleGridSize.y;
-
-
-	bPaused = true;
-	bHasStarted = false;
-
-	Particles.clear();
-	Particles.resize(ParticlesCount);
-	
-	OriginalPositions.clear();
-	OriginalPositions.resize(ParticlesCount);
-	
-	
-
-	if ( ParticlesCount == 0 )
-		return;
-
-	
-	if ( bRandomPositions )
-	{
-		for ( int32 i = 0; i < ParticlesCount; ++i )
-		{
-			glm::vec2 Range = ParentContainer->GetSize() - glm::vec2(ParticleRadius*2.0f);
-			float x = BravoMath::Rand(-Range.x, Range.x);
-			float y = BravoMath::Rand(-Range.y, Range.y);
-			Particles[i].Position = glm::vec2(x, y);
-			OriginalPositions[i] = Particles[i].Position;
-		}
-	}
-	else
-	{
-		float ParticleDiameter = 2 * ParticleRadius;
-		float aspectRatio = WorldSize.x / WorldSize.y;
-		int32 gridWidth = static_cast<int32>(glm::ceil(sqrt(ParticlesCount * aspectRatio)));
-		int32 gridHeight = (ParticlesCount + gridWidth - 1) / gridWidth;
-
-		// Adjust ParticleCount if it exceeds the capacity of the grid
-		ParticlesCount = std::min(ParticlesCount, gridWidth * gridHeight);
-
-		// Calculate the offsets to center the grid around the origin
-		float offsetX = -(gridWidth - 1) * ParticleDiameter / 2;
-		float offsetY = -(gridHeight - 1) * ParticleDiameter / 2;
-
-		int32 index = 0;
-		for (int32 i = 0; i < gridWidth && index < ParticlesCount; ++i)
-		{
-			for (int32 j = 0; j < gridHeight && index < ParticlesCount; ++j)
-			{
-				float x = i * ParticleDiameter + offsetX;
-				float y = j * ParticleDiameter + offsetY;
-
-				Particles[index].Position = glm::vec2(x, y);
-				OriginalPositions[index] = Particles[index].Position;
-				index++;
-			}
-		}
-	}
-
-	CachedParticlesCount = ParticlesCount;
-
 	FillBuffers();
 	UpdateShaderUniformParams();
+	
+	bPaused = true;
+
+	ParticleGenerationCompute->Use();
+		// update time step
+		ParticleGenerationCompute->SetInt("ParticleCount", ParticlesCount);
+		ParticleGenerationCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform().GetTransformMatrix());
+		
+		glDispatchCompute(NumWorkGroups, 1, 1);
+		
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+	ParticleGenerationCompute->StopUsage();
+
+	bReadyToRender = true;
 }
 
-void FluidSimulation::Reset()
-{
-	SpawnParticles();
-}
-
-void FluidSimulation::TogglePause()
+void FluidSimulation3D::TogglePause()
 {
 	bPaused = !bPaused;
-	if ( !bPaused )
-		bHasStarted = true;
 }
 
-void FluidSimulation::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
-{
-	if ( bMouseRight )
-		SetMouseForce(CurrentPosition, -1.0f);
-	if ( bMouseLeft )
-		SetMouseForce(CurrentPosition, 1.0f);
-}
-
-void FluidSimulation::OnInput_MOUSERIGHT(bool ButtonState, float DeltaTime)
-{
-	bMouseRight = ButtonState;
-	if ( bMouseRight )
-		SetMouseForce(Engine->GetInput()->GetMousePosition(), -1.0f);
-	else if ( !bMouseLeft )
-		InteractionForce = 0.0f;
-}
-
-void FluidSimulation::OnInput_MOUSELEFT(bool ButtonState, float DeltaTime)
-{
-	bMouseLeft = ButtonState;
-	if ( bMouseLeft )
-		SetMouseForce(Engine->GetInput()->GetMousePosition(), 1.0f);
-	else if ( !bMouseRight )
-		InteractionForce = 0.0f;
-}
-
-void FluidSimulation::OnInput_Space(bool ButtonState, float DeltaTime)
+void FluidSimulation3D::OnInput_Space(bool ButtonState, float DeltaTime)
 {
 	TogglePause();	
 }
-void FluidSimulation::OnInput_R(bool ButtonState, float DeltaTime)
+void FluidSimulation3D::OnInput_R(bool ButtonState, float DeltaTime)
 {
 	Reset();
 }
 
-void FluidSimulation::SetMouseForce(const glm::vec2& MouseLocation, float Dir)
-{
-	const glm::ivec2 vSize = Engine->GetViewport()->GetViewportSize();
-	const glm::vec2 rPos = (glm::vec2(MouseLocation.x / vSize.x, MouseLocation.y / vSize.y ) * 2.0f) - glm::vec2(1.0f);
-
-	const glm::vec2 halfWorldSize = WorldSize * 0.5f;
-
-	const glm::vec2 mWorldPos = rPos * halfWorldSize;
-
-	InteractionLocation = mWorldPos;
-	InteractionForce = InteractionAcceleration * Dir;
-}
-
-
 ///////////////////////////////////////////////
 
-void FluidSimulation::Tick(float DeltaTime)
+void FluidSimulation3D::Tick(float DeltaTime)
 {
 	if ( bPaused ) return;
+
+	BoundingBox->SetRotation(glm::vec3(0.0f, 0.0f, sin(LifeTime*0.5f)*20.0f));
+	BoundingBox->SetScale(glm::vec3(20 + cos(LifeTime)*10.0f, 20.0f, 10.0f));
+
 	for ( int32 i = 0; i < StepsPerTick; ++i )
 		SimulationStep(DeltaTime / StepsPerTick);
 }
 
-void FluidSimulation::SimulationStep(float DeltaTime)
+void FluidSimulation3D::SimulationStep(float DeltaTime)
 {
 	if ( bPaused ) return;
 
 	ExternalForcesCompute->Use();
 		// update time step
 		ExternalForcesCompute->SetFloat1("SimulationTimeStep", 1.0f / (120.0f * StepsPerTick));
-		ExternalForcesCompute->SetFloat1("InteractionForce", InteractionForce);
-		ExternalForcesCompute->SetFloat2("InteractionLocation", InteractionLocation);
-		ExternalForcesCompute->SetFloat1("InteractionRadius", InteractionRadius);
 		
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		
@@ -388,31 +294,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 	GridHashingCompute->StopUsage();
 
 
-	struct SortedParticle
-	{
-		uint32 CellHash;
-		uint32 CellIndex;
-		uint32 pIndex;
-	};
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-		std::vector<SortedParticle> sortedParticles(CachedParticlesCount);
-		void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-		if (ptr)
-		{
-			memcpy(sortedParticles.data(), ptr, CachedParticlesCount * sizeof(SortedParticle));
-
-			std::sort(sortedParticles.begin(), sortedParticles.end(),
-				[](const SortedParticle& a, const SortedParticle& b)
-				{
-					return a.CellIndex < b.CellIndex;
-				});
-			memcpy(ptr, sortedParticles.data(), CachedParticlesCount * sizeof(SortedParticle));
-			glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		}
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	//ExecuteRadixSort();
+	ExecuteRadixSort();
 	
 	FluidStartingIndiciesCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
@@ -433,7 +315,7 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 	PressureCompute->StopUsage();
 }
 
-void FluidSimulation::ExecuteRadixSort()
+void FluidSimulation3D::ExecuteRadixSort()
 {
 	for ( int32 iteration = 0; iteration < 4; ++iteration )
 	{
@@ -452,7 +334,7 @@ void FluidSimulation::ExecuteRadixSort()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
 }
 
-void FluidSimulation::UpdateRadixIteration(int32 iteration)
+void FluidSimulation3D::UpdateRadixIteration(int32 iteration)
 {
 	if (iteration == 0 || iteration == 2)
 	{
@@ -470,5 +352,5 @@ void FluidSimulation::UpdateRadixIteration(int32 iteration)
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, RadixSortConstantsUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(FluidSimulation::RadixSortConstants), &RadixSortPushConstants, GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(FluidSimulation3D::RadixSortConstants), &RadixSortPushConstants, GL_STATIC_DRAW);
 }

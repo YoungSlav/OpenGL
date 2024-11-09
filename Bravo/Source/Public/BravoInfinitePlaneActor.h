@@ -27,6 +27,4 @@ protected:
 private:
 	std::shared_ptr<BravoShaderAsset> Shader;
 	std::shared_ptr<BravoStaticMeshAsset> Mesh;
-
-	GLuint VAO = 0;
 };

@@ -31,6 +31,8 @@
 #include "BravoScreen_Debug.h"
 #include "BravoScreen_ObjectHierarchy.h"
 #include "BravoTerrainActor.h"
+#include "BravoBoundingBox.h"
+
 
 bool BravoGameInstance::Initialize_Internal()
 {
@@ -59,19 +61,22 @@ bool BravoGameInstance::Initialize_Internal()
 	Camera->AttachTo(Player);
 	Camera->SetTransform(BravoTransform());
 	
-	if ( auto skyboxActor = NewObject<BravoSkyboxActor>("Skybox") )
-	{
-		skyboxActor->SetCubemap(AssetManager->FindOrLoad<BravoCubemapAsset>("SkyboxAsset", BravoCubemapLoadingParams({
-			"Cubemaps\\skybox\\right.jpg",
-			"Cubemaps\\skybox\\left.jpg",
-			"Cubemaps\\skybox\\top.jpg",
-			"Cubemaps\\skybox\\bottom.jpg",
-			"Cubemaps\\skybox\\front.jpg",
-			"Cubemaps\\skybox\\back.jpg", })));
-	}
-	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
+	//if ( auto skyboxActor = NewObject<BravoSkyboxActor>("Skybox") )
+	//{
+	//	skyboxActor->SetCubemap(AssetManager->FindOrLoad<BravoCubemapAsset>("SkyboxAsset", BravoCubemapLoadingParams({
+	//		"Cubemaps\\skybox\\right.jpg",
+	//		"Cubemaps\\skybox\\left.jpg",
+	//		"Cubemaps\\skybox\\top.jpg",
+	//		"Cubemaps\\skybox\\bottom.jpg",
+	//		"Cubemaps\\skybox\\front.jpg",
+	//		"Cubemaps\\skybox\\back.jpg", })));
+	//}
+	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
 
-	
+	if ( auto planeActor = NewObject<BravoActor>("BoundingBoxActor") )
+	{
+		auto planeMesh = planeActor->NewObject<BravoBoundingBox>("BoundingBox");
+	}
 
 	SpawnDirLights();
 

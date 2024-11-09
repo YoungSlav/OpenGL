@@ -104,7 +104,6 @@ private:
 	std::vector<BravoInstanceData> InstanceData;
 	bool bInstanceStateDirty = true;
 
-	GLuint VAO = 0;
 	GLuint InstancesSSBO = 0;
 	
 	GLuint SelectedInstancesSSBO = 0;

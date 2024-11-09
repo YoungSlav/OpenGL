@@ -131,6 +131,8 @@ bool BravoStaticMeshAsset::LoadToGPU_Internal()
 	}
 
 	// create buffers/arrays
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 
@@ -141,7 +143,45 @@ bool BravoStaticMeshAsset::LoadToGPU_Internal()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(uint32), &Indices[0], GL_STATIC_DRAW);
 
+	// vertex Positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glEnableVertexAttribArray(0);
+	// vertex normals
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Normal));
+	glEnableVertexAttribArray(1);
+	// vertex texture coords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::TexCoords));
+	glEnableVertexAttribArray(2);
+	// vertex tangent
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Tangent));
+	glEnableVertexAttribArray(3);
+	// vertex bitangent
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Bitangent));
+	glEnableVertexAttribArray(4);
+	// vertex colors
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
+	glEnableVertexAttribArray(5);
+
+	glBindVertexArray(0);
+
 	return true;
+}
+
+void BravoStaticMeshAsset::Render(size_t InstanceCount)
+{
+	if ( InstanceCount == 0 )
+		return;
+	
+	glBindVertexArray(VAO);
+	if ( InstanceCount == 1 )
+	{
+		glDrawElements(GL_TRIANGLES, (int32)Indices.size(), GL_UNSIGNED_INT, 0);
+	}
+	else
+	{
+		glDrawElementsInstanced(GL_TRIANGLES, (int32)Indices.size(), GL_UNSIGNED_INT, 0, (int32)InstanceCount);
+	}
+	glBindVertexArray(0);
 }
 
 
@@ -149,7 +189,9 @@ void BravoStaticMeshAsset::ReleaseFromGPU_Internal()
 {
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+	glDeleteVertexArrays(6, &VAO);
 
+	VAO = 0;
 	VBO = 0;
 	EBO = 0;
 }

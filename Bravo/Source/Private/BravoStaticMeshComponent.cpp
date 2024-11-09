@@ -41,43 +41,12 @@ bool BravoStaticMeshComponent::EnsureReady()
 
 	if ( Mesh->GetLoadingState() == EAssetLoadingState::InRAM )
 	{
-		if ( VAO != 0 )
-			glDeleteVertexArrays(10, &VAO);
-		VAO = 0;
+		Mesh->LoadToGPU();
 	}
 
 	if ( !Mesh->EnsureGPUReady() )
 		return false;
 
-	if ( VAO == 0 )
-	{
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER,  Mesh->GetVBO());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->GetEBO());
-
-		// vertex Positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-		glEnableVertexAttribArray(0);
-		// vertex normals
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Normal));
-		glEnableVertexAttribArray(1);
-		// vertex texture coords
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::TexCoords));
-		glEnableVertexAttribArray(2);
-		// vertex tangent
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Tangent));
-		glEnableVertexAttribArray(3);
-		// vertex bitangent
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Bitangent));
-		glEnableVertexAttribArray(4);
-		// vertex colors
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::Color));
-		glEnableVertexAttribArray(5);
-
-		glBindVertexArray(0);
-
-	}
 
 	if ( bInstanceStateDirty )
 		UpdateInstanceBuffer();
@@ -202,9 +171,6 @@ void BravoStaticMeshComponent::OnDestroy()
 	glDeleteBuffers(1, &SelectedInstancesSSBO);
 	SelectedInstancesSSBO = 0;
 
-	glDeleteVertexArrays(6, &VAO);
-	VAO = 0;
-
 	Material->Destroy();
 	Mesh->ReleaseFromGPU();
 }
@@ -247,17 +213,14 @@ void BravoStaticMeshComponent::Render()
 		Material->GetShader()->SetMatrix4d("projection", CameraProjection);
 		Material->GetShader()->SetMatrix4d("view", CameraView);
 		Material->GetShader()->SetMatrix4d("model", model);
-		Material->GetShader()->SetVector3d("viewPos", CameraLocation);
-		Material->GetShader()->SetVector1d("drawDistance", Engine->GetCamera()->GetMaxDrawingDistance());
+		Material->GetShader()->SetFloat3("viewPos", CameraLocation);
+		Material->GetShader()->SetFloat1("drawDistance", Engine->GetCamera()->GetMaxDrawingDistance());
 		Engine->GetLightManager()->ApplyLights(Material->GetShader());
 
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
 
-		glBindVertexArray(VAO);
-		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
-		glBindVertexArray(0);
-
-
+		Mesh->Render(Instances.size());
+		
 
 		Engine->GetLightManager()->ResetLightsUsage();
 	Material->StopUsage();
@@ -289,9 +252,7 @@ void BravoStaticMeshComponent::RenderSelectionID()
 		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
 		
-		glBindVertexArray(VAO);
-		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
-		glBindVertexArray(0);
+		Mesh->Render(Instances.size());
 
 
 	SelectionIDShader->StopUsage();
@@ -319,14 +280,12 @@ void BravoStaticMeshComponent::RenderOutlineMask()
 
 	OutlineMaskShader->Use();
 		
-		OutlineMaskShader->SetVector1d("OutlineColor", (float)(GetHandle()));
+		OutlineMaskShader->SetFloat1("OutlineColor", (float)(GetHandle()));
 		OutlineMaskShader->SetMatrix4d("transform", ModelTranform);
 
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SelectedInstancesSSBO);
 		
-		glBindVertexArray(VAO);
-		glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, SelectedInstancesCount);
-		glBindVertexArray(0);
+		Mesh->Render(Instances.size());
 
 		
 	OutlineMaskShader->StopUsage();
@@ -341,8 +300,7 @@ void BravoStaticMeshComponent::RenderDepthMap(std::shared_ptr<class BravoShaderA
 
 	_Shader->SetMatrix4d("model", model);
 		
-	glBindVertexArray(VAO);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, InstancesSSBO);
-	glDrawElementsInstanced(GL_TRIANGLES, (int32)Mesh->GetIndices().size(), GL_UNSIGNED_INT, 0, (int32)Instances.size());
+	Mesh->Render(Instances.size());
 }

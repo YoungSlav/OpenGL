@@ -47,6 +47,7 @@ EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, cons
 		return LoadingState;
 	}
 	glDeleteProgram(ShaderID);
+	Log::LogMessage(ELog::Error, "Failed to load shader: {}", params.ShaderPath);
 	LoadingState = EAssetLoadingState::Failed;
 	return LoadingState;
 }
@@ -169,7 +170,6 @@ bool BravoShaderAsset::LinkProgramm()
     glGetProgramiv(ShaderID, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(ShaderID, 512, NULL, infoLog);
-		Log::LogMessage(ELog::Error, "PROGRAM::LINKING_FAILED");
 		Log::LogMessage(ELog::Error, infoLog );
 		return false;
     }
@@ -225,29 +225,50 @@ void BravoShaderAsset::SetInt(const std::string& name, const GLuint val) const
 	glUniform1i(FindUniformLocation(name.c_str()), val);
 }
 
-void BravoShaderAsset::SetVector1d(const std::string& name, const float val) const
+void BravoShaderAsset::SetFloat1(const std::string& name, const float val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
 	glUniform1f(FindUniformLocation(name.c_str()), val);
 }
 
-void BravoShaderAsset::SetVector2d(const std::string& name, const glm::vec2& val) const
+void BravoShaderAsset::SetFloat2(const std::string& name, const glm::vec2& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
 	glUniform2f(FindUniformLocation(name.c_str()), val.x, val.y);
 }
 
-void BravoShaderAsset::SetVector3d(const std::string& name, const glm::vec3& val) const
+void BravoShaderAsset::SetFloat3(const std::string& name, const glm::vec3& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
 	glUniform3f(FindUniformLocation(name.c_str()), val.x, val.y, val.z);
 }
 
-void BravoShaderAsset::SetVector4d(const std::string& name, const glm::vec4& val) const
+void BravoShaderAsset::SetFloat4(const std::string& name, const glm::vec4& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
 	glUniform4f(FindUniformLocation(name.c_str()), val.x, val.y, val.z, val.w);
 }
+
+void BravoShaderAsset::SetFloat1v(const std::string& name, uint32 count, const float* val) const
+{
+	glUniform1fv(FindUniformLocation(name.c_str()), count, val);
+}
+
+void BravoShaderAsset::SetFloat2v(const std::string& name, uint32 count, const float* val) const
+{
+	glUniform2fv(FindUniformLocation(name.c_str()), count, val);
+}
+
+void BravoShaderAsset::SetFloat3v(const std::string& name, uint32 count, const float* val) const
+{
+	glUniform3fv(FindUniformLocation(name.c_str()), count, val);
+}
+
+void BravoShaderAsset::SetFloat4v(const std::string& name, uint32 count, const float* val) const
+{
+	glUniform4fv(FindUniformLocation(name.c_str()), count, val);
+}
+
 
 void BravoShaderAsset::SetMatrix2d(const std::string& name, const glm::mat2& val) const
 {
