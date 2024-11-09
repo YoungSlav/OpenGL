@@ -68,7 +68,7 @@ bool FluidSimulation3D::Initialize_Internal()
 	auto AssetManager = Engine->GetAssetManager();
 
 	BoundingBox = NewObject<BravoBoundingBox>("SimulationBoundingBox");
-	BoundingBox->SetScale(glm::vec3(20.0f, 20.0f, 10.0f));
+	BoundingBox->SetScale(glm::vec3(20.0f, 30.0f, 20.0f));
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
 	
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("Shaders\\FluidParticle3D"));
@@ -266,8 +266,8 @@ void FluidSimulation3D::Tick(float DeltaTime)
 {
 	if ( bPaused ) return;
 
-	//BoundingBox->SetRotation(glm::vec3(0.0f, 0.0f, sin(LifeTime)*20.0f));
-	BoundingBox->SetScale(glm::vec3(40 + cos(LifeTime)*10.0f, 40.0f, 10.0f));
+	BoundingBox->SetRotation(glm::vec3(0.0f, LifeTime*60.0f, 0.0f));
+	//BoundingBox->SetScale(glm::vec3(40 + cos(LifeTime)*10.0f, 40.0f, 10.0f));
 
 	for ( int32 i = 0; i < StepsPerTick; ++i )
 		SimulationStep(DeltaTime / StepsPerTick);

@@ -29,7 +29,7 @@ void main()
     );
 
     // Calculate the overall scale of the object
-    float scale = sqrt(min(scale3D.x, min(scale3D.y, scale3D.z)));
+    float scale = sqrt(max(scale3D.x, max(scale3D.y, scale3D.z)));
         
 	// Assign the calculated point size to gl_PointSize
 	gl_PointSize = scale * particleSize;
