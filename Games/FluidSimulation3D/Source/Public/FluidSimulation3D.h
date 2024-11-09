@@ -25,15 +25,16 @@ public:
 
 	// SIMULATION PROPERTIES
 
+	const float scale = 2.0f;
 	int32 ParticlesCount = 40000;
 	
 	float ParticleMass = 1.0f;
 	float ParticleRadius = 10.0f; 
-	float SmoothingRadius = 0.2f;
+	float SmoothingRadius = 0.5f;
 
-	float TargetDensity = 10.0f;
-	float Preassure = 10000.0f;
-	float ViscosityFactor = 0.2f;
+	float TargetDensity = 0.5f;
+	float PressureFactor = 24.0f;
+	float ViscosityFactor = 1.0f;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);

@@ -43,7 +43,7 @@ uniform float TargetDensity;
 uniform float SimulationTimeStep;
 
 // force params
-uniform float Preassure;
+uniform float PressureFactor;
 uniform float ViscosityFactor;
 uniform float CollisionDamping;
 
@@ -147,12 +147,12 @@ void CalcDensity(uint i)
             // now we got all the indices
             vec3 otherPosition = Particles[otherP].PredictedPosition;
             vec3 offset = myPosition - otherPosition;
-            float dst = length(offset);
-            if ( dst > SmoothingRadius ) continue;
+            float dst2 = dot(offset, offset);
+            if ( dst2 > SmoothingRadius*SmoothingRadius ) continue;
             
             // now we have all the data
 
-            Density += ParticleMass * DensityKernel(dst);
+            Density += ParticleMass * DensityKernel(dst2);
         }
     }
     Particles[i].Density = Density;
@@ -186,9 +186,10 @@ vec3 CalcPressure(uint i)
 
             vec3 otherPosition = Particles[otherP].PredictedPosition;
             vec3 offset = myPosition - otherPosition;
-            float dst = length(offset);
-            if ( dst > SmoothingRadius ) continue;
+            float dst2 = dot(offset,  offset);
+            if ( dst2 > SmoothingRadius*SmoothingRadius ) continue;
             
+            float dst = sqrt(dst2);
             // now we have all the data
 
             vec3 dir = dst != 0.0f ? offset / dst : RandomVector;
@@ -280,9 +281,9 @@ void ResolveCollisions(uint i)
 
 //// HELPERS
 
-float DensityKernel(float dst)
+float DensityKernel(float dst2)
 {
-    float v = SmoothingRadius*SmoothingRadius - dst*dst;
+    float v = SmoothingRadius*SmoothingRadius - dst2;
 	return v * v * v * DensityScale;
 }
 
@@ -298,7 +299,7 @@ float ViscosityKernel(float dst)
 }
 float DensityToPressure(float density)
 {
-    return max((density - TargetDensity), 0.0f) * Preassure;
+    return max((density - TargetDensity), 0.0f) * PressureFactor;
 }
 
 // GRID

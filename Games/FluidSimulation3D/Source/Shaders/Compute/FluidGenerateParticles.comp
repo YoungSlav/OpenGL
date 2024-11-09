@@ -33,4 +33,7 @@ void main()
 
     // Apply the BoundingBox transformation (including scale, rotation, and translation)
     Particles[i].Position = vec3(BoundingBox * vec4(randomPosition, 1.0));
+    Particles[i].PredictedPosition = Particles[i].Position;
+    Particles[i].Velocity = vec3(0.0);
+    Particles[i].Density = 0.0;
 };

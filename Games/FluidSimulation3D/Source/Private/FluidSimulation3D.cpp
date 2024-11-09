@@ -68,7 +68,7 @@ bool FluidSimulation3D::Initialize_Internal()
 	auto AssetManager = Engine->GetAssetManager();
 
 	BoundingBox = NewObject<BravoBoundingBox>("SimulationBoundingBox");
-	BoundingBox->SetScale(glm::vec3(10.0f, 20.0f, 10.0f));
+	BoundingBox->SetScale(glm::vec3(20.0f, 20.0f, 10.0f));
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
 	
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("Shaders\\FluidParticle3D"));
@@ -177,12 +177,12 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
 		PressureCompute->SetFloat1("TargetDensity", TargetDensity);
 	
-		PressureCompute->SetFloat1("Preassure", Preassure);
+		PressureCompute->SetFloat1("PressureFactor", PressureFactor);
 		PressureCompute->SetFloat1("ViscosityFactor", ViscosityFactor);
 		PressureCompute->SetFloat1("CollisionDamping", CollisionDamping);
 
 		const float DensityScale	= 315.0f / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
-		const float PressureScale	= -15.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 3));
+		const float PressureScale	= -45.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 6));
 		const float ViscosityScale	= 45.0f  / (glm::pi<float>() * glm::pow(SmoothingRadius, 5));
 		
 		PressureCompute->SetFloat1("DensityScale", DensityScale);
@@ -266,8 +266,8 @@ void FluidSimulation3D::Tick(float DeltaTime)
 {
 	if ( bPaused ) return;
 
-	BoundingBox->SetRotation(glm::vec3(0.0f, 0.0f, sin(LifeTime*0.5f)*20.0f));
-	BoundingBox->SetScale(glm::vec3(20 + cos(LifeTime)*10.0f, 20.0f, 10.0f));
+	//BoundingBox->SetRotation(glm::vec3(0.0f, 0.0f, sin(LifeTime)*20.0f));
+	BoundingBox->SetScale(glm::vec3(40 + cos(LifeTime)*10.0f, 40.0f, 10.0f));
 
 	for ( int32 i = 0; i < StepsPerTick; ++i )
 		SimulationStep(DeltaTime / StepsPerTick);
