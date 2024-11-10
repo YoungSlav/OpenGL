@@ -48,7 +48,7 @@ protected:
 private:
 	float FOV = 45.0f;
 	float MinDrawingDistance = 0.1f;
-	float MaxDrawingDistance = 100000.0f;
+	float MaxDrawingDistance = 1000.0f;
 
 	glm::vec2 WorldSize2D;
 	

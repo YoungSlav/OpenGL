@@ -61,24 +61,72 @@ bool BravoGameInstance::Initialize_Internal()
 	Camera->AttachTo(Player);
 	Camera->SetTransform(BravoTransform());
 	
-	//if ( auto skyboxActor = NewObject<BravoSkyboxActor>("Skybox") )
-	//{
-	//	skyboxActor->SetCubemap(AssetManager->FindOrLoad<BravoCubemapAsset>("SkyboxAsset", BravoCubemapLoadingParams({
-	//		"Cubemaps\\skybox\\right.jpg",
-	//		"Cubemaps\\skybox\\left.jpg",
-	//		"Cubemaps\\skybox\\top.jpg",
-	//		"Cubemaps\\skybox\\bottom.jpg",
-	//		"Cubemaps\\skybox\\front.jpg",
-	//		"Cubemaps\\skybox\\back.jpg", })));
-	//}
-	//auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
-
-	if ( auto planeActor = NewObject<BravoActor>("BoundingBoxActor") )
+	if ( auto skyboxActor = NewObject<BravoSkyboxActor>("Skybox") )
 	{
-		auto planeMesh = planeActor->NewObject<BravoBoundingBox>("BoundingBox");
+		skyboxActor->SetCubemap(AssetManager->FindOrLoad<BravoCubemapAsset>("SkyboxAsset", BravoCubemapLoadingParams({
+			"Cubemaps\\skybox\\right.jpg",
+			"Cubemaps\\skybox\\left.jpg",
+			"Cubemaps\\skybox\\top.jpg",
+			"Cubemaps\\skybox\\bottom.jpg",
+			"Cubemaps\\skybox\\front.jpg",
+			"Cubemaps\\skybox\\back.jpg", })));
+	}
+	auto InfinitePlane = NewObject<BravoInfinitePlaneActor>("InfinitePlane");
+
+	//if ( auto planeActor = NewObject<BravoActor>("BoundingBoxActor") )
+	//{
+	//	auto planeMesh = planeActor->NewObject<BravoBoundingBox>("BoundingBox");
+	//}
+
+	if ( auto planeActor = NewObject<BravoActor>("PlaneMeshActor") )
+	{
+		std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+		planeActor->SetScale(glm::vec3(50.0f, 1.0f, 50.0f));
+		//planeActor->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+		//planeActor->SetLocation(glm::vec3(0.0f, -1.0f, 0.0f));
+		auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
+		planeMesh->SetMesh(planeAsset);
+		planeMesh->SetCastShadows(true);
+		//planeMesh->SetScale(glm::vec3(50.0f, 0.1f, 50.0f));
+		
+		BravoPBRMaterialParams materailLoadingParams;
+		materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		materailLoadingParams.AoColor = 1.0f;
+		std::shared_ptr<BravoMaterialPBR> planeMat = planeMesh->NewObject<BravoMaterialPBR>();
+		planeMat->Load(materailLoadingParams);
+		planeMesh->SetMaterial(planeMat);
+	}
+
+	{
+		auto TestActor = NewObject<BravoActor>("TestActor");
+		TestActor->SetLocation(glm::vec3(0.0f, 5.0f, 0.0f));
+		auto cubeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+		auto TestComponent = TestActor->NewObject<BravoStaticMeshComponent>("TestComponent");
+		TestComponent->SetMesh(cubeAsset);
+		TestComponent->SetCastShadows(true);
+
+		BravoUnlitMaterialParams materailLoadingParams;
+		materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	//	BravoPBRMaterialParams materailLoadingParams;
+	//	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	//	materailLoadingParams.AoColor = 1.0f;
+		auto material = TestComponent->NewObject<BravoMaterialUnlit>();
+		material->Load(materailLoadingParams);
+		TestComponent->SetMaterial(material);
 	}
 
 	SpawnDirLights();
+
+	//if ( auto pointLightActor = NewObject<BravoSpotLightActor>("PointLight", BravoSpotLightSettings(), glm::vec3(1.0f)) )
+	//{
+	//	glm::vec3 newLocation = glm::vec3(0.0f);
+	//	//newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 100;
+	//	//newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 100;
+	//	newLocation.y = 20.0f;
+	//	pointLightActor->SetLocation(newLocation);
+	//	pointLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - pointLightActor->GetLocation());
+	//}
 
 	return true;
 }
@@ -92,8 +140,8 @@ void BravoGameInstance::SpawnDirLights()
 		if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight", BravoDirectionalLightSettings(), glm::vec3(1.0f)) )
 		{
 			glm::vec3 newLocation = glm::vec3(0.0f);
-			newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 100;
-			newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 100;
+			//newLocation.x = glm::sin(glm::radians(360.0f / count *i)) * 100;
+			//newLocation.z = glm::cos(glm::radians(360.0f / count *i)) * 100;
 			newLocation.y = 100.0f;
 			dirLightActor->SetLocation(newLocation);
 			dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
