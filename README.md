@@ -17,7 +17,6 @@ This project is a custom game engine, inspired by Unreal Engine, designed for le
         [3D simulation](https://youtu.be/AKP-av83-H4?si=JyxycT73ULsHNfo3),
         [2D simulation with user interaction](https://youtu.be/P0kn4GMmqLA?si=z2K_qHNCnWvIzwQO)
 
- - : Developing a basic ray tracing renderer
 
 ## Future Plans (with no specific order)
  - Basic Ray Tracing (Work in progress)
