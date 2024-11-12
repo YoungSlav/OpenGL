@@ -15,7 +15,7 @@ This project is a custom game engine, inspired by Unreal Engine, designed for le
 ## Projects I've developed using my engine
   - Particle-based Fluid Simulation using compute shaders:
         [3D simulation](https://youtu.be/AKP-av83-H4?si=JyxycT73ULsHNfo3),
-        [2D simulation with user interaction](https://youtu.be/P0kn4GMmqLA?si=z2K_qHNCnWvIzwQO)
+        [2D simulation with user interaction](https://youtu.be/Hkz3_GT-KfU)
 
 
 ## Future Plans (with no specific order)
