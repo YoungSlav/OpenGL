@@ -26,15 +26,15 @@ public:
 
 	// SIMULATION PROPERTIES
 
-	int32 ParticlesCount = 1025;
+	int32 ParticlesCount = 30000;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
-	float ParticleRadius = 0.05f; 
-	float SmoothingRadius = 1.0f;
+	float ParticleRadius = 0.1f; 
+	float SmoothingRadius = 0.5f;
 
-	float TargetDensity = 100.0f;
-	float Preassure = 100.0f;
+	float TargetDensity = 0.25f;
+	float Preassure = 12.0f;
 	float ViscosityFactor = 0.2f;
 
 
@@ -42,10 +42,10 @@ public:
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	float InteractionAcceleration = 20.0f;
-	float InteractionRadius = 2000.0f;
+	float InteractionAcceleration = 50.0f;
+	float InteractionRadius = 2.0f;
 	float CollisionDamping = 0.3f;
-	float Gravity = 0.0f;
+	float Gravity = 9.8f;
 
 	float MaxVelocity = 10.0;
 
