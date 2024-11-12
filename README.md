@@ -31,7 +31,7 @@ This project is a custom game engine, inspired by Unreal Engine, designed for le
  - animations
  - landscape rendeing (Work in progress)
  
-## Dependencies
+## Dependencies and 3rd parties used
 OpenGL 4.3 or higher
 
 GLFW for window and context management
@@ -47,5 +47,7 @@ GLM for OpenGL Mathematics
 [Glad for managing OpenGL function pointers](https://glad.dav1d.de/)
 
 [STB for image loading](https://github.com/nothings/stb)
+
+[Radix sort implemeted for Vulkan](https://github.com/MircoWerner/VkRadixSort)
 
 [Advanced Unreal-like delegates for c++](https://benui.ca/unreal/delegates-advanced)
