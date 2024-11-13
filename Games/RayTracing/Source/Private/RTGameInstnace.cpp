@@ -16,6 +16,7 @@
 #include "BravoActor.h"
 #include "BravoStaticMeshComponent.h"
 #include "BravoMaterialPBR.h"
+#include "BravoMaterialUnlit.h"
 
 
 bool RTGameInstnace::Initialize_Internal()
@@ -39,7 +40,7 @@ bool RTGameInstnace::Initialize_Internal()
 	Engine->SetCamera(Camera);
 
 	Player = NewObject<BravoPlayer>("Player");
-	Player->SetLocation(glm::vec3(1000.0f, 50.0f, 1000.0f));
+	Player->SetLocation(glm::vec3(1000.0f, 0.0f, 1000.0f));
 	Camera->AttachTo(Player);
 	Camera->SetTransform(BravoTransform());
 
@@ -55,6 +56,7 @@ bool RTGameInstnace::Initialize_Internal()
 	}
 
 	DirLight = NewObject<BravoDirectionalLightActor>("DirLight", BravoDirectionalLightSettings(), glm::vec3(1.0f));
+	DirLight->SetAmbientLightColor(glm::vec3(1.0f));
 	glm::vec3 newLocation = glm::vec3(0.0f);
 	newLocation.x = 100.0f;
 	newLocation.z = 100.0f;
@@ -62,16 +64,51 @@ bool RTGameInstnace::Initialize_Internal()
 	DirLight->SetLocation(newLocation);
 	DirLight->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - DirLight->GetLocation());
 	
+	{
+		BravoPointLightSettings PointSettings;
+		PointSettings.Intencity = 1000.0f;
+		PointLightActor = NewObject<BravoPointLightActor>("PointLight", PointSettings, glm::vec3(1.0f));
+		PointLightActor->SetLocation(glm::vec3(1000.0f, 0.0f, 1000.0f));
+		
+		std::shared_ptr<BravoStaticMeshAsset> sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
+		auto sphereMashComponent = PointLightActor->NewObject<BravoStaticMeshComponent>("sphereMashComponent");
+		sphereMashComponent->SetCastShadows(false);
+		sphereMashComponent->SetMesh(sphereAsset);
+		
+		BravoUnlitMaterialParams lightMaterial;
+		lightMaterial.AlbedoColor = glm::vec3(1.0f);
+		std::shared_ptr<BravoMaterialUnlit> sphereMat = sphereMashComponent->NewObject<BravoMaterialUnlit>();
+		sphereMat->Load(lightMaterial);
+		sphereMashComponent->SetMaterial(sphereMat);
+	}
 	
+	BravoSpotLightSettings SpotSettings;
+	SpotSettings.Intencity = 700.0f;
+	SpotLightActor = NewObject<BravoSpotLightActor>("Spot", SpotSettings, glm::vec3(1.0f));
 	
 
-	std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\cube.fbx"));
+	
+
+	std::shared_ptr<BravoStaticMeshAsset> planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("CubeAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
 	auto planeActor = NewObject<BravoActor>("PlaneMeshActor");
 	planeActor->SetScale(glm::vec3(10.0f, 10.0f, 10.0f));
 	planeActor->SetLocation(glm::vec3(1000.0f, 0.0f, 1000.0f));
 	auto planeMesh = planeActor->NewObject<BravoStaticMeshComponent>("PlaneMeshStaticMesh");
 	planeMesh->SetMesh(planeAsset);
-	planeMesh->SetCastShadows(false);
+	planeMesh->SetCastShadows(true);
+
+	const float dist = 3.0f;
+	planeMesh->RemoveAllInstances();
+	std::vector<BravoTransform> Instances;
+	Instances.resize(6);
+	Instances[0].SetLocation(glm::vec3(-dist, 0.0f, 0.0f));
+	Instances[1].SetLocation(glm::vec3(dist , 0.0f, 0.0f));
+	Instances[2].SetLocation(glm::vec3(0.0f, -dist, 0.0f));
+	Instances[3].SetLocation(glm::vec3(0.0f, dist , 0.0f));
+	Instances[4].SetLocation(glm::vec3(0.0f, 0.0f, -dist));
+	Instances[5].SetLocation(glm::vec3(0.0f, 0.0f, dist ));
+	for ( auto& inst :Instances )
+		planeMesh->AddInstance(inst);
 
 	BravoPBRMaterialParams planeMaterailLoadingParams;
 	//planeMaterailLoadingParams.RoughnessTexture = "Textures\\LightPlankFlooring\\light-plank-flooring_roughness.png";
@@ -85,8 +122,8 @@ bool RTGameInstnace::Initialize_Internal()
 	planeMaterailLoadingParams.RoughnessTexture = "Textures\\rustedIron\\roughness.png";
 	planeMaterailLoadingParams.NormalTexture = "Textures\\rustedIron\\normal.png";
 	planeMaterailLoadingParams.MetallicTexture = "Textures\\rustedIron\\metallic.png";
-	planeMaterailLoadingParams.MetallicColor = 1.0f;
-	planeMaterailLoadingParams.AoColor = 1.0f;
+	//planeMaterailLoadingParams.MetallicColor = 1.0f;
+	//planeMaterailLoadingParams.AoColor = 1.0f;
 	planeMaterailLoadingParams.AlbedoTexture = "Textures\\rustedIron\\albedo.png";
 	//planeMaterailLoadingParams.AlbedoColor = glm::vec3(1.0f);
 
@@ -96,9 +133,7 @@ bool RTGameInstnace::Initialize_Internal()
 
 	planeMesh->SetMaterial(planeMat);
 
-	return true;
-
-	uint32 boxCount = 4;
+	uint32 boxCount = 0;
 	glm::vec3 boxSpacing = glm::vec3(60.0f, 0.0f, 0.0f);
 	float boxSize = 50.0f;
 	const float boxHalfSize = boxSize / 2.0f;
@@ -155,23 +190,12 @@ bool RTGameInstnace::Initialize_Internal()
 		}
 	}
 
-	BravoPointLightSettings PointSettings;
-	PointSettings.Intencity = 700.0f;
-	if ( auto pointLightActor = NewObject<BravoPointLightActor>("PointLight", PointSettings, glm::vec3(1.0f)) )
-	{	
-	}
-
-	BravoSpotLightSettings SpotSettings;
-	SpotSettings.Intencity = 700.0f;
-	if ( auto spotLightActor = NewObject<BravoSpotLightActor>("Spot", SpotSettings, glm::vec3(1.0f)) )
-	{	
-	}
+	
 
 	return true;
 }
 
 void RTGameInstnace::Tick(float DeltaTime)
 {
-
 	
 }

@@ -21,4 +21,7 @@ protected:
 	std::shared_ptr<class BravoCamera> Camera;
 	std::shared_ptr<class BravoPlayer> Player;
 	std::vector<std::shared_ptr<class BravoActor>> ShowRooms;
+
+	std::shared_ptr<class BravoPointLightActor> PointLightActor;
+	std::shared_ptr<class BravoSpotLightActor> SpotLightActor;
 };
