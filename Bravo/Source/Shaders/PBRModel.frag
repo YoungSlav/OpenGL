@@ -30,6 +30,10 @@ struct Material
 
 	sampler2D normalTexture;
 	bool useNormalTexture;
+
+	sampler2D heightTexture;
+	bool useHeightTexture;
+	float heightScale;
 };
 uniform Material material;
 
@@ -95,6 +99,7 @@ in VS_OUT {
 	vec2 TexCoords;
 } fs_in;
   
+uniform mat4 model;
 uniform mat4 view;
 uniform vec3 viewPos;
 uniform float drawDistance;
@@ -102,6 +107,7 @@ uniform float drawDistance;
 out vec4 FragColor;
 
 const float PI = 3.14159265359;
+
 
 
 // shadow function prototypes
@@ -182,12 +188,28 @@ vec3 calcLight(vec3 V, vec3 N, vec3 L, vec3 H, vec3 F0, vec3 albedo, float rough
 	return  (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 }
 
+vec2 parallaxMapping(vec2 texCoords, vec3 viewDir)
+{
+	float height = texture(material.heightTexture, texCoords).r;
+	height = height * material.heightScale - material.heightScale * 0.5;
+	vec2 pOffset = height * viewDir.xy / viewDir.z;
+	return texCoords - pOffset;
+}
+
 void main()
 {
-	vec3 albedo = material.useAlbedoTexture ? texture(material.albedoTexture, fs_in.TexCoords).rgb : material.albedoColor;
-	float metallic = material.useMetallicTexture ? texture(material.metallicTexture, fs_in.TexCoords).r : material.metallicColor;
-	float roughness = material.useRoughnessTexture ? texture(material.roughnessTexture, fs_in.TexCoords).r : material.roughnessColor;
-	float ao = material.useAoTexture ? texture(material.aoTexture, fs_in.TexCoords).r : material.aoColor;
+	vec2 texCoords = fs_in.TexCoords;
+
+	if ( material.useHeightTexture )
+	{
+		vec3 viewDirTangent = normalize(fs_in.TBN * (viewPos - fs_in.FragPos));
+		texCoords = parallaxMapping(texCoords, viewDirTangent);
+	}
+
+	vec3 albedo = material.useAlbedoTexture ? texture(material.albedoTexture, texCoords).rgb : material.albedoColor;
+	float metallic = material.useMetallicTexture ? texture(material.metallicTexture, texCoords).r : material.metallicColor;
+	float roughness = material.useRoughnessTexture ? texture(material.roughnessTexture, texCoords).r : material.roughnessColor;
+	float ao = material.useAoTexture ? texture(material.aoTexture, texCoords).r : material.aoColor;
 
 	// properties
 	vec3 N;
@@ -198,7 +220,7 @@ void main()
 	}
 	else
 	{
-		vec3 TexturenNorm = texture(material.normalTexture, fs_in.TexCoords).rgb;
+		vec3 TexturenNorm = texture(material.normalTexture, texCoords).rgb;
 		N = normalize(fs_in.TBN * normalize((TexturenNorm)*2.0 - 1.0));
 	}
 	vec3 V = normalize(viewPos - fs_in.FragPos);
@@ -309,7 +331,7 @@ float CalcDirLightShadow(int index, vec3 normal)
     if(projCoords.z > 1.0)
 		return 0.0;
 	// calculate bias (based on depth map resolution and slope)
-	float bias = max(0.05 * (1.0 - dot(normal, -dirLights[layer].direction)), 0.005);
+	float bias = max(0.05 * (1.0 - dot(normal, -dirLights[layer].direction)), 0.05);
 	const float biasModifier = 0.5f;
 	bias *= 1 / (dirLights[layer].cascadePlaneDistance * biasModifier);
 	// PCF

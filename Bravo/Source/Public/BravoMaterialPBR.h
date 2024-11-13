@@ -16,6 +16,9 @@ struct BravoPBRMaterialParams
 	float AoColor = 0.0f;
 
 	std::string NormalTexture = "";
+
+	std::string HeightTexture = "";
+	float HeightScale = 1.0f;
 };
 
 class BravoMaterialPBR : public BravoMaterial
@@ -42,9 +45,12 @@ protected:
 	std::shared_ptr<class BravoTextureAsset> RoughnessTexture = nullptr;
 	std::shared_ptr<class BravoTextureAsset> AoTexture = nullptr;
 	std::shared_ptr<class BravoTextureAsset> NormalTexture = nullptr;
+	std::shared_ptr<class BravoTextureAsset> HeightTexture = nullptr;
 
 	glm::vec3 AlbedoColor = glm::vec3(0.0f);
 	float MetallicColor = 0.0f;
 	float RoughnessColor = 0.0f;
 	float AoColor = 0.0f;
+	float HeightScale = 1.0f;
+
 };

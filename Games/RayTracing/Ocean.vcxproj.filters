@@ -15,5 +15,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Private\Main.cpp" />
+    <ClCompile Include="Source\Private\RTGameInstnace.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Public\RTGameInstnace.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

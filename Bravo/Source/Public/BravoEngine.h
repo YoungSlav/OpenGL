@@ -12,6 +12,7 @@
 // TODO:
 /*
 *	GRAPHICS:
+* fix directional light bug on glm::vec3(0) world pos
 * create some cool looking scene. kinda tired and bored looking at fucking cubes
 * billboarding
 * bloom
