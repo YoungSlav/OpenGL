@@ -1,0 +1,210 @@
+#version 430
+
+layout (local_size_x = 16, local_size_y = 16) in;
+
+layout(rgba32f, binding = 0) uniform image2D outputTexture;
+
+struct Material
+{
+    vec3 albedo;
+    float metallic;
+    float roughness;
+    float specular;
+};
+
+struct ComponentData
+{
+	uint Type;    // 0 = sphere, 1 = plane
+
+	mat4 model;
+	mat4 modelInverse;
+
+	Material material;
+};
+
+// BUFFERS
+layout(std430, binding = 5) buffer ComponentsBuffer
+{
+	ComponentData components[];
+};
+
+uniform samplerCube skybox;
+
+uniform vec3 eyeLocation;
+uniform mat4 invProjMat;
+uniform mat4 invViewMat;
+
+const float FLT_MAX = 3.402823466e+38;
+
+struct Ray
+{
+    vec3 origin;
+    vec3 dir;
+};
+
+struct HitInfo
+{
+    bool bHit;
+    float dst2;
+    vec3 hitLocation;
+    vec3 hitNormal;
+};
+
+vec4 TraceRay(Ray ray);
+HitInfo RayIntersectsSphere(Ray worldRay, mat4 model, mat4 modelInverse);
+HitInfo RayIntersectsPlane(Ray worldRay, mat4 model, mat4 modelInverse);
+
+void main()
+{
+    ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 iSize = imageSize(outputTexture);
+    if (pixelCoord.x >= iSize.x || pixelCoord.y >= iSize.y)
+    {
+        return;  // Ignore out-of-bounds invocations
+    }
+
+    // Convert pixel coordinates to NDC
+    vec2 ndc = vec2(0.0);
+    ndc.x = (2.0 * float(pixelCoord.x) / float(iSize.x)) - 1.0;
+    ndc.y = (2.0 * float(pixelCoord.y) / float(iSize.y)) - 1.0;
+
+    // Create a clip coordinate (z = 1.0 for a point on the far plane)
+    vec4 clipCoord = vec4(ndc.x, ndc.y, 1.0, 1.0);
+
+    // Convert from clip space to view space by multiplying by the inverse of the projection matrix
+    vec4 viewCoord = invProjMat * clipCoord;  // Use only inverse projection matrix
+    viewCoord.xyz /= viewCoord.w;  // Normalize to get view space direction
+
+    // Now we have a direction in view space
+    vec3 viewDir = normalize(viewCoord.xyz);
+
+    Ray ray;
+    ray.origin = eyeLocation;
+    ray.dir = normalize(mat3(invViewMat) * viewDir);
+
+    
+    // Sample the skybox using the world-space ray direction
+    vec4 color = TraceRay(ray);
+
+    // Write the resulting color to the output texture
+    imageStore(outputTexture, pixelCoord, color);
+};
+
+vec4 TraceRay(Ray ray)
+{
+    float closestT = FLT_MAX;
+    vec3 hitColor = vec3(0.0);
+
+    // Iterate over all components (objects)
+    for (uint i = 0; i < components.length(); ++i)
+    {
+        ComponentData component = components[i];
+        
+        if (component.Type == 0) // Sphere
+        {
+            HitInfo hitInfo = RayIntersectsSphere(ray, component.model, component.modelInverse);
+            if ( hitInfo.bHit )
+            {
+                if ( hitInfo.dst2 < closestT )
+                {
+                    closestT = hitInfo.dst2;
+                    hitColor = component.material.albedo;
+                }
+            }
+        }
+        else if ( component.Type == 1 )
+        {
+            HitInfo hitInfo = RayIntersectsPlane(ray, component.model, component.modelInverse);
+            if ( hitInfo.bHit )
+            {
+                if ( hitInfo.dst2 < closestT )
+                {
+                    closestT = hitInfo.dst2;
+                    hitColor = component.material.albedo;
+                }
+            }
+        }
+    }
+
+    // If no intersection was found, sample from the skybox
+    if (closestT == FLT_MAX) {
+        // Sample the skybox using the ray direction (assuming the ray is already normalized)
+        hitColor = texture(skybox, ray.dir).rgb;
+    }
+
+    // Return the color of the closest intersection or the skybox if no intersection was found
+    return vec4(hitColor, 1.0);
+}
+
+HitInfo RayIntersectsSphere(Ray worldRay, mat4 model, mat4 modelInverse)
+{
+    Ray localRay;
+    localRay.origin = (modelInverse * vec4(worldRay.origin, 1.0)).xyz;
+    localRay.dir = normalize((modelInverse * vec4(worldRay.dir, 0.0)).xyz);
+
+    vec3 rayOrigin = localRay.origin - vec3(0.0);
+
+    HitInfo hitInfo;
+    
+    hitInfo.bHit = false;
+
+    float a = dot(localRay.dir, localRay.dir);
+    float b = 2 * dot(rayOrigin, localRay.dir);
+    float c = dot(rayOrigin, rayOrigin) - 1.0*1.0;
+
+    float discriminant = b*b - 4*a*c;
+    if ( discriminant >= 0.0 )
+    {
+        float dst = (-b - sqrt(discriminant)) / (2*a);
+
+        if ( dst >= 0 )
+        {
+            hitInfo.bHit = true;
+
+            hitInfo.hitLocation = localRay.origin + localRay.dir * dst;
+            hitInfo.hitNormal = normalize(hitInfo.hitLocation - vec3(0.0));
+            
+            // transform back to world space
+            hitInfo.hitLocation = (model * vec4(hitInfo.hitLocation, 1.0)).xyz;
+            hitInfo.hitNormal = normalize((model * vec4(hitInfo.hitNormal, 0.0)).xyz);
+            
+            vec3 originToHit = hitInfo.hitLocation - worldRay.origin;
+            hitInfo.dst2 = dot(originToHit, originToHit);
+        }
+    }
+    return hitInfo;
+}
+
+HitInfo RayIntersectsPlane(Ray worldRay, mat4 model, mat4 modelInverse)
+{
+    Ray localRay;
+    localRay.origin = (modelInverse * vec4(worldRay.origin, 1.0)).xyz;
+    localRay.dir = normalize((modelInverse * vec4(worldRay.dir, 0.0)).xyz);
+
+    HitInfo hitInfo;
+    
+    hitInfo.bHit = false;
+
+    float dst = -localRay.origin.z / localRay.dir.z;
+    if ( dst >= 0.0 )
+    {
+        vec3 hitPoint = localRay.origin + localRay.dir * dst;
+        // Check if the hit point is within the square bounds
+        if (abs(hitPoint.x) <= 1.0 && abs(hitPoint.y) <= 1.0)
+        {
+            hitInfo.bHit = true;
+
+            hitInfo.hitLocation = hitPoint;
+            hitInfo.hitNormal = vec3(1.0, 0.0, 0.0);
+
+            // transform back to world space
+            hitInfo.hitLocation = (model * vec4(hitInfo.hitLocation, 1.0)).xyz;
+            hitInfo.hitNormal = normalize((model * vec4(hitInfo.hitNormal, 0.0)).xyz);
+            
+            vec3 originToHit = hitInfo.hitLocation - worldRay.origin;
+            hitInfo.dst2 = dot(originToHit, originToHit);
+        }
+    }
+
+    return hitInfo;
+}

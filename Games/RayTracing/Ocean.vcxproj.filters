@@ -18,10 +18,25 @@
     <ClCompile Include="Source\Private\RTGameInstnace.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\RTSceneComponent.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\RTPostProcess.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Public\RTGameInstnace.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Public\RTSceneComponent.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\RTPostProcess.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\RayTracing.comp" />
   </ItemGroup>
 </Project>

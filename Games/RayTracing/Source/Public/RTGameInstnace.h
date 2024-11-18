@@ -24,4 +24,6 @@ protected:
 
 	std::shared_ptr<class BravoPointLightActor> PointLightActor;
 	std::shared_ptr<class BravoSpotLightActor> SpotLightActor;
+
+	std::shared_ptr<class RTPostProcess> RayTracingPP;
 };

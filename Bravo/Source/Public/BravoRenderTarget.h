@@ -23,6 +23,7 @@ public:
 	void Setup();
 
 	void Resize(const glm::ivec2& Size);
+	const glm::ivec2& GetSize() const { return Size; }
 	void Clean();
 
 	uint32 GetColorTexture() const { return TextureColorBuffer; }

@@ -49,6 +49,8 @@ void BravoObject::AddChildObject(std::weak_ptr<BravoObject> _OwnedObject)
 
 void BravoObject::Destroy()
 {
+	OnObjectDestroyDelegate.Broadcast(Self<BravoObject>());
+
 	for( auto it : OwnedObjects )
 	{
 		if ( it.expired() )

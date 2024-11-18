@@ -179,13 +179,15 @@ vec3 calcLight(vec3 V, vec3 N, vec3 L, vec3 H, vec3 F0, vec3 albedo, float rough
 	// multiply kD by the inverse metalness such that only non-metals 
 	// have diffuse lighting, or a linear blend if partly metal (pure metals
 	// have no diffuse light).
-	kD *= 1.0 - metallic;	  
+	kD *= 1.0 - metallic;	
+	
+	vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metallic);
 
 	// scale light by NdotL
 	float NdotL = max(dot(N, L), 0.0);        
 
 	// add to outgoing radiance Lo
-	return  (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+	return  (kd * albedo + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 }
 
 vec2 parallaxMapping(vec2 texCoords, vec3 viewDir)

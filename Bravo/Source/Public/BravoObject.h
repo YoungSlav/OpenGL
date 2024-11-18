@@ -26,6 +26,8 @@ protected:
 	float LifeTime = 0.0f;
 };
 
+typedef MulticastDelegate<const std::shared_ptr<class BravoObject>> OnObjectDestroySignature;
+
 class BravoObject : public SharedFromThis
 {
 	friend class BravoEngine;
@@ -75,6 +77,8 @@ public:
 
 		return std::dynamic_pointer_cast<Class>(newObject);
 	}
+
+	OnObjectDestroySignature OnObjectDestroyDelegate;
 
 protected:
 	virtual bool Initialize_Internal() { return true; }

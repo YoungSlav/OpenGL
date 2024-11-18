@@ -21,9 +21,16 @@
   <ItemGroup>
     <ClCompile Include="Source\Private\Main.cpp" />
     <ClCompile Include="Source\Private\RTGameInstnace.cpp" />
+    <ClCompile Include="Source\Private\RTPostProcess.cpp" />
+    <ClCompile Include="Source\Private\RTSceneComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Public\RTGameInstnace.h" />
+    <ClInclude Include="Source\Public\RTPostProcess.h" />
+    <ClInclude Include="Source\Public\RTSceneComponent.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\RayTracing.comp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
