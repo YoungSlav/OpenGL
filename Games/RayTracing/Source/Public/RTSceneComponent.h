@@ -10,10 +10,13 @@ enum ERTComponentType : uint32
 
 struct RTMaterial
 {
-	alignas(16) glm::vec3 Albedo = glm::vec3(0.0f);
+	alignas(16) glm::vec3 Color = glm::vec3(0.0f);
 	alignas(4) float Metallic = 0.0f;
 	alignas(4) float Roughness = 0.0f;
 	alignas(4) float Specular = 0.0f;
+
+	alignas(16) glm::vec3 LightColor = glm::vec3(0.0f);
+	alignas(4) float LightStrength = 0.0f;
 };
 
 struct RTSceneComponentData

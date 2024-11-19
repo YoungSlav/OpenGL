@@ -6,10 +6,13 @@ layout(rgba32f, binding = 0) uniform image2D outputTexture;
 
 struct Material
 {
-    vec3 albedo;
+    vec3 color;
     float metallic;
     float roughness;
     float specular;
+    
+    vec3 lightColor;
+    float lightStrength;
 };
 
 struct ComponentData
@@ -27,6 +30,10 @@ layout(std430, binding = 5) buffer ComponentsBuffer
 {
 	ComponentData components[];
 };
+
+uniform int frameNumber;
+uniform int maxBounceCount;
+uniform int raysPerPixel;
 
 uniform samplerCube skybox;
 
@@ -48,9 +55,18 @@ struct HitInfo
     float dst2;
     vec3 hitLocation;
     vec3 hitNormal;
+
+    uint componentIndex;
 };
 
-vec4 TraceRay(Ray ray);
+float RandomValue(inout uint seed);
+float RandomValueNormalDistr(inout uint seed);
+vec3 RandomDirection(inout uint seed);
+vec3 RandomHemisphereDirection(inout uint seed, vec3 dir);
+
+vec3 TraceRay(Ray ray, inout uint rndSeed);
+
+HitInfo RayCollision(Ray worldRay);
 HitInfo RayIntersectsSphere(Ray worldRay, mat4 model, mat4 modelInverse);
 HitInfo RayIntersectsPlane(Ray worldRay, mat4 model, mat4 modelInverse);
 
@@ -62,6 +78,8 @@ void main()
     {
         return;  // Ignore out-of-bounds invocations
     }
+
+    
 
     // Convert pixel coordinates to NDC
     vec2 ndc = vec2(0.0);
@@ -82,58 +100,77 @@ void main()
     ray.origin = eyeLocation;
     ray.dir = normalize(mat3(invViewMat) * viewDir);
 
+    uint rndSeed = pixelCoord.y * iSize.x + pixelCoord.x + frameNumber;
+
     
     // Sample the skybox using the world-space ray direction
-    vec4 color = TraceRay(ray);
+    vec3 avarageColor = vec3(0.0);
+    for ( int i = 0; i < raysPerPixel; ++i )
+    {
+        avarageColor += TraceRay(ray, rndSeed);
+    }
+    avarageColor = avarageColor / raysPerPixel;
 
     // Write the resulting color to the output texture
-    imageStore(outputTexture, pixelCoord, color);
+    imageStore(outputTexture, pixelCoord, vec4(avarageColor, 1.0));
 };
 
-vec4 TraceRay(Ray ray)
+vec3 TraceRay(Ray ray, inout uint rndSeed)
 {
-    float closestT = FLT_MAX;
-    vec3 hitColor = vec3(0.0);
+    vec3 rayColor = vec3(1.0);
+    vec3 incommingLight = vec3(0.0);
 
-    // Iterate over all components (objects)
+    for ( int i = 0; i < maxBounceCount; ++i )
+    {
+        HitInfo hitInfo = RayCollision(ray);
+        if ( hitInfo.bHit )
+        {
+            ray.origin = hitInfo.hitLocation;
+            ray.dir = RandomHemisphereDirection(rndSeed, hitInfo.hitNormal);
+
+            Material material = components[hitInfo.componentIndex].material;
+            vec3 emittedLight = material.lightColor * material.lightStrength;
+            incommingLight += emittedLight * rayColor;
+
+            rayColor = rayColor * material.color;
+        }
+        else
+        {
+            rayColor = rayColor * texture(skybox, ray.dir).rgb;
+            break;
+        }
+    }
+    return incommingLight;
+}
+
+HitInfo RayCollision(Ray worldRay)
+{
+    HitInfo hitInfo;
+    hitInfo.bHit = false;
+    hitInfo.dst2 = FLT_MAX;
+    hitInfo.componentIndex = 0;
+
     for (uint i = 0; i < components.length(); ++i)
     {
         ComponentData component = components[i];
-        
+        HitInfo tmpHitInfo;
+
         if (component.Type == 0) // Sphere
         {
-            HitInfo hitInfo = RayIntersectsSphere(ray, component.model, component.modelInverse);
-            if ( hitInfo.bHit )
-            {
-                if ( hitInfo.dst2 < closestT )
-                {
-                    closestT = hitInfo.dst2;
-                    hitColor = component.material.albedo;
-                }
-            }
+            tmpHitInfo = RayIntersectsSphere(worldRay, component.model, component.modelInverse);
         }
         else if ( component.Type == 1 )
         {
-            HitInfo hitInfo = RayIntersectsPlane(ray, component.model, component.modelInverse);
-            if ( hitInfo.bHit )
-            {
-                if ( hitInfo.dst2 < closestT )
-                {
-                    closestT = hitInfo.dst2;
-                    hitColor = component.material.albedo;
-                }
-            }
+            tmpHitInfo = RayIntersectsPlane(worldRay, component.model, component.modelInverse);
+        }
+
+        if ( tmpHitInfo.bHit && tmpHitInfo.dst2 < hitInfo.dst2)
+        {
+            hitInfo = tmpHitInfo;
+            hitInfo.componentIndex = i;
         }
     }
-
-    // If no intersection was found, sample from the skybox
-    if (closestT == FLT_MAX) {
-        // Sample the skybox using the ray direction (assuming the ray is already normalized)
-        hitColor = texture(skybox, ray.dir).rgb;
-    }
-
-    // Return the color of the closest intersection or the skybox if no intersection was found
-    return vec4(hitColor, 1.0);
+    return hitInfo;
 }
 
 HitInfo RayIntersectsSphere(Ray worldRay, mat4 model, mat4 modelInverse)
@@ -207,4 +244,35 @@ HitInfo RayIntersectsPlane(Ray worldRay, mat4 model, mat4 modelInverse)
     }
 
     return hitInfo;
+}
+
+// TODO: replace me?
+float RandomValue(inout uint seed)
+{
+    seed = seed * 747796405 + 2891336453;
+    uint result = ((seed >> ((seed >> 28) + 4)) ^ seed) * 277803737;
+    result = (result >> 22) ^ result;
+    return result / 4294967295.0;
+}
+
+float RandomValueNormalDistr(inout uint seed)
+{
+    float t = 2.0 * 3.1415926 * RandomValue(seed);
+    float r = sqrt(-2 * log(RandomValue(seed)));
+    return r * cos(t);
+}
+
+vec3 RandomDirection(inout uint seed)
+{
+    vec3 result = vec3(0);
+    result.x = RandomValueNormalDistr(seed);
+    result.y = RandomValueNormalDistr(seed);
+    result.z = RandomValueNormalDistr(seed);
+    return normalize(result);
+}
+
+vec3 RandomHemisphereDirection(inout uint seed, vec3 dir)
+{
+    vec3 result = RandomDirection(seed);
+    return result * sign(dot(result, dir));
 }

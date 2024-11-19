@@ -38,5 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\RayTracing.comp" />
+    <None Include="Source\Shaders\AverageFrame.frag" />
+    <None Include="Source\Shaders\AverageFrame.vert" />
   </ItemGroup>
 </Project>

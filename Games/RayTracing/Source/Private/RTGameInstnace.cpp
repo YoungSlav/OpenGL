@@ -42,8 +42,8 @@ bool RTGameInstnace::Initialize_Internal()
 	Engine->SetCamera(Camera);
 
 	Player = NewObject<BravoPlayer>("Player");
-	Player->SetLocation(glm::vec3(5.0f, 0.0f, 0.0f));
-	Player->SetDirection(glm::vec3(0.0f) - glm::vec3(5.0f, 0.0f, 0.0f));
+	Player->SetLocation(glm::vec3(0.0f, 50.0f, 50.0f));
+	Player->SetDirection(glm::vec3(0.0f) - Player->GetLocation());
 	Camera->AttachTo(Player);
 	Camera->SetTransform(BravoTransform());
 
@@ -65,6 +65,26 @@ bool RTGameInstnace::Initialize_Internal()
 
 	RayTracingPP->RegisterSkybox(Skybox);
 
+
+	{
+		auto SunActor = NewObject<BravoActor>("sunActor");
+		SunActor->SetLocation(glm::vec3(0.0f, 150.0f, 0.0f));
+		SunActor->SetDirection(glm::vec3(0.0f) - SunActor->GetLocation());
+	
+		{
+			auto SphereComponent = SunActor->NewObject<RTSceneComponent>("sunComponent", ERTComponentType::ERTComponentType_Plane);
+			RayTracingPP->RegisterSceneComponent(SphereComponent);
+	
+			SphereComponent->SetLocation(glm::vec3(0.0f));
+			SphereComponent->SetScale(glm::vec3(1000.0f));
+	
+			RTMaterial mat;
+			mat.LightColor = glm::vec3(1.0f);
+			mat.LightStrength = 5.0f;
+	
+			SphereComponent->SetMaterial(mat);
+		}
+	}
 	
 	{
 		auto PlaneActor = NewObject<BravoActor>("planeActor");
@@ -74,8 +94,11 @@ bool RTGameInstnace::Initialize_Internal()
 		PlaneComponent->SetLocation(glm::vec3(0.0f));
 		PlaneComponent->SetDirection(glm::vec3(0.0f, 1.0f, 0.0f));
 		PlaneComponent->SetScale(glm::vec3(50.0f));
+
+		RTMaterial mat;
+		mat.Color = glm::vec3(0.7f, 0.23f, 0.56f);
 		
-		PlaneComponent->SetMaterial({glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f, 0.0f});
+		PlaneComponent->SetMaterial(mat);
 	}
 	{
 		auto SphereActor = NewObject<BravoActor>("sphereActor");
@@ -88,21 +111,24 @@ bool RTGameInstnace::Initialize_Internal()
 			SphereComponent->SetLocation(glm::vec3(-5.0f, 3.0f, 0.0f));
 			SphereComponent->SetScale(glm::vec3(3.0f));
 
-			SphereComponent->SetMaterial({glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, 0.0f});
+			RTMaterial mat;
+			mat.Color = glm::vec3(0.23f, 0.45f, 0.87f);
+
+			SphereComponent->SetMaterial(mat);
 		}
 		{
 			auto SphereComponent = SphereActor->NewObject<RTSceneComponent>("sphereComponent2", ERTComponentType::ERTComponentType_Sphere);
 			RayTracingPP->RegisterSceneComponent(SphereComponent);
 		
-			SphereComponent->SetLocation(glm::vec3(5.0f, 3.0f, 0.0f));
-			SphereComponent->SetScale(glm::vec3(3.0f));
+			SphereComponent->SetLocation(glm::vec3(10.0f, 7.0f, 0.0f));
+			SphereComponent->SetScale(glm::vec3(7.0f));
 		
-			SphereComponent->SetMaterial({glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, 0.0f});
+			RTMaterial mat;
+			mat.Color = glm::vec3(0.456f, 0.234f, 0.717f);
+
+			SphereComponent->SetMaterial(mat);
 		}
 	}
-
-
-	
 
 	return true;
 }

@@ -14,7 +14,7 @@ bool RTPostProcess::Initialize_Internal()
 		return false;
 
 	// TODO: replace by shader that would average output from all past frames
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("AntiAliasingShader", BravoShaderLoadingParams("Shaders\\PostProccess"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("AverageFrameShader", BravoShaderLoadingParams("Shaders\\AverageFrame"));
 	if ( !Shader )
 		return false;
 
@@ -109,6 +109,9 @@ bool RTPostProcess::EnsureReady()
 
 void RTPostProcess::Render_Internal()
 {
+	static int32 frameNumber = 0;
+	frameNumber++;
+
 	glm::ivec2 OutpitImageSize = RenderTarget->GetSize();
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -130,6 +133,10 @@ void RTPostProcess::Render_Internal()
 		RayTracingCompute->SetInt("outputTexture", OutputTextureUnit);
 
 		RayTracingCompute->SetFloat3("eyeLocation", camera->GetLocation_World());
+
+		RayTracingCompute->SetInt("maxBounceCount", 10);
+		RayTracingCompute->SetInt("raysPerPixel", 10);
+		RayTracingCompute->SetInt("frameNumber", frameNumber);
 
 		RayTracingCompute->SetCubemap("skybox", Skybox);
 

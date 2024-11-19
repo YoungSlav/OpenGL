@@ -30,6 +30,8 @@
     <ClInclude Include="Source\Public\RTSceneComponent.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Shaders\AverageFrame.frag" />
+    <None Include="Source\Shaders\AverageFrame.vert" />
     <None Include="Source\Shaders\RayTracing.comp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
