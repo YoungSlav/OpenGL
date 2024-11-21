@@ -1,7 +1,7 @@
 
 # My Custom OpenGL Game Engine
 
-This project is a custom game engine, inspired by Unreal Engine, designed for learning OpenGL and exploring various game engine features.
+This project is an experimental game engine inspired by Unreal Engine, created to explore and learn OpenGL while experimenting with various game engine concepts and techniques. While not production-ready and lacking some core features, it serves as a platform for continuous learning and experimentation.
 
 ## Features
  - Lighting: Supports directional, point, and spot lights.
@@ -13,13 +13,23 @@ This project is a custom game engine, inspired by Unreal Engine, designed for le
  - Advanced Delegates: Implements advanced Unreal-like C++ delegates for flexible event handling.
 
 ## Projects I've developed using my engine
+
+  - PBR material demo with basics lighting
+  ![PBR Material Demo Screenshot](Games/PBRDemo/Demo.png)
+
   - Particle-based Fluid Simulation using compute shaders:
         [3D simulation](https://youtu.be/AKP-av83-H4?si=JyxycT73ULsHNfo3),
         [2D simulation with user interaction](https://youtu.be/Hkz3_GT-KfU)
+    ![2D fluid sim Screenshot](Games/FluidSimulation/Demo.png)
+    ![3D fluid sim Screenshot](Games/FluidSimulation3D/Demo.png)
+
+    
+  - Basic path tracer
+    ![path tracer Screenshot](Games/RayTracing/Demo.png)
 
 
 ## Future Plans (with no specific order)
- - Basic Ray Tracing (Work in progress)
+ - Path Tracing rendering (Work in progress)
  - Scene Editor and serialization (Work in progress)
  - Improve fluid rendering using ray-marching technique
  - OIT
