@@ -72,15 +72,15 @@ bool RTGameInstnace::Initialize_Internal()
 		SunActor->SetDirection(glm::vec3(0.0f) - SunActor->GetLocation());
 	
 		{
-			auto SphereComponent = SunActor->NewObject<RTSceneComponent>("sunComponent", ERTComponentType::ERTComponentType_Plane);
+			auto SphereComponent = SunActor->NewObject<RTSceneComponent>("sunComponent", ERTComponentType::ERTComponentType_Sphere);
 			RayTracingPP->RegisterSceneComponent(SphereComponent);
 	
-			SphereComponent->SetLocation(glm::vec3(0.0f));
+			SphereComponent->SetLocation(glm::vec3(1000.0f));
 			SphereComponent->SetScale(glm::vec3(1000.0f));
 	
 			RTMaterial mat;
 			mat.LightColor = glm::vec3(1.0f);
-			mat.LightStrength = 5.0f;
+			mat.LightStrength = 10.0f;
 	
 			SphereComponent->SetMaterial(mat);
 		}
@@ -88,15 +88,15 @@ bool RTGameInstnace::Initialize_Internal()
 	
 	{
 		auto PlaneActor = NewObject<BravoActor>("planeActor");
-		auto PlaneComponent = PlaneActor->NewObject<RTSceneComponent>("planeComponent", ERTComponentType::ERTComponentType_Plane);
+		auto PlaneComponent = PlaneActor->NewObject<RTSceneComponent>("planeComponent", ERTComponentType::ERTComponentType_Sphere);
 		RayTracingPP->RegisterSceneComponent(PlaneComponent);
 		
-		PlaneComponent->SetLocation(glm::vec3(0.0f));
-		PlaneComponent->SetDirection(glm::vec3(0.0f, 1.0f, 0.0f));
-		PlaneComponent->SetScale(glm::vec3(50.0f));
+		PlaneComponent->SetLocation(glm::vec3(0.0f, -100.0f, 0.0f));
+		PlaneComponent->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f));
+		PlaneComponent->SetScale(glm::vec3(100.0f));
 
 		RTMaterial mat;
-		mat.Color = glm::vec3(0.7f, 0.23f, 0.56f);
+		mat.Color = glm::vec3(0.1f, 0.23f, 0.76f);
 		
 		PlaneComponent->SetMaterial(mat);
 	}
@@ -113,6 +113,8 @@ bool RTGameInstnace::Initialize_Internal()
 
 			RTMaterial mat;
 			mat.Color = glm::vec3(0.23f, 0.45f, 0.87f);
+			mat.Smoothness = 1.0f;
+			mat.Specular = 1.0f;
 
 			SphereComponent->SetMaterial(mat);
 		}
@@ -125,6 +127,8 @@ bool RTGameInstnace::Initialize_Internal()
 		
 			RTMaterial mat;
 			mat.Color = glm::vec3(0.456f, 0.234f, 0.717f);
+			mat.Smoothness = 1.0f;
+			mat.Specular = 1.0f;
 
 			SphereComponent->SetMaterial(mat);
 		}

@@ -92,6 +92,10 @@ void RTPostProcess::UpdateSceneData()
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, SceneComponentsSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+	RayTracingCompute->Use();
+		RayTracingCompute->SetInt("componentsCount", SceneData.size());
+	RayTracingCompute->StopUsage();
+
 	bDirtyData = false;
 }
 
@@ -112,11 +116,23 @@ void RTPostProcess::Render_Internal()
 	static int32 frameNumber = 0;
 	frameNumber++;
 
+
 	glm::ivec2 OutpitImageSize = RenderTarget->GetSize();
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 	if ( !camera )
 		return;
+
+	static glm::quat camDir = camera->GetRotation_World();
+	static glm::vec3 camLoc = camera->GetLocation_World();
+	glm::quat newCamDir = camera->GetRotation_World();
+	glm::vec3 newCamLoc = camera->GetLocation_World();
+	if ( camDir != newCamDir || camLoc != newCamLoc )
+	{
+		camLoc = newCamLoc;
+		camDir = newCamDir;
+		frameNumber = 0;
+	}
 
 	const glm::mat4 view = camera->GetViewMatrix();
 	const glm::mat4 proj = camera->GetProjectionMatrix();
@@ -128,7 +144,7 @@ void RTPostProcess::Render_Internal()
 	glBindTexture(GL_TEXTURE_2D, RenderTarget->GetColorTexture());
 
 	RayTracingCompute->Use();
-		glBindImageTexture(OutputTextureUnit, RenderTarget->GetColorTexture(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(OutputTextureUnit, RenderTarget->GetColorTexture(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
 		RayTracingCompute->SetInt("outputTexture", OutputTextureUnit);
 
@@ -139,9 +155,11 @@ void RTPostProcess::Render_Internal()
 		RayTracingCompute->SetInt("frameNumber", frameNumber);
 
 		RayTracingCompute->SetCubemap("skybox", Skybox);
+		
 
 		RayTracingCompute->SetMatrix4d("invViewMat", glm::inverse(view));
 		RayTracingCompute->SetMatrix4d("invProjMat", glm::inverse(proj));
+		RayTracingCompute->SetFloat1("antiAliasingStrength", 0.1f);
 
 		GLuint workGroupSizeX = (OutpitImageSize.x + 15) / 16;  // Round up to the nearest multiple of 16
 		GLuint workGroupSizeY = (OutpitImageSize.y + 15) / 16;

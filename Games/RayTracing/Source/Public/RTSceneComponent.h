@@ -5,14 +5,15 @@
 enum ERTComponentType : uint32
 {
 	ERTComponentType_Sphere = 0,
-	ERTComponentType_Plane = 1
+	ERTComponentType_Plane = 1,
+	ERTComponentType_Box = 2
 };
 
 struct RTMaterial
 {
 	alignas(16) glm::vec3 Color = glm::vec3(0.0f);
 	alignas(4) float Metallic = 0.0f;
-	alignas(4) float Roughness = 0.0f;
+	alignas(4) float Smoothness = 0.0f;
 	alignas(4) float Specular = 0.0f;
 
 	alignas(16) glm::vec3 LightColor = glm::vec3(0.0f);
