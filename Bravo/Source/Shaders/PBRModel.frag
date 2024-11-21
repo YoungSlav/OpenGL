@@ -290,7 +290,7 @@ void main()
 	// ambient lighting
 	vec3 ambient = vec3(0.0);
 	for ( int i = 0; i < directionalLightCount; i += dirLights[i].cascadeCount )
-		ambient += dirLights[i].ambient * albedo * ao;
+		ambient += dirLights[i].ambient * albedo;// * ao;
 
 	vec3 color = ambient + Lo;
 
