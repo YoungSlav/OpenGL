@@ -20,4 +20,5 @@ private:
 	std::shared_ptr<class BravoCamera> Camera;
 	std::shared_ptr<class BravoPlayer> Player;
 	std::shared_ptr<class BravoSpotLightActor> SpotLight;
+	std::shared_ptr<class BravoPointLightActor> PointLight;
 };
