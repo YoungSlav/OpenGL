@@ -76,7 +76,7 @@ bool RTGameInstnace::Initialize_Internal()
 			RayTracingPP->RegisterSceneComponent(SphereComponent);
 	
 			SphereComponent->SetLocation(glm::vec3(1000.0f));
-			SphereComponent->SetScale(glm::vec3(1000.0f));
+			SphereComponent->SetScale(glm::vec3(500.0f));
 	
 			RTMaterial mat;
 			mat.LightColor = glm::vec3(1.0f);
@@ -129,6 +129,20 @@ bool RTGameInstnace::Initialize_Internal()
 			mat.Color = glm::vec3(0.456f, 0.234f, 0.717f);
 			mat.Smoothness = 1.0f;
 			mat.Specular = 1.0f;
+
+			SphereComponent->SetMaterial(mat);
+		}
+		{
+			auto SphereComponent = SphereActor->NewObject<RTSceneComponent>("sphereComponent2", ERTComponentType::ERTComponentType_Sphere);
+			RayTracingPP->RegisterSceneComponent(SphereComponent);
+		
+			SphereComponent->SetLocation(glm::vec3(0.0f, 5.0f, 7.0f));
+			SphereComponent->SetScale(glm::vec3(5.0f));
+		
+			RTMaterial mat;
+			mat.Color = glm::vec3(0.825f, 0.1346f, 0.146f);
+			mat.Smoothness = 0.2f;
+			mat.Specular = 0.3f;
 
 			SphereComponent->SetMaterial(mat);
 		}

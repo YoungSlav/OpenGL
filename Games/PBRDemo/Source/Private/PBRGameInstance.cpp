@@ -55,14 +55,14 @@ bool PBRGameInstance::Initialize_Internal()
 		skyboxActor->SetCubemap(SkyboxAsset);
 	}
 
-	//if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight", BravoDirectionalLightSettings(), glm::vec3(1.0f)) )
-	//{
-	//	dirLightActor->SetAmbientLightColor(glm::vec3(0.5f));
-	//
-	//	glm::vec3 newLocation = glm::vec3(0.0f);
-	//	dirLightActor->SetLocation(newLocation);
-	//	dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
-	//}
+	if ( auto dirLightActor = NewObject<BravoDirectionalLightActor>("DirLight", BravoDirectionalLightSettings(), glm::vec3(1.0f)) )
+	{
+		dirLightActor->SetAmbientLightColor(glm::vec3(0.25f));
+	
+		glm::vec3 newLocation = glm::vec3(0.0f);
+		dirLightActor->SetLocation(newLocation);
+		dirLightActor->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - dirLightActor->GetLocation());
+	}
 
 	if ( auto backPanelActor = NewObject<BravoActor>("BackPanelActor") )
 	{
@@ -107,7 +107,7 @@ bool PBRGameInstance::Initialize_Internal()
 			sphereMesh->SetLocation(spawnPos);
 			sphereMesh->SetScale(glm::vec3(2.0f));
 			sphereMesh->SetMesh(sphereAsset);
-			//sphereMesh->SetCastShadows(true);
+			sphereMesh->SetCastShadows(true);
 			auto sphereMat = sphereMesh->NewObject<BravoMaterialPBR>("SphereMaterial" + std::to_string(x) + "_" + std::to_string(y));
 			sphereMaterial.MetallicColor = float(x) / squreSize;
 			sphereMaterial.RoughnessColor = float(y) / squreSize;
