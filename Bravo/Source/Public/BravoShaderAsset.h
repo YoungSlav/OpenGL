@@ -41,7 +41,7 @@ public:
 	{}
 
 
-	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
+	EAssetLoadingState Load(const BravoShaderLoadingParams& params);
 		
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -67,7 +67,7 @@ public:
 	void SetMatrix4d(const std::string& name, const glm::mat4& val) const;
 
 protected:
-	bool LoadShader(GLenum ShaderType, int32& OutShader, const std::string& ResourcesPath, const BravoShaderLoadingParams& params);
+	bool LoadShader(GLenum ShaderType, int32& OutShader, const BravoShaderLoadingParams& params);
 	bool LinkProgramm();
 
 private:

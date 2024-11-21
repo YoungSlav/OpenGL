@@ -54,7 +54,7 @@ bool BravoSkyboxActor::Initialize_Internal()
 		-1.0f, -1.0f,  1.0f,
 		+1.0f, -1.0f,  1.0f
 	};
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("SkyboxShader", BravoShaderLoadingParams("Shaders\\Skybox"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("SkyboxShader", BravoShaderLoadingParams("Skybox"));
 
 	glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);

@@ -10,7 +10,7 @@ bool FluidPostProcess_Density::Initialize_Internal()
 	if ( !BravoPostProcess::Initialize_Internal() )
 		return false;
 
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DensityPP", BravoShaderLoadingParams("Shaders\\Density"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DensityPP", BravoShaderLoadingParams("Density"));
 	if ( !Shader )
 		return false;
 	

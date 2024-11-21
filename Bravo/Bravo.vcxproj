@@ -32,6 +32,7 @@
     <ClCompile Include="Source\Private\BravoDirectionalLightActor.cpp" />
     <ClCompile Include="Source\Private\BravoDirectionalLightShaderDataCollection.cpp" />
     <ClCompile Include="Source\Private\BravoEngine.cpp" />
+    <ClCompile Include="Source\Private\BravoFontAsset.cpp" />
     <ClCompile Include="Source\Private\BravoGameInstance.cpp" />
     <ClCompile Include="Source\Private\BravoGizmo.cpp" />
     <ClCompile Include="Source\Private\BravoHUD.cpp" />
@@ -294,9 +295,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
-
-xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -344,9 +343,7 @@ xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</C
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
-
-xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -367,9 +364,7 @@ xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</C
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
-
-xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(SolutionDir)ThirdParty\Lib\$(Configuration)\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

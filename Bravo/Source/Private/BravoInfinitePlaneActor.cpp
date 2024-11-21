@@ -7,7 +7,7 @@
 bool BravoInfinitePlaneActor::Initialize_Internal()
 {
 	Mesh = Engine->GetAssetManager()->FindOrLoad<BravoStaticMeshAsset>("PlaneMeshAsset", BravoStaticMeshLoadingParams("primitives\\plane.fbx"));
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("InfinitePlaneShader", BravoShaderLoadingParams("Shaders\\InfinitePlane"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("InfinitePlaneShader", BravoShaderLoadingParams("InfinitePlane"));
 
 	if ( Mesh && Shader )
 	{

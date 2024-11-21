@@ -21,7 +21,7 @@ void BravoMaterialPBR::Load(const BravoPBRMaterialParams& params)
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	ShaderAsset = AssetManager->FindOrLoad<BravoShaderAsset>("PBRShaderModel", BravoShaderLoadingParams("Shaders\\PBRModel"));
+	ShaderAsset = AssetManager->FindOrLoad<BravoShaderAsset>("PBRShaderModel", BravoShaderLoadingParams("PBRModel"));
 
 	AlbedoTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.AlbedoTexture, BravoTextureLoadingParams(params.AlbedoTexture, false, true));
 	MetallicTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.MetallicTexture, BravoTextureLoadingParams(params.MetallicTexture));

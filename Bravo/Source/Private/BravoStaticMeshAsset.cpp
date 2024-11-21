@@ -4,21 +4,22 @@
 #include "BravoTextureAsset.h"
 
 #include "BravoEngine.h"
+#include "BravoAssetManager.h"
 
-EAssetLoadingState BravoStaticMeshAsset::Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params)
+EAssetLoadingState BravoStaticMeshAsset::Load(const BravoStaticMeshLoadingParams& params)
 {
-	std::thread asyncLoadThread(&BravoStaticMeshAsset::AsyncLoad, this, ResourcesPath, params);
+	std::thread asyncLoadThread(&BravoStaticMeshAsset::AsyncLoad, this, params);
 
 	LoadingState = EAssetLoadingState::AsyncLoading;
 	asyncLoadThread.detach();
 	return LoadingState;
 }
 
-void BravoStaticMeshAsset::AsyncLoad(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params)
+void BravoStaticMeshAsset::AsyncLoad(const BravoStaticMeshLoadingParams& params)
 {
 	// read file via ASSIMP
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(ResourcesPath+params.MeshPath, aiProcess_Triangulate | aiProcess_FlipUVs  | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile(Engine->GetAssetManager()->FindAsset(params.MeshPath), aiProcess_Triangulate | aiProcess_FlipUVs  | aiProcess_CalcTangentSpace);
 	// check for errors
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{

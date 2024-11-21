@@ -331,6 +331,9 @@
     <ClCompile Include="Source\Private\BravoBoundingBox.cpp">
       <Filter>Private\Actors\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoFontAsset.cpp">
+      <Filter>Private\Assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />

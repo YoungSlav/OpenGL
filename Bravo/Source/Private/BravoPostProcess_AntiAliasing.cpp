@@ -9,7 +9,7 @@ bool BravoPostProcess_AntiAliasing::Initialize_Internal()
 	if ( !BravoPostProcess::Initialize_Internal() )
 		return false;
 
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("AntiAliasingShader", BravoShaderLoadingParams("Shaders\\PostProccess"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("AntiAliasingShader", BravoShaderLoadingParams("PostProccess"));
 	if ( !Shader )
 		return false;
 	

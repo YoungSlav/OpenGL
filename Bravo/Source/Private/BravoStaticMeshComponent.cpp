@@ -16,8 +16,8 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 
 	if (auto AssetManager = Engine->GetAssetManager())
 	{
-		SelectionIDShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshSelectionShader", BravoShaderLoadingParams("Shaders\\MeshSelectionID"));
-		OutlineMaskShader = AssetManager->FindOrLoad<BravoShaderAsset>("OutlineMaskShader", BravoShaderLoadingParams("Shaders\\MeshOutlineMask"));
+		SelectionIDShader = AssetManager->FindOrLoad<BravoShaderAsset>("MeshSelectionShader", BravoShaderLoadingParams("MeshSelectionID"));
+		OutlineMaskShader = AssetManager->FindOrLoad<BravoShaderAsset>("OutlineMaskShader", BravoShaderLoadingParams("MeshOutlineMask"));
 	}
 
 	glGenBuffers(1, &InstancesSSBO);

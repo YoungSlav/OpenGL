@@ -12,7 +12,7 @@ bool BravoDirectionalDepthMap::Initialize_Internal()
 	if ( !BravoDepthMap::Initialize_Internal() )
 		return false;
 
-	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DirectionalDepthMapShader", BravoShaderLoadingParams("Shaders\\DepthMapDir"));
+	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("DirectionalDepthMapShader", BravoShaderLoadingParams("DepthMapDir"));
 	return true;
 }
 void BravoDirectionalDepthMap::Setup(const int32 LayersCount, const uint32 TextureSize)

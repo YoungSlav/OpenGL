@@ -11,7 +11,7 @@ bool BravoScreen_Debug::Initialize_Internal()
 	SetOrigin(glm::vec2(1.0f, 0.0f));
 	SetPosition(glm::vec2(1.0f, 0.00f));
 
-	Font = ImGui::GetIO().Fonts->AddFontFromFileTTF((GetAssetManager()->GetResourceFolder() + "Fonts\\arial.ttf").c_str(), 30);
+	Font = ImGui::GetIO().Fonts->AddFontFromFileTTF((GetAssetManager()->FindAsset("Fonts\\arial.ttf")).c_str(), 30);
 	
 	return true;
 }

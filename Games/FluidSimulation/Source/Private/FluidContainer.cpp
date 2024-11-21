@@ -11,7 +11,7 @@ bool FluidContainer::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("ContainerShader", BravoShaderLoadingParams("Shaders\\Container"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("ContainerShader", BravoShaderLoadingParams("Container"));
 
 	// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 	static const float Vertices[] = {

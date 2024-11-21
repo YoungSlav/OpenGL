@@ -8,12 +8,12 @@
 #include <sstream>
 #include <regex>
 
-EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, const BravoShaderLoadingParams& params)
+EAssetLoadingState BravoShaderAsset::Load(const BravoShaderLoadingParams& params)
 {
 	ShaderID = glCreateProgram();
 
 	int32 ComputeShader = 0;
-	if ( LoadShader(GL_COMPUTE_SHADER, ComputeShader, ResourcesPath, params) )
+	if ( LoadShader(GL_COMPUTE_SHADER, ComputeShader, params) )
 	{
 		if ( LinkProgramm() )
 		{
@@ -28,11 +28,11 @@ EAssetLoadingState BravoShaderAsset::Load(const std::string& ResourcesPath, cons
 	int32 TessContrShader = 0;
 	int32 TessEvalShader = 0;
 
-	if ( LoadShader(GL_VERTEX_SHADER, VertShader, ResourcesPath, params) &&
-		LoadShader(GL_FRAGMENT_SHADER, FragShader, ResourcesPath, params) &&
-		LoadShader(GL_GEOMETRY_SHADER, GeomShader, ResourcesPath, params) &&
-		LoadShader(GL_TESS_CONTROL_SHADER, TessContrShader, ResourcesPath, params) &&
-		LoadShader(GL_TESS_EVALUATION_SHADER, TessEvalShader, ResourcesPath, params) &&
+	if ( LoadShader(GL_VERTEX_SHADER, VertShader, params) &&
+		LoadShader(GL_FRAGMENT_SHADER, FragShader, params) &&
+		LoadShader(GL_GEOMETRY_SHADER, GeomShader, params) &&
+		LoadShader(GL_TESS_CONTROL_SHADER, TessContrShader, params) &&
+		LoadShader(GL_TESS_EVALUATION_SHADER, TessEvalShader, params) &&
 		LinkProgramm() )
 	{
 		if ( VertShader ) glDeleteShader(VertShader);
@@ -67,34 +67,34 @@ void BravoShaderAsset::StopUsage()
 		EmptyTexture->StopUsage();
 }
 
-bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const std::string& ResourcesPath, const BravoShaderLoadingParams& params)
+bool BravoShaderAsset::LoadShader(GLenum ShaderType, int32& OutShader, const BravoShaderLoadingParams& params)
 {
 	OutShader = 0;
 	std::string RealShaderName;
 
 	if ( ShaderType == GL_VERTEX_SHADER )
 	{
-		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::VertexShaderExtension;
+		RealShaderName = Engine->GetAssetManager()->FindShader(params.ShaderPath + ShaderProgrammConstancts::VertexShaderExtension);
 	}
 	else if ( ShaderType == GL_FRAGMENT_SHADER )
 	{
-		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::FragmentShaderExtension;
+		RealShaderName = Engine->GetAssetManager()->FindShader(params.ShaderPath + ShaderProgrammConstancts::FragmentShaderExtension);
 	}
 	else if ( ShaderType == GL_GEOMETRY_SHADER )
 	{
-		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::GeometryShaderExtension;
+		RealShaderName = Engine->GetAssetManager()->FindShader(params.ShaderPath + ShaderProgrammConstancts::GeometryShaderExtension);
 	}
 	else if ( ShaderType == GL_TESS_CONTROL_SHADER )
 	{
-		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::TessellationControllShaderExtension;
+		RealShaderName = Engine->GetAssetManager()->FindShader(params.ShaderPath + ShaderProgrammConstancts::TessellationControllShaderExtension);
 	}
 	else if ( ShaderType == GL_TESS_EVALUATION_SHADER )
 	{
-		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::TessellationEvaluationShaderExtension;
+		RealShaderName = Engine->GetAssetManager()->FindShader(params.ShaderPath + ShaderProgrammConstancts::TessellationEvaluationShaderExtension);
 	}
 	else if ( ShaderType == GL_COMPUTE_SHADER )
 	{
-		RealShaderName = ResourcesPath + params.ShaderPath + ShaderProgrammConstancts::ComputeShaderExtension;
+		RealShaderName = Engine->GetAssetManager()->FindShader(params.ShaderPath + ShaderProgrammConstancts::ComputeShaderExtension);
 	}
 	
 	

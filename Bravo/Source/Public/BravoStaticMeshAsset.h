@@ -32,10 +32,10 @@ public:
 
 	void Render(size_t InstanceCount);
 
-	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params);
+	EAssetLoadingState Load(const BravoStaticMeshLoadingParams& params);
 
 protected:
-	void AsyncLoad(const std::string& ResourcesPath, const BravoStaticMeshLoadingParams& params);
+	void AsyncLoad(const BravoStaticMeshLoadingParams& params);
 
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;

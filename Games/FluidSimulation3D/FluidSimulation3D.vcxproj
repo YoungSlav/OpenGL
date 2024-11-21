@@ -141,8 +141,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -165,8 +165,8 @@
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>assimp-vc143-mtd.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -192,8 +192,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -215,8 +215,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /s /e "$(ProjectDir)\Source\Shaders\*" "$(SolutionDir)\Resources\Shaders\"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

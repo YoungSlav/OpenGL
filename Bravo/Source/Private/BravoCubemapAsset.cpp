@@ -3,17 +3,19 @@
 #include "BravoTextureData.h"
 #include "openGL.h"
 #include "stdafx.h"
+#include "BravoEngine.h"
+#include "BravoAssetManager.h"
 
 
-EAssetLoadingState BravoCubemapAsset::Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params)
+EAssetLoadingState BravoCubemapAsset::Load(const BravoCubemapLoadingParams& params)
 {
-	std::thread asyncLoadThread(&BravoCubemapAsset::AsyncLoad, this, ResourcesPath, params);
+	std::thread asyncLoadThread(&BravoCubemapAsset::AsyncLoad, this, params);
 	LoadingState = EAssetLoadingState::AsyncLoading;
 	asyncLoadThread.detach();
 	return LoadingState;
 }
 
-void BravoCubemapAsset::AsyncLoad(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params)
+void BravoCubemapAsset::AsyncLoad(const BravoCubemapLoadingParams& params)
 {
 	if ( params.TexturesPaths.size() != 6 )
 	{
@@ -24,12 +26,12 @@ void BravoCubemapAsset::AsyncLoad(const std::string& ResourcesPath, const BravoC
 	bool success = true;
 	for (uint32 i = 0; i < 6; i++)
 	{
-		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturesPaths[i], false));
+		Textures[i] = std::shared_ptr<BravoTextureData>(new BravoTextureData(Engine->GetAssetManager()->FindAsset(params.TexturesPaths[i]), false));
 
 		success = success && Textures[i] != nullptr && Textures[i]->bInitialized;
 	}
-	if ( success )
-		LoadingState = EAssetLoadingState::InRAM;
+
+	LoadingState = success ? EAssetLoadingState::InRAM : EAssetLoadingState::Failed;
 }
 
 bool BravoCubemapAsset::LoadToGPU_Internal()

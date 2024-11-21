@@ -50,7 +50,7 @@ bool BravoBoundingBox::Initialize_Internal()
 
 	
 	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("BoundingBoxShader",
-		BravoShaderLoadingParams("Shaders\\BoundingBox"));
+		BravoShaderLoadingParams("BoundingBox"));
 
 	UpdateVertices(nullptr);
 	SetScale(glm::vec3(10.0f));

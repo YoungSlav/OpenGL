@@ -3,11 +3,13 @@
 #include "BravoTextureUnitManager.h"
 #include "openGL.h"
 #include "stdafx.h"
+#include "BravoEngine.h"
+#include "BravoAssetManager.h"
 
 
-EAssetLoadingState BravoTextureAsset::Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
+EAssetLoadingState BravoTextureAsset::Load(const BravoTextureLoadingParams& params)
 {
-	std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, ResourcesPath, params);
+	std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, params);
 	//AsyncLoad(ResourcesPath, params);
 
 	LoadingState = EAssetLoadingState::AsyncLoading;
@@ -15,9 +17,9 @@ EAssetLoadingState BravoTextureAsset::Load(const std::string& ResourcesPath, con
 	return LoadingState;
 }
 
-void BravoTextureAsset::AsyncLoad(const std::string& ResourcesPath, const BravoTextureLoadingParams& params)
+void BravoTextureAsset::AsyncLoad(const BravoTextureLoadingParams& params)
 {
-	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(ResourcesPath + params.TexturePath, params.bFloat, params.sRGB));
+	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(Engine->GetAssetManager()->FindAsset(params.TexturePath), params.bFloat, params.sRGB));
 	if ( TextureData != nullptr && TextureData->bInitialized )
 		LoadingState = EAssetLoadingState::InRAM;
 	else

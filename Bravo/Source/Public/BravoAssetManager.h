@@ -9,8 +9,19 @@ class BravoAssetManager : public BravoObject
 public:
 	template <typename... Args>
 	BravoAssetManager(Args&&... args) :
-		BravoObject(std::forward<Args>(args)...)
-	{}
+		BravoObject(std::forward<Args>(args)...),
+		RootFolder(GetRootFolder()),
+		ProjectName(GetExecutableName())
+	{
+		ResourcesFolders.reserve(2);
+		ResourcesFolders.push_back(RootFolder + std::format(ProjectResourcesRelativePath, ProjectName));
+		ResourcesFolders.push_back(RootFolder + EngineResourcesRelativePath);
+
+		ShaderFolders.reserve(2);
+		ShaderFolders.push_back(RootFolder + std::format(ProjectShadersRelativePath, ProjectName));
+		ShaderFolders.push_back(RootFolder + EngineShadersRelativePath);
+
+	}
 
 
 	template<typename ClassName, typename... Args>
@@ -27,7 +38,7 @@ public:
 		if ( std::shared_ptr<ClassName> asset = NewObject<ClassName>(Name) )
 		{
 			LoadedAssets.insert({Name, asset});
-			EAssetLoadingState LoadingState = asset->Load(ResourcesFolderPath, std::forward<Args>(args)...);
+			EAssetLoadingState LoadingState = asset->Load(std::forward<Args>(args)...);
 			assert(LoadingState != EAssetLoadingState::Failed);
 
 			if ( LoadingState == EAssetLoadingState::AsyncLoading )
@@ -46,62 +57,67 @@ public:
 
 		return nullptr;
 	}
+
+	std::string FindAsset(const std::string& AssetName);
+	std::string FindShader(const std::string& ShaderName);
 	
-	const std::string& GetResourceFolder()
-	{
-		return ResourcesFolderPath;
-	}
-
-	void CheckPendingAssets()
-	{
-		for ( int32 i = (int32)PendingLoadingAssets.size()-1; i >= 0; --i )
-		{
-			//if ( PendingLoadingAssets[i]->GetLoadingState() == EAssetLoadingState::InRAM )
-			//{
-			//	PendingLoadingAssets[i]->LoadToGPU();
-			//}
-
-			auto asset = PendingLoadingAssets[i];
-			EAssetLoadingState LoadingState = asset->GetLoadingState();
-			if (LoadingState != EAssetLoadingState::AsyncLoading )
-			{
-				if ( LoadingState != EAssetLoadingState::Failed )
-				{
-					if ( LoadingState != EAssetLoadingState::Loaded )
-						asset->LoadToGPU();
-					asset->OnAssetLoaded.Broadcast(asset);
-				}
-
-				PendingLoadingAssets.erase(PendingLoadingAssets.begin()+i);
-			}
-		}
-	}
-
-
-
-protected:
-	virtual bool Initialize_Internal() override
-	{
-		if ( !BravoObject::Initialize_Internal() )
-			return false;
-
-		ResourcesFolderPath = GetRunningDir() + ResourcesFolderRelativePath;
-		return true;
-	}
+	void CheckPendingAssets();
 
 private:
-	inline static std::string GetRunningDir()
+
+	static bool IfFileExist(const std::string& FileName);
+
+	inline static std::string GetRootFolder()
 	{
-		int8 buffer[MAX_PATH];
-		GetModuleFileName( NULL, buffer, MAX_PATH );
-		std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
-		return std::string( buffer ).substr( 0, pos) + "\\";
+		char buffer[MAX_PATH];
+		GetModuleFileName(NULL, buffer, MAX_PATH);
+		std::string fullPath(buffer);
+
+		// Find the base directory by removing up to 3 levels
+		for (int i = 0; i < 4; ++i)
+		{
+			std::string::size_type pos = fullPath.find_last_of("\\/");
+			if (pos == std::string::npos) break; // Exit if there are no more levels
+			fullPath = fullPath.substr(0, pos);
+		}
+
+		return fullPath + "\\";
+	}
+	inline static std::string GetExecutableName()
+	{
+		char buffer[MAX_PATH];
+		GetModuleFileName(NULL, buffer, MAX_PATH);
+		std::string fullPath(buffer);
+
+		// Find the position of the last path separator
+		std::string::size_type lastSlashPos = fullPath.find_last_of("\\/");
+
+		// Extract the file name (from the last path separator to the end)
+		std::string fileName = fullPath.substr(lastSlashPos + 1);
+
+		// Find the position of the last dot (file extension)
+		std::string::size_type lastDotPos = fileName.find_last_of('.');
+
+		// Remove the extension (if present)
+		if (lastDotPos != std::string::npos)
+		{
+			fileName = fileName.substr(0, lastDotPos);
+		}
+
+		return fileName;
 	}
 
 private:
 	std::vector<std::shared_ptr<class BravoAsset>> PendingLoadingAssets;
 	std::map<std::string, std::shared_ptr<class BravoAsset>> LoadedAssets;
 
-	const std::string ResourcesFolderRelativePath = "..\\..\\..\\Resources\\";
-	std::string ResourcesFolderPath;
+	const std::string RootFolder;
+	const std::string ProjectName;
+	const std::string EngineResourcesRelativePath = "Resources\\";
+	const std::string EngineShadersRelativePath = "Bravo\\Source\\Shaders\\";
+	static constexpr std::string_view ProjectResourcesRelativePath = "Games\\{}\\Resources\\";
+	static constexpr std::string_view ProjectShadersRelativePath = "Games\\{}\\Source\\Shaders\\";
+
+	std::vector<std::string> ResourcesFolders;
+	std::vector<std::string> ShaderFolders;
 };

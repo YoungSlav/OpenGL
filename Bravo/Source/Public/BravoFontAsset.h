@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "BravoAsset.h"
-#include "stb_truetype.h"
+#include "stb/stb_truetype.h"
 
 struct BravoFontInfo
 {
@@ -41,7 +41,7 @@ public:
 	{}
 
 
-	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params);
+	EAssetLoadingState Load(const BravoFontLoadingParams& params);
 	
 
 	virtual void Use() override;

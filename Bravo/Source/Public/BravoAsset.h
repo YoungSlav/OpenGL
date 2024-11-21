@@ -24,7 +24,7 @@ public:
 	{}
 
 
-	void Load(const std::string& ResourcesPath) { }
+	void Load() { }
 
 	virtual void Use() {};
 	virtual void StopUsage() {};

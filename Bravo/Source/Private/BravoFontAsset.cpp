@@ -1,13 +1,15 @@
 #include "BravoFontAsset.h"
 #include "openGL.h"
 #include <fstream>
-#include "stb_rect_pack.h"
+#include "stb/stb_rect_pack.h"
 #include "BravoTextureUnitManager.h"
 #include <math.h>
+#include "BravoEngine.h"
+#include "BravoAssetManager.h"
 
 #define POINT_TO_PIXEL 1.333f
 
-EAssetLoadingState BravoFontAsset::Load(const std::string& ResourcesPath, const BravoFontLoadingParams& params)
+EAssetLoadingState BravoFontAsset::Load(const BravoFontLoadingParams& params)
 {
 	if ( !params.FontSizes.size() )
 	{
@@ -16,7 +18,7 @@ EAssetLoadingState BravoFontAsset::Load(const std::string& ResourcesPath, const 
 		return LoadingState;
 	}
 
-	std::string Path = ResourcesPath + params.FontPath;
+	std::string Path = Engine->GetAssetManager()->FindAsset(params.FontPath);
 
 	std::ifstream file(&*Path.begin(), std::ios::binary | std::ios::ate);
 	std::streamsize size = file.tellg();

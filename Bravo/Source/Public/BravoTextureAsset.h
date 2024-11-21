@@ -26,7 +26,7 @@ public:
 	{}
 
 
-	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoTextureLoadingParams& params);
+	EAssetLoadingState Load(const BravoTextureLoadingParams& params);
 
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -36,7 +36,7 @@ public:
 
 protected:
 
-	void AsyncLoad(const std::string& ResourcesPath, const BravoTextureLoadingParams& params);
+	void AsyncLoad(const BravoTextureLoadingParams& params);
 
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;

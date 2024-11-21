@@ -20,7 +20,7 @@ public:
 	{}
 
 
-	EAssetLoadingState Load(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params);
+	EAssetLoadingState Load(const BravoCubemapLoadingParams& params);
 
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -29,7 +29,7 @@ public:
 
 protected:
 
-	void AsyncLoad(const std::string& ResourcesPath, const BravoCubemapLoadingParams& params);
+	void AsyncLoad(const BravoCubemapLoadingParams& params);
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
 

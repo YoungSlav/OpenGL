@@ -21,7 +21,7 @@ void BravoMaterialUnlit::Load(const BravoUnlitMaterialParams& params)
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	ShaderAsset = AssetManager->FindOrLoad<BravoShaderAsset>("UnlitShader", BravoShaderLoadingParams("Shaders\\Unlit"));
+	ShaderAsset = AssetManager->FindOrLoad<BravoShaderAsset>("UnlitShader", BravoShaderLoadingParams("Unlit"));
 	AlbedoTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.AlbedoTexture, BravoTextureLoadingParams(params.AlbedoTexture, true));
 	AlbedoColor = params.AlbedoColor;
 
