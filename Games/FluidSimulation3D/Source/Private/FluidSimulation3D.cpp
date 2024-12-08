@@ -106,18 +106,18 @@ bool FluidSimulation3D::Initialize_Internal()
 
 void FluidSimulation3D::FillBuffers()
 {
-	NumWorkGroups = (ParticlesCount + 1023) / 1024;
+	NumWorkGroups = (ParticleCount + 1023) / 1024;
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixTmpSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, RadixTmpSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixHistogramSSBO);
@@ -125,13 +125,13 @@ void FluidSimulation3D::FillBuffers()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, RadixHistogramSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, StartIndicesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticlesCount * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, StartIndicesSSBO);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, RadixSortConstantsUBO);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, RadixSortConstantsUBO);
 
-	RadixSortPushConstants.g_num_elements = ParticlesCount;
+	RadixSortPushConstants.g_num_elements = ParticleCount;
 	RadixSortPushConstants.g_num_workgroups = NumWorkGroups;
 	RadixSortPushConstants.g_num_blocks_per_workgroup = 1024;
 }
@@ -157,16 +157,25 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 	// external force
 	ExternalForcesCompute->Use();
 		ExternalForcesCompute->SetFloat1("GravityForce", Gravity);
+		ExternalForcesCompute->SetInt("ParticleCount", ParticleCount);
 	ExternalForcesCompute->StopUsage();
 
 	// hashing
 	GridHashingCompute->Use();
 		GridHashingCompute->SetFloat2("WorldSize", ContainerSize);
 		GridHashingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
+		GridHashingCompute->SetInt("ParticleCount", ParticleCount);
 	GridHashingCompute->StopUsage();
+
+	// starting indicies
+	FluidStartingIndiciesCompute->Use();
+		FluidStartingIndiciesCompute->SetInt("ParticleCount", ParticleCount);
+	FluidStartingIndiciesCompute->StopUsage();
 	
 	// pressure
 	PressureCompute->Use();
+		PressureCompute->SetInt("ParticleCount", ParticleCount);
+
 		PressureCompute->SetFloat2("WorldSize", ContainerSize);
 		PressureCompute->SetMatrix4d("BoundingBoxModel",
 			BoundingBox->GetTransform().GetTransformMatrix());
@@ -193,7 +202,7 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 
 void FluidSimulation3D::Render()
 {
-	if ( ParticlesCount <= 0 && bReadyToRender)
+	if ( ParticleCount <= 0 && bReadyToRender)
 		return;
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -219,7 +228,7 @@ void FluidSimulation3D::Render()
 		RenderShader->SetFloat3("Hot", Hot);
 				
 		glBindVertexArray(ParticleVAO);
-			glDrawArrays(GL_POINTS, 0, ParticlesCount);
+			glDrawArrays(GL_POINTS, 0, ParticleCount);
 		glBindVertexArray(0);
 
 	RenderShader->StopUsage();
@@ -234,7 +243,7 @@ void FluidSimulation3D::Reset()
 
 	ParticleGenerationCompute->Use();
 		// update time step
-		ParticleGenerationCompute->SetInt("ParticleCount", ParticlesCount);
+		ParticleGenerationCompute->SetInt("ParticleCount", ParticleCount);
 		ParticleGenerationCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform().GetTransformMatrix());
 		
 		glDispatchCompute(NumWorkGroups, 1, 1);

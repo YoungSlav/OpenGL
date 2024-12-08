@@ -30,6 +30,8 @@ layout(std430, binding = 2) buffer StartIndicesBuffer
 	uint StartIndices[];
 };
 
+uniform uint ParticleCount;
+
 // world params
 uniform vec3 WorldSize;
 uniform mat4 BoundingBoxModel;
@@ -108,7 +110,7 @@ const ivec3 GridOffsets[GridLookupCount] = ivec3[](
 void main()
 {
     uint i = gl_GlobalInvocationID.x;
-    if ( i >= Particles.length() ) return;
+    if ( i >= ParticleCount ) return;
 
     CalcDensity(i);
 
@@ -136,7 +138,7 @@ void CalcDensity(uint i)
         ivec3 lookupCell = myCell + GridOffsets[gr];
         uint CellHash = GetCellHash(lookupCell);
         uint CellIndex = CellIndexFromHash(CellHash);
-        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < SortedParticles.length(); ++lookupIndex )
+        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < ParticleCount; ++lookupIndex )
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
@@ -173,7 +175,7 @@ vec3 CalcPressure(uint i)
         ivec3 lookupCell = myCell + GridOffsets[gr];
         uint CellHash = GetCellHash(lookupCell);
         uint CellIndex = CellIndexFromHash(CellHash);
-        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < SortedParticles.length(); ++lookupIndex )
+        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < ParticleCount; ++lookupIndex )
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
@@ -218,7 +220,7 @@ vec3 CalcViscosity(uint i)
         ivec3 lookupCell = myCell + GridOffsets[gr];
         uint CellHash = GetCellHash(lookupCell);
         uint CellIndex = CellIndexFromHash(CellHash);
-        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < SortedParticles.length(); ++lookupIndex )
+        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < ParticleCount; ++lookupIndex )
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
@@ -324,5 +326,5 @@ uint GetCellHash(ivec3 Coords)
 
 uint CellIndexFromHash(uint Hash)
 {
-    return Hash % Particles.length();
+    return Hash % ParticleCount;
 }

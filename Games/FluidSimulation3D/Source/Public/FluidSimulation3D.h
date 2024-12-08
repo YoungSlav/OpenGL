@@ -26,7 +26,7 @@ public:
 	// SIMULATION PROPERTIES
 
 	const float scale = 2.0f;
-	int32 ParticlesCount = 40000;
+	int32 ParticleCount = 40000;
 	
 	float ParticleMass = 1.0f;
 	float ParticleRadius = 20.0f; 

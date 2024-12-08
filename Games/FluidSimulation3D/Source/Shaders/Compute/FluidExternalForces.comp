@@ -18,12 +18,12 @@ uniform float SimulationTimeStep;
 
 uniform float GravityForce;
 
-
+uniform uint ParticleCount;
 
 void main()
 {
     uint i = gl_GlobalInvocationID.x;
-    if ( i >= Particles.length() ) return;
+    if ( i >= ParticleCount ) return;
 
     Particles[i].Velocity += vec3(0.0, -GravityForce, 0.0) * SimulationTimeStep;
     Particles[i].PredictedPosition = Particles[i].Position + Particles[i].Velocity * SimulationTimeStep;

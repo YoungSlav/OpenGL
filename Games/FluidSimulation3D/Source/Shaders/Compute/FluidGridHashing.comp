@@ -33,6 +33,8 @@ layout(std430, binding = 2) buffer StartIndicesBuffer
 uniform vec3 WorldSize;
 uniform float SmoothingRadius;
 
+uniform uint ParticleCount;
+
 
 void PrepareHash(uint i);
 ivec3 GetCellCoord(vec3 Position);
@@ -42,7 +44,7 @@ uint CellIndexFromHash(uint Hash);
 void main()
 {
     uint i = gl_GlobalInvocationID.x;
-    if ( i >= Particles.length() ) return;
+    if ( i >= ParticleCount ) return;
 
     PrepareHash(i);
 };
@@ -53,7 +55,7 @@ void PrepareHash(uint i)
     SortedParticles[i].CellHash = GetCellHash(CellCord);
     SortedParticles[i].CellIndex = CellIndexFromHash(SortedParticles[i].CellHash);
     SortedParticles[i].pIndex = i;
-    StartIndices[i] = Particles.length();
+    StartIndices[i] = ParticleCount;
 }
 
 ivec3 GetCellCoord(vec3 Position)
@@ -76,5 +78,5 @@ uint GetCellHash(ivec3 Coords)
 
 uint CellIndexFromHash(uint Hash)
 {
-    return Hash % Particles.length();
+    return Hash % ParticleCount;
 }
