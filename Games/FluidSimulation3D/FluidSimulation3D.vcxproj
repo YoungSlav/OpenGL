@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Private\FluidGameInstance3D.cpp" />
     <ClCompile Include="Source\Private\FluidGrid3D.cpp" />
+    <ClCompile Include="Source\Private\FluidPostProcess.cpp" />
     <ClCompile Include="Source\Private\FluidSimulation3D.cpp" />
     <ClCompile Include="Source\Private\Main.cpp" />
   </ItemGroup>
@@ -28,6 +29,7 @@
     <ClInclude Include="Source\Public\FluidGameInstance3D.h" />
     <ClInclude Include="Source\Public\FluidGrid3D.h" />
     <ClInclude Include="Source\Public\FluidMath3D.h" />
+    <ClInclude Include="Source\Public\FluidPostProcess.h" />
     <ClInclude Include="Source\Public\FluidSimulation3D.h" />
   </ItemGroup>
   <ItemGroup>
@@ -41,7 +43,7 @@
     <None Include="Source\Shaders\Compute\ThirdParty\single_radixsort.comp" />
     <None Include="Source\Shaders\FluidParticle3D.frag" />
     <None Include="Source\Shaders\FluidParticle3D.vert" />
-    <None Include="Source\Shaders\RayMarching.comp" />
+    <None Include="Source\Shaders\FluidRayMarching.comp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

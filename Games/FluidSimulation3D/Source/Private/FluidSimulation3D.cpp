@@ -7,14 +7,13 @@
 #include "BravoInput.h"
 #include "BravoViewport.h"
 #include "BravoStaticMeshAsset.h"
+#include "FluidPostProcess.h"
 
 bool FluidSimulation3D::Initialize_Internal()
 {
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
-	size_t s = sizeof(Particle);
-	
 
 	glGenVertexArrays(1, &ParticleVAO);
 
@@ -83,6 +82,9 @@ bool FluidSimulation3D::Initialize_Internal()
 		Engine->GetInput()->SubscribeKey(subscription);
 	}
 
+	RaymarchingPP = NewObject<FluidPostProcess>("FluidPostProcess");
+	Engine->GetViewport()->AddPostProcess(RaymarchingPP);
+
 	Reset();
 
 	return true;
@@ -125,11 +127,11 @@ void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransfor
 	glm::vec3 ContainerSize = BoundingBox->GetScale();
 
 	GridHashingCompute->Use();
-		GridHashingCompute->SetFloat2("WorldSize", ContainerSize);
+		GridHashingCompute->SetFloat3("WorldSize", ContainerSize);
 	GridHashingCompute->StopUsage();
 
 	PressureCompute->Use();
-		PressureCompute->SetFloat2("WorldSize", ContainerSize);
+		PressureCompute->SetFloat3("WorldSize", ContainerSize);
 		
 		PressureCompute->SetMatrix4d("BoundingBoxModel",
 			BoundingBox->GetTransform().GetTransformMatrix());
@@ -164,7 +166,7 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 	PressureCompute->Use();
 		PressureCompute->SetInt("ParticleCount", ParticleCount);
 
-		PressureCompute->SetFloat2("WorldSize", ContainerSize);
+		PressureCompute->SetFloat3("WorldSize", ContainerSize);
 		PressureCompute->SetMatrix4d("BoundingBoxModel",
 			BoundingBox->GetTransform().GetTransformMatrix());
 		PressureCompute->SetMatrix4d("InverseBoundingBoxModel", glm::inverse(
@@ -189,6 +191,25 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("PressureScale", PressureScale);
 		PressureCompute->SetFloat1("ViscosityScale", ViscosityScale);
 	PressureCompute->StopUsage();
+
+	auto RayMarchingCompute = RaymarchingPP->GetComputeShader();
+	RayMarchingCompute->Use();
+		RayMarchingCompute->SetFloat3("WorldSize", ContainerSize);
+
+		RayMarchingCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform().GetTransformMatrix());
+		RayMarchingCompute->SetMatrix4d("inverseBoundingBox", glm::inverse(BoundingBox->GetTransform().GetTransformMatrix()));
+
+		RayMarchingCompute->SetInt("ParticleCount", ParticleCount);
+
+		RayMarchingCompute->SetFloat1("DensityScale", DensityScale);
+		RayMarchingCompute->SetFloat1("ParticleMass", ParticleMass);
+
+		RayMarchingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
+		RayMarchingCompute->SetFloat1("SmoothingRadius2", SmoothingRadius*SmoothingRadius);
+
+		RayMarchingCompute->SetFloat1("MarchingRayStep", 0.1f);
+
+	RayMarchingCompute->StopUsage();
 }
 
 void FluidSimulation3D::Render()

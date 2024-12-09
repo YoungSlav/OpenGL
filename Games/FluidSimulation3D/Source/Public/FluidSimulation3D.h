@@ -116,6 +116,8 @@ private:
 
 	std::shared_ptr<class BravoBoundingBox> BoundingBox;
 
+	std::shared_ptr<class FluidPostProcess> RaymarchingPP = nullptr;
+
 	// particle
 	GLuint ParticleVAO;
 };

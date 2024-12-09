@@ -4,12 +4,87 @@ layout (local_size_x = 16, local_size_y = 16) in;
 
 layout(rgba32f, binding = 0) uniform image2D outputTexture;
 
+const float FLT_MAX = 3.402823466e+38;
+const float PI = 3.14159265359;
+
+
+
+struct Particle
+{
+    vec3 Position;
+    vec3 PredictedPosition;
+    vec3 Velocity;
+    float Density;
+    float iDensity;
+};
+struct SortedParticle
+{
+    uint CellHash;
+    uint CellIndex;
+    uint pIndex;
+};
+
+// BUFFERS
+layout(std430, binding = 0) buffer ParticlesBuffer
+{
+	Particle Particles[];
+};
+layout(std430, binding = 1) buffer SortedParticlesBuffer
+{
+	SortedParticle SortedParticles[];
+};
+layout(std430, binding = 2) buffer StartIndicesBuffer
+{
+	uint StartIndices[];
+};
+
 uniform vec3 eyeLocation;
 uniform mat4 invProjMat;
 uniform mat4 invViewMat;
 
-const float FLT_MAX = 3.402823466e+38;
-const float PI = 3.14159265359;
+uniform vec3 WorldSize;
+uniform mat4 BoundingBox;
+uniform mat4 inverseBoundingBox;
+
+uniform uint ParticleCount;
+uniform float DensityScale;
+uniform float ParticleMass;
+uniform float SmoothingRadius;
+uniform float SmoothingRadius2;
+
+uniform float MarchingRayStep;
+
+const uint GridLookupCount = 27;
+const ivec3 GridOffsets[GridLookupCount] = ivec3[](
+    ivec3(0, 0, 0),
+    ivec3(1, 0, 0),
+    ivec3(-1, 0, 0),
+    ivec3(0, 1, 0),
+    ivec3(0, -1, 0),
+    ivec3(0, 0, 1),
+    ivec3(0, 0, -1),
+    ivec3(1, 1, 0),
+    ivec3(1, -1, 0),
+    ivec3(-1, 1, 0),
+    ivec3(-1, -1, 0),
+    ivec3(1, 0, 1),
+    ivec3(1, 0, -1),
+    ivec3(-1, 0, 1),
+    ivec3(-1, 0, -1),
+    ivec3(0, 1, 1),
+    ivec3(0, 1, -1),
+    ivec3(0, -1, 1),
+    ivec3(0, -1, -1),
+    ivec3(1, 1, 1),
+    ivec3(1, 1, -1),
+    ivec3(1, -1, 1),
+    ivec3(1, -1, -1),
+    ivec3(-1, 1, 1),
+    ivec3(-1, 1, -1),
+    ivec3(-1, -1, 1),
+    ivec3(-1, -1, -1)
+);
+
 
 
 struct Ray
@@ -18,22 +93,17 @@ struct Ray
     vec3 dir;
 };
 
-struct HitInfo
-{
-    bool bHit;
-    float dst2;
-    vec3 hitLocation;
-    vec3 hitNormal;
+float CalcDensity(vec3 location);
 
-    uint componentIndex;
-};
+// kernels
+float DensityKernel(float dst);
 
-float RandomValue(inout uint seed);
-float RandomValueNormalDistr(inout uint seed);
-vec3 RandomDirection(inout uint seed);
-vec3 RandomHemisphereDirection(inout uint seed, vec3 dir);
-vec2 RandomCirclePoint(inout uint seed);
+// grid helpers
+ivec3 GetCellCoord(vec3 Position);
+uint GetCellHash(ivec3 Coords);
+uint CellIndexFromHash(uint Hash);
 
+bool IntersectRayBox(Ray ray, out vec3 hitLocation);
 
 void main()
 {
@@ -67,47 +137,115 @@ void main()
     
     Ray ray;
     ray.origin = eyeLocation;
-    ray.dir = normalize(worldCoord - eyeLocation);    
+    ray.dir = normalize(worldCoord - eyeLocation);
     
+    vec3 hitLocation;
+    if ( !IntersectRayBox(ray, hitLocation) )
+    {
+        imageStore(outputTexture, pixelCoord, vec4(0.0f));
+        return;
+    }
 
-    vec3 newColor = vec3(1.0f);
-    imageStore(outputTexture, pixelCoord, vec4(newColor, 1.0));
+    vec4 newColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);
+    // TODO ray marching here
+
+    imageStore(outputTexture, pixelCoord, newColor);
 };
 
-// TODO: replace me?
-float RandomValue(inout uint seed)
+float CalcDensity(vec3 location)
 {
-    seed = seed * 747796405 + 2891336453;
-    uint result = ((seed >> ((seed >> 28) + 4)) ^ seed) * 277803737;
-    result = (result >> 22) ^ result;
-    return result / 4294967295.0;
+    float Density = 0.0f;
+    ivec3 myCell = GetCellCoord(location);
+    for ( uint gr = 0; gr < GridLookupCount; ++gr )
+    {
+        ivec3 lookupCell = myCell + GridOffsets[gr];
+        uint CellHash = GetCellHash(lookupCell);
+        uint CellIndex = CellIndexFromHash(CellHash);
+        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < ParticleCount; ++lookupIndex )
+        {
+            if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
+                break;
+            if ( SortedParticles[lookupIndex].CellHash != CellHash )
+                continue;
+            uint otherP = SortedParticles[lookupIndex].pIndex;
+
+            // now we got all the indices
+            vec3 otherPosition = Particles[otherP].PredictedPosition;
+            vec3 offset = location - otherPosition;
+            float dst2 = dot(offset, offset);
+            if ( dst2 > SmoothingRadius2 ) continue;
+            
+            // now we have all the data
+
+            Density += ParticleMass * DensityKernel(dst2);
+        }
+    }
+    return Density;
 }
 
-float RandomValueNormalDistr(inout uint seed)
+bool IntersectRayBox(Ray worldRay, out vec3 hitLocation)
 {
-    float t = 2.0 * PI * RandomValue(seed);
-    float r = sqrt(-2 * log(RandomValue(seed)));
-    return r * cos(t);
+    Ray ray;
+    ray.origin = (inverseBoundingBox * vec4(worldRay.origin, 1.0)).xyz;
+    ray.dir = normalize((inverseBoundingBox * vec4(worldRay.dir, 0.0)).xyz);
+
+    // Box bounds
+    vec3 minBound = vec3(-0.5);
+    vec3 maxBound = vec3(0.5);
+
+    // Calculate the t-values for intersection with each slab
+    vec3 tMin = (minBound - ray.origin) / ray.dir;
+    vec3 tMax = (maxBound - ray.origin) / ray.dir;
+
+    // Ensure tMin < tMax
+    vec3 t1 = min(tMin, tMax);
+    vec3 t2 = max(tMin, tMax);
+
+    // Find the largest entry t and the smallest exit t
+    float tNear = max(max(t1.x, t1.y), t1.z);
+    float tFar = min(min(t2.x, t2.y), t2.z);
+
+    // If tNear > tFar or tFar < 0, there is no intersection
+    if (tNear > tFar || tFar < 0.0)
+    {
+        return false;
+    }
+
+    // Populate the hit info
+    hitLocation = ray.origin + ray.dir * tNear;
+
+    hitLocation = (BoundingBox * vec4(hitLocation, 0.0)).xyz;
+
+    return true;
 }
 
-vec3 RandomDirection(inout uint seed)
+// kernels
+float DensityKernel(float dst2)
 {
-    vec3 result = vec3(0);
-    result.x = RandomValueNormalDistr(seed);
-    result.y = RandomValueNormalDistr(seed);
-    result.z = RandomValueNormalDistr(seed);
-    return normalize(result);
+    float v = SmoothingRadius2 - dst2;
+	return v * v * v * DensityScale;
 }
 
-vec3 RandomHemisphereDirection(inout uint seed, vec3 dir)
+// GRID
+
+ivec3 GetCellCoord(vec3 Position)
 {
-    vec3 result = RandomDirection(seed);
-    return result * sign(dot(result, dir));
+	vec3 normilizedPos = Position + WorldSize;
+    
+    float scaleF = 1.0f / SmoothingRadius*2.0f;
+    return ivec3(floor(normilizedPos * scaleF));
 }
 
-vec2 RandomCirclePoint(inout uint seed)
+uint GetCellHash(ivec3 Coords)
+{	
+	const uint PRIME1 = 0x9e3779b1;
+    const uint PRIME2 = 0x85ebca6b;
+    const uint PRIME3 = 0xc2b2ae35;
+
+	return Coords.y * PRIME1 + Coords.x * PRIME2 + Coords.z * PRIME3;
+}
+
+uint CellIndexFromHash(uint Hash)
 {
-    float angle = RandomValue(seed) * 2.0 * PI;
-    vec2 point = vec2(cos(angle), sin(angle));
-    return point * sqrt(RandomValue(seed));
+    return Hash % ParticleCount;
 }

@@ -22,6 +22,7 @@ private:
 	std::shared_ptr<class BravoPlayer> Player = nullptr;
 	std::shared_ptr<class BravoCamera> Camera = nullptr;
 	std::shared_ptr<class FluidSimulation3D> Simulation = nullptr;
+	
 
 	const float WorldHeight = 10.0f;
 };
