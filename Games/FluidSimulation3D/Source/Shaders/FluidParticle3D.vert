@@ -3,6 +3,7 @@ layout(location = 0) in vec3 aPosition;
 layout(location = 1) in vec3 aPredictedPosition;
 layout(location = 2) in vec3 aVelocity;
 layout(location = 3) in float aDensity;
+layout(location = 4) in float aIDensity;
 
 uniform mat4 model;
 uniform mat4 viewProj;

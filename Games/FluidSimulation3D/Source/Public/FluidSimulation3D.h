@@ -10,7 +10,8 @@ struct Particle
 	alignas(8) glm::vec3 Position = glm::vec3(0.0f);
     alignas(8) glm::vec3 PredictedPosition = glm::vec3(0.0f);
     alignas(8) glm::vec3 Velocity = glm::vec3(0.0f);
-    float Density;
+    alignas(8) float Density;
+	alignas(8) float iDensity;
 };
 
 class FluidSimulation3D : public BravoActor, public IBravoTickable, public IBravoRenderable

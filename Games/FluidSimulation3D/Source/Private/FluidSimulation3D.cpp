@@ -12,6 +12,8 @@ bool FluidSimulation3D::Initialize_Internal()
 {
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
+
+	size_t s = sizeof(Particle);
 	
 
 	glGenVertexArrays(1, &ParticleVAO);
@@ -31,6 +33,9 @@ bool FluidSimulation3D::Initialize_Internal()
     // Density
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, Density));
+	// iDensity
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, iDensity));
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -106,7 +111,7 @@ bool FluidSimulation3D::Initialize_Internal()
 
 void FluidSimulation3D::FillBuffers()
 {
-	NumWorkGroups = (ParticleCount + 1023) / 1024;
+	NumWorkGroups = (ParticleCount + 255) / 256;
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
@@ -133,7 +138,7 @@ void FluidSimulation3D::FillBuffers()
 
 	RadixSortPushConstants.g_num_elements = ParticleCount;
 	RadixSortPushConstants.g_num_workgroups = NumWorkGroups;
-	RadixSortPushConstants.g_num_blocks_per_workgroup = 1024;
+	RadixSortPushConstants.g_num_blocks_per_workgroup = 256;
 }
 
 void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransformable*)

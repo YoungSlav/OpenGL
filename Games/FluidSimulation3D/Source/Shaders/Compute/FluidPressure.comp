@@ -1,6 +1,6 @@
 #version 430
 
-layout(local_size_x = 1024) in;
+layout(local_size_x = 256) in;
 
 struct Particle
 {
@@ -8,6 +8,7 @@ struct Particle
     vec3 PredictedPosition;
     vec3 Velocity;
     float Density;
+    float iDensity;
 };
 struct SortedParticle
 {
@@ -160,6 +161,7 @@ void CalcDensity(uint i)
         }
     }
     Particles[i].Density = Density;
+    Particles[i].iDensity = 1.0f / Density;
 }
 
 vec3 CalcFluidForces(uint i)
@@ -195,18 +197,24 @@ vec3 CalcFluidForces(uint i)
             if ( dst2 > SmoothingRadius2 ) continue;
             
             float dst = sqrt(dst2);
+            
             // now we have all the data
-
+            
             vec3 dir = dst != 0.0f ? offset / dst : RandomVector;
-
+            
+            
             float otherDensity = Particles[otherP].Density;
             vec3 otherVelocity = Particles[otherP].Velocity;
-
+            
             float otherPressure = DensityToPressure(otherDensity);
 
-            pressureForce += ((myPressure + otherPressure) / (2.0f * otherDensity)) * dir * PressureKernel(dst);
-
-            viscosityForce += ((otherVelocity - myVelocity) / otherDensity) * ViscosityKernel(dst);
+            float densityFactor = Particles[i].iDensity;
+            
+            
+            // this 2 lines are the bottleneck
+            pressureForce += ((myPressure + otherPressure) * 0.5f * densityFactor) * dir * PressureKernel(dst);
+            
+            viscosityForce += ((otherVelocity - myVelocity) * densityFactor) * ViscosityKernel(dst);
         }
     }
     return (viscosityForce * ViscosityFactor) - pressureForce;
