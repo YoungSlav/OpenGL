@@ -146,8 +146,12 @@ void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransfor
 
 	PressureCompute->Use();
 		PressureCompute->SetFloat2("WorldSize", ContainerSize);
+		
 		PressureCompute->SetMatrix4d("BoundingBoxModel",
 			BoundingBox->GetTransform().GetTransformMatrix());
+
+		PressureCompute->SetMatrix4d("InverseBoundingBoxModel", glm::inverse(
+			BoundingBox->GetTransform().GetTransformMatrix()));
 	PressureCompute->StopUsage();
 }
 
@@ -179,11 +183,14 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 		PressureCompute->SetFloat2("WorldSize", ContainerSize);
 		PressureCompute->SetMatrix4d("BoundingBoxModel",
 			BoundingBox->GetTransform().GetTransformMatrix());
+		PressureCompute->SetMatrix4d("InverseBoundingBoxModel", glm::inverse(
+			BoundingBox->GetTransform().GetTransformMatrix()));
 		PressureCompute->SetFloat1("MaxVelocity", MaxVelocity);
 
 		PressureCompute->SetFloat1("ParticleMass", ParticleMass);
 		PressureCompute->SetFloat1("ParticleRadius", ParticleRadius);
 		PressureCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
+		PressureCompute->SetFloat1("SmoothingRadius2", SmoothingRadius*SmoothingRadius);
 		PressureCompute->SetFloat1("TargetDensity", TargetDensity);
 	
 		PressureCompute->SetFloat1("PressureFactor", PressureFactor);
