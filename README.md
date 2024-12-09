@@ -14,7 +14,7 @@ This project is an experimental game engine inspired by Unreal Engine, created t
 
 ## Projects I've developed using my engine
 
-  - PBR material demo with basics lighting
+  - PBR material demo with basics lighting and shadows
   ![PBR Material Demo Screenshot](Games/PBRDemo/Demo.png)
 
   - Particle-based Fluid Simulation using compute shaders:
