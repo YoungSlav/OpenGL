@@ -17,29 +17,8 @@ bool FluidSimulation3D::Initialize_Internal()
 	
 
 	glGenVertexArrays(1, &ParticleVAO);
-	glBindVertexArray(ParticleVAO);
+
 	glGenBuffers(1, &ParticlesSSBO);
-	glBindBuffer(GL_ARRAY_BUFFER, ParticlesSSBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, Position));
-    // PredictedPosition
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, PredictedPosition));
-    // Velocity
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, Velocity));
-    // Density
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, Density));
-	// iDensity
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, iDensity));
-	
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 		
@@ -73,7 +52,7 @@ bool FluidSimulation3D::Initialize_Internal()
 	auto AssetManager = Engine->GetAssetManager();
 
 	BoundingBox = NewObject<BravoBoundingBox>("SimulationBoundingBox");
-	BoundingBox->SetScale(glm::vec3(40.0f, 30.0f, 10.0f));
+	BoundingBox->SetScale(glm::vec3(50.0f, 30.0f, 50.0f));
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
 	
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("FluidParticle3D"));
@@ -238,6 +217,8 @@ void FluidSimulation3D::Render()
 		RenderShader->SetFloat3("Cold", Cold);
 		RenderShader->SetFloat3("Middle", Middle);
 		RenderShader->SetFloat3("Hot", Hot);
+
+		RenderShader->SetFloat1("TargetDensity", TargetDensity);
 				
 		glBindVertexArray(ParticleVAO);
 			glDrawArrays(GL_POINTS, 0, ParticleCount);
@@ -254,9 +235,13 @@ void FluidSimulation3D::Reset()
 	bPaused = true;
 
 	ParticleGenerationCompute->Use();
-		// update time step
+		// update time step	
 		ParticleGenerationCompute->SetInt("ParticleCount", ParticleCount);
-		ParticleGenerationCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform().GetTransformMatrix());
+
+		BravoTransform spawnBoxTransform = BoundingBox->GetTransform();
+		spawnBoxTransform.SetScale(spawnBoxTransform.GetScale() * 0.5f);
+
+		ParticleGenerationCompute->SetMatrix4d("BoundingBox", spawnBoxTransform.GetTransformMatrix());
 		
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		
@@ -286,17 +271,17 @@ void FluidSimulation3D::OnInput_R(bool ButtonState, float DeltaTime)
 void FluidSimulation3D::Tick(float DeltaTime)
 {
 	if ( bPaused ) return;
-	static float startTime = LifeTime;
-	float elapsed = LifeTime - startTime;
-	float speed = 12.0f;
-	if ( elapsed > 15.0f )
-	{
-		static float start = LifeTime;
-		float moveT = start - LifeTime;
-		//BoundingBox->SetRotation(glm::vec3(0.0f, LifeTime*60.0f, 0.0f));
-		//BoundingBox->SetScale(glm::vec3(40 + cos(LifeTime)*speed, 40.0f, 10.0f));
-		BoundingBox->SetLocation(glm::vec3(sin(moveT) * speed * 0.5f, 0.0f, 0.0f));
-	}
+	//static float startTime = LifeTime;
+	//float elapsed = LifeTime - startTime;
+	//float speed = 12.0f;
+	//if ( elapsed > 15.0f )
+	//{
+	//	static float start = LifeTime;
+	//	float moveT = start - LifeTime;
+	//	//BoundingBox->SetRotation(glm::vec3(0.0f, LifeTime*60.0f, 0.0f));
+	//	//BoundingBox->SetScale(glm::vec3(40 + cos(LifeTime)*speed, 40.0f, 10.0f));
+	//	BoundingBox->SetLocation(glm::vec3(sin(moveT) * speed * 0.5f, 0.0f, 0.0f));
+	//}
 
 	for ( int32 i = 0; i < StepsPerTick; ++i )
 		SimulationStep(DeltaTime / StepsPerTick);

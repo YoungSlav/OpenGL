@@ -1,9 +1,18 @@
 #version 430 core
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec3 aPredictedPosition;
-layout(location = 2) in vec3 aVelocity;
-layout(location = 3) in float aDensity;
-layout(location = 4) in float aIDensity;
+
+struct Particle
+{
+    vec3 Position;
+    vec3 PredictedPosition;
+    vec3 Velocity;
+    float Density;
+    float iDensity;
+};
+
+layout(std430, binding = 0) buffer ParticlesBuffer
+{
+	Particle Particles[];
+};
 
 uniform mat4 model;
 uniform mat4 viewProj;
@@ -17,9 +26,9 @@ out VS_OUT {
 
 void main()
 {
-	vs_out.PredictedPosition = aPredictedPosition;
-	vs_out.Velocity = aVelocity;
-	vs_out.Density = aDensity;
+	vs_out.PredictedPosition = Particles[gl_VertexID].PredictedPosition;
+	vs_out.Velocity = Particles[gl_VertexID].Velocity;
+	vs_out.Density = Particles[gl_VertexID].Density;
 
     mat4 finalMat = viewProj * model;
 
@@ -34,7 +43,7 @@ void main()
         
 	// Assign the calculated point size to gl_PointSize
 	gl_PointSize = scale * particleSize;
-
+    
     // Set the final position for the vertex in clip space (view + projection)
-    gl_Position = viewProj * model * vec4(aPosition, 1.0);
+    gl_Position = viewProj * model * vec4(Particles[gl_VertexID].Position, 1.0);
 }
