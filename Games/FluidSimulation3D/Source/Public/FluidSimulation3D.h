@@ -30,19 +30,19 @@ public:
 	int32 ParticleCount = 100000;
 	
 	float ParticleMass = 1.0f;
-	float ParticleRadius = 5.0f; 
+	float ParticleRadius = 0.5f; 
 	float SmoothingRadius = 2.0f;
 
 	float TargetDensity = 1.2f;
 	float PressureFactor = 240.0f;
-	float ViscosityFactor = 0.7f;
+	float ViscosityFactor = 5.0f;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	float CollisionDamping = 0.1f;
+	float CollisionDamping = 0.3f;
 	float Gravity = 20.0f;
 
 	float MaxVelocity = 20.0;
@@ -120,4 +120,5 @@ private:
 
 	// particle
 	GLuint ParticleVAO;
+	GLuint ParticleVBO = 0;
 };

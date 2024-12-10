@@ -1,4 +1,6 @@
 #version 430 core
+layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec2 aTexCoords;
 
 struct Particle
 {
@@ -15,35 +17,33 @@ layout(std430, binding = 0) buffer ParticlesBuffer
 };
 
 uniform mat4 model;
+uniform mat4 view;
 uniform mat4 viewProj;
 uniform float particleSize;
 
-out VS_OUT {
-	vec3 PredictedPosition;
-	vec3 Velocity;
-	float Density;
-} vs_out;
+flat out int InstanceID;
+out vec2 TexCoords;
+
 
 void main()
 {
-	vs_out.PredictedPosition = Particles[gl_VertexID].PredictedPosition;
-	vs_out.Velocity = Particles[gl_VertexID].Velocity;
-	vs_out.Density = Particles[gl_VertexID].Density;
+    InstanceID = gl_InstanceID;
+    TexCoords = aTexCoords;
 
-    mat4 finalMat = viewProj * model;
+    // Particle center position
+    vec3 particlePosition = Particles[gl_InstanceID].Position;
 
-	vec3 scale3D = vec3(
-        dot(finalMat[0].xyz, finalMat[0].xyz), // Length of the first column (X scale)
-        dot(finalMat[1].xyz, finalMat[1].xyz), // Length of the second column (Y scale)
-        dot(finalMat[2].xyz, finalMat[2].xyz)  // Length of the third column (Z scale)
-    );
+    // Extract the right and up vectors from the view matrix
+    vec3 cameraRight = vec3(view[0][0], view[1][0], view[2][0]);
+    vec3 cameraUp = vec3(view[0][1], view[1][1], view[2][1]);
 
-    // Calculate the overall scale of the object
-    float scale = sqrt(max(scale3D.x, max(scale3D.y, scale3D.z)));
-        
-	// Assign the calculated point size to gl_PointSize
-	gl_PointSize = scale * particleSize;
-    
-    // Set the final position for the vertex in clip space (view + projection)
-    gl_Position = viewProj * model * vec4(Particles[gl_VertexID].Position, 1.0);
+    // Transform the quad vertices into world space using the camera's orientation
+    vec3 scaledRight = aPos.x * particleSize * cameraRight;
+    vec3 scaledUp = aPos.y * particleSize * cameraUp;
+
+    // Compute the final vertex position
+    vec3 billboardVertex = particlePosition + scaledRight + scaledUp;
+
+    // Transform to clip space
+    gl_Position = viewProj * vec4(billboardVertex, 1.0);
 }

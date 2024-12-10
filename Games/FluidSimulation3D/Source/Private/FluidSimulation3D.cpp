@@ -14,8 +14,26 @@ bool FluidSimulation3D::Initialize_Internal()
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
+	static float vertices[] = {
+        // positions   // texCoords
+        -0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  1.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  1.0f, 1.0f
+    };
 
 	glGenVertexArrays(1, &ParticleVAO);
+	glGenBuffers(1, &ParticleVBO);
+    glBindVertexArray(ParticleVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, ParticleVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
 	glGenBuffers(1, &ParticlesSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
@@ -241,6 +259,7 @@ void FluidSimulation3D::Render()
 
 		RenderShader->SetMatrix4d("model", model);
 
+		RenderShader->SetMatrix4d("view", CameraView);
 		RenderShader->SetMatrix4d("viewProj", ViewProj);
 		RenderShader->SetFloat1("particleSize", ParticleRadius);
 		RenderShader->SetFloat1("maxSpeed", MaxVelocity);
@@ -252,7 +271,8 @@ void FluidSimulation3D::Render()
 		RenderShader->SetFloat1("TargetDensity", TargetDensity);
 				
 		glBindVertexArray(ParticleVAO);
-			glDrawArrays(GL_POINTS, 0, ParticleCount);
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, ParticleCount);
+			//glDrawArrays(GL_POINTS, 0, ParticleCount);
 		glBindVertexArray(0);
 
 	RenderShader->StopUsage();
@@ -303,11 +323,11 @@ void FluidSimulation3D::OnInput_R(bool ButtonState, float DeltaTime)
 
 void FluidSimulation3D::Tick(float DeltaTime)
 {
-	//if ( bPaused ) return;
+	if ( bPaused ) return;
 	//static float startTime = LifeTime;
 	//float elapsed = LifeTime - startTime;
 	//float speed = 12.0f;
-	//if ( elapsed > 15.0f )
+	//if ( elapsed > 5.0f )
 	//{
 	//	static float start = LifeTime;
 	//	float moveT = start - LifeTime;
