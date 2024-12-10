@@ -18,7 +18,7 @@ layout(std140) uniform PushConstants {
 };
 
 struct SortedParticle {
-    uint CellHash;
+    //uint CellHash;
     uint CellIndex;
     uint pIndex;
 };

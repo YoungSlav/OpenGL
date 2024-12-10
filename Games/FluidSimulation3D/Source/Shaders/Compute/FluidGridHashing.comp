@@ -17,7 +17,7 @@ layout(std430, binding = 0) buffer ParticlesBuffer
 
 struct SortedParticle
 {
-    uint CellHash;
+    //uint CellHash;
     uint CellIndex;
     uint pIndex;
 };
@@ -53,8 +53,8 @@ void main()
 void PrepareHash(uint i)
 {
     ivec3 CellCord = GetCellCoord(Particles[i].PredictedPosition);
-    SortedParticles[i].CellHash = GetCellHash(CellCord);
-    SortedParticles[i].CellIndex = CellIndexFromHash(SortedParticles[i].CellHash);
+    uint CellHash = GetCellHash(CellCord);
+    SortedParticles[i].CellIndex = CellIndexFromHash(CellHash);
     SortedParticles[i].pIndex = i;
     StartIndices[i] = ParticleCount;
 }

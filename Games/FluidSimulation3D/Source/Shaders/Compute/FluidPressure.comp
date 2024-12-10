@@ -12,7 +12,6 @@ struct Particle
 };
 struct SortedParticle
 {
-    uint CellHash;
     uint CellIndex;
     uint pIndex;
 };
@@ -120,20 +119,23 @@ void main()
 
     barrier();
 
-    //vec3 fluidForces = CalcFluidForces(i);
-
-    vec3 pressureForce = CalcPressure(i);
-
-    Particles[i].Velocity += pressureForce * SimulationTimeStep;
     
-    barrier();
+    vec3 fluidForces = CalcFluidForces(i);
 
-    vec3 viscosityForce = CalcViscosity(i);
+    Particles[i].Velocity += fluidForces * SimulationTimeStep;
 
-    Particles[i].Velocity += viscosityForce * SimulationTimeStep;
+    //vec3 pressureForce = CalcPressure(i);
+    //
+    //Particles[i].Velocity += pressureForce * SimulationTimeStep;
+    //
+    //barrier();
+    //
+    //vec3 viscosityForce = CalcViscosity(i);
+    //
+    //Particles[i].Velocity += viscosityForce * SimulationTimeStep;
 
 
-    //Particles[i].Velocity += fluidForces * SimulationTimeStep;
+    //
     
     Particles[i].Position += Particles[i].Velocity * SimulationTimeStep;
 
@@ -155,8 +157,6 @@ void CalcDensity(uint i)
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
-            if ( SortedParticles[lookupIndex].CellHash != CellHash )
-                continue;
             uint otherP = SortedParticles[lookupIndex].pIndex;
 
             // now we got all the indices
@@ -193,8 +193,6 @@ vec3 CalcPressure(uint i)
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
-            if ( SortedParticles[lookupIndex].CellHash != CellHash )
-                continue;
             uint otherP = SortedParticles[lookupIndex].pIndex;
             if ( otherP == i ) continue;
 
@@ -241,8 +239,6 @@ vec3 CalcViscosity(uint i)
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
-            if ( SortedParticles[lookupIndex].CellHash != CellHash )
-                continue;
             uint otherP = SortedParticles[lookupIndex].pIndex;
             if ( otherP == i ) continue;
 
@@ -292,8 +288,8 @@ vec3 CalcFluidForces(uint i)
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
-            if ( SortedParticles[lookupIndex].CellHash != CellHash )
-                continue;
+            //if ( SortedParticles[lookupIndex].CellHash != CellHash )
+            //    continue;
             uint otherP = SortedParticles[lookupIndex].pIndex;
             if ( otherP == i ) continue;
 

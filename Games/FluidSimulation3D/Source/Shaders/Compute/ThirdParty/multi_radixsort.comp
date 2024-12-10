@@ -15,7 +15,7 @@
 layout (local_size_x = WORKGROUP_SIZE) in;
 
 struct SortedParticle {
-    uint CellHash;
+    //uint CellHash;
     uint CellIndex;
     uint pIndex;
 };
