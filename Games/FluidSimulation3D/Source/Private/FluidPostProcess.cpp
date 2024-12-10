@@ -21,7 +21,7 @@ bool FluidPostProcess::Initialize_Internal()
 		return false;
 
 	glm::ivec2 Size = Engine->GetViewport()->GetViewportSize();
-	RenderTarget = NewObject<BravoRenderTarget>("RayTracingRenderTarget", Size, GL_RGBA32F, GL_RGBA, GL_FLOAT, false);
+	RenderTarget = NewObject<BravoRenderTarget>("RayTracingRenderTarget", Size / 4, GL_RGBA32F, GL_RGBA, GL_FLOAT, false);
 
 	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<FluidPostProcess>(), &FluidPostProcess::OnViewportResize);
 	
@@ -43,6 +43,7 @@ bool FluidPostProcess::EnsureReady()
 
 void FluidPostProcess::Render_Internal()
 {
+	return;
 	glm::ivec2 OutputImageSize = RenderTarget->GetSize();
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();

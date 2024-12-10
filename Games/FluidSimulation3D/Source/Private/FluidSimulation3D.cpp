@@ -51,7 +51,7 @@ bool FluidSimulation3D::Initialize_Internal()
 	auto AssetManager = Engine->GetAssetManager();
 
 	BoundingBox = NewObject<BravoBoundingBox>("SimulationBoundingBox");
-	BoundingBox->SetScale(glm::vec3(50.0f, 30.0f, 50.0f));
+	BoundingBox->SetScale(glm::vec3(50.0f, 50.0f, 50.0f));
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
 	
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("FluidParticle3D"));
@@ -139,6 +139,14 @@ void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransfor
 		PressureCompute->SetMatrix4d("InverseBoundingBoxModel", glm::inverse(
 			BoundingBox->GetTransform().GetTransformMatrix()));
 	PressureCompute->StopUsage();
+
+	auto RayMarchingCompute = RaymarchingPP->GetComputeShader();
+	RayMarchingCompute->Use();
+		RayMarchingCompute->SetFloat3("WorldSize", BoundingBox->GetScale_World());
+
+		RayMarchingCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform().GetTransformMatrix());
+		RayMarchingCompute->SetMatrix4d("inverseBoundingBox", glm::inverse(BoundingBox->GetTransform().GetTransformMatrix()));
+	RayMarchingCompute->StopUsage();
 }
 
 void FluidSimulation3D::UpdateShaderUniformParams()
@@ -152,7 +160,7 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 
 	// hashing
 	GridHashingCompute->Use();
-		GridHashingCompute->SetFloat2("WorldSize", ContainerSize);
+		GridHashingCompute->SetFloat3("WorldSize", ContainerSize);
 		GridHashingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
 		GridHashingCompute->SetInt("ParticleCount", ParticleCount);
 	GridHashingCompute->StopUsage();
@@ -207,7 +215,13 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 		RayMarchingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
 		RayMarchingCompute->SetFloat1("SmoothingRadius2", SmoothingRadius*SmoothingRadius);
 
-		RayMarchingCompute->SetFloat1("MarchingRayStep", 0.1f);
+		RayMarchingCompute->SetFloat1("TargetDensity", TargetDensity);
+		
+		RayMarchingCompute->SetFloat1("MarchingRayStep", 0.5f);
+		RayMarchingCompute->SetFloat1("DensityMultiplier", 0.04f);
+
+		RayMarchingCompute->SetFloat3("ScatteringCoefficients", glm::vec3(0.0f, 0.0f, 50.0f));
+		
 
 	RayMarchingCompute->StopUsage();
 }
@@ -260,7 +274,7 @@ void FluidSimulation3D::Reset()
 		ParticleGenerationCompute->SetInt("ParticleCount", ParticleCount);
 
 		BravoTransform spawnBoxTransform = BoundingBox->GetTransform();
-		spawnBoxTransform.SetScale(spawnBoxTransform.GetScale() * 0.5f);
+		spawnBoxTransform.SetScale(spawnBoxTransform.GetScale() * 0.75f);
 
 		ParticleGenerationCompute->SetMatrix4d("BoundingBox", spawnBoxTransform.GetTransformMatrix());
 		
@@ -269,6 +283,8 @@ void FluidSimulation3D::Reset()
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	ParticleGenerationCompute->StopUsage();
+
+	PrepareGrid(0.0f);
 
 	bReadyToRender = true;
 }
@@ -291,7 +307,7 @@ void FluidSimulation3D::OnInput_R(bool ButtonState, float DeltaTime)
 
 void FluidSimulation3D::Tick(float DeltaTime)
 {
-	if ( bPaused ) return;
+	//if ( bPaused ) return;
 	//static float startTime = LifeTime;
 	//float elapsed = LifeTime - startTime;
 	//float speed = 12.0f;
@@ -312,9 +328,26 @@ void FluidSimulation3D::SimulationStep(float DeltaTime)
 {
 	if ( bPaused ) return;
 
+	PrepareGrid(DeltaTime);
+
+	PressureCompute->Use();
+		// update time step
+		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
+
+		glm::vec2 RandomVector = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
+		PressureCompute->SetFloat2("RandomVector", RandomVector);
+
+		glDispatchCompute(NumWorkGroups, 1, 1);
+		
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	PressureCompute->StopUsage();
+}
+
+void FluidSimulation3D::PrepareGrid(float DeltaTime)
+{
 	ExternalForcesCompute->Use();
 		// update time step
-		ExternalForcesCompute->SetFloat1("SimulationTimeStep", 1.0f / (120.0f * StepsPerTick));
+		ExternalForcesCompute->SetFloat1("SimulationTimeStep", DeltaTime);
 		
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		
@@ -336,18 +369,6 @@ void FluidSimulation3D::SimulationStep(float DeltaTime)
 		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	FluidStartingIndiciesCompute->StopUsage();
-
-	PressureCompute->Use();
-		// update time step
-		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
-
-		glm::vec2 RandomVector = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
-		PressureCompute->SetFloat2("RandomVector", RandomVector);
-
-		glDispatchCompute(NumWorkGroups, 1, 1);
-		
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-	PressureCompute->StopUsage();
 }
 
 void FluidSimulation3D::ExecuteRadixSort()

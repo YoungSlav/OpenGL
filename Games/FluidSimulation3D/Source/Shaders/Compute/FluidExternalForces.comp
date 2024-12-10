@@ -27,5 +27,7 @@ void main()
     if ( i >= ParticleCount ) return;
 
     Particles[i].Velocity += vec3(0.0, -GravityForce, 0.0) * SimulationTimeStep;
-    Particles[i].PredictedPosition = Particles[i].Position + Particles[i].Velocity * SimulationTimeStep;
+
+    const float predictionStep = 1.0f / 480.0f;
+    Particles[i].PredictedPosition = Particles[i].Position + Particles[i].Velocity * predictionStep;
 };

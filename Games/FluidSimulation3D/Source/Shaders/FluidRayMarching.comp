@@ -51,8 +51,12 @@ uniform float DensityScale;
 uniform float ParticleMass;
 uniform float SmoothingRadius;
 uniform float SmoothingRadius2;
+uniform float TargetDensity;
 
 uniform float MarchingRayStep;
+uniform float DensityMultiplier;
+
+uniform vec3 ScatteringCoefficients;
 
 const uint GridLookupCount = 27;
 const ivec3 GridOffsets[GridLookupCount] = ivec3[](
@@ -86,13 +90,6 @@ const ivec3 GridOffsets[GridLookupCount] = ivec3[](
 );
 
 
-
-struct Ray
-{
-    vec3 origin;
-    vec3 dir;
-};
-
 float CalcDensity(vec3 location);
 
 // kernels
@@ -103,7 +100,18 @@ ivec3 GetCellCoord(vec3 Position);
 uint GetCellHash(ivec3 Coords);
 uint CellIndexFromHash(uint Hash);
 
-bool IntersectRayBox(Ray ray, out vec3 hitLocation);
+
+// marching
+struct Ray
+{
+    vec3 origin;
+    vec3 dir;
+};
+
+
+bool IntersectRayBox(Ray ray, out vec3 hitLocation, out float distInsideCube2);
+vec3 RayMarch(vec3 dir, vec3 origin, float marchingDist2);
+
 
 void main()
 {
@@ -129,28 +137,48 @@ void main()
 
     vec3 camRight = vec3(invViewMat[0][0], invViewMat[0][1], invViewMat[0][2]);
     vec3 camUp = vec3(invViewMat[1][0], invViewMat[1][1], invViewMat[1][2]);
-
-    vec2 aaJitter = vec2(0.0f);//RandomCirclePoint(rndSeed) * antiAliasingStrength / iSize.x;
-    vec3 aaOfset = camRight * aaJitter.x + camUp * aaJitter.y;
-
-    worldCoord = worldCoord + aaOfset;
-    
+        
     Ray ray;
     ray.origin = eyeLocation;
     ray.dir = normalize(worldCoord - eyeLocation);
+
+    vec4 Color = vec4(0.0f);
     
     vec3 hitLocation;
-    if ( !IntersectRayBox(ray, hitLocation) )
+    float marchingDistance2;
+    if ( IntersectRayBox(ray, hitLocation, marchingDistance2) )
     {
-        imageStore(outputTexture, pixelCoord, vec4(0.0f));
-        return;
+        Color = vec4(RayMarch(ray.dir, hitLocation, marchingDistance2), 1.0f);
     }
 
-    vec4 newColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);
-    // TODO ray marching here
-
-    imageStore(outputTexture, pixelCoord, newColor);
+    imageStore(outputTexture, pixelCoord, Color);
 };
+
+vec3 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
+{
+    float totalDensity = 0.0f;
+    vec3 totalLight = vec3(0.0f);
+
+    const float jumpDist = MarchingRayStep * 5.0f;
+    bool bJumping = false;
+
+    float coveredDst = 0.0f;
+    do
+    {
+        vec3 samplePoint = origin + dir * coveredDst;
+        float density = CalcDensity(samplePoint) * MarchingRayStep * DensityMultiplier;
+
+        totalDensity += density;
+
+        vec3 inScatteredLight = vec3(1.0f) * totalDensity * ScatteringCoefficients;
+        vec3 lightDecay = exp(-totalDensity * ScatteringCoefficients);
+        totalLight += inScatteredLight * lightDecay;
+
+        coveredDst += MarchingRayStep;
+    } while( coveredDst*coveredDst < marchingDist2 );
+    
+    return totalLight;
+}
 
 float CalcDensity(vec3 location)
 {
@@ -170,7 +198,7 @@ float CalcDensity(vec3 location)
             uint otherP = SortedParticles[lookupIndex].pIndex;
 
             // now we got all the indices
-            vec3 otherPosition = Particles[otherP].PredictedPosition;
+            vec3 otherPosition = Particles[otherP].Position;
             vec3 offset = location - otherPosition;
             float dst2 = dot(offset, offset);
             if ( dst2 > SmoothingRadius2 ) continue;
@@ -183,7 +211,7 @@ float CalcDensity(vec3 location)
     return Density;
 }
 
-bool IntersectRayBox(Ray worldRay, out vec3 hitLocation)
+bool IntersectRayBox(Ray worldRay, out vec3 hitLocation, out float distInsideCube2)
 {
     Ray ray;
     ray.origin = (inverseBoundingBox * vec4(worldRay.origin, 1.0)).xyz;
@@ -213,8 +241,18 @@ bool IntersectRayBox(Ray worldRay, out vec3 hitLocation)
 
     // Populate the hit info
     hitLocation = ray.origin + ray.dir * tNear;
+    vec3 hitFar = ray.origin + ray.dir * tFar;
 
     hitLocation = (BoundingBox * vec4(hitLocation, 0.0)).xyz;
+    hitFar = (BoundingBox * vec4(hitFar, 0.0)).xyz;
+
+    //float scaleToWorld = length((BoundingBox * vec4(ray.dir, 1)).xyz);
+    //float nearDistance = scaleToWorld * tFar;
+    //float farDistance = scaleToWorld * tFar;
+
+    vec3 offset = (hitFar - hitLocation);
+
+    distInsideCube2 = dot(offset, offset);
 
     return true;
 }

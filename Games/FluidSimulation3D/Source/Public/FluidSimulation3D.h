@@ -27,23 +27,23 @@ public:
 	// SIMULATION PROPERTIES
 
 	const float scale = 2.0f;
-	int32 ParticleCount = 40000;
+	int32 ParticleCount = 100000;
 	
 	float ParticleMass = 1.0f;
-	float ParticleRadius = 20.0f; 
+	float ParticleRadius = 5.0f; 
 	float SmoothingRadius = 2.0f;
 
 	float TargetDensity = 1.2f;
 	float PressureFactor = 240.0f;
-	float ViscosityFactor = 0.5f;
+	float ViscosityFactor = 0.7f;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	float CollisionDamping = 0.8f;
-	float Gravity = 9.8f;
+	float CollisionDamping = 0.1f;
+	float Gravity = 20.0f;
 
 	float MaxVelocity = 10.0;
 
@@ -65,6 +65,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	void SimulationStep(float DeltaTime);
 	
+	void PrepareGrid(float DeltaTime);
 	void ExecuteRadixSort();
 	void UpdateRadixIteration(int32 i);
 
