@@ -33,14 +33,12 @@
     <ClInclude Include="Source\Public\FluidSimulation3D.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Shaders\Compute\FluidExternalForces.comp" />
     <None Include="Source\Shaders\Compute\FluidGenerateParticles.comp" />
     <None Include="Source\Shaders\Compute\FluidGridHashing.comp" />
     <None Include="Source\Shaders\Compute\FluidStartingIndicies.comp" />
     <None Include="Source\Shaders\Compute\FluidPressure.comp" />
     <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort.comp" />
     <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort_histograms.comp" />
-    <None Include="Source\Shaders\Compute\ThirdParty\single_radixsort.comp" />
     <None Include="Source\Shaders\FluidParticle3D.frag" />
     <None Include="Source\Shaders\FluidParticle3D.vert" />
     <None Include="Source\Shaders\FluidRayMarching.comp" />

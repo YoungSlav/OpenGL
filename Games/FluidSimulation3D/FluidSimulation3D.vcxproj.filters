@@ -52,13 +52,11 @@
     <None Include="Source\Shaders\FluidParticle3D.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Source\Shaders\Compute\FluidExternalForces.comp" />
     <None Include="Source\Shaders\Compute\FluidGridHashing.comp" />
     <None Include="Source\Shaders\Compute\FluidStartingIndicies.comp" />
     <None Include="Source\Shaders\Compute\FluidPressure.comp" />
     <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort.comp" />
     <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort_histograms.comp" />
-    <None Include="Source\Shaders\Compute\ThirdParty\single_radixsort.comp" />
     <None Include="Source\Shaders\Compute\FluidGenerateParticles.comp" />
     <None Include="Source\Shaders\FluidRayMarching.comp" />
   </ItemGroup>

@@ -45,7 +45,7 @@ public:
 	float CollisionDamping = 0.1f;
 	float Gravity = 20.0f;
 
-	float MaxVelocity = 10.0;
+	float MaxVelocity = 20.0;
 
 	uint32 StepsPerTick = 4;
 
@@ -93,7 +93,6 @@ private:
 	std::shared_ptr<class BravoShaderAsset> RenderShader;
 
 	std::shared_ptr<class BravoShaderAsset> ParticleGenerationCompute;
-	std::shared_ptr<class BravoShaderAsset> ExternalForcesCompute;
 	std::shared_ptr<class BravoShaderAsset> GridHashingCompute;
 	
 	struct RadixSortConstants

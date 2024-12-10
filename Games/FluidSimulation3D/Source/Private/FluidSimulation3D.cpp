@@ -58,7 +58,6 @@ bool FluidSimulation3D::Initialize_Internal()
 
 	ParticleGenerationCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGenerateParticles", BravoShaderLoadingParams("Compute\\FluidGenerateParticles"));
 
-	ExternalForcesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidExternalForces", BravoShaderLoadingParams("Compute\\FluidExternalForces"));
 	GridHashingCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGridHashing", BravoShaderLoadingParams("Compute\\FluidGridHashing"));
 	
 	RadixSortCompute = AssetManager->FindOrLoad<BravoShaderAsset>("RadixSort", BravoShaderLoadingParams("Compute\\ThirdParty\\multi_radixsort"));
@@ -152,11 +151,7 @@ void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransfor
 void FluidSimulation3D::UpdateShaderUniformParams()
 {
 	glm::vec3 ContainerSize = BoundingBox->GetScale();
-	// external force
-	ExternalForcesCompute->Use();
-		ExternalForcesCompute->SetFloat1("GravityForce", Gravity);
-		ExternalForcesCompute->SetInt("ParticleCount", ParticleCount);
-	ExternalForcesCompute->StopUsage();
+
 
 	// hashing
 	GridHashingCompute->Use();
@@ -174,6 +169,7 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 	PressureCompute->Use();
 		PressureCompute->SetInt("ParticleCount", ParticleCount);
 
+		PressureCompute->SetFloat1("GravityForce", Gravity);
 		PressureCompute->SetFloat3("WorldSize", ContainerSize);
 		PressureCompute->SetMatrix4d("BoundingBoxModel",
 			BoundingBox->GetTransform().GetTransformMatrix());
@@ -344,17 +340,7 @@ void FluidSimulation3D::SimulationStep(float DeltaTime)
 }
 
 void FluidSimulation3D::PrepareGrid(float DeltaTime)
-{
-	ExternalForcesCompute->Use();
-		// update time step
-		ExternalForcesCompute->SetFloat1("SimulationTimeStep", DeltaTime);
-		
-		glDispatchCompute(NumWorkGroups, 1, 1);
-		
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-	ExternalForcesCompute->StopUsage();
-	
+{	
 	GridHashingCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		
