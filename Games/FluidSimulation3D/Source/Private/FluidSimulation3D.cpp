@@ -69,7 +69,7 @@ bool FluidSimulation3D::Initialize_Internal()
 	auto AssetManager = Engine->GetAssetManager();
 
 	BoundingBox = NewObject<BravoBoundingBox>("SimulationBoundingBox");
-	BoundingBox->SetScale(glm::vec3(50.0f, 50.0f, 50.0f));
+	BoundingBox->SetScale(glm::vec3(100.0f, 50.0f, 25.0f));
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
 	
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("FluidParticle3D"));
@@ -231,10 +231,10 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 
 		RayMarchingCompute->SetFloat1("TargetDensity", TargetDensity);
 		
-		RayMarchingCompute->SetFloat1("MarchingRayStep", 0.5f);
-		RayMarchingCompute->SetFloat1("DensityMultiplier", 0.04f);
+		RayMarchingCompute->SetFloat1("MarchingRayStep", 0.25f);
+		RayMarchingCompute->SetFloat1("DensityMultiplier", 1.0f);
 
-		RayMarchingCompute->SetFloat3("ScatteringCoefficients", glm::vec3(0.0f, 0.0f, 50.0f));
+		RayMarchingCompute->SetFloat3("ScatteringCoefficients", glm::vec3(0.01f, 0.01f, 10.0f));
 		
 
 	RayMarchingCompute->StopUsage();
@@ -326,8 +326,8 @@ void FluidSimulation3D::Tick(float DeltaTime)
 	if ( bPaused ) return;
 	//static float startTime = LifeTime;
 	//float elapsed = LifeTime - startTime;
-	//float speed = 12.0f;
-	//if ( elapsed > 5.0f )
+	//float speed = 5.0f;
+	//if ( elapsed > 15.0f )
 	//{
 	//	static float start = LifeTime;
 	//	float moveT = start - LifeTime;

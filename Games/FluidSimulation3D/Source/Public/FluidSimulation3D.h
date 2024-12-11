@@ -7,11 +7,11 @@
 
 struct Particle
 {
-	alignas(8) glm::vec3 Position = glm::vec3(0.0f);
-    alignas(8) glm::vec3 PredictedPosition = glm::vec3(0.0f);
-    alignas(8) glm::vec3 Velocity = glm::vec3(0.0f);
-    alignas(8) float Density;
-	alignas(8) float iDensity;
+	alignas(16) glm::vec3 Position = glm::vec3(0.0f);
+    alignas(16) glm::vec3 PredictedPosition = glm::vec3(0.0f);
+    alignas(16) glm::vec3 Velocity = glm::vec3(0.0f);
+    alignas(4) float Density;
+	alignas(4) float iDensity;
 };
 
 class FluidSimulation3D : public BravoActor, public IBravoTickable, public IBravoRenderable
@@ -42,7 +42,7 @@ public:
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	float CollisionDamping = 0.3f;
+	float CollisionDamping = 0.1f;
 	float Gravity = 20.0f;
 
 	float MaxVelocity = 20.0;

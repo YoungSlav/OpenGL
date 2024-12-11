@@ -36,20 +36,20 @@ void main()
 {
     if ( length(TexCoords - vec2(0.5)) > 0.5 ) discard;
 
-    //float speed = length(Particles[InstanceID].Velocity);
-    //const float midSpeed = maxSpeed*0.5f;
-    //vec3 Color;
-    //if ( speed < midSpeed )
-    //    Color = mix(Cold, Middle, speed / midSpeed);
-    //else
-    //    Color = mix(Middle, Hot, (speed-midSpeed) / (maxSpeed-midSpeed));
-
+    float speed = length(Particles[InstanceID].Velocity);
+    const float midSpeed = maxSpeed*0.5f;
     vec3 Color;
-    const float MaxDensity = TargetDensity * 2.0f;
-    if ( Particles[InstanceID].Density < TargetDensity )
-        Color = mix(Green, Blue, Particles[InstanceID].Density / TargetDensity);
+    if ( speed < midSpeed )
+        Color = mix(Cold, Middle, speed / midSpeed);
     else
-        Color = mix(Blue, Red, (Particles[InstanceID].Density-TargetDensity) / (MaxDensity-TargetDensity));
+        Color = mix(Middle, Hot, (speed-midSpeed) / (maxSpeed-midSpeed));
+
+    //vec3 Color;
+    //const float MaxDensity = TargetDensity * 2.0f;
+    //if ( Particles[InstanceID].Density < TargetDensity )
+    //    Color = mix(Green, Blue, Particles[InstanceID].Density / TargetDensity);
+    //else
+    //    Color = mix(Blue, Red, (Particles[InstanceID].Density-TargetDensity) / (MaxDensity-TargetDensity));
 
     
     FragColor = vec4(Color, 1.0);

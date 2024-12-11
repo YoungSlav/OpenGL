@@ -19,7 +19,6 @@ struct Particle
 };
 struct SortedParticle
 {
-    uint CellHash;
     uint CellIndex;
     uint pIndex;
 };
@@ -148,7 +147,9 @@ void main()
     float marchingDistance2;
     if ( IntersectRayBox(ray, hitLocation, marchingDistance2) )
     {
-        Color = vec4(RayMarch(ray.dir, hitLocation, marchingDistance2), 1.0f);
+        vec3 totalLight = RayMarch(ray.dir, hitLocation, marchingDistance2);
+        bool alpha = totalLight.x > 0.0f && totalLight.y > 0.0f && totalLight.z > 0.0f;
+        Color = vec4(totalLight, alpha ? 1.0f : 0.0f);
     }
 
     imageStore(outputTexture, pixelCoord, Color);
@@ -158,9 +159,6 @@ vec3 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
 {
     float totalDensity = 0.0f;
     vec3 totalLight = vec3(0.0f);
-
-    const float jumpDist = MarchingRayStep * 5.0f;
-    bool bJumping = false;
 
     float coveredDst = 0.0f;
     do
@@ -193,8 +191,6 @@ float CalcDensity(vec3 location)
         {
             if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
                 break;
-            if ( SortedParticles[lookupIndex].CellHash != CellHash )
-                continue;
             uint otherP = SortedParticles[lookupIndex].pIndex;
 
             // now we got all the indices
