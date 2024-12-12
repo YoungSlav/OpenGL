@@ -25,7 +25,7 @@ void FluidPostProcess_Density::Render_Internal()
 
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, Simulation->GetParticlesSSBO());
 
-		Shader->SetInt("particleCount", Simulation->ParticlesCount);
+		Shader->SetInt("particleCount", Simulation->ParticleCount);
 		Shader->SetFloat1("targetDensity", Simulation->TargetDensity);
 		Shader->SetFloat1("particleMass", Simulation->ParticleMass);
 		Shader->SetFloat1("smoothingRadius", Simulation->SmoothingRadius);

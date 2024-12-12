@@ -100,7 +100,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		Spacing();
 
 
-		if ( Slider("Particle count", &Simulation->ParticlesCount, 1, 4000) )
+		if ( Slider("Particle count", &Simulation->ParticleCount, 1, 4000) )
 		{
 			if ( !Simulation->HasStarted() )
 			{

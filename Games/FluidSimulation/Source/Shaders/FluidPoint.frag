@@ -6,6 +6,7 @@ struct Particle
     vec2 PredictedPosition;
     vec2 Velocity;
     float Density;
+    float iDensity;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer

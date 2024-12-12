@@ -69,7 +69,6 @@ bool FluidSimulation::Initialize_Internal()
 
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidPoint", BravoShaderLoadingParams("FluidPoint"));
 
-	ExternalForcesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidExternalForces", BravoShaderLoadingParams("Compute\\FluidExternalForces"));
 	GridHashingCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGridHashing", BravoShaderLoadingParams("Compute\\FluidGridHashing"));
 	
 	RadixSortCompute = AssetManager->FindOrLoad<BravoShaderAsset>("RadixSort", BravoShaderLoadingParams("Compute\\ThirdParty\\multi_radixsort"));
@@ -115,7 +114,7 @@ bool FluidSimulation::Initialize_Internal()
 
 void FluidSimulation::FillBuffers()
 {
-	NumWorkGroups = (Particles.size() + 1023) / 1024;
+	NumWorkGroups = (Particles.size() + 255) / 256;
 
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
@@ -123,11 +122,11 @@ void FluidSimulation::FillBuffers()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixTmpSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 3, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, RadixTmpSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixHistogramSSBO);
@@ -143,27 +142,26 @@ void FluidSimulation::FillBuffers()
 
 	RadixSortPushConstants.g_num_elements = Particles.size();
 	RadixSortPushConstants.g_num_workgroups = NumWorkGroups;
-	RadixSortPushConstants.g_num_blocks_per_workgroup = 1024;
+	RadixSortPushConstants.g_num_blocks_per_workgroup = 256;
 }
 
 void FluidSimulation::UpdateShaderUniformParams()
 {
-	// external force
-	ExternalForcesCompute->Use();
-		ExternalForcesCompute->SetFloat1("GravityForce", Gravity);
-		ExternalForcesCompute->SetFloat1("InteractionForce", InteractionForce);
-		ExternalForcesCompute->SetFloat2("InteractionLocation", InteractionLocation);
-		ExternalForcesCompute->SetFloat1("InteractionRadius", InteractionRadius);
-	ExternalForcesCompute->StopUsage();
+	FluidStartingIndiciesCompute->Use();
+		FluidStartingIndiciesCompute->SetInt("ParticleCount", ParticleCount);
+	FluidStartingIndiciesCompute->StopUsage();
 
 	// hashing
 	GridHashingCompute->Use();
 		GridHashingCompute->SetFloat2("WorldSize", WorldSize);
 		GridHashingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
+		GridHashingCompute->SetInt("ParticleCount", ParticleCount);
 	GridHashingCompute->StopUsage();
 	
 	// pressure
 	PressureCompute->Use();
+		PressureCompute->SetInt("ParticleCount", ParticleCount);
+
 		PressureCompute->SetFloat2("WorldSize", WorldSize);
 		PressureCompute->SetFloat2("ContainerSize", ParentContainer->GetSize());
 		PressureCompute->SetFloat1("MaxVelocity", MaxVelocity);
@@ -176,6 +174,11 @@ void FluidSimulation::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("Preassure", Preassure);
 		PressureCompute->SetFloat1("ViscosityFactor", ViscosityFactor);
 		PressureCompute->SetFloat1("CollisionDamping", CollisionDamping);
+
+		PressureCompute->SetFloat1("GravityForce", Gravity);
+		PressureCompute->SetFloat1("InteractionForce", InteractionForce);
+		PressureCompute->SetFloat2("InteractionLocation", InteractionLocation);
+		PressureCompute->SetFloat1("InteractionRadius", InteractionRadius);
 
 		const float DensityScale	= 315.0f / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
 		const float PressureScale	= -15.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 3));
@@ -229,33 +232,34 @@ void FluidSimulation::SpawnParticles()
 	ParticleGridSize.x = glm::ceil(WorldSize.x / ParticleRadius * 2.0f);
     ParticleGridSize.y = glm::ceil(WorldSize.y / ParticleRadius * 2.0f);
 
-	if ( ParticleGridSize.x * ParticleGridSize.y < ParticlesCount )
-		ParticlesCount = ParticleGridSize.x * ParticleGridSize.y;
+	if ( ParticleGridSize.x * ParticleGridSize.y < ParticleCount )
+		ParticleCount = ParticleGridSize.x * ParticleGridSize.y;
 
 
 	bPaused = true;
 	bHasStarted = false;
 
 	Particles.clear();
-	Particles.resize(ParticlesCount);
+	Particles.resize(ParticleCount);
 	
 	OriginalPositions.clear();
-	OriginalPositions.resize(ParticlesCount);
+	OriginalPositions.resize(ParticleCount);
 	
 	
 
-	if ( ParticlesCount == 0 )
+	if ( ParticleCount == 0 )
 		return;
 
 	
 	if ( bRandomPositions )
 	{
-		for ( int32 i = 0; i < ParticlesCount; ++i )
+		for ( int32 i = 0; i < ParticleCount; ++i )
 		{
 			glm::vec2 Range = ParentContainer->GetSize() - glm::vec2(ParticleRadius*2.0f);
 			float x = BravoMath::Rand(-Range.x, Range.x);
 			float y = BravoMath::Rand(-Range.y, Range.y);
 			Particles[i].Position = glm::vec2(x, y);
+			Particles[i].PredictedPosition = Particles[i].Position;
 			OriginalPositions[i] = Particles[i].Position;
 		}
 	}
@@ -263,32 +267,33 @@ void FluidSimulation::SpawnParticles()
 	{
 		float ParticleDiameter = 2 * ParticleRadius;
 		float aspectRatio = WorldSize.x / WorldSize.y;
-		int32 gridWidth = static_cast<int32>(glm::ceil(sqrt(ParticlesCount * aspectRatio)));
-		int32 gridHeight = (ParticlesCount + gridWidth - 1) / gridWidth;
+		int32 gridWidth = static_cast<int32>(glm::ceil(sqrt(ParticleCount * aspectRatio)));
+		int32 gridHeight = (ParticleCount + gridWidth - 1) / gridWidth;
 
 		// Adjust ParticleCount if it exceeds the capacity of the grid
-		ParticlesCount = std::min(ParticlesCount, gridWidth * gridHeight);
+		ParticleCount = std::min(ParticleCount, gridWidth * gridHeight);
 
 		// Calculate the offsets to center the grid around the origin
 		float offsetX = -(gridWidth - 1) * ParticleDiameter / 2;
 		float offsetY = -(gridHeight - 1) * ParticleDiameter / 2;
 
 		int32 index = 0;
-		for (int32 i = 0; i < gridWidth && index < ParticlesCount; ++i)
+		for (int32 i = 0; i < gridWidth && index < ParticleCount; ++i)
 		{
-			for (int32 j = 0; j < gridHeight && index < ParticlesCount; ++j)
+			for (int32 j = 0; j < gridHeight && index < ParticleCount; ++j)
 			{
 				float x = i * ParticleDiameter + offsetX;
 				float y = j * ParticleDiameter + offsetY;
 
 				Particles[index].Position = glm::vec2(x, y);
+				Particles[index].PredictedPosition = Particles[index].Position;
 				OriginalPositions[index] = Particles[index].Position;
 				index++;
 			}
 		}
 	}
 
-	CachedParticlesCount = ParticlesCount;
+	CachedParticlesCount = ParticleCount;
 
 	FillBuffers();
 	UpdateShaderUniformParams();
@@ -367,19 +372,6 @@ void FluidSimulation::Tick(float DeltaTime)
 void FluidSimulation::SimulationStep(float DeltaTime)
 {
 	if ( bPaused ) return;
-
-	ExternalForcesCompute->Use();
-		// update time step
-		ExternalForcesCompute->SetFloat1("SimulationTimeStep", 1.0f / (120.0f * StepsPerTick));
-		ExternalForcesCompute->SetFloat1("InteractionForce", InteractionForce);
-		ExternalForcesCompute->SetFloat2("InteractionLocation", InteractionLocation);
-		ExternalForcesCompute->SetFloat1("InteractionRadius", InteractionRadius);
-		
-		glDispatchCompute(NumWorkGroups, 1, 1);
-		
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-	ExternalForcesCompute->StopUsage();
 	
 	GridHashingCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
@@ -388,33 +380,10 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 	GridHashingCompute->StopUsage();
 
 
-	struct SortedParticle
-	{
-		uint32 CellHash;
-		uint32 CellIndex;
-		uint32 pIndex;
-	};
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-		std::vector<SortedParticle> sortedParticles(CachedParticlesCount);
-		void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-		if (ptr)
-		{
-			memcpy(sortedParticles.data(), ptr, CachedParticlesCount * sizeof(SortedParticle));
-
-			std::sort(sortedParticles.begin(), sortedParticles.end(),
-				[](const SortedParticle& a, const SortedParticle& b)
-				{
-					return a.CellIndex < b.CellIndex;
-				});
-			memcpy(ptr, sortedParticles.data(), CachedParticlesCount * sizeof(SortedParticle));
-			glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		}
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	//ExecuteRadixSort();
+	ExecuteRadixSort();
 	
 	FluidStartingIndiciesCompute->Use();
+
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -424,7 +393,12 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		// update time step
 		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
 
-		glm::vec2 RandomVector = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
+		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
+		PressureCompute->SetFloat1("InteractionForce", InteractionForce);
+		PressureCompute->SetFloat2("InteractionLocation", InteractionLocation);
+		PressureCompute->SetFloat1("InteractionRadius", InteractionRadius);
+
+		glm::vec2 RandomVector = glm::vec2(1.0f);//glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
 		PressureCompute->SetFloat2("RandomVector", RandomVector);
 
 		glDispatchCompute(NumWorkGroups, 1, 1);

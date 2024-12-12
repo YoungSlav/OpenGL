@@ -11,6 +11,7 @@ struct Particle
     alignas(8) glm::vec2 PredictedPosition = glm::vec2(0.0f);
     alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
     float Density;
+	float iDensity;
 };
 
 class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
@@ -26,11 +27,11 @@ public:
 
 	// SIMULATION PROPERTIES
 
-	int32 ParticlesCount = 30000;
+	int32 ParticleCount = 5000;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
-	float ParticleRadius = 0.1f; 
+	float ParticleRadius = 0.05f; 
 	float SmoothingRadius = 0.5f;
 
 	float TargetDensity = 0.25f;
@@ -102,7 +103,6 @@ private:
 
 	std::shared_ptr<class BravoShaderAsset> RenderShader;
 
-	std::shared_ptr<class BravoShaderAsset> ExternalForcesCompute;
 	std::shared_ptr<class BravoShaderAsset> GridHashingCompute;
 	
 	struct RadixSortConstants

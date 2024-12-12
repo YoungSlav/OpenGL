@@ -5,7 +5,7 @@
 #version 460
 #extension GL_GOOGLE_include_directive: enable
 
-#define WORKGROUP_SIZE 1024 // assert WORKGROUP_SIZE >= RADIX_SORT_BINS
+#define WORKGROUP_SIZE 256 // assert WORKGROUP_SIZE >= RADIX_SORT_BINS
 #define RADIX_SORT_BINS 256
 
 layout (local_size_x = WORKGROUP_SIZE) in;
@@ -18,7 +18,6 @@ layout(std140) uniform PushConstants {
 };
 
 struct SortedParticle {
-    uint CellHash;
     uint CellIndex;
     uint pIndex;
 };
