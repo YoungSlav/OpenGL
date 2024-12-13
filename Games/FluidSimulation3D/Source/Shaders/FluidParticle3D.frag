@@ -45,7 +45,7 @@ void main()
         Color = mix(Middle, Hot, (speed-midSpeed) / (maxSpeed-midSpeed));
 
     //vec3 Color;
-    //const float MaxDensity = TargetDensity * 3.0f;
+    //const float MaxDensity = TargetDensity * 2.0f;
     //if ( Particles[InstanceID].Density < TargetDensity )
     //    Color = mix(Blue, Green, Particles[InstanceID].Density / TargetDensity);
     //else

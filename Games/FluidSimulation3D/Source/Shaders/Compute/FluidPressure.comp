@@ -216,14 +216,12 @@ vec3 CalcFluidForces(uint i)
             vec3 otherPosition = Particles[otherP].PredictedPosition;
             vec3 offset = myPosition - otherPosition;
             float dst2 = dot(offset,  offset);
-            if ( dst2 > SmoothingRadius*SmoothingRadius ) continue;
-            
-            float dst = sqrt(dst2);
+            if ( dst2 > SmoothingRadius2 ) continue;
             
             // now we have all the data
             
+            float dst = sqrt(dst2);
             vec3 dir = dst > 0.0f ? offset / dst : RandomVector;
-            
             
             float otherDensity = Particles[otherP].Density;
             float otherNearDensity = Particles[otherP].NearDensity;
@@ -241,7 +239,7 @@ vec3 CalcFluidForces(uint i)
             pressureForce += dir * NearPressureKernel(dst) * sharedNearPressure * otherNearDensityInverse;
             
             vec3 otherVelocity = Particles[otherP].Velocity;
-            viscosityForce += (otherVelocity - myVelocity) * ParticleMass * otherDensityInverse * ViscosityKernel(dst);
+            viscosityForce += (otherVelocity - myVelocity) * /*ParticleMass * otherDensityInverse **/ ViscosityKernel(dst);
         }
     }
     return (viscosityForce * ViscosityFactor) + (pressureForce * myDensityInverse);
@@ -249,8 +247,31 @@ vec3 CalcFluidForces(uint i)
 
 void ResolveCollisions(vec3 OldPosition, inout vec3 Position, inout vec3 Velocity)
 {
-
     vec4 localPoint = InverseBoundingBoxModel * vec4(Position, 1.0);
+    //vec4 localVelocity = InverseBoundingBoxModel * vec4(Velocity, 0.0);
+    //
+    //const vec3 halfSize = vec3(0.5);
+	//const vec3 edgeDst = vec3(halfSize - abs(localPoint.xyz));
+    //
+    //if (edgeDst.x <= 0)
+	//{
+	//	localPoint.x = halfSize.x * sign(localPoint.x);
+	//	localVelocity.x *= -1 * CollisionDamping;
+	//}
+	//if (edgeDst.y <= 0)
+	//{
+	//	localPoint.y = halfSize.y * sign(localPoint.y);
+	//	localVelocity.y *= -1 * CollisionDamping;
+	//}
+	//if (edgeDst.z <= 0)
+	//{
+	//	localPoint.z = halfSize.z * sign(localPoint.z);
+	//	localVelocity.z *= -1 * CollisionDamping;
+	//}
+    //
+    //Position = (BoundingBoxModel * localPoint).xyz;
+    //Velocity = (BoundingBoxModel * localVelocity).xyz;
+    //return;
 
     const vec3 bottomLeft = vec3(-0.5f);
     const vec3 topRight = vec3(0.5f);

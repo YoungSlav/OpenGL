@@ -28,30 +28,30 @@ public:
 
 	// SIMULATION PROPERTIES
 
-	const float scale = 2.0f;
+	glm::vec3 SimulationBounds = glm::vec3(15.0f, 15.0f, 5.0f);
+	float ParticleMass = 1.0f;
 	int32 ParticleCount = 100000;
 	
-	float ParticleRadius = 0.05f; 
+	float ParticleRadius = 0.1f; 
 	const float SmoothingRadius = ParticleRadius * 4.0f;
 
-	float TargetDensity = 1000.0f;
-	float PressureFactor = TargetDensity * 1.0f;
-	float NearPressureFactor = PressureFactor * 0.01f;
-	float ViscosityFactor = 0.003f;// * TargetDensity;
+	float TargetDensity = 315.0f;
+	float PressureFactor = 288.0f;
+	float NearPressureFactor = 1.0f;
 
-	float ParticleMass = (4.0f * glm::pi<float>() * glm::pow(SmoothingRadius, 3.0f) / 50.0f) * TargetDensity;
+	float ViscosityFactor = 0.01f;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	float CollisionDamping = 0.1f;
-	float Gravity = 20.0f;
+	float CollisionDamping = 0.05f;
+	float Gravity = 10.0f;
 
-	float MaxVelocity = 20.0;
+	float MaxVelocity = 6.0;
 
-	uint32 StepsPerTick = 4;
+	uint32 StepsPerTick = 2;
 
 	// END SIMULATION PROPERTIES
 		
