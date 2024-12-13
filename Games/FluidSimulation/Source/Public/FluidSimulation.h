@@ -12,6 +12,8 @@ struct Particle
     alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
     float Density;
 	float iDensity;
+	float NearDensity;
+	float iNearDensity;
 };
 
 class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
@@ -27,16 +29,17 @@ public:
 
 	// SIMULATION PROPERTIES
 
-	int32 ParticleCount = 5000;
+	int32 ParticleCount = 16000;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
 	float ParticleRadius = 0.05f; 
-	float SmoothingRadius = 0.5f;
+	float SmoothingRadius = 0.2f;
 
-	float TargetDensity = 0.25f;
-	float Preassure = 12.0f;
-	float ViscosityFactor = 0.2f;
+	float TargetDensity = 234.0f;
+	float Preassure = 225.0f;
+	float NearPreassure = 18.0f;
+	float ViscosityFactor = 0.03f;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
@@ -45,12 +48,14 @@ public:
 
 	float InteractionAcceleration = 50.0f;
 	float InteractionRadius = 2.0f;
-	float CollisionDamping = 0.3f;
+	float CollisionDamping = 0.5f;
 	float Gravity = 9.8f;
 
 	float MaxVelocity = 10.0;
 
-	uint32 StepsPerTick = 1;
+	uint32 StepsPerTick = 4;
+
+	glm::vec2 WorldSize;
 
 	// END SIMULATION PROPERTIES
 
@@ -121,7 +126,7 @@ private:
 	std::shared_ptr<class BravoShaderAsset> PressureCompute;
 
 
-	glm::vec2 WorldSize = glm::vec2(0.0f);
+	
 
 	bool bHasStarted = false;
 	bool bPaused = true;

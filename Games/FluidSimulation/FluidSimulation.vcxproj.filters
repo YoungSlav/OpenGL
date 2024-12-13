@@ -27,9 +27,6 @@
     <ClCompile Include="Source\Private\FluidScreen_Simulation.cpp">
       <Filter>Private</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Private\FluidPostProcess_Density.cpp">
-      <Filter>Private</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Private\FluidGrid.cpp">
       <Filter>Private</Filter>
     </ClCompile>
@@ -45,9 +42,6 @@
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\FluidScreen_Simulation.h">
-      <Filter>Public</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Public\FluidPostProcess_Density.h">
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\FluidMath.h">
@@ -68,12 +62,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\FluidPoint.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\Density.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Source\Shaders\Density.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Source\Shaders\Compute\FluidGridHashing.comp" />

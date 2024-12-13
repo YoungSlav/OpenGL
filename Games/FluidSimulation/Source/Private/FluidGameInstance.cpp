@@ -7,14 +7,13 @@
 #include "BravoHUD.h"
 #include "BravoScreen_Debug.h"
 #include "FluidScreen_Simulation.h"
-#include "FluidPostProcess_Density.h"
 
 bool FluidGameInstance::Initialize_Internal()
 {
 	if ( !BravoObject::Initialize_Internal() )
 		return false;
 
-	
+	//Engine->LimitFPS(120.0f);
 
 	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<FluidGameInstance>(), &FluidGameInstance::OnViewportResize);
 
@@ -38,9 +37,6 @@ bool FluidGameInstance::Initialize_Internal()
 
 		Container->SetSimulation(Simulation);
 	}
-
-	auto PP = NewObject<FluidPostProcess_Density>("SimulationPP", Simulation, Container);
-	Engine->GetViewport()->AddPostProcess(PP);
 
 	if ( Engine->GetViewport()->GetHUD() )
 	{

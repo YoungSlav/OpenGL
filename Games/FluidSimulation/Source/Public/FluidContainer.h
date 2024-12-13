@@ -19,7 +19,6 @@ public:
 	const glm::vec2& GetSize(bool Inside = true) const;
 
 	void SetTransform(const BravoTransform2D& _Transform) { Transform = _Transform; }
-	bool CheckRoundCollision(glm::vec2& Location, float Radius, glm::vec2& OutVelocityModify) const;
 
 
 	void SetOutlineColor(const glm::vec3& _color) { OutlineColor = _color; }

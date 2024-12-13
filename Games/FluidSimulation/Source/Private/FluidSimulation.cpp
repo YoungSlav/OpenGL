@@ -172,6 +172,7 @@ void FluidSimulation::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("TargetDensity", TargetDensity);
 	
 		PressureCompute->SetFloat1("Preassure", Preassure);
+		PressureCompute->SetFloat1("NearPreassure", NearPreassure);
 		PressureCompute->SetFloat1("ViscosityFactor", ViscosityFactor);
 		PressureCompute->SetFloat1("CollisionDamping", CollisionDamping);
 
@@ -180,12 +181,16 @@ void FluidSimulation::UpdateShaderUniformParams()
 		PressureCompute->SetFloat2("InteractionLocation", InteractionLocation);
 		PressureCompute->SetFloat1("InteractionRadius", InteractionRadius);
 
-		const float DensityScale	= 315.0f / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
-		const float PressureScale	= -15.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 3));
-		const float ViscosityScale	= 45.0f  / (glm::pi<float>() * glm::pow(SmoothingRadius, 5));
+		const float DensityScale		= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
+		const float NearDensityScale	= 10.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		const float PressureScale		= 12.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
+		const float NearPressureScale	= 30.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		const float ViscosityScale		= 4.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 8)));
 		
 		PressureCompute->SetFloat1("DensityScale", DensityScale);
+		PressureCompute->SetFloat1("NearDensityScale", NearDensityScale);
 		PressureCompute->SetFloat1("PressureScale", PressureScale);
+		PressureCompute->SetFloat1("NearPressureScale", NearPressureScale);
 		PressureCompute->SetFloat1("ViscosityScale", ViscosityScale);
 	PressureCompute->StopUsage();
 }

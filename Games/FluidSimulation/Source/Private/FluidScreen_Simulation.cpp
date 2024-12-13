@@ -119,7 +119,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		bool UpdateSettings = false;
 
 		Spacing();
-		UpdateSettings |= Slider("Mass", &Simulation->ParticleMass, 50.0f, 200.0f);
+		UpdateSettings |= Slider("Mass", &Simulation->ParticleMass, 1.0f, 10.0f);
 		
 		Spacing();
 		if ( Slider("Size", &Simulation->ParticleRadius, 1.0f, 100.0) )
@@ -132,7 +132,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		}
 
 		Spacing();
-		if ( Slider("Smoothing radius", &Simulation->SmoothingRadius, 1.0f, 100.0f) )
+		if ( Slider("Smoothing radius", &Simulation->SmoothingRadius, 0.0f, 10.0f) )
 		{
 			if ( !Simulation->HasStarted() )
 			{
@@ -143,13 +143,15 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 
 		Spacing();
 		Spacing();
-		UpdateSettings |= Slider("Target density", &Simulation->TargetDensity, 0.0f, 2.0f);
+		UpdateSettings |= Slider("Target density", &Simulation->TargetDensity, 0.0f, 500.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Preassure", &Simulation->Preassure, 0.0f, 5000.0f);
+		UpdateSettings |= Slider("Preassure", &Simulation->Preassure, 0.0f, 500.0f);
+
+		UpdateSettings |= Slider("NearPreassure", &Simulation->NearPreassure, 0.0f, 500.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 100000.0f);
+		UpdateSettings |= Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 10.0f);
 
 
 		Spacing();
@@ -160,10 +162,10 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		UpdateSettings |= Slider("Gravity", &Simulation->Gravity, -100.0f, 100.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Interaction force", &Simulation->InteractionAcceleration, -100000.0f, 100000.0f);
+		UpdateSettings |= Slider("Interaction force", &Simulation->InteractionAcceleration, -100.0f, 100.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Interaction radius", &Simulation->InteractionRadius, 10.0f, 1000.0f);
+		UpdateSettings |= Slider("Interaction radius", &Simulation->InteractionRadius, 10.0f, 100.0f);
 
 		Spacing();
 		UpdateSettings |= Slider("Max Velocity", &Simulation->MaxVelocity, 0.0f, 100.0f);

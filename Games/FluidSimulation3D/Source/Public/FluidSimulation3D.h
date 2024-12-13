@@ -30,12 +30,12 @@ public:
 	int32 ParticleCount = 100000;
 	
 	float ParticleMass = 1.0f;
-	float ParticleRadius = 0.5f; 
+	float ParticleRadius = 1.0f; 
 	float SmoothingRadius = 2.0f;
 
 	float TargetDensity = 1.2f;
-	float PressureFactor = 240.0f;
-	float ViscosityFactor = 5.0f;
+	float PressureFactor = 24.0f;
+	float ViscosityFactor = 0.9f;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);

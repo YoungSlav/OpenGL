@@ -9,6 +9,8 @@ struct Particle
     vec2 Velocity;
     float Density;
     float iDensity;
+    float NearDensity;
+    float iNearDensity;
 };
 struct SortedParticle
 {
@@ -46,12 +48,15 @@ uniform float SimulationTimeStep;
 
 // force params
 uniform float Preassure;
+uniform float NearPreassure;
 uniform float ViscosityFactor;
 uniform float CollisionDamping;
 
 // kernel scales
 uniform float DensityScale;
+uniform float NearDensityScale;
 uniform float PressureScale;
+uniform float NearPressureScale;
 uniform float ViscosityScale;
 
 // external forces
@@ -60,7 +65,7 @@ uniform float InteractionForce;
 uniform vec2 InteractionLocation;
 uniform float InteractionRadius;
 
-const float PredictionTimeStep = 1.0f / 120.0f;
+
 
 
 
@@ -71,10 +76,13 @@ void ResolveCollisions(uint i);
 
 // conversion helpers
 float DensityToPressure(float density);
+float NearDensityToPressure(float density);
 
 // kernels
 float DensityKernel(float dst);
+float NearDensityKernel(float dst);
 float PressureKernel(float dst);
+float NearPressureKernel(float dst);
 float ViscosityKernel(float dst);
 
 // grid helpers
@@ -113,20 +121,28 @@ void main()
 
     vec2 fluidForces = CalcFluidForces(i);
 
-    vec2 newVelocity = Particles[i].Velocity + (fluidForces + externalForces)* SimulationTimeStep;
-    vec2 newPosition = Particles[i].Position + newVelocity * SimulationTimeStep;
+    vec2 newVelocity = Particles[i].Velocity + ((fluidForces + externalForces) * SimulationTimeStep);
+    vec2 newPosition = Particles[i].Position + (newVelocity * SimulationTimeStep);
 
     ResolveCollisions(i, newPosition, newVelocity);
 
-    Particles[i].Velocity = newVelocity;
     Particles[i].Position = newPosition;
+    
 
+    barrier();
+
+    Particles[i].Velocity = newVelocity;
+
+    const float PredictionTimeStep = 1.0f / 120.0f;
     Particles[i].PredictedPosition = newPosition + newVelocity * PredictionTimeStep;
 };
+
+
 
 void CalcDensity(uint i)
 {
     float Density = 0.0f;
+    float NearDensity = 0.0f;
 
     vec2 myPosition = Particles[i].PredictedPosition;
     ivec2 myCell = GetCellCoord(myPosition);
@@ -143,17 +159,21 @@ void CalcDensity(uint i)
 
             // now we got all the indices
             vec2 otherPosition = Particles[otherP].PredictedPosition;
-            vec2 offset = myPosition - otherPosition;
+            vec2 offset = otherPosition - myPosition;
             float dst2 = dot(offset, offset);
             if ( dst2 > SmoothingRadius*SmoothingRadius ) continue;
             
             // now we have all the data
-
-            Density += ParticleMass * DensityKernel(dst2);
+            float dst = sqrt(dst2);
+            Density += ParticleMass * DensityKernel(dst);
+            NearDensity += ParticleMass * NearDensityKernel(dst);
         }
     }
     Particles[i].Density = Density;
     Particles[i].iDensity = 1.0f / Density;
+
+    Particles[i].NearDensity = NearDensity;
+    Particles[i].iNearDensity = 1.0f / NearDensity;
 }
 
 vec2 CalcFluidForces(uint i)
@@ -163,7 +183,11 @@ vec2 CalcFluidForces(uint i)
     
     vec2 myVelocity = Particles[i].Velocity;
     float myDensity = Particles[i].Density;
+    float myDensityInverse = Particles[i].iDensity;
+    float myNearDensityInverse = Particles[i].iNearDensity;
+    float myNearDensity = Particles[i].NearDensity;
     float myPressure = DensityToPressure(myDensity);
+    float myNearPressure = NearDensityToPressure(myNearDensity);
 
     vec2 myPosition = Particles[i].PredictedPosition;
     ivec2 myCell = GetCellCoord(myPosition);
@@ -194,18 +218,25 @@ vec2 CalcFluidForces(uint i)
             
             
             float otherDensity = Particles[otherP].Density;
-            vec2 otherVelocity = Particles[otherP].Velocity;
+            float otherNearDensity = Particles[otherP].NearDensity;
             
             float otherPressure = DensityToPressure(otherDensity);
+            float otherNearPressure = NearDensityToPressure(otherDensity);
 
-            float densityFactor = Particles[otherP].iDensity;
+            float otherDensityInverse = Particles[otherP].iDensity;
+            float otherNearDensityInverse = Particles[otherP].iNearDensity;
+
+            float sharedPressure = (myPressure + otherPressure) * 0.5f;
+            float sharedNearPressure = (myNearPressure + otherNearPressure) * 0.5f;
             
-            pressureForce += ((myPressure + otherPressure) * 0.5f * densityFactor) * dir * PressureKernel(dst);
+            pressureForce += dir * PressureKernel(dst) * sharedPressure * otherDensityInverse;
+            pressureForce += dir * NearPressureKernel(dst) * sharedNearPressure * otherNearDensityInverse;
             
-            viscosityForce += ((otherVelocity - myVelocity) * densityFactor) * ViscosityKernel(dst);
+            vec2 otherVelocity = Particles[otherP].Velocity;
+            viscosityForce += (otherVelocity - myVelocity) * ViscosityKernel(dst);
         }
     }
-    return (viscosityForce * ViscosityFactor) - pressureForce;
+    return (viscosityForce * ViscosityFactor) + (pressureForce * myDensityInverse);
 }
 
 vec2 CalcExternalForces(uint i)
@@ -290,25 +321,39 @@ void ResolveCollisions(uint i)
 
 //// HELPERS
 
-float DensityKernel(float dst2)
+float DensityKernel(float dst)
 {
-    float v = SmoothingRadius*SmoothingRadius - dst2;
-	return v * v * v * DensityScale;
+    float v = SmoothingRadius - dst;
+	return v * v * DensityScale;
+}
+float NearDensityKernel(float dst)
+{
+    float v = SmoothingRadius - dst;
+	return v * v * v * NearDensityScale;
 }
 
 float PressureKernel(float dst)
 {
-    float v = SmoothingRadius*SmoothingRadius - dst*dst;
-	return v * v * v * PressureScale;
+    float v = SmoothingRadius - dst;
+	return v * PressureScale;
+}
+float NearPressureKernel(float dst)
+{
+    float v = SmoothingRadius - dst;
+	return v * v * NearPressureScale;
 }
 float ViscosityKernel(float dst)
 {
-    float v = SmoothingRadius - dst;
-	return v * ViscosityScale;
+    float v = SmoothingRadius * SmoothingRadius - dst * dst;
+	return v * v * v * ViscosityScale;
 }
 float DensityToPressure(float density)
 {
-    return max((density - TargetDensity), 0.0f) * Preassure;
+    return (density - TargetDensity) * Preassure;
+}
+float NearDensityToPressure(float density)
+{
+    return density * NearPreassure;
 }
 
 // GRID

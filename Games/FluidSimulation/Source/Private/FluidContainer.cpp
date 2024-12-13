@@ -4,7 +4,8 @@
 #include "BravoShaderAsset.h"
 #include "BravoCamera.h"
 #include "FluidSimulation.h"
-
+#include "BravoInput.h"
+#include "BravoViewport.h"
 
 bool FluidContainer::Initialize_Internal()
 {
@@ -38,25 +39,6 @@ bool FluidContainer::Initialize_Internal()
 	return true;
 }
 
-bool FluidContainer::CheckRoundCollision(glm::vec2& Location, float Radius, glm::vec2& OutVelocityModify) const
-{
-	bool bResult = false;
-	glm::vec2 Bounds = GetSize() - glm::vec2(Radius);
-	if ( glm::abs(Location.x) > Bounds.x )
-	{
-		Location.x = Bounds.x * glm::sign(Location.x);
-		OutVelocityModify.x = -1;
-		bResult = true;
-	}
-	if ( glm::abs(Location.y) > Bounds.y )
-	{
-		Location.y = Bounds.y * glm::sign(Location.y);
-		OutVelocityModify.y = -1;
-		bResult = true;
-	}
-	return bResult;
-}
-
 const glm::vec2& FluidContainer::GetSize(bool Inside) const
 {
 	if ( !Inside )
@@ -86,12 +68,27 @@ void FluidContainer::Render()
 		Shader->SetFloat3("outlineColor", OutlineColor);
 		Shader->SetFloat1("borderWidth", BorderWidth);
 
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, Simulation->GetParticlesSSBO());
+		glm::vec2 mousePos = Engine->GetInput()->GetMousePosition();
+		const glm::ivec2 vSize = Engine->GetViewport()->GetViewportSize();
+		const glm::vec2 rPos = (glm::vec2(mousePos.x / vSize.x, mousePos.y / vSize.y ) * 2.0f) - glm::vec2(1.0f);
+
+		const glm::vec2 halfWorldSize = GetSize();
+
+		glm::vec2 mWorldPos = rPos * halfWorldSize;
+		mWorldPos.y = mWorldPos.y * -1.0f;
+
+		Shader->SetFloat2("mousePos", mWorldPos);
+
+		//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, Simulation->GetParticlesSSBO());
 
 		Shader->SetInt("particleCount", Simulation->ParticleCount);
 		Shader->SetFloat1("targetDensity", Simulation->TargetDensity);
 		Shader->SetFloat1("particleMass", Simulation->ParticleMass);
 		Shader->SetFloat1("smoothingRadius", Simulation->SmoothingRadius);
+
+		Shader->SetFloat2("WorldSize", Simulation->WorldSize);
+		const float DensityScale	= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(Simulation->SmoothingRadius, 4)));
+		Shader->SetFloat1("DensityScale", DensityScale);
 	
 		glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);

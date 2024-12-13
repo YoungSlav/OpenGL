@@ -45,11 +45,11 @@ void main()
         Color = mix(Middle, Hot, (speed-midSpeed) / (maxSpeed-midSpeed));
 
     //vec3 Color;
-    //const float MaxDensity = TargetDensity * 2.0f;
+    //const float MaxDensity = TargetDensity * 3.0f;
     //if ( Particles[InstanceID].Density < TargetDensity )
-    //    Color = mix(Green, Blue, Particles[InstanceID].Density / TargetDensity);
+    //    Color = mix(Blue, Green, Particles[InstanceID].Density / TargetDensity);
     //else
-    //    Color = mix(Blue, Red, (Particles[InstanceID].Density-TargetDensity) / (MaxDensity-TargetDensity));
+    //    Color = mix(Green, Red, (Particles[InstanceID].Density-TargetDensity) / (MaxDensity-TargetDensity));
 
     
     FragColor = vec4(Color, 1.0);
