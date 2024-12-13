@@ -22,6 +22,7 @@
     <ClCompile Include="Source\Private\FluidContainer.cpp" />
     <ClCompile Include="Source\Private\FluidGameInstance.cpp" />
     <ClCompile Include="Source\Private\FluidGrid.cpp" />
+    <ClCompile Include="Source\Private\FluidPostProcess.cpp" />
     <ClCompile Include="Source\Private\FluidScreen_Simulation.cpp" />
     <ClCompile Include="Source\Private\FluidSimulation.cpp" />
     <ClCompile Include="Source\Private\Main.cpp" />
@@ -31,6 +32,7 @@
     <ClInclude Include="Source\Public\FluidGameInstance.h" />
     <ClInclude Include="Source\Public\FluidGrid.h" />
     <ClInclude Include="Source\Public\FluidMath.h" />
+    <ClInclude Include="Source\Public\FluidPostProcess.h" />
     <ClInclude Include="Source\Public\FluidScreen_Simulation.h" />
     <ClInclude Include="Source\Public\FluidSimulation.h" />
   </ItemGroup>
@@ -45,6 +47,8 @@
     <None Include="Source\Shaders\Container.vert" />
     <None Include="Source\Shaders\FluidPoint.frag" />
     <None Include="Source\Shaders\FluidPoint.vert" />
+    <None Include="Source\Shaders\FluidPostProcess.frag" />
+    <None Include="Source\Shaders\FluidPostProcess.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

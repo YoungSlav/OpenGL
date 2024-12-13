@@ -12,6 +12,8 @@ struct Particle
     alignas(16) glm::vec3 Velocity = glm::vec3(0.0f);
     alignas(4) float Density;
 	alignas(4) float iDensity;
+	alignas(4) float NearDensity;
+	alignas(4) float iNearDensity;
 };
 
 class FluidSimulation3D : public BravoActor, public IBravoTickable, public IBravoRenderable
@@ -29,13 +31,15 @@ public:
 	const float scale = 2.0f;
 	int32 ParticleCount = 100000;
 	
-	float ParticleMass = 1.0f;
-	float ParticleRadius = 1.0f; 
-	float SmoothingRadius = 2.0f;
+	float ParticleRadius = 0.05f; 
+	const float SmoothingRadius = ParticleRadius * 4.0f;
 
-	float TargetDensity = 1.2f;
-	float PressureFactor = 24.0f;
-	float ViscosityFactor = 0.9f;
+	float TargetDensity = 1000.0f;
+	float PressureFactor = TargetDensity * 1.0f;
+	float NearPressureFactor = PressureFactor * 0.01f;
+	float ViscosityFactor = 0.003f;// * TargetDensity;
+
+	float ParticleMass = (4.0f * glm::pi<float>() * glm::pow(SmoothingRadius, 3.0f) / 50.0f) * TargetDensity;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
@@ -65,7 +69,6 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	void SimulationStep(float DeltaTime);
 	
-	void PrepareGrid(float DeltaTime);
 	void ExecuteRadixSort();
 	void UpdateRadixIteration(int32 i);
 

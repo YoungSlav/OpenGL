@@ -19,6 +19,7 @@ public:
 	const glm::vec2& GetSize(bool Inside = true) const;
 
 	void SetTransform(const BravoTransform2D& _Transform) { Transform = _Transform; }
+	const BravoTransform2D& GetTransform() const { return Transform; }
 
 
 	void SetOutlineColor(const glm::vec3& _color) { OutlineColor = _color; }

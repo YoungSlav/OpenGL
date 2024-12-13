@@ -69,7 +69,7 @@ bool FluidSimulation3D::Initialize_Internal()
 	auto AssetManager = Engine->GetAssetManager();
 
 	BoundingBox = NewObject<BravoBoundingBox>("SimulationBoundingBox");
-	BoundingBox->SetScale(glm::vec3(100.0f, 50.0f, 25.0f));
+	BoundingBox->SetScale(glm::vec3(20.0f, 10.0f, 10.0f));
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
 	
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("FluidParticle3D"));
@@ -205,12 +205,16 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("ViscosityFactor", ViscosityFactor);
 		PressureCompute->SetFloat1("CollisionDamping", CollisionDamping);
 
-		const float DensityScale	= 315.0f / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
-		const float PressureScale	= -45.0f / (glm::pi<float>() * glm::pow(SmoothingRadius, 6));
-		const float ViscosityScale	= 45.0f  / (glm::pi<float>() * glm::pow(SmoothingRadius, 5));
+		const float DensityScale		= 15.0f   / (2.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		const float NearDensityScale	= 15.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 6)));
+		const float PressureScale		= 15.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		const float NearPressureScale	= 45.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 6)));
+		const float ViscosityScale		= 315.0f  / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
 		
 		PressureCompute->SetFloat1("DensityScale", DensityScale);
+		PressureCompute->SetFloat1("NearDensityScale", NearDensityScale);
 		PressureCompute->SetFloat1("PressureScale", PressureScale);
+		PressureCompute->SetFloat1("NearPressureScale", NearPressureScale);
 		PressureCompute->SetFloat1("ViscosityScale", ViscosityScale);
 	PressureCompute->StopUsage();
 
@@ -300,7 +304,7 @@ void FluidSimulation3D::Reset()
 
 	ParticleGenerationCompute->StopUsage();
 
-	PrepareGrid(0.0f);
+	SimulationStep(0.0f);
 
 	bReadyToRender = true;
 }
@@ -342,25 +346,6 @@ void FluidSimulation3D::Tick(float DeltaTime)
 
 void FluidSimulation3D::SimulationStep(float DeltaTime)
 {
-	if ( bPaused ) return;
-
-	PrepareGrid(DeltaTime);
-
-	PressureCompute->Use();
-		// update time step
-		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
-
-		glm::vec2 RandomVector = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
-		PressureCompute->SetFloat2("RandomVector", RandomVector);
-
-		glDispatchCompute(NumWorkGroups, 1, 1);
-		
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-	PressureCompute->StopUsage();
-}
-
-void FluidSimulation3D::PrepareGrid(float DeltaTime)
-{	
 	GridHashingCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		
@@ -375,6 +360,18 @@ void FluidSimulation3D::PrepareGrid(float DeltaTime)
 		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	FluidStartingIndiciesCompute->StopUsage();
+
+	PressureCompute->Use();
+		// update time step
+		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
+
+		glm::vec2 RandomVector = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
+		PressureCompute->SetFloat2("RandomVector", RandomVector);
+
+		glDispatchCompute(NumWorkGroups, 1, 1);
+		
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	PressureCompute->StopUsage();
 }
 
 void FluidSimulation3D::ExecuteRadixSort()

@@ -72,6 +72,7 @@ public:
 private:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
+
 	void SimulationStep(float DeltaTime);
 	
 	void ExecuteRadixSort();

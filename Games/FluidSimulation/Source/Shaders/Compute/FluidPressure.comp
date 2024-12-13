@@ -72,7 +72,6 @@ uniform float InteractionRadius;
 // forces
 void CalcDensity(uint i);
 vec2 CalcFluidForces(uint i);
-void ResolveCollisions(uint i);
 
 // conversion helpers
 float DensityToPressure(float density);
@@ -92,7 +91,7 @@ uint CellIndexFromHash(uint Hash);
 
 // extrenal forces
 vec2 CalcExternalForces(uint i);
-void ResolveCollisions(uint i, inout vec2 Position, inout vec2 Velocity);
+void ResolveCollisions(vec2 OldPosition, inout vec2 Position, inout vec2 Velocity);
 
 
 const uint GridLookupCount = 9;
@@ -124,7 +123,7 @@ void main()
     vec2 newVelocity = Particles[i].Velocity + ((fluidForces + externalForces) * SimulationTimeStep);
     vec2 newPosition = Particles[i].Position + (newVelocity * SimulationTimeStep);
 
-    ResolveCollisions(i, newPosition, newVelocity);
+    ResolveCollisions(Particles[i].Position, newPosition, newVelocity);
 
     Particles[i].Position = newPosition;
     
@@ -233,7 +232,7 @@ vec2 CalcFluidForces(uint i)
             pressureForce += dir * NearPressureKernel(dst) * sharedNearPressure * otherNearDensityInverse;
             
             vec2 otherVelocity = Particles[otherP].Velocity;
-            viscosityForce += (otherVelocity - myVelocity) * ViscosityKernel(dst);
+            viscosityForce += (otherVelocity - myVelocity) * ParticleMass * otherDensityInverse * ViscosityKernel(dst);
         }
     }
     return (viscosityForce * ViscosityFactor) + (pressureForce * myDensityInverse);
@@ -263,59 +262,43 @@ vec2 CalcExternalForces(uint i)
     return externalForces;
 }
 
-void ResolveCollisions(uint i, inout vec2 Position, inout vec2 Velocity)
+void ResolveCollisions(vec2 OldPosition, inout vec2 Position, inout vec2 Velocity)
 {
     vec2 Bounds = ContainerSize - vec2(ParticleRadius);
-    vec2 myPosition = Position;
+    vec2 collisionPoint = Position;
     vec2 collisionNormal = vec2(0.0); // Normal vector for collision
 
     // Check for collisions and compute the collision normal
-    if (abs(myPosition.x) > Bounds.x)
+    if (abs(collisionPoint.x) > Bounds.x)
     {
-        myPosition.x = Bounds.x * sign(myPosition.x);
-        collisionNormal.x = -sign(myPosition.x); // Normal is perpendicular to the X wall
+        collisionPoint.x = Bounds.x * sign(collisionPoint.x);
+        collisionNormal.x = -sign(collisionPoint.x); // Normal is perpendicular to the X wall
     }
-    if (abs(myPosition.y) > Bounds.y)
+    if (abs(collisionPoint.y) > Bounds.y)
     {
-        myPosition.y = Bounds.y * sign(myPosition.y);
-        collisionNormal.y = -sign(myPosition.y); // Normal is perpendicular to the Y wall
+        collisionPoint.y = Bounds.y * sign(collisionPoint.y);
+        collisionNormal.y = -sign(collisionPoint.y); // Normal is perpendicular to the Y wall
     }
 
     // If a collision happened
     if (collisionNormal != vec2(0.0))
     {
-        Position = myPosition;
-
         // Reflect velocity using the collision normal
         Velocity = Velocity - 2.0 * dot(Velocity, collisionNormal) * collisionNormal;
-
         // Apply damping to the velocity
         Velocity *= CollisionDamping;
-    }
-}
 
-void ResolveCollisions(uint i)
-{
-    vec2 Bounds = ContainerSize - vec2(ParticleRadius);
-    bool bResult = false;
-    vec2 myPosition = Particles[i].Position;
-    vec2 VelocityModifyDir = vec2(0.0f);
-	if ( abs(myPosition.x) > Bounds.x )
-	{
-		myPosition.x = Bounds.x * sign(myPosition.x);
-		VelocityModifyDir.x = -1;
-		bResult = true;
-	}
-	if ( abs(myPosition.y) > Bounds.y )
-	{
-		myPosition.y = Bounds.y * sign(myPosition.y);
-		VelocityModifyDir.y = -1;
-		bResult = true;
-	}
-    if ( bResult )
-    {
-        Particles[i].Position = myPosition;
-        Particles[i].Velocity *= (VelocityModifyDir * CollisionDamping);
+        const vec2 originalOffset = (Position - OldPosition);
+        const float originalMotion2 = dot(originalOffset, originalOffset);
+
+
+        const vec2 actualOffset = (collisionPoint - OldPosition);
+        const float actualMotion2 = dot(actualOffset, actualOffset);
+
+        const float coveredDt2 = actualMotion2 / originalMotion2;
+        const float leftDt = 1.0f - sqrt(coveredDt2);
+
+        Position = collisionPoint + Velocity * SimulationTimeStep * leftDt2;
     }
 }
 

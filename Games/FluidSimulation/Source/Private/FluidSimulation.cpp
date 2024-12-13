@@ -302,6 +302,7 @@ void FluidSimulation::SpawnParticles()
 
 	FillBuffers();
 	UpdateShaderUniformParams();
+	SimulationStep(0.0f);
 }
 
 void FluidSimulation::Reset()
@@ -376,8 +377,6 @@ void FluidSimulation::Tick(float DeltaTime)
 
 void FluidSimulation::SimulationStep(float DeltaTime)
 {
-	if ( bPaused ) return;
-	
 	GridHashingCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
 		

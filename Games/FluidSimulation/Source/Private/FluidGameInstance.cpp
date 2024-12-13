@@ -7,6 +7,7 @@
 #include "BravoHUD.h"
 #include "BravoScreen_Debug.h"
 #include "FluidScreen_Simulation.h"
+#include "FluidPostProcess.h"
 
 bool FluidGameInstance::Initialize_Internal()
 {
@@ -37,6 +38,9 @@ bool FluidGameInstance::Initialize_Internal()
 
 		Container->SetSimulation(Simulation);
 	}
+
+	auto PP = NewObject<FluidPostProcess>("SimulationPP", Simulation, Container);
+	Engine->GetViewport()->AddPostProcess(PP);
 
 	if ( Engine->GetViewport()->GetHUD() )
 	{

@@ -30,6 +30,9 @@
     <ClCompile Include="Source\Private\FluidGrid.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\FluidPostProcess.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidGameInstance.h">
@@ -48,6 +51,9 @@
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\FluidGrid.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\FluidPostProcess.h">
       <Filter>Public</Filter>
     </ClInclude>
   </ItemGroup>
@@ -70,5 +76,7 @@
     <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort.comp" />
     <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort_histograms.comp" />
     <None Include="Source\Shaders\Compute\ThirdParty\single_radixsort.comp" />
+    <None Include="Source\Shaders\FluidPostProcess.frag" />
+    <None Include="Source\Shaders\FluidPostProcess.vert" />
   </ItemGroup>
 </Project>
