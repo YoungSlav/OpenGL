@@ -51,7 +51,7 @@ public:
 
 	float MaxVelocity = 6.0;
 
-	uint32 StepsPerTick = 2;
+	uint32 StepsPerTick = 1;
 
 	// END SIMULATION PROPERTIES
 		

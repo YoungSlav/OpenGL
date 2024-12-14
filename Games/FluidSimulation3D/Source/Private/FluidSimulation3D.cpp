@@ -235,8 +235,8 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 
 		RayMarchingCompute->SetFloat1("TargetDensity", TargetDensity);
 		
-		RayMarchingCompute->SetFloat1("MarchingRayStep", 0.25f);
-		RayMarchingCompute->SetFloat1("DensityMultiplier", 1.0f);
+		RayMarchingCompute->SetFloat1("MarchingRayStep", SmoothingRadius*0.5f);
+		RayMarchingCompute->SetFloat1("DensityMultiplier", 0.0004f);
 
 		RayMarchingCompute->SetFloat3("ScatteringCoefficients", glm::vec3(0.01f, 0.01f, 10.0f));
 		
@@ -246,6 +246,7 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 
 void FluidSimulation3D::Render()
 {
+	return;
 	if ( ParticleCount <= 0 && bReadyToRender)
 		return;
 

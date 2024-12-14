@@ -43,7 +43,6 @@ bool FluidPostProcess::EnsureReady()
 
 void FluidPostProcess::Render_Internal()
 {
-	return;
 	glm::ivec2 OutputImageSize = RenderTarget->GetSize();
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();

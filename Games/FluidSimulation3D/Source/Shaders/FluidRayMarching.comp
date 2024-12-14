@@ -16,6 +16,8 @@ struct Particle
     vec3 Velocity;
     float Density;
     float iDensity;
+    float NearDensity;
+    float iNearDensity;
 };
 struct SortedParticle
 {
@@ -109,7 +111,7 @@ struct Ray
 
 
 bool IntersectRayBox(Ray ray, out vec3 hitLocation, out float distInsideCube2);
-vec3 RayMarch(vec3 dir, vec3 origin, float marchingDist2);
+float RayMarch(vec3 dir, vec3 origin, float marchingDist2);
 
 
 void main()
@@ -147,35 +149,35 @@ void main()
     float marchingDistance2;
     if ( IntersectRayBox(ray, hitLocation, marchingDistance2) )
     {
-        vec3 totalLight = RayMarch(ray.dir, hitLocation, marchingDistance2);
-        bool alpha = totalLight.x > 0.0f && totalLight.y > 0.0f && totalLight.z > 0.0f;
-        Color = vec4(totalLight, alpha ? 1.0f : 0.0f);
+        float totalLight = RayMarch(ray.dir, hitLocation, marchingDistance2);
+        
+        Color = vec4(vec3(totalLight), 1.0f);
     }
 
     imageStore(outputTexture, pixelCoord, Color);
 };
 
-vec3 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
+float RayMarch(vec3 dir, vec3 origin, float marchingDist2)
 {
     float totalDensity = 0.0f;
-    vec3 totalLight = vec3(0.0f);
 
-    float coveredDst = 0.0f;
-    do
+    
+    for (float coveredDst = 0.0f; coveredDst*coveredDst < marchingDist2; coveredDst += MarchingRayStep)
     {
         vec3 samplePoint = origin + dir * coveredDst;
         float density = CalcDensity(samplePoint) * MarchingRayStep * DensityMultiplier;
 
         totalDensity += density;
+        
 
-        vec3 inScatteredLight = vec3(1.0f) * totalDensity * ScatteringCoefficients;
-        vec3 lightDecay = exp(-totalDensity * ScatteringCoefficients);
-        totalLight += inScatteredLight * lightDecay;
+        //vec3 inScatteredLight = vec3(1.0f) * totalDensity * ScatteringCoefficients;
+        //vec3 lightDecay = exp(-totalDensity * ScatteringCoefficients);
+        //totalLight += inScatteredLight * lightDecay;
 
-        coveredDst += MarchingRayStep;
-    } while( coveredDst*coveredDst < marchingDist2 );
+        
+    }
     
-    return totalLight;
+    return totalDensity;
 }
 
 float CalcDensity(vec3 location)
@@ -200,6 +202,7 @@ float CalcDensity(vec3 location)
             if ( dst2 > SmoothingRadius2 ) continue;
             
             // now we have all the data
+            float dst = sqrt(dst2);
 
             Density += ParticleMass * DensityKernel(dst2);
         }
@@ -254,10 +257,10 @@ bool IntersectRayBox(Ray worldRay, out vec3 hitLocation, out float distInsideCub
 }
 
 // kernels
-float DensityKernel(float dst2)
+float DensityKernel(float dst)
 {
-    float v = SmoothingRadius2 - dst2;
-	return v * v * v * DensityScale;
+    float v = SmoothingRadius - dst;
+	return v * v * DensityScale;
 }
 
 // GRID
