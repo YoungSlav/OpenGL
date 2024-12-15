@@ -139,14 +139,14 @@ void RTPostProcess::Render_Internal()
 	//const glm::mat4 ViewProj = proj * view;
 	
 
-	int32 OutputTextureUnit = BravoTextureUnitManager::BindTexture();
-	glActiveTexture(GL_TEXTURE0 + OutputTextureUnit);
-	glBindTexture(GL_TEXTURE_2D, RenderTarget->GetColorTexture());
+	//int32 OutputTextureUnit = BravoTextureUnitManager::BindTexture();
+	//glActiveTexture(GL_TEXTURE0 + OutputTextureUnit);
+	//glBindTexture(GL_TEXTURE_2D, RenderTarget->GetColorTexture());
 
 	RayTracingCompute->Use();
-		glBindImageTexture(OutputTextureUnit, RenderTarget->GetColorTexture(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		glBindImageTexture(0, RenderTarget->GetColorTexture(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
-		RayTracingCompute->SetInt("outputTexture", OutputTextureUnit);
+		//RayTracingCompute->SetInt("outputTexture", OutputTextureUnit);
 
 		RayTracingCompute->SetFloat3("eyeLocation", camera->GetLocation_World());
 

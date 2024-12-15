@@ -3,56 +3,21 @@
 layout (local_size_x = 16, local_size_y = 16) in;
 
 layout(rgba32f, binding = 0) uniform image2D outputTexture;
+layout(r32f, binding = 1) uniform image3D densitiesMap;
 
 const float FLT_MAX = 3.402823466e+38;
 const float PI = 3.14159265359;
 
 
-
-struct Particle
-{
-    vec3 Position;
-    vec3 PredictedPosition;
-    vec3 Velocity;
-    float Density;
-    float iDensity;
-    float NearDensity;
-    float iNearDensity;
-};
-struct SortedParticle
-{
-    uint CellIndex;
-    uint pIndex;
-};
-
-// BUFFERS
-layout(std430, binding = 0) buffer ParticlesBuffer
-{
-	Particle Particles[];
-};
-layout(std430, binding = 1) buffer SortedParticlesBuffer
-{
-	SortedParticle SortedParticles[];
-};
-layout(std430, binding = 2) buffer StartIndicesBuffer
-{
-	uint StartIndices[];
-};
-
 uniform vec3 eyeLocation;
 uniform mat4 invProjMat;
 uniform mat4 invViewMat;
 
-uniform vec3 WorldSize;
+uniform float DensitiesResolutionInverse;
+uniform vec3 BoundsSize;
+uniform vec3 BoundsOrigin;
 uniform mat4 BoundingBox;
 uniform mat4 inverseBoundingBox;
-
-uniform uint ParticleCount;
-uniform float DensityScale;
-uniform float ParticleMass;
-uniform float SmoothingRadius;
-uniform float SmoothingRadius2;
-uniform float TargetDensity;
 
 uniform float MarchingRayStep;
 uniform float DensityMultiplier;
@@ -151,7 +116,7 @@ void main()
     {
         float totalLight = RayMarch(ray.dir, hitLocation, marchingDistance2);
         
-        Color = vec4(vec3(totalLight), 1.0f);
+        Color = vec4(vec3(totalLight), totalLight > 0.0 ? 0.8f : 0.0f);
     }
 
     imageStore(outputTexture, pixelCoord, Color);
@@ -168,13 +133,7 @@ float RayMarch(vec3 dir, vec3 origin, float marchingDist2)
         float density = CalcDensity(samplePoint) * MarchingRayStep * DensityMultiplier;
 
         totalDensity += density;
-        
-
-        //vec3 inScatteredLight = vec3(1.0f) * totalDensity * ScatteringCoefficients;
-        //vec3 lightDecay = exp(-totalDensity * ScatteringCoefficients);
-        //totalLight += inScatteredLight * lightDecay;
-
-        
+                
     }
     
     return totalDensity;
@@ -182,31 +141,13 @@ float RayMarch(vec3 dir, vec3 origin, float marchingDist2)
 
 float CalcDensity(vec3 location)
 {
-    float Density = 0.0f;
-    ivec3 myCell = GetCellCoord(location);
-    for ( uint gr = 0; gr < GridLookupCount; ++gr )
-    {
-        ivec3 lookupCell = myCell + GridOffsets[gr];
-        uint CellHash = GetCellHash(lookupCell);
-        uint CellIndex = CellIndexFromHash(CellHash);
-        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < ParticleCount; ++lookupIndex )
-        {
-            if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
-                break;
-            uint otherP = SortedParticles[lookupIndex].pIndex;
+    vec3 localPoint = (inverseBoundingBox * vec4(location, 1.0)).xyz;
+    localPoint = localPoint + vec3(0.5f);
+    ivec3 mapSize = imageSize(densitiesMap);
+    vec3 sampleCoord = localPoint * vec3(mapSize);
 
-            // now we got all the indices
-            vec3 otherPosition = Particles[otherP].Position;
-            vec3 offset = location - otherPosition;
-            float dst2 = dot(offset, offset);
-            if ( dst2 > SmoothingRadius2 ) continue;
-            
-            // now we have all the data
-            float dst = sqrt(dst2);
-
-            Density += ParticleMass * DensityKernel(dst2);
-        }
-    }
+    float Density = imageLoad(densitiesMap, ivec3(sampleCoord.xyz)).r;
+       
     return Density;
 }
 
@@ -217,8 +158,8 @@ bool IntersectRayBox(Ray worldRay, out vec3 hitLocation, out float distInsideCub
     ray.dir = normalize((inverseBoundingBox * vec4(worldRay.dir, 0.0)).xyz);
 
     // Box bounds
-    vec3 minBound = vec3(-0.5);
-    vec3 maxBound = vec3(0.5);
+    vec3 minBound = vec3(-0.5f);
+    vec3 maxBound = vec3(0.5f);
 
     // Calculate the t-values for intersection with each slab
     vec3 tMin = (minBound - ray.origin) / ray.dir;
@@ -254,35 +195,4 @@ bool IntersectRayBox(Ray worldRay, out vec3 hitLocation, out float distInsideCub
     distInsideCube2 = dot(offset, offset);
 
     return true;
-}
-
-// kernels
-float DensityKernel(float dst)
-{
-    float v = SmoothingRadius - dst;
-	return v * v * DensityScale;
-}
-
-// GRID
-
-ivec3 GetCellCoord(vec3 Position)
-{
-	vec3 normilizedPos = Position + WorldSize;
-    
-    float scaleF = 1.0f / SmoothingRadius*2.0f;
-    return ivec3(floor(normilizedPos * scaleF));
-}
-
-uint GetCellHash(ivec3 Coords)
-{	
-	const uint PRIME1 = 0x9e3779b1;
-    const uint PRIME2 = 0x85ebca6b;
-    const uint PRIME3 = 0xc2b2ae35;
-
-	return Coords.y * PRIME1 + Coords.x * PRIME2 + Coords.z * PRIME3;
-}
-
-uint CellIndexFromHash(uint Hash)
-{
-    return Hash % ParticleCount;
 }

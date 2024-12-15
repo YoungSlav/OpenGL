@@ -29,8 +29,9 @@ public:
 	// SIMULATION PROPERTIES
 
 	glm::vec3 SimulationBounds = glm::vec3(15.0f, 15.0f, 5.0f);
+
 	float ParticleMass = 1.0f;
-	int32 ParticleCount = 100000;
+	int32 ParticleCount = 50000;
 	
 	float ParticleRadius = 0.1f; 
 	const float SmoothingRadius = ParticleRadius * 4.0f;
@@ -38,20 +39,28 @@ public:
 	float TargetDensity = 315.0f;
 	float PressureFactor = 288.0f;
 	float NearPressureFactor = 1.0f;
-
 	float ViscosityFactor = 0.01f;
 
+	float CollisionDamping = 0.05f;
+	float Gravity = 10.0f;
+
+	uint32 StepsPerTick = 4;
+
+	float MaxVelocity = 6.0;
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
 
-	float CollisionDamping = 0.05f;
-	float Gravity = 10.0f;
+	
+	float DensityScale;
+	float NearDensityScale;
+	float PressureScale;
+	float NearPressureScale;
+	float ViscosityScale;
+	
 
-	float MaxVelocity = 6.0;
-
-	uint32 StepsPerTick = 1;
+	
 
 	// END SIMULATION PROPERTIES
 		
@@ -92,6 +101,11 @@ private:
 
 	GLuint StartIndicesSSBO = 0;
 	GLuint NumWorkGroups;
+
+	float SimulationStartTime = 0.0f;
+	bool bStarted = false;
+
+	
 
 	std::shared_ptr<class BravoShaderAsset> RenderShader;
 

@@ -99,7 +99,7 @@ bool FluidSimulation3D::Initialize_Internal()
 		Engine->GetInput()->SubscribeKey(subscription);
 	}
 
-	RaymarchingPP = NewObject<FluidPostProcess>("FluidPostProcess");
+	RaymarchingPP = NewObject<FluidPostProcess>("FluidPostProcess", Self<FluidSimulation3D>(), BoundingBox);
 	Engine->GetViewport()->AddPostProcess(RaymarchingPP);
 
 	Reset();
@@ -159,10 +159,7 @@ void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransfor
 
 	auto RayMarchingCompute = RaymarchingPP->GetComputeShader();
 	RayMarchingCompute->Use();
-		RayMarchingCompute->SetFloat3("WorldSize", BoundingBox->GetScale_World());
-
-		RayMarchingCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform().GetTransformMatrix());
-		RayMarchingCompute->SetMatrix4d("inverseBoundingBox", glm::inverse(BoundingBox->GetTransform().GetTransformMatrix()));
+		
 	RayMarchingCompute->StopUsage();
 }
 
@@ -205,11 +202,11 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("ViscosityFactor", ViscosityFactor);
 		PressureCompute->SetFloat1("CollisionDamping", CollisionDamping);
 
-		const float DensityScale		= 15.0f   / (2.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
-		const float NearDensityScale	= 15.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 6)));
-		const float PressureScale		= 15.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
-		const float NearPressureScale	= 45.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 6)));
-		const float ViscosityScale		= 315.0f  / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
+		DensityScale		= 15.0f   / (2.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		NearDensityScale	= 15.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 6)));
+		PressureScale		= 15.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		NearPressureScale	= 45.0f   / (1.0f  * (glm::pi<float>() * glm::pow(SmoothingRadius, 6)));
+		ViscosityScale		= 315.0f  / (64.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 9)));
 		
 		PressureCompute->SetFloat1("DensityScale", DensityScale);
 		PressureCompute->SetFloat1("NearDensityScale", NearDensityScale);
@@ -219,34 +216,15 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 	PressureCompute->StopUsage();
 
 	auto RayMarchingCompute = RaymarchingPP->GetComputeShader();
-	RayMarchingCompute->Use();
-		RayMarchingCompute->SetFloat3("WorldSize", ContainerSize);
-
-		RayMarchingCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform().GetTransformMatrix());
-		RayMarchingCompute->SetMatrix4d("inverseBoundingBox", glm::inverse(BoundingBox->GetTransform().GetTransformMatrix()));
-
-		RayMarchingCompute->SetInt("ParticleCount", ParticleCount);
-
-		RayMarchingCompute->SetFloat1("DensityScale", DensityScale);
-		RayMarchingCompute->SetFloat1("ParticleMass", ParticleMass);
-
-		RayMarchingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
-		RayMarchingCompute->SetFloat1("SmoothingRadius2", SmoothingRadius*SmoothingRadius);
-
-		RayMarchingCompute->SetFloat1("TargetDensity", TargetDensity);
+	
 		
-		RayMarchingCompute->SetFloat1("MarchingRayStep", SmoothingRadius*0.5f);
-		RayMarchingCompute->SetFloat1("DensityMultiplier", 0.0004f);
-
-		RayMarchingCompute->SetFloat3("ScatteringCoefficients", glm::vec3(0.01f, 0.01f, 10.0f));
 		
 
-	RayMarchingCompute->StopUsage();
+	
 }
 
 void FluidSimulation3D::Render()
 {
-	return;
 	if ( ParticleCount <= 0 && bReadyToRender)
 		return;
 
@@ -285,6 +263,8 @@ void FluidSimulation3D::Render()
 
 void FluidSimulation3D::Reset()
 {
+	BoundingBox->SetScale(SimulationBounds);
+
 	FillBuffers();
 	UpdateShaderUniformParams();
 	
@@ -293,9 +273,11 @@ void FluidSimulation3D::Reset()
 	ParticleGenerationCompute->Use();
 		// update time step	
 		ParticleGenerationCompute->SetInt("ParticleCount", ParticleCount);
+		float SpawnParticleDist = glm::pow((ParticleMass / TargetDensity), 1.0f / 3.0f);
+		ParticleGenerationCompute->SetFloat1("Offset", SpawnParticleDist);
 
 		BravoTransform spawnBoxTransform = BoundingBox->GetTransform();
-		spawnBoxTransform.SetScale(spawnBoxTransform.GetScale() * 0.75f);
+		spawnBoxTransform.SetScale(spawnBoxTransform.GetScale() * glm::vec3(1.0f, 0.25f, 0.25f));
 
 		ParticleGenerationCompute->SetMatrix4d("BoundingBox", spawnBoxTransform.GetTransformMatrix());
 		
@@ -308,11 +290,21 @@ void FluidSimulation3D::Reset()
 	SimulationStep(0.0f);
 
 	bReadyToRender = true;
+
+	bStarted = false;
 }
 
 void FluidSimulation3D::TogglePause()
 {
 	bPaused = !bPaused;
+	if ( !bPaused )
+	{
+		if ( !bStarted )
+		{
+			SimulationStartTime = LifeTime;
+		}
+		bStarted = true;
+	}
 }
 
 void FluidSimulation3D::OnInput_Space(bool ButtonState, float DeltaTime)
@@ -329,10 +321,9 @@ void FluidSimulation3D::OnInput_R(bool ButtonState, float DeltaTime)
 void FluidSimulation3D::Tick(float DeltaTime)
 {
 	if ( bPaused ) return;
-	static float startTime = LifeTime;
-	float elapsed = LifeTime - startTime;
-	float amplitude = 0.2f * SimulationBounds.x;
-	if ( elapsed > 30.0f )
+	float elapsed = LifeTime - SimulationStartTime;
+	float amplitude = 0.75f * SimulationBounds.x;
+	if ( elapsed > 00.0f )
 	{
 		static float start = LifeTime;
 		float moveT = start - LifeTime;
@@ -340,7 +331,7 @@ void FluidSimulation3D::Tick(float DeltaTime)
 		//glm::vec3(150.0f, 75.0f, 25.0f)
 		glm::vec3 newScale = SimulationBounds + glm::vec3(sin(moveT)*amplitude, 0.0f, 0.0f);
 		BoundingBox->SetScale(newScale);
-		BoundingBox->SetLocation(glm::vec3(sin(moveT) * amplitude * 0.5f, 0.0f, 0.0f));
+		//BoundingBox->SetLocation(glm::vec3(sin(moveT) * amplitude * 0.5f, 0.0f, 0.0f));
 	}
 
 	for ( int32 i = 0; i < StepsPerTick; ++i )

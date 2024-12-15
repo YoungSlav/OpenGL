@@ -59,5 +59,6 @@
     <None Include="Source\Shaders\Compute\ThirdParty\multi_radixsort_histograms.comp" />
     <None Include="Source\Shaders\Compute\FluidGenerateParticles.comp" />
     <None Include="Source\Shaders\FluidRayMarching.comp" />
+    <None Include="Source\Shaders\SampleDensities.comp" />
   </ItemGroup>
 </Project>
