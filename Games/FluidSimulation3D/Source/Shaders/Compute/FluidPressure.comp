@@ -227,7 +227,7 @@ vec3 CalcFluidForces(uint i)
             float otherNearDensity = Particles[otherP].NearDensity;
             
             float otherPressure = DensityToPressure(otherDensity);
-            float otherNearPressure = NearDensityToPressure(otherDensity);
+            float otherNearPressure = NearDensityToPressure(otherNearDensity);
 
             float otherDensityInverse = Particles[otherP].iDensity;
             float otherNearDensityInverse = Particles[otherP].iNearDensity;
@@ -248,8 +248,8 @@ vec3 CalcFluidForces(uint i)
 void ResolveCollisions(vec3 OldPosition, inout vec3 Position, inout vec3 Velocity)
 {
     vec4 localPoint = InverseBoundingBoxModel * vec4(Position, 1.0);
-    //vec4 localVelocity = InverseBoundingBoxModel * vec4(Velocity, 0.0);
-    //
+    vec4 localVelocity = InverseBoundingBoxModel * vec4(Velocity, 0.0);
+    
     //const vec3 halfSize = vec3(0.5);
 	//const vec3 edgeDst = vec3(halfSize - abs(localPoint.xyz));
     //

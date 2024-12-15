@@ -44,8 +44,6 @@ void main()
     vec3 localPos = vec3(x, y, z) * Offset - (scale * 0.5);
     vec3 worldPos = origin + localPos - origin;
 
-    // TODO
-
     Particles[i].Position = worldPos;
 
 

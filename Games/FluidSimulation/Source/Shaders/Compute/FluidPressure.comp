@@ -220,7 +220,7 @@ vec2 CalcFluidForces(uint i)
             float otherNearDensity = Particles[otherP].NearDensity;
             
             float otherPressure = DensityToPressure(otherDensity);
-            float otherNearPressure = NearDensityToPressure(otherDensity);
+            float otherNearPressure = NearDensityToPressure(otherNearDensity);
 
             float otherDensityInverse = Particles[otherP].iDensity;
             float otherNearDensityInverse = Particles[otherP].iNearDensity;

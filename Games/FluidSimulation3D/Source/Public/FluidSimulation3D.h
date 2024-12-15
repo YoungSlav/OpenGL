@@ -36,9 +36,9 @@ public:
 	float ParticleRadius = 0.1f; 
 	const float SmoothingRadius = ParticleRadius * 4.0f;
 
-	float TargetDensity = 315.0f;
-	float PressureFactor = 288.0f;
-	float NearPressureFactor = 1.0f;
+	float TargetDensity = 75.0f;
+	float PressureFactor = 300.0f;
+	float NearPressureFactor = TargetDensity * 0.01f;
 	float ViscosityFactor = 0.01f;
 
 	float CollisionDamping = 0.05f;

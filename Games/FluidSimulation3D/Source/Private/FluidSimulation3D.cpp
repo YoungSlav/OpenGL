@@ -277,7 +277,7 @@ void FluidSimulation3D::Reset()
 		ParticleGenerationCompute->SetFloat1("Offset", SpawnParticleDist);
 
 		BravoTransform spawnBoxTransform = BoundingBox->GetTransform();
-		spawnBoxTransform.SetScale(spawnBoxTransform.GetScale() * glm::vec3(1.0f, 0.25f, 0.25f));
+		spawnBoxTransform.SetScale(spawnBoxTransform.GetScale() * glm::vec3(0.75f, 0.75f, 1.0f));
 
 		ParticleGenerationCompute->SetMatrix4d("BoundingBox", spawnBoxTransform.GetTransformMatrix());
 		
@@ -321,18 +321,18 @@ void FluidSimulation3D::OnInput_R(bool ButtonState, float DeltaTime)
 void FluidSimulation3D::Tick(float DeltaTime)
 {
 	if ( bPaused ) return;
-	float elapsed = LifeTime - SimulationStartTime;
-	float amplitude = 0.75f * SimulationBounds.x;
-	if ( elapsed > 00.0f )
-	{
-		static float start = LifeTime;
-		float moveT = start - LifeTime;
-		//BoundingBox->SetRotation(glm::vec3(0.0f, LifeTime*60.0f, 0.0f));
-		//glm::vec3(150.0f, 75.0f, 25.0f)
-		glm::vec3 newScale = SimulationBounds + glm::vec3(sin(moveT)*amplitude, 0.0f, 0.0f);
-		BoundingBox->SetScale(newScale);
-		//BoundingBox->SetLocation(glm::vec3(sin(moveT) * amplitude * 0.5f, 0.0f, 0.0f));
-	}
+	//float elapsed = LifeTime - SimulationStartTime;
+	//float amplitude = 0.75f * SimulationBounds.x;
+	//if ( elapsed > 00.0f )
+	//{
+	//	static float start = LifeTime;
+	//	float moveT = start - LifeTime;
+	//	//BoundingBox->SetRotation(glm::vec3(0.0f, LifeTime*60.0f, 0.0f));
+	//	//glm::vec3(150.0f, 75.0f, 25.0f)
+	//	glm::vec3 newScale = SimulationBounds + glm::vec3(sin(moveT)*amplitude, 0.0f, 0.0f);
+	//	BoundingBox->SetScale(newScale);
+	//	//BoundingBox->SetLocation(glm::vec3(sin(moveT) * amplitude * 0.5f, 0.0f, 0.0f));
+	//}
 
 	for ( int32 i = 0; i < StepsPerTick; ++i )
 		SimulationStep(DeltaTime / StepsPerTick);
