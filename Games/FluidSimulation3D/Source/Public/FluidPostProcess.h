@@ -12,7 +12,18 @@ public:
 		BoundingBox(_Bounds)
 	{}
 
-	std::shared_ptr<class BravoShaderAsset> GetComputeShader() const { return RayMarchingCompute; };
+public:
+	float DensityOffset = 30.0f;
+	float DensityMultiplier = 0.001f;
+	float MarchingRayStep = 0.01f;
+	float LightMarchingRayStep = 0.5f;
+	float DensitiesResolution = 0.05;
+
+	float SurfaceStepsTreashold = 100.0f;
+
+	glm::vec3 DirToLight = glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::vec3 ScatteringCoefficients = glm::vec3(32.0f, 16.0f, 2.0f)*0.25f;
 
 protected:
 	virtual bool Initialize_Internal() override;
@@ -38,6 +49,6 @@ private:
 
 	GLuint DensitiesMapBuffer = 0;
 
-	float DensitiesResolution = 0.05;
+	
 	glm::ivec3 DensitiesMapSize;
 };

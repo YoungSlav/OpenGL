@@ -4,6 +4,7 @@ layout (local_size_x = 16, local_size_y = 16) in;
 
 layout(rgba32f, binding = 0) uniform image2D outputTexture;
 layout(r32f, binding = 1) uniform image3D densitiesMap;
+uniform vec3 DensitiesMapSize;
 
 const float FLT_MAX = 3.402823466e+38;
 const float PI = 3.14159265359;
@@ -20,43 +21,26 @@ uniform mat4 BoundingBox;
 uniform mat4 inverseBoundingBox;
 
 uniform float MarchingRayStep;
+uniform float LightMarchingRayStep;
 uniform float DensityMultiplier;
+uniform float DensityOffset;
+
+uniform float TargetDensity;
 
 uniform vec3 ScatteringCoefficients;
 
-const uint GridLookupCount = 27;
-const ivec3 GridOffsets[GridLookupCount] = ivec3[](
-    ivec3(0, 0, 0),
-    ivec3(1, 0, 0),
-    ivec3(-1, 0, 0),
-    ivec3(0, 1, 0),
-    ivec3(0, -1, 0),
-    ivec3(0, 0, 1),
-    ivec3(0, 0, -1),
-    ivec3(1, 1, 0),
-    ivec3(1, -1, 0),
-    ivec3(-1, 1, 0),
-    ivec3(-1, -1, 0),
-    ivec3(1, 0, 1),
-    ivec3(1, 0, -1),
-    ivec3(-1, 0, 1),
-    ivec3(-1, 0, -1),
-    ivec3(0, 1, 1),
-    ivec3(0, 1, -1),
-    ivec3(0, -1, 1),
-    ivec3(0, -1, -1),
-    ivec3(1, 1, 1),
-    ivec3(1, 1, -1),
-    ivec3(1, -1, 1),
-    ivec3(1, -1, -1),
-    ivec3(-1, 1, 1),
-    ivec3(-1, 1, -1),
-    ivec3(-1, -1, 1),
-    ivec3(-1, -1, -1)
-);
+
+uniform vec3 DirToLight;
+
+// debug
+uniform float SurfaceStepsTreashold;
 
 
-float CalcDensity(vec3 location);
+
+
+
+
+float SampleDensity(vec3 location);
 
 // kernels
 float DensityKernel(float dst);
@@ -67,16 +51,12 @@ uint GetCellHash(ivec3 Coords);
 uint CellIndexFromHash(uint Hash);
 
 
-// marching
-struct Ray
-{
-    vec3 origin;
-    vec3 dir;
-};
 
+bool IntersectRayBox(vec3 origin, vec3 dir, out vec3 hitLocation, out float distInsideCube2);
+vec4 RayMarch(vec3 dir, vec3 origin, float marchingDist2);
 
-bool IntersectRayBox(Ray ray, out vec3 hitLocation, out float distInsideCube2);
-float RayMarch(vec3 dir, vec3 origin, float marchingDist2);
+float DensityAlongRay(vec3 origin, vec3 dir);
+float FindSurface(vec3 origin, vec3 dir);
 
 
 void main()
@@ -104,66 +84,205 @@ void main()
     vec3 camRight = vec3(invViewMat[0][0], invViewMat[0][1], invViewMat[0][2]);
     vec3 camUp = vec3(invViewMat[1][0], invViewMat[1][1], invViewMat[1][2]);
         
-    Ray ray;
-    ray.origin = eyeLocation;
-    ray.dir = normalize(worldCoord - eyeLocation);
+    
+    vec3 rayOrigin = eyeLocation;
+    vec3 rayDir = normalize(worldCoord - eyeLocation);
 
     vec4 Color = vec4(0.0f);
     
     vec3 hitLocation;
     float marchingDistance2;
-    if ( IntersectRayBox(ray, hitLocation, marchingDistance2) )
+    if ( IntersectRayBox(rayOrigin, rayDir, hitLocation, marchingDistance2) )
     {
-        float totalLight = RayMarch(ray.dir, hitLocation, marchingDistance2);
+        vec4 totalLight = RayMarch(rayDir, hitLocation, marchingDistance2);
         
-        Color = vec4(vec3(totalLight), totalLight > 0.0 ? 0.8f : 0.0f);
+        
+        Color = vec4(totalLight);
     }
 
     imageStore(outputTexture, pixelCoord, Color);
 };
 
-float RayMarch(vec3 dir, vec3 origin, float marchingDist2)
+vec4 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
 {
-    float totalDensity = 0.0f;
+    vec3 totalLight = vec3(0.0f);
+    float accumulatedDensity = 0.0f;
 
-    
-    for (float coveredDst = 0.0f; coveredDst*coveredDst < marchingDist2; coveredDst += MarchingRayStep)
+    float Step = MarchingRayStep;
+
+    float debugCount = 0.0f;
+        
+    for (float coveredDst = 0.0f; coveredDst*coveredDst < marchingDist2; coveredDst += Step)
     {
         vec3 samplePoint = origin + dir * coveredDst;
-        float density = CalcDensity(samplePoint) * MarchingRayStep * DensityMultiplier;
+        float density = SampleDensity(samplePoint);
+        float densityAlongStep = (density * Step * DensityMultiplier);
+        accumulatedDensity += densityAlongStep;
 
-        totalDensity += density;
-                
+        
+        //debugCount += DensityAlongRay(samplePoint, DirToLight);
+        //if ( density != 0.0f )
+        //    break;
+
+        float densityAlongSunRay = DensityAlongRay(samplePoint, DirToLight);
+        vec3 transmittedLight = exp(-densityAlongSunRay * ScatteringCoefficients);
+        
+        vec3 scatteredLight = transmittedLight * densityAlongStep * ScatteringCoefficients;
+        vec3 viewTransmittance = exp(-accumulatedDensity * ScatteringCoefficients);
+        
+        totalLight += scatteredLight * viewTransmittance;
+
+
+        // TODO: check if this optimization gives anything
+        Step = density >= TargetDensity ? MarchingRayStep *(density / TargetDensity) : MarchingRayStep;
     }
     
+    // actual
+    return vec4(totalLight, 1.0f);
+}
+
+
+
+float DensityAlongRay(vec3 origin, vec3 dir)
+{
+    float totalDensity = 0.0f;
+    float coveredDst = 0.0f;
+    float pointDensity = 0.0f;
+    do
+    {
+        vec3 samplePoint = origin + dir * coveredDst;
+        pointDensity = SampleDensity(samplePoint) * DensityMultiplier;
+        float densityAlongStep = (pointDensity * LightMarchingRayStep);
+        
+        totalDensity += densityAlongStep;
+        coveredDst += LightMarchingRayStep;
+    
+    } while ( pointDensity > 0.0f );
     return totalDensity;
 }
 
-float CalcDensity(vec3 location)
+
+// will not give advantages until Surface search will be fast
+float DensityAlongRayOptimized(vec3 origin, vec3 dir)
+{
+    float surfaceDistance =  FindSurface(origin, dir);
+    float totalDensity = TargetDensity * DensityMultiplier * surfaceDistance;
+    return totalDensity;
+}
+
+// fust as fuck boi
+// binary search.
+// visual artifacts
+// fails to correctly detect droplets of water along the ray
+float FindSurfaceFast(vec3 origin, vec3 dir)
+{
+    float steps = 0.0f;
+
+    const float Precision = LightMarchingRayStep * 0.5f;
+
+    const float MaxDist = max(BoundsSize.x, max(BoundsSize.y, BoundsSize.z));
+
+    float JumpSize = MaxDist * 0.5f;
+    float surfaceDist = JumpSize;
+
+    float pointDensity = SampleDensity(origin);
+    if ( pointDensity <= 0.0f )
+        return 0.0f;
+
+    const uint dropTestIterrations = 4;
+    
+    do
+    {
+        steps += 1.0f;
+
+        vec3 samplePoint = origin + dir * surfaceDist;
+        pointDensity = SampleDensity(samplePoint);
+
+        if (pointDensity > 0.0f)
+        {
+            // we found fluid. we should check if it's not an independent drop
+            // if it is, jump back, not forward
+            bool bDropDetected = false;
+            float dropTestItrDist = JumpSize / (dropTestIterrations+1);
+            for ( uint i = 1; i < dropTestIterrations; ++i )
+            {
+                float dropTestDist = surfaceDist - dropTestItrDist*i;
+                vec3 dropTestPoint = origin + dir * dropTestDist;
+                float dropTestDensity = SampleDensity(dropTestPoint);
+                if (dropTestDensity <= 0.0f)
+                {
+                    bDropDetected = true;
+                    break;
+                }
+            }
+
+            if ( !bDropDetected )
+            {
+                surfaceDist += JumpSize;
+            }
+            else
+            {
+                surfaceDist -= JumpSize;
+            }
+            //surfaceDist += JumpSize;
+        }
+        else
+        {
+            surfaceDist -= JumpSize;
+        }
+        JumpSize *= 0.5f;
+
+    } while( JumpSize > Precision && JumpSize < MaxDist );
+    
+    //return steps;
+
+    return surfaceDist;
+
+    
+}
+
+float FindSurface(vec3 origin, vec3 dir)
+{
+    float steps = 0.0f;
+    float coveredDst = 0.0f;
+    float pointDensity = 0.0f;
+    do
+    {
+        steps++;
+        vec3 samplePoint = origin + dir * coveredDst;
+        pointDensity = SampleDensity(samplePoint) * DensityMultiplier;
+        
+        coveredDst += LightMarchingRayStep;
+
+    } while ( pointDensity > 0.0f );
+    return steps;
+    return coveredDst - LightMarchingRayStep;
+}
+
+float SampleDensity(vec3 location)
 {
     vec3 localPoint = (inverseBoundingBox * vec4(location, 1.0)).xyz;
     localPoint = localPoint + vec3(0.5f);
-    ivec3 mapSize = imageSize(densitiesMap);
+    ivec3 mapSize = ivec3(DensitiesMapSize);
     vec3 sampleCoord = localPoint * vec3(mapSize);
 
     float Density = imageLoad(densitiesMap, ivec3(sampleCoord.xyz)).r;
        
-    return Density;
+    return Density >= DensityOffset ? Density : 0.0f ;
 }
 
-bool IntersectRayBox(Ray worldRay, out vec3 hitLocation, out float distInsideCube2)
+bool IntersectRayBox(vec3 origin, vec3 dir, out vec3 hitLocation, out float distInsideCube2)
 {
-    Ray ray;
-    ray.origin = (inverseBoundingBox * vec4(worldRay.origin, 1.0)).xyz;
-    ray.dir = normalize((inverseBoundingBox * vec4(worldRay.dir, 0.0)).xyz);
+    vec3 localOrigin = (inverseBoundingBox * vec4(origin, 1.0)).xyz;
+    vec3 localDir = normalize((inverseBoundingBox * vec4(dir, 0.0)).xyz);
 
     // Box bounds
     vec3 minBound = vec3(-0.5f);
     vec3 maxBound = vec3(0.5f);
 
     // Calculate the t-values for intersection with each slab
-    vec3 tMin = (minBound - ray.origin) / ray.dir;
-    vec3 tMax = (maxBound - ray.origin) / ray.dir;
+    vec3 tMin = (minBound - localOrigin) / localDir;
+    vec3 tMax = (maxBound - localOrigin) / localDir;
 
     // Ensure tMin < tMax
     vec3 t1 = min(tMin, tMax);
@@ -180,8 +299,8 @@ bool IntersectRayBox(Ray worldRay, out vec3 hitLocation, out float distInsideCub
     }
 
     // Populate the hit info
-    hitLocation = ray.origin + ray.dir * tNear;
-    vec3 hitFar = ray.origin + ray.dir * tFar;
+    hitLocation = localOrigin + localDir * tNear;
+    vec3 hitFar = localOrigin + localDir * tFar;
 
     hitLocation = (BoundingBox * vec4(hitLocation, 0.0)).xyz;
     hitFar = (BoundingBox * vec4(hitFar, 0.0)).xyz;

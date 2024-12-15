@@ -103,17 +103,27 @@ bool FluidPostProcess::EnsureReady()
 	DensitiesSampleCompute->StopUsage();
 
 	RayMarchingCompute->Use();
-		RayMarchingCompute->SetFloat3("WorldSize", BoundingBox->GetScale());
+
+		RayMarchingCompute->SetFloat3("BoundsSize", BoundingBox->GetScale());
 
 		RayMarchingCompute->SetMatrix4d("BoundingBox", BoundingBox->GetTransform_World().GetTransformMatrix());
 		RayMarchingCompute->SetMatrix4d("inverseBoundingBox", glm::inverse(BoundingBox->GetTransform_World().GetTransformMatrix()));
 
+		RayMarchingCompute->SetFloat3("DensitiesMapSize", glm::vec3(DensitiesMapSize));
+
 		RayMarchingCompute->SetFloat1("DensitiesResolutionInverse", (1.0f / DensitiesResolution));
-		RayMarchingCompute->SetFloat1("DensityMultiplier", 0.0004f);
+		RayMarchingCompute->SetFloat1("DensityMultiplier", DensityMultiplier);
+		RayMarchingCompute->SetFloat1("DensityOffset", DensityOffset);
 
-		RayMarchingCompute->SetFloat1("MarchingRayStep", Simulation->SmoothingRadius*0.5f);
+		RayMarchingCompute->SetFloat1("MarchingRayStep", MarchingRayStep);
+		RayMarchingCompute->SetFloat1("TargetDensity", Simulation->TargetDensity);
 
-		RayMarchingCompute->SetFloat3("ScatteringCoefficients", glm::vec3(0.01f, 0.01f, 10.0f));
+		RayMarchingCompute->SetFloat1("LightMarchingRayStep", LightMarchingRayStep);
+		RayMarchingCompute->SetFloat3("DirToLight", DirToLight);
+
+		RayMarchingCompute->SetFloat3("ScatteringCoefficients", ScatteringCoefficients);
+
+		RayMarchingCompute->SetFloat1("SurfaceStepsTreashold", SurfaceStepsTreashold);
 
 		RayMarchingCompute->SetFloat3("eyeLocation", camera->GetLocation_World());
 		RayMarchingCompute->SetMatrix4d("invViewMat", glm::inverse(view));

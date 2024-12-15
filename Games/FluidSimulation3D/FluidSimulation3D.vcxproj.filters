@@ -27,6 +27,12 @@
     <ClCompile Include="Source\Private\FluidPostProcess.cpp">
       <Filter>Private</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\FluidScreen_SimulationSettings.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\FluidScreen_PostProcessSettings.cpp">
+      <Filter>Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidGameInstance3D.h">
@@ -42,6 +48,12 @@
       <Filter>Public</Filter>
     </ClInclude>
     <ClInclude Include="Source\Public\FluidPostProcess.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\FluidScreen_SimulationSettings.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\FluidScreen_PostProcessSettings.h">
       <Filter>Public</Filter>
     </ClInclude>
   </ItemGroup>

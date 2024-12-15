@@ -99,8 +99,7 @@ bool FluidSimulation3D::Initialize_Internal()
 		Engine->GetInput()->SubscribeKey(subscription);
 	}
 
-	RaymarchingPP = NewObject<FluidPostProcess>("FluidPostProcess", Self<FluidSimulation3D>(), BoundingBox);
-	Engine->GetViewport()->AddPostProcess(RaymarchingPP);
+	
 
 	Reset();
 
@@ -156,16 +155,14 @@ void FluidSimulation3D::OnBoundingBoxTransofrmUpdated(const class IBravoTransfor
 		PressureCompute->SetMatrix4d("InverseBoundingBoxModel", glm::inverse(
 			BoundingBox->GetTransform().GetTransformMatrix()));
 	PressureCompute->StopUsage();
-
-	auto RayMarchingCompute = RaymarchingPP->GetComputeShader();
-	RayMarchingCompute->Use();
-		
-	RayMarchingCompute->StopUsage();
 }
 
 void FluidSimulation3D::UpdateShaderUniformParams()
 {
 	glm::vec3 ContainerSize = BoundingBox->GetScale();
+
+	SmoothingRadius = ParticleRadius * 4.0f;
+	NearPressureFactor = TargetDensity * 0.01f;
 
 
 	// hashing
@@ -214,17 +211,11 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("NearPressureScale", NearPressureScale);
 		PressureCompute->SetFloat1("ViscosityScale", ViscosityScale);
 	PressureCompute->StopUsage();
-
-	auto RayMarchingCompute = RaymarchingPP->GetComputeShader();
-	
-		
-		
-
-	
 }
 
 void FluidSimulation3D::Render()
 {
+	return;
 	if ( ParticleCount <= 0 && bReadyToRender)
 		return;
 
@@ -323,7 +314,7 @@ void FluidSimulation3D::Tick(float DeltaTime)
 	if ( bPaused ) return;
 	//float elapsed = LifeTime - SimulationStartTime;
 	//float amplitude = 0.75f * SimulationBounds.x;
-	//if ( elapsed > 00.0f )
+	//if ( elapsed > 10.0f )
 	//{
 	//	static float start = LifeTime;
 	//	float moveT = start - LifeTime;

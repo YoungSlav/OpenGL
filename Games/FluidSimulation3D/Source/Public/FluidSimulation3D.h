@@ -34,12 +34,12 @@ public:
 	int32 ParticleCount = 50000;
 	
 	float ParticleRadius = 0.1f; 
-	const float SmoothingRadius = ParticleRadius * 4.0f;
+	float SmoothingRadius = ParticleRadius * 4.0f;
 
-	float TargetDensity = 75.0f;
+	float TargetDensity = 150.0f;
 	float PressureFactor = 300.0f;
 	float NearPressureFactor = TargetDensity * 0.01f;
-	float ViscosityFactor = 0.01f;
+	float ViscosityFactor = 0.05f;
 
 	float CollisionDamping = 0.05f;
 	float Gravity = 10.0f;
@@ -67,13 +67,18 @@ public:
 	void Reset();
 	void TogglePause();
 	bool IsPaused() const { return bPaused; }
+	bool HasStarted() const { return bStarted; }
+
+	std::shared_ptr<class BravoBoundingBox> GetBoundingBox() const { return BoundingBox; }
+
+	void UpdateShaderUniformParams();
 
 protected:
 	virtual bool Initialize_Internal() override;
 
 	void OnBoundingBoxTransofrmUpdated(const class IBravoTransformable*);
 
-	void UpdateShaderUniformParams();
+	
 
 	virtual void Tick(float DeltaTime) override;
 	void SimulationStep(float DeltaTime);
@@ -133,7 +138,7 @@ private:
 
 	std::shared_ptr<class BravoBoundingBox> BoundingBox;
 
-	std::shared_ptr<class FluidPostProcess> RaymarchingPP = nullptr;
+	
 
 	// particle
 	GLuint ParticleVAO;

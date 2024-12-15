@@ -22,6 +22,8 @@
     <ClCompile Include="Source\Private\FluidGameInstance3D.cpp" />
     <ClCompile Include="Source\Private\FluidGrid3D.cpp" />
     <ClCompile Include="Source\Private\FluidPostProcess.cpp" />
+    <ClCompile Include="Source\Private\FluidScreen_PostProcessSettings.cpp" />
+    <ClCompile Include="Source\Private\FluidScreen_SimulationSettings.cpp" />
     <ClCompile Include="Source\Private\FluidSimulation3D.cpp" />
     <ClCompile Include="Source\Private\Main.cpp" />
   </ItemGroup>
@@ -30,6 +32,8 @@
     <ClInclude Include="Source\Public\FluidGrid3D.h" />
     <ClInclude Include="Source\Public\FluidMath3D.h" />
     <ClInclude Include="Source\Public\FluidPostProcess.h" />
+    <ClInclude Include="Source\Public\FluidScreen_PostProcessSettings.h" />
+    <ClInclude Include="Source\Public\FluidScreen_SimulationSettings.h" />
     <ClInclude Include="Source\Public\FluidSimulation3D.h" />
   </ItemGroup>
   <ItemGroup>
