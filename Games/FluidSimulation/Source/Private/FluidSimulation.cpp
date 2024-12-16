@@ -69,6 +69,8 @@ bool FluidSimulation::Initialize_Internal()
 
 	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidPoint", BravoShaderLoadingParams("FluidPoint"));
 
+	SpawnParticlesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGenerateParticles", BravoShaderLoadingParams("Compute\\FluidGenerateParticles"));
+
 	GridHashingCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGridHashing", BravoShaderLoadingParams("Compute\\FluidGridHashing"));
 	
 	RadixSortCompute = AssetManager->FindOrLoad<BravoShaderAsset>("RadixSort", BravoShaderLoadingParams("Compute\\ThirdParty\\multi_radixsort"));
@@ -114,19 +116,19 @@ bool FluidSimulation::Initialize_Internal()
 
 void FluidSimulation::FillBuffers()
 {
-	NumWorkGroups = (Particles.size() + 255) / 256;
+	NumWorkGroups = (ParticleCount + 255) / 256;
 
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(Particle), Particles.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixTmpSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, RadixTmpSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixHistogramSSBO);
@@ -134,13 +136,13 @@ void FluidSimulation::FillBuffers()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, RadixHistogramSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, StartIndicesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, Particles.size() * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, StartIndicesSSBO);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, RadixSortConstantsUBO);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, RadixSortConstantsUBO);
 
-	RadixSortPushConstants.g_num_elements = Particles.size();
+	RadixSortPushConstants.g_num_elements = ParticleCount;
 	RadixSortPushConstants.g_num_workgroups = NumWorkGroups;
 	RadixSortPushConstants.g_num_blocks_per_workgroup = 256;
 }
@@ -197,7 +199,7 @@ void FluidSimulation::UpdateShaderUniformParams()
 
 void FluidSimulation::Render()
 {
-	if ( !Particles.size() )
+	if ( !ParticleCount )
 		return;
 
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -221,93 +223,47 @@ void FluidSimulation::Render()
 				
 
 		glBindVertexArray(VAO);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, Particles.size());
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, ParticleCount);
 		glBindVertexArray(0);
 
 	RenderShader->StopUsage();
 }
 
-void FluidSimulation::SpawnParticles()
+void FluidSimulation::Reset()
 {
-	assert( ParentContainer != nullptr );
-
-	WorldSize = ParentContainer->GetSize() * 2.0f;
-
-	glm::ivec2 ParticleGridSize;
-	ParticleGridSize.x = glm::ceil(WorldSize.x / ParticleRadius * 2.0f);
-    ParticleGridSize.y = glm::ceil(WorldSize.y / ParticleRadius * 2.0f);
-
-	if ( ParticleGridSize.x * ParticleGridSize.y < ParticleCount )
-		ParticleCount = ParticleGridSize.x * ParticleGridSize.y;
-
+	WorldSize = ParentContainer->GetSize()*2.0f;
 
 	bPaused = true;
 	bHasStarted = false;
 
-	Particles.clear();
-	Particles.resize(ParticleCount);
-	
-	OriginalPositions.clear();
-	OriginalPositions.resize(ParticleCount);
-	
-	
+	float SpawnSpacing = glm::pow((ParticleMass / TargetDensity), 1.0f / 2.0f);
 
-	if ( ParticleCount == 0 )
-		return;
+	glm::vec2 MaxSpawnBounds = glm::vec2((WorldSize.x-SpawnSpacing) , (WorldSize.y-SpawnSpacing));
 
-	
-	if ( bRandomPositions )
-	{
-		for ( int32 i = 0; i < ParticleCount; ++i )
-		{
-			glm::vec2 Range = ParentContainer->GetSize() - glm::vec2(ParticleRadius*2.0f);
-			float x = BravoMath::Rand(-Range.x, Range.x);
-			float y = BravoMath::Rand(-Range.y, Range.y);
-			Particles[i].Position = glm::vec2(x, y);
-			Particles[i].PredictedPosition = Particles[i].Position;
-			OriginalPositions[i] = Particles[i].Position;
-		}
-	}
-	else
-	{
-		float ParticleDiameter = 2 * ParticleRadius;
-		float aspectRatio = WorldSize.x / WorldSize.y;
-		int32 gridWidth = static_cast<int32>(glm::ceil(sqrt(ParticleCount * aspectRatio)));
-		int32 gridHeight = (ParticleCount + gridWidth - 1) / gridWidth;
-
-		// Adjust ParticleCount if it exceeds the capacity of the grid
-		ParticleCount = std::min(ParticleCount, gridWidth * gridHeight);
-
-		// Calculate the offsets to center the grid around the origin
-		float offsetX = -(gridWidth - 1) * ParticleDiameter / 2;
-		float offsetY = -(gridHeight - 1) * ParticleDiameter / 2;
-
-		int32 index = 0;
-		for (int32 i = 0; i < gridWidth && index < ParticleCount; ++i)
-		{
-			for (int32 j = 0; j < gridHeight && index < ParticleCount; ++j)
-			{
-				float x = i * ParticleDiameter + offsetX;
-				float y = j * ParticleDiameter + offsetY;
-
-				Particles[index].Position = glm::vec2(x, y);
-				Particles[index].PredictedPosition = Particles[index].Position;
-				OriginalPositions[index] = Particles[index].Position;
-				index++;
-			}
-		}
-	}
-
-	CachedParticlesCount = ParticleCount;
+	ParticleRadius = glm::max(ParticleRadius, 0.001f);
+	SmoothingRadius = ParticleRadius * 6.0f;
+	NearPreassure = TargetDensity * 0.0001f;
+	int32 maxParticles = (int32)((MaxSpawnBounds.x * MaxSpawnBounds.y) / (SpawnSpacing*SpawnSpacing));
+	ParticleCount = glm::min(ParticleCount, maxParticles);
 
 	FillBuffers();
 	UpdateShaderUniformParams();
-	SimulationStep(0.0f);
-}
 
-void FluidSimulation::Reset()
-{
-	SpawnParticles();
+	SpawnParticlesCompute->Use();
+
+		SpawnParticlesCompute->SetInt("ParticleCount", ParticleCount);
+		
+		SpawnParticlesCompute->SetFloat1("Spacing", SpawnSpacing);
+		SpawnParticlesCompute->SetFloat2("Size", MaxSpawnBounds);
+		SpawnParticlesCompute->SetFloat2("Origin", glm::vec2(0.0f, 0.0f) * MaxSpawnBounds);
+
+		glDispatchCompute(NumWorkGroups, 1, 1);
+		
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+	SpawnParticlesCompute->StopUsage();
+
+	SimulationStep(0.0f);
 }
 
 void FluidSimulation::TogglePause()

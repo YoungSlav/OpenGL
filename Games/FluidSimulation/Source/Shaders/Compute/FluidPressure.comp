@@ -232,7 +232,7 @@ vec2 CalcFluidForces(uint i)
             pressureForce += dir * NearPressureKernel(dst) * sharedNearPressure * otherNearDensityInverse;
             
             vec2 otherVelocity = Particles[otherP].Velocity;
-            viscosityForce += (otherVelocity - myVelocity) * ParticleMass * otherDensityInverse * ViscosityKernel(dst);
+            viscosityForce += (otherVelocity - myVelocity) * /*ParticleMass * otherDensityInverse **/ ViscosityKernel(dst);
         }
     }
     return (viscosityForce * ViscosityFactor) + (pressureForce * myDensityInverse);

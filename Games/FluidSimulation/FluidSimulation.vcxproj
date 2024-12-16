@@ -37,6 +37,7 @@
     <ClInclude Include="Source\Public\FluidSimulation.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Shaders\Compute\FluidGenerateParticles.comp" />
     <None Include="Source\Shaders\Compute\FluidGridHashing.comp" />
     <None Include="Source\Shaders\Compute\FluidStartingIndicies.comp" />
     <None Include="Source\Shaders\Compute\FluidPressure.comp" />

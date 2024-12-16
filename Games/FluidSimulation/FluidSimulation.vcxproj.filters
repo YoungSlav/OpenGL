@@ -78,5 +78,6 @@
     <None Include="Source\Shaders\Compute\ThirdParty\single_radixsort.comp" />
     <None Include="Source\Shaders\FluidPostProcess.frag" />
     <None Include="Source\Shaders\FluidPostProcess.vert" />
+    <None Include="Source\Shaders\Compute\FluidGenerateParticles.comp" />
   </ItemGroup>
 </Project>

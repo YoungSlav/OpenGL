@@ -1,0 +1,50 @@
+#version 430
+
+layout(local_size_x = 256) in;
+
+struct Particle
+{
+    vec2 Position;
+    vec2 PredictedPosition;
+    vec2 Velocity;
+    float Density;
+    float iDensity;
+    float NearDensity;
+    float iNearDensity;
+};
+layout(std430, binding = 0) buffer ParticlesBuffer
+{
+	Particle Particles[];
+};
+
+uniform int ParticleCount;
+uniform vec2 Origin;
+uniform vec2 Size;
+uniform float Spacing;
+
+
+void main()
+{
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= ParticleCount) return;
+
+    uvec2 gridDimensions = uvec2(Size / Spacing);
+    
+    // Adjust the grid calculation to fully fill Y axis
+    uint y = i % gridDimensions.y;
+    uint x = i / gridDimensions.y;
+
+
+    vec2 localPos = (vec2(x, y) - vec2(gridDimensions) * 0.5) * Spacing;
+    vec2 worldPos = Origin + localPos;
+
+    Particles[i].Position = worldPos;
+
+
+    Particles[i].PredictedPosition = Particles[i].Position;
+    Particles[i].Velocity = vec2(0.0);
+    Particles[i].Density = 0.0;
+    Particles[i].iDensity = 0.0;
+    Particles[i].NearDensity = 0.0;
+    Particles[i].iNearDensity = 0.0;
+};

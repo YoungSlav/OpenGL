@@ -81,65 +81,25 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoCollapse );
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_AlwaysVerticalScrollbar );
 
-		Spacing();
-		std::string pauseText = Simulation->IsPaused() ? "Play" : "Pause";
-		if (ImGui::Button(pauseText.c_str(), ImVec2(BtnWidth, 0)))
+
+		if ( Slider("Particle count", &Simulation->ParticleCount, 1, 100000) )
 		{
-			Simulation->TogglePause();
+			Simulation->Reset();
 		}
-
+		
+		bool UpdateSettings = false;
+		
 		Spacing();
-		if (ImGui::Button("Reset", ImVec2(BtnWidth, 0)))
+		if ( Slider("Size", &Simulation->ParticleRadius, 0.0001f, 1.0) )
 		{
 			Simulation->Reset();
 		}
 
 		Spacing();
-		Spacing();
-
-
-		if ( Slider("Particle count", &Simulation->ParticleCount, 1, 4000) )
-		{
-			if ( !Simulation->HasStarted() )
-			{
-				Simulation->SpawnParticles();
-			}
-		}
-		
-		if ( ImGui::Checkbox("Random", &Simulation->bRandomPositions) )
-		{
-			if ( !Simulation->HasStarted() )
-			{
-				Simulation->SpawnParticles();
-			}
-		}
-		
-		bool UpdateSettings = false;
-
-		Spacing();
 		UpdateSettings |= Slider("Mass", &Simulation->ParticleMass, 1.0f, 10.0f);
-		
-		Spacing();
-		if ( Slider("Size", &Simulation->ParticleRadius, 1.0f, 100.0) )
-		{
-			if ( !Simulation->HasStarted() )
-			{
-				Simulation->SpawnParticles();
-			}
-			UpdateSettings |= true;
-		}
-
-		Spacing();
-		if ( Slider("Smoothing radius", &Simulation->SmoothingRadius, 0.0f, 10.0f) )
-		{
-			if ( !Simulation->HasStarted() )
-			{
-				Simulation->SpawnParticles();
-			}
-			UpdateSettings |= true;
-		}
 
 		Spacing();
 		Spacing();
@@ -147,8 +107,8 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 
 		Spacing();
 		UpdateSettings |= Slider("Preassure", &Simulation->Preassure, 0.0f, 500.0f);
-
-		UpdateSettings |= Slider("NearPreassure", &Simulation->NearPreassure, 0.0f, 500.0f);
+		Spacing();
+		UpdateSettings |= Slider("Near pressure", &Simulation->NearPreassure, 0.0f, 1.0f);
 
 		Spacing();
 		UpdateSettings |= Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 10.0f);
