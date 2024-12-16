@@ -35,7 +35,7 @@ layout(std430, binding = 2) buffer StartIndicesBuffer
 uniform vec2 WorldSize;
 uniform float SmoothingRadius;
 
-uniform uint ParticleCount;
+uniform int ParticleCount;
 
 
 void PrepareHash(uint i);

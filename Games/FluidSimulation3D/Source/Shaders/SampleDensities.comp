@@ -40,7 +40,7 @@ uniform vec3 BoundsOrigin;
 
 uniform mat4 BoundingBox;
 
-uniform uint ParticleCount;
+uniform int ParticleCount;
 
 uniform float DensityScale;
 uniform float ParticleMass;

@@ -222,7 +222,7 @@ void BravoShaderAsset::SetInt(const std::string& name, const int32 val) const
 void BravoShaderAsset::SetInt(const std::string& name, const GLuint val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
-	glUniform1ui(FindUniformLocation(name.c_str()), val);
+	glUniform1i(FindUniformLocation(name.c_str()), val);
 }
 
 void BravoShaderAsset::SetFloat1(const std::string& name, const float val) const

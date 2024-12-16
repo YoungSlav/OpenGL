@@ -1,7 +1,7 @@
 #version 430 core
 
 uniform vec2 WorldSize;
-uniform uint ParticleCount;
+uniform int ParticleCount;
 
 uniform float ParticleMass;
 uniform float ParticleRadius;

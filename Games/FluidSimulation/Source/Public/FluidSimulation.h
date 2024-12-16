@@ -38,7 +38,7 @@ public:
 
 	float TargetDensity = 234.0f;
 	float Preassure = 225.0f;
-	float NearPreassure = 18.0f;
+	float NearPreassure = 5.0f;
 	float ViscosityFactor = 0.03f;
 
 

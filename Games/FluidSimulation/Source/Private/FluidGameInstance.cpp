@@ -39,8 +39,8 @@ bool FluidGameInstance::Initialize_Internal()
 		Container->SetSimulation(Simulation);
 	}
 
-	auto PP = NewObject<FluidPostProcess>("SimulationPP", Simulation, Container);
-	Engine->GetViewport()->AddPostProcess(PP);
+	//auto PP = NewObject<FluidPostProcess>("SimulationPP", Simulation, Container);
+	//Engine->GetViewport()->AddPostProcess(PP);
 
 	if ( Engine->GetViewport()->GetHUD() )
 	{

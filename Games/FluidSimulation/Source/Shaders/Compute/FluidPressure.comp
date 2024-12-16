@@ -37,7 +37,7 @@ uniform vec2 WorldSize;
 uniform vec2 ContainerSize;
 uniform float MaxVelocity;
 uniform vec2 RandomVector;
-uniform uint ParticleCount;
+uniform int ParticleCount;
 
 // particle params
 uniform float ParticleMass;
@@ -298,7 +298,7 @@ void ResolveCollisions(vec2 OldPosition, inout vec2 Position, inout vec2 Velocit
         const float coveredDt2 = actualMotion2 / originalMotion2;
         const float leftDt = 1.0f - sqrt(coveredDt2);
 
-        Position = collisionPoint + Velocity * SimulationTimeStep * leftDt2;
+        Position = collisionPoint + Velocity * SimulationTimeStep * leftDt;
     }
 }
 

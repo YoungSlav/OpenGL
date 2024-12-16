@@ -30,13 +30,13 @@ layout(std430, binding = 5) buffer ComponentsBuffer
 {
 	ComponentData components[];
 };
-uniform uint componentsCount;
+uniform int componentsCount;
 
 uniform float antiAliasingStrength;
 
-uniform uint frameNumber;
-uniform uint maxBounceCount;
-uniform uint raysPerPixel;
+uniform int frameNumber;
+uniform int maxBounceCount;
+uniform int raysPerPixel;
 
 uniform samplerCube skybox;
 
