@@ -19,7 +19,10 @@ protected:
 	virtual void Render_Internal() override;
 
 private:
-	
 	std::shared_ptr<class FluidSimulation> Simulation = nullptr;
 	std::shared_ptr<class FluidContainer> Container = nullptr;
+
+	std::shared_ptr<class BravoShaderAsset> DensitiesMapShader = nullptr;
+	
+	std::shared_ptr<class BravoRenderTarget> DensitiesRenderTarget;
 };

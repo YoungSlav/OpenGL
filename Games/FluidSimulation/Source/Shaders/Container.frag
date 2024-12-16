@@ -47,7 +47,7 @@ void main()
 
 			// TODO: display with accounting to interactionForce and gravityForce
 			float dst = sqrt(mouseDst2);
-			float normilizedInteractionForce =interactionForce / (gravityForce*10.0f);
+			float normilizedInteractionForce = interactionForce / (100.0f);
 			float normilizeDist = (1.0f - (dst / interactionRadius));
 
 			float totalMix = normilizeDist * normilizedInteractionForce;

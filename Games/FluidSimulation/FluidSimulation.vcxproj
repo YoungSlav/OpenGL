@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="Source\Private\FluidContainer.cpp" />
     <ClCompile Include="Source\Private\FluidGameInstance.cpp" />
-    <ClCompile Include="Source\Private\FluidGrid.cpp" />
     <ClCompile Include="Source\Private\FluidPostProcess.cpp" />
     <ClCompile Include="Source\Private\FluidScreen_Simulation.cpp" />
     <ClCompile Include="Source\Private\FluidSimulation.cpp" />
@@ -30,8 +29,6 @@
   <ItemGroup>
     <ClInclude Include="Source\Public\FluidContainer.h" />
     <ClInclude Include="Source\Public\FluidGameInstance.h" />
-    <ClInclude Include="Source\Public\FluidGrid.h" />
-    <ClInclude Include="Source\Public\FluidMath.h" />
     <ClInclude Include="Source\Public\FluidPostProcess.h" />
     <ClInclude Include="Source\Public\FluidScreen_Simulation.h" />
     <ClInclude Include="Source\Public\FluidSimulation.h" />
@@ -46,6 +43,8 @@
     <None Include="Source\Shaders\Compute\ThirdParty\single_radixsort.comp" />
     <None Include="Source\Shaders\Container.frag" />
     <None Include="Source\Shaders\Container.vert" />
+    <None Include="Source\Shaders\FluidDensities.frag" />
+    <None Include="Source\Shaders\FluidDensities.vert" />
     <None Include="Source\Shaders\FluidPoint.frag" />
     <None Include="Source\Shaders\FluidPoint.vert" />
     <None Include="Source\Shaders\FluidPostProcess.frag" />

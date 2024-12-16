@@ -108,7 +108,7 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		UpdateSettings |= Slider("Preassure", &Simulation->Preassure, 0.1f, 500.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 10.0f);
+		UpdateSettings |= Slider("Viscosity", &Simulation->ViscosityFactor, 0.0f, 0.2f);
 
 		Spacing();
 		UpdateSettings |= Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
@@ -117,13 +117,13 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		UpdateSettings |= Slider("Gravity", &Simulation->Gravity, -100.0f, 100.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Interaction force", &Simulation->InteractionAcceleration, -100.0f, 100.0f);
+		UpdateSettings |= Slider("Interaction force", &Simulation->InteractionAcceleration, 0.0f, 100.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Interaction radius", &Simulation->InteractionRadius, 10.0f, 100.0f);
+		UpdateSettings |= Slider("Interaction radius", &Simulation->InteractionRadius, 1.0f, 10.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Max velocity display", &Simulation->MaxVelocity, 0.0f, 100.0f);
+		UpdateSettings |= Slider("Max velocity display", &Simulation->MaxVelocity, 0.0f, 50.0f);
 
 		Spacing();
 		UpdateSettings |= Slider("Steps per tick", &Simulation->StepsPerTick, 1, 4);

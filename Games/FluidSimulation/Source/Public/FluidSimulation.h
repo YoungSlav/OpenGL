@@ -2,8 +2,6 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 #include "IBravoRenderable.h"
-#include "FluidMath.h"
-#include "FluidGrid.h"
 
 struct Particle
 {
@@ -37,7 +35,7 @@ public:
 	float CollisionDamping = 0.1f;
 	float Gravity = 9.8f;
 
-	float InteractionAcceleration = Gravity*2.0f;
+	float InteractionAcceleration = Gravity*10.0f;
 	float InteractionRadius = 1.0f;
 
 	float MaxVelocity = 10.0;
