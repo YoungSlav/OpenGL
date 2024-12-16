@@ -21,6 +21,7 @@ private:
 
 	bool Slider(const std::string& Label, float* value, float min, float max);
 	bool Slider(const std::string& Label, int32* value, int32 min, int32 max);
+	void Display(const std::string& Label, const std::string& value);
 	void Spacing();
 
 private:

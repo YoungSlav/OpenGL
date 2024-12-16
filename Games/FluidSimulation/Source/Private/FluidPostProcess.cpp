@@ -43,16 +43,16 @@ void FluidPostProcess::Render_Internal()
 
 	Shader->Use();
 
-		Shader->SetInt("ParticleCount", Simulation->ParticleCount);
-		Shader->SetFloat2("WorldSize", Simulation->WorldSize);
+		Shader->SetInt("ParticleCount", Simulation->GetParticleCount());
+		Shader->SetFloat2("WorldSize", Simulation->GetWorldSize());
 
-		Shader->SetFloat1("ParticleMass", Simulation->ParticleMass);
+		Shader->SetFloat1("ParticleMass", Simulation->GetParticleMass());
 		Shader->SetFloat1("ParticleRadius", Simulation->ParticleRadius);
-		Shader->SetFloat1("SmoothingRadius", Simulation->SmoothingRadius);
+		Shader->SetFloat1("SmoothingRadius", Simulation->GetSmoothingRadius());
 		Shader->SetFloat1("TargetDensity", Simulation->TargetDensity);
 
-		const float DensityScale		= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(Simulation->SmoothingRadius, 4)));
-		Shader->SetFloat1("DensityScale", DensityScale);
+		
+		Shader->SetFloat1("DensityScale", Simulation->GetDensityScale());
 
 		glm::mat4 CameraProjection = camera->GetProjectionMatrix();
 		glm::mat4 CameraView = camera->GetViewMatrix();

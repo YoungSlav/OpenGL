@@ -8,6 +8,7 @@
 #include "BravoScreen_Debug.h"
 #include "FluidScreen_Simulation.h"
 #include "FluidPostProcess.h"
+#include "BravoSelectionManager.h"
 
 bool FluidGameInstance::Initialize_Internal()
 {
@@ -16,7 +17,10 @@ bool FluidGameInstance::Initialize_Internal()
 
 	//Engine->LimitFPS(120.0f);
 
+
 	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<FluidGameInstance>(), &FluidGameInstance::OnViewportResize);
+
+
 
 	{
 		Camera = NewObject<BravoCamera>("FluidCamera", EBravoCameraType::Orthographic);

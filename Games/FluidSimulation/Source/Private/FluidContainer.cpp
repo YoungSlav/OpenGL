@@ -79,16 +79,10 @@ void FluidContainer::Render()
 
 		Shader->SetFloat2("mousePos", mWorldPos);
 
-		//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, Simulation->GetParticlesSSBO());
+		Shader->SetFloat1("interactionRadius", Simulation->InteractionRadius);
+		Shader->SetFloat1("interactionForce", Simulation->InteractionAcceleration);
+		Shader->SetFloat1("gravityForce", Simulation->Gravity);
 
-		Shader->SetInt("particleCount", Simulation->ParticleCount);
-		Shader->SetFloat1("targetDensity", Simulation->TargetDensity);
-		Shader->SetFloat1("particleMass", Simulation->ParticleMass);
-		Shader->SetFloat1("smoothingRadius", Simulation->SmoothingRadius);
-
-		Shader->SetFloat2("WorldSize", Simulation->WorldSize);
-		const float DensityScale	= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(Simulation->SmoothingRadius, 4)));
-		Shader->SetFloat1("DensityScale", DensityScale);
 	
 		glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);

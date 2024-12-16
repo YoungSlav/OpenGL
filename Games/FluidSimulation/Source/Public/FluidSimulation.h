@@ -28,36 +28,56 @@ public:
 	{}
 
 	// SIMULATION PROPERTIES
+	float ParticleRadius = 0.08f; 
+	float TargetDensity = 500.0f;
 
-	int32 ParticleCount = 84000;
-	bool bRandomPositions = false;
+	float Preassure = 250;
+	float ViscosityFactor = 0.001f;
 
-	float ParticleMass = 0.1f;
-	float ParticleRadius = 0.021f; 
-
-	float TargetDensity = 20.0f;
-	float Preassure = 10.0f;
-	float ViscosityFactor = 0.03f;
-
-	float SmoothingRadius = ParticleRadius * 6.0f;
-	float NearPreassure = TargetDensity * 0.0001f;
-
-	float InteractionAcceleration = 50.0f;
-	float InteractionRadius = 2.0f;
 	float CollisionDamping = 0.1f;
 	float Gravity = 9.8f;
+
+	float InteractionAcceleration = Gravity*2.0f;
+	float InteractionRadius = 1.0f;
+
+	float MaxVelocity = 10.0;
+
+	int32 StepsPerTick = 2;
+
+	int32 GetParticleCount() const { return ParticleCount; }
+	float GetSmoothingRadius() const { return SmoothingRadius; }
+	float GetNearPreassure() const { return NearPreassure; }
+	float GetParticleMass() const { return ParticleMass; }
+	const glm::vec2 GetWorldSize() const { return WorldSize; } 
+
+	float GetDensityScale() const { return DensityScale; }
+	float GetNearDensityScale() const { return NearDensityScale; }
+	float GetPressureScale() const { return PressureScale; }
+	float GetNearPressureScale() const { return NearPressureScale; }
+	float GetViscosityScale() const { return ViscosityScale; }
+
+protected:
+	int32 ParticleCount = 84000;
+	float SmoothingRadius = ParticleRadius * 4.0f;
+	float NearPreassure = TargetDensity * 0.002f;
+	float ParticleMass = ((ParticleRadius * ParticleRadius * glm::pi<float>()) / 20) * TargetDensity;
+	glm::vec2 WorldSize;
 
 
 	glm::vec3 Cold = glm::vec3(5.0f, 49.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Middle = glm::vec3(5.0f, 106.0f, 111.0f) / glm::vec3(255.0f);
 	glm::vec3 Hot = glm::vec3(192.0f, 233.0f, 248.0f) / glm::vec3(255.0f);
-	float MaxVelocity = 10.0;
-
-	uint32 StepsPerTick = 4;
-
-	glm::vec2 WorldSize;
-
+	
+	
+	float DensityScale;
+	float NearDensityScale;
+	float PressureScale;
+	float NearPressureScale;
+	float ViscosityScale;
 	// END SIMULATION PROPERTIES
+
+public:
+
 		
 	void Reset();
 	void TogglePause();

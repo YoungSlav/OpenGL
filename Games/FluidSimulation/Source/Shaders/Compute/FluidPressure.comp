@@ -244,9 +244,10 @@ vec2 CalcExternalForces(uint i)
     if ( InteractionForce != 0.0f )
     {
         vec2 offset = InteractionLocation - Particles[i].Position;
-        float dst = length(offset);
-        if ( dst < InteractionRadius )
+        float dst2 = dot(offset, offset);
+        if ( dst2 < InteractionRadius*InteractionRadius )
         {
+            float dst = sqrt(dst2);
             float normilizeDist = 1.0f - (dst / InteractionRadius);
             vec2 forceDirection = offset / dst;
             float gravityWeight = 1 - (normilizeDist * clamp(InteractionForce / 10.0f, 0.0f, 1.0f));

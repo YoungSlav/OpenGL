@@ -27,6 +27,8 @@ public:
 
 	const std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>>& GetSelections() const { return ActiveSelections; }
 
+	void SetAllowSelections(bool bAllow) { bAllowSelections = bAllow; }
+
 protected:
 
 	virtual bool Initialize_Internal() override;
@@ -53,4 +55,6 @@ private:
 	std::shared_ptr<class BravoRenderTarget> SelectionRenderTarget;
 
 	std::shared_ptr<class BravoGizmo> Gizmo = nullptr;
+
+	bool bAllowSelections = false;
 };

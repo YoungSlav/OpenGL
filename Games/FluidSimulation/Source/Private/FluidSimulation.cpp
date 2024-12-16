@@ -183,11 +183,11 @@ void FluidSimulation::UpdateShaderUniformParams()
 		PressureCompute->SetFloat2("InteractionLocation", InteractionLocation);
 		PressureCompute->SetFloat1("InteractionRadius", InteractionRadius);
 
-		const float DensityScale		= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
-		const float NearDensityScale	= 10.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
-		const float PressureScale		= 12.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
-		const float NearPressureScale	= 30.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
-		const float ViscosityScale		= 4.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 8)));
+		DensityScale		= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
+		NearDensityScale	= 10.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		PressureScale		= 12.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
+		NearPressureScale	= 30.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+		ViscosityScale		= 4.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 8)));
 		
 		PressureCompute->SetFloat1("DensityScale", DensityScale);
 		PressureCompute->SetFloat1("NearDensityScale", NearDensityScale);
@@ -236,15 +236,18 @@ void FluidSimulation::Reset()
 	bPaused = true;
 	bHasStarted = false;
 
-	float SpawnSpacing = glm::pow((ParticleMass / TargetDensity), 1.0f / 2.0f);
-
-	glm::vec2 MaxSpawnBounds = glm::vec2((WorldSize.x-SpawnSpacing) , (WorldSize.y-SpawnSpacing));
 
 	ParticleRadius = glm::max(ParticleRadius, 0.001f);
-	SmoothingRadius = ParticleRadius * 6.0f;
-	NearPreassure = TargetDensity * 0.0001f;
+	SmoothingRadius = ParticleRadius * 4.0f;
+	NearPreassure = TargetDensity * 0.002f;
+
+	ParticleMass = ((ParticleRadius * ParticleRadius * glm::pi<float>()) / 20) * TargetDensity;
+
+	float SpawnSpacing = glm::pow((ParticleMass / TargetDensity), 1.0f / 2.0f);
+	glm::vec2 MaxSpawnBounds = glm::vec2((WorldSize.x-SpawnSpacing) , (WorldSize.y-SpawnSpacing))*0.7f;
+
 	int32 maxParticles = (int32)((MaxSpawnBounds.x * MaxSpawnBounds.y) / (SpawnSpacing*SpawnSpacing));
-	ParticleCount = glm::min(ParticleCount, maxParticles);
+	ParticleCount = glm::min(maxParticles, 100000);
 
 	FillBuffers();
 	UpdateShaderUniformParams();

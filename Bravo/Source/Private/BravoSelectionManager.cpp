@@ -46,6 +46,8 @@ void BravoSelectionManager::OnDestroy()
 
 void BravoSelectionManager::OnMouseClicked(bool ButtonState, float DeltaTime)
 {
+	if ( !bAllowSelections )
+		return;
 	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
 	{
 		SelectionRenderTarget->Bind();

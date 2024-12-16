@@ -55,6 +55,7 @@ bool FluidScreen_Simulation::Slider(const std::string& Label, float* value, floa
 {
 	ImGui::SetNextItemWidth(SliderWidth);
 	ImGui::Text(Label.c_str());
+
 	
 	ImGui::SetNextItemWidth(SliderWidth * 0.65f);
 	std::string sliderName = "##slider" + Label;
@@ -64,6 +65,14 @@ bool FluidScreen_Simulation::Slider(const std::string& Label, float* value, floa
 	bool retInput = ImGui::InputFloat(inputName.c_str(), value, 0.01f, 100.0f);
 
 	return retSlider || retInput;
+}
+
+void FluidScreen_Simulation::Display(const std::string& Label, const std::string& value)
+{
+	ImGui::SetNextItemWidth(SliderWidth);
+	ImGui::TextDisabled(Label.c_str());
+	ImGui::SameLine();
+	ImGui::TextDisabled(value.c_str());
 }
 
 void FluidScreen_Simulation::Render_Internal(float DeltaTime)
@@ -85,36 +94,22 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_AlwaysVerticalScrollbar );
 
 
-		if ( Slider("Particle count", &Simulation->ParticleCount, 1, 100000) )
-		{
-			Simulation->Reset();
-		}
-		
 		bool UpdateSettings = false;
 		
-		Spacing();
-		if ( Slider("Size", &Simulation->ParticleRadius, 0.0001f, 1.0) )
+		if ( Slider("Size", &Simulation->ParticleRadius, 0.01f, 1.0) )
 		{
 			Simulation->Reset();
 		}
 
 		Spacing();
-		UpdateSettings |= Slider("Mass", &Simulation->ParticleMass, 1.0f, 10.0f);
+		UpdateSettings |= Slider("Target density", &Simulation->TargetDensity, 0.1f, 2000.0f);
 
 		Spacing();
-		Spacing();
-		UpdateSettings |= Slider("Target density", &Simulation->TargetDensity, 0.0f, 500.0f);
-
-		Spacing();
-		UpdateSettings |= Slider("Preassure", &Simulation->Preassure, 0.0f, 500.0f);
-		Spacing();
-		UpdateSettings |= Slider("Near pressure", &Simulation->NearPreassure, 0.0f, 1.0f);
+		UpdateSettings |= Slider("Preassure", &Simulation->Preassure, 0.1f, 500.0f);
 
 		Spacing();
 		UpdateSettings |= Slider("Viscosity", &Simulation->ViscosityFactor, 1.0f, 10.0f);
 
-
-		Spacing();
 		Spacing();
 		UpdateSettings |= Slider("Collision Damping", &Simulation->CollisionDamping, 0.0f, 1.0f);
 
@@ -128,10 +123,19 @@ void FluidScreen_Simulation::Render_Internal(float DeltaTime)
 		UpdateSettings |= Slider("Interaction radius", &Simulation->InteractionRadius, 10.0f, 100.0f);
 
 		Spacing();
-		UpdateSettings |= Slider("Max Velocity", &Simulation->MaxVelocity, 0.0f, 100.0f);
+		UpdateSettings |= Slider("Max velocity display", &Simulation->MaxVelocity, 0.0f, 100.0f);
+
+		Spacing();
+		UpdateSettings |= Slider("Steps per tick", &Simulation->StepsPerTick, 1, 4);
 
 		if ( UpdateSettings )
 			Simulation->UpdateShaderUniformParams();
+
+		Display("Particle count: ", Log::to_string(Simulation->GetParticleCount()));
+		Display("Smoothing radius: ", Log::to_string(Simulation->GetSmoothingRadius()));
+		Display("Near pressure: ", Log::to_string(Simulation->GetNearPreassure()));
+		Display("Particle mass: ", Log::to_string(Simulation->GetParticleMass()));
+		Display("World size: ", Log::to_string(Simulation->GetWorldSize()));
 
 	ImGui::End();
 	ImGui::GetStyle().ScaleAllSizes(2.0f);

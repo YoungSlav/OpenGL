@@ -34,17 +34,16 @@ public:
 		);
 		Print(std::vformat(format_str, format_args), Type);
 	}
-private:
 
-	static void Print(const std::string& Message, ELog Type = ELog::Log);
-	static void Print(const char* const Message, ELog Type = ELog::Log);
-
-	
 	template<typename T>
 	static std::string to_string(const T& val)
 	{
 		return to_string_internal<T>(val);
 	}
+private:
+
+	static void Print(const std::string& Message, ELog Type = ELog::Log);
+	static void Print(const char* const Message, ELog Type = ELog::Log);
 
 	template<typename T=char*>
 	static std::string to_string_internal(const char* val) 
