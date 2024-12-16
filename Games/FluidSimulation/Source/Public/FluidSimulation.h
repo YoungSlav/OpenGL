@@ -29,7 +29,7 @@ public:
 
 	// SIMULATION PROPERTIES
 
-	int32 ParticleCount = 16000;
+	int32 ParticleCount = 10000;
 	bool bRandomPositions = false;
 
 	float ParticleMass = 1.0f;
