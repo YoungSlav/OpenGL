@@ -2,7 +2,7 @@
 
 layout (local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 
-layout(r32f, binding = 0) uniform image3D outputTexture;
+layout(r8ui, binding = 0) uniform uimage3D outputTexture;
 
 struct Particle
 {
@@ -49,6 +49,7 @@ uniform float SmoothingRadius;
 uniform float SmoothingRadius2;
 
 uniform float DensityMultiplier;
+uniform float DensityOffset;
 
 
 const uint GridLookupCount = 27;
@@ -112,8 +113,10 @@ void main()
 
     float Density = CalcDensity(worldPosition);
 
+    float data = Density > DensityOffset ? 1.0f : 0.0f;
 
-    imageStore(outputTexture, pixelCoord, vec4(Density));
+
+    imageStore(outputTexture, pixelCoord, uvec4(uvec3(data), 1.0f));
 };
 
 float CalcDensity(vec3 location)

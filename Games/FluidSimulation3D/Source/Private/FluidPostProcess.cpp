@@ -47,7 +47,7 @@ void FluidPostProcess::CreateDensitiesMap()
 
 	glGenTextures(1, &DensitiesMapBuffer);
     glBindTexture(GL_TEXTURE_3D, DensitiesMapBuffer);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, DensitiesMapSize.x, DensitiesMapSize.y, DensitiesMapSize.z, 0, GL_RED, GL_FLOAT, nullptr);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R8UI, DensitiesMapSize.x, DensitiesMapSize.y, DensitiesMapSize.z, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -99,6 +99,8 @@ bool FluidPostProcess::EnsureReady()
 		DensitiesSampleCompute->SetFloat1("SmoothingRadius", Simulation->SmoothingRadius);
 		DensitiesSampleCompute->SetFloat1("SmoothingRadius2", Simulation->SmoothingRadius*Simulation->SmoothingRadius);
 
+		DensitiesSampleCompute->SetFloat1("DensityOffset", DensityOffset);
+
 		
 	DensitiesSampleCompute->StopUsage();
 
@@ -140,7 +142,7 @@ void FluidPostProcess::Render_Internal()
 	{
 		DensitiesSampleCompute->Use();
 
-		glBindImageTexture(0, DensitiesMapBuffer, 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_R32F);
+		glBindImageTexture(0, DensitiesMapBuffer, 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_R8UI);
 
 		GLuint workGroupSizeX = (DensitiesMapSize.x + 7) / 8;  // Round up to the nearest multiple of 16
 		GLuint workGroupSizeY = (DensitiesMapSize.y + 7) / 8;
@@ -157,7 +159,7 @@ void FluidPostProcess::Render_Internal()
 		RayMarchingCompute->Use();
 		
 		glBindImageTexture(0, RenderTarget->GetColorTexture(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-		glBindImageTexture(1, DensitiesMapBuffer, 0, GL_TRUE, 0, GL_READ_ONLY, GL_R32F);
+		glBindImageTexture(1, DensitiesMapBuffer, 0, GL_TRUE, 0, GL_READ_ONLY, GL_R8UI);
 		
 
 		GLuint workGroupSizeX = (OutputImageSize.x + 15) / 16;  // Round up to the nearest multiple of 16

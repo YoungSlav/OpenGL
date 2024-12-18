@@ -3,7 +3,7 @@
 layout (local_size_x = 16, local_size_y = 16) in;
 
 layout(rgba32f, binding = 0) uniform image2D outputTexture;
-layout(r32f, binding = 1) uniform image3D densitiesMap;
+layout(r8ui, binding = 1) uniform uimage3D densitiesMap;
 uniform vec3 DensitiesMapSize;
 
 const float FLT_EPS = 0.001f;
@@ -24,9 +24,10 @@ uniform mat4 inverseBoundingBox;
 uniform float MarchingRayStep;
 uniform float LightMarchingRayStep;
 uniform float DensityMultiplier;
-uniform float DensityOffset;
+
 
 uniform float TargetDensity;
+uniform float DensityOffset;
 
 uniform vec3 ScatteringCoefficients;
 
@@ -109,20 +110,16 @@ vec4 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
     vec3 totalLight = vec3(0.0f);
     float accumulatedDensity = 0.0f;
 
-    float Step = MarchingRayStep;
-
-    float debugCount = 0.0f;
-        
-    for (float coveredDst = 0.0f; coveredDst*coveredDst < marchingDist2; coveredDst += Step)
+    for (float coveredDst = 0.0f; coveredDst*coveredDst < marchingDist2; coveredDst += MarchingRayStep)
     {
         vec3 samplePoint = origin + dir * coveredDst;
         float density = SampleDensity(samplePoint);
-        float densityAlongStep = (density * Step * DensityMultiplier);
-        accumulatedDensity += densityAlongStep;
-
         
         if ( density > DensityOffset )
         {
+            float densityAlongStep = (density * MarchingRayStep * DensityMultiplier);
+            accumulatedDensity += densityAlongStep;
+
             float densityAlongSunRay = DensityAlongRay(samplePoint, DirToLight);
             vec3 transmittedLight = exp(-densityAlongSunRay * ScatteringCoefficients);
         
@@ -130,14 +127,13 @@ vec4 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
             vec3 viewTransmittance = exp(-accumulatedDensity * ScatteringCoefficients);
         
             totalLight += scatteredLight * viewTransmittance;
+
+            // TODO: should we break if no more light can be transmited?
+            if (all(lessThan(viewTransmittance, vec3(0.1f))))
+                break;
         }
-
-
-        // TODO: check if this optimization gives anything
-        Step = density >= TargetDensity ? MarchingRayStep * (density / TargetDensity) : MarchingRayStep;
     }
     
-    // actual
     return vec4(totalLight, 1.0f);
 }
 
@@ -163,7 +159,7 @@ float DensityAlongRayDetailed_A(vec3 origin, vec3 dir)
 
 float DensityAlongRay_B(vec3 origin, vec3 dir)
 {
-    if ( SampleDensity(origin) <= FLT_EPS  )
+    if ( SampleDensity(origin) <= DensityOffset  )
         return 0.0f;
 
     float pointDensity = 0.0f;
@@ -219,7 +215,7 @@ float DensityAlongRay(vec3 origin, vec3 dir)
 float FindSurface(vec3 origin, vec3 dir)
 {
 
-    if ( SampleDensity(origin) <= FLT_EPS  )
+    if ( SampleDensity(origin) <= DensityOffset  )
         return 0.0f;
 
     float pointDensity = 0.0f;
@@ -236,7 +232,7 @@ float FindSurface(vec3 origin, vec3 dir)
         float sampleDist = DistCandidate + (Step[StepSizeIndex] * StepIteration);
         vec3 samplePoint = origin + dir * sampleDist;
         pointDensity = SampleDensity(samplePoint);
-        if ( pointDensity <= FLT_EPS )
+        if ( pointDensity <= 0.5 )
         {
             DistCandidate = DistCandidate + (Step[StepSizeIndex] * (StepIteration-1));
 
@@ -280,12 +276,11 @@ float SampleDensity(vec3 location)
 {
     vec3 localPoint = (inverseBoundingBox * vec4(location, 1.0)).xyz;
     localPoint = localPoint + vec3(0.5f);
-    //ivec3 mapSize = ivec3(DensitiesMapSize);
     vec3 sampleCoord = localPoint * DensitiesMapSize;
 
-    float Density = imageLoad(densitiesMap, ivec3(sampleCoord.xyz)).r;
+    float Density = imageLoad(densitiesMap, ivec3(sampleCoord.xyz)).r * TargetDensity;
        
-    return max(0.0f, Density - DensityOffset);
+    return Density;
 }
 
 bool IntersectRayBox(vec3 origin, vec3 dir, out vec3 hitLocation, out float distInsideCube2)
