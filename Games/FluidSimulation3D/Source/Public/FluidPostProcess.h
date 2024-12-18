@@ -15,7 +15,7 @@ public:
 public:
 	float DensityOffset = 30.0f;
 	float DensityMultiplier = 0.001f;
-	float MarchingRayStep = 0.01f;
+	float MarchingRayStep = 0.05f;
 	float LightMarchingRayStep = 0.5f;
 	float DensitiesResolution = 0.05;
 

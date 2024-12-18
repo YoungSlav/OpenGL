@@ -6,6 +6,7 @@ layout(rgba32f, binding = 0) uniform image2D outputTexture;
 layout(r32f, binding = 1) uniform image3D densitiesMap;
 uniform vec3 DensitiesMapSize;
 
+const float FLT_EPS = 0.001f;
 const float FLT_MAX = 3.402823466e+38;
 const float PI = 3.14159265359;
 
@@ -120,21 +121,20 @@ vec4 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
         accumulatedDensity += densityAlongStep;
 
         
-        //debugCount += DensityAlongRay(samplePoint, DirToLight);
-        //if ( density != 0.0f )
-        //    break;
-
-        float densityAlongSunRay = DensityAlongRay(samplePoint, DirToLight);
-        vec3 transmittedLight = exp(-densityAlongSunRay * ScatteringCoefficients);
+        if ( density > DensityOffset )
+        {
+            float densityAlongSunRay = DensityAlongRay(samplePoint, DirToLight);
+            vec3 transmittedLight = exp(-densityAlongSunRay * ScatteringCoefficients);
         
-        vec3 scatteredLight = transmittedLight * densityAlongStep * ScatteringCoefficients;
-        vec3 viewTransmittance = exp(-accumulatedDensity * ScatteringCoefficients);
+            vec3 scatteredLight = transmittedLight * densityAlongStep * ScatteringCoefficients;
+            vec3 viewTransmittance = exp(-accumulatedDensity * ScatteringCoefficients);
         
-        totalLight += scatteredLight * viewTransmittance;
+            totalLight += scatteredLight * viewTransmittance;
+        }
 
 
         // TODO: check if this optimization gives anything
-        Step = density >= TargetDensity ? MarchingRayStep *(density / TargetDensity) : MarchingRayStep;
+        Step = density >= TargetDensity ? MarchingRayStep * (density / TargetDensity) : MarchingRayStep;
     }
     
     // actual
@@ -143,7 +143,7 @@ vec4 RayMarch(vec3 dir, vec3 origin, float marchingDist2)
 
 
 
-float DensityAlongRay(vec3 origin, vec3 dir)
+float DensityAlongRayDetailed_A(vec3 origin, vec3 dir)
 {
     float totalDensity = 0.0f;
     float coveredDst = 0.0f;
@@ -157,91 +157,108 @@ float DensityAlongRay(vec3 origin, vec3 dir)
         totalDensity += densityAlongStep;
         coveredDst += LightMarchingRayStep;
     
-    } while ( pointDensity > 0.0f );
+    } while ( pointDensity > FLT_EPS );
+    return totalDensity;
+}
+
+float DensityAlongRay_B(vec3 origin, vec3 dir)
+{
+    if ( SampleDensity(origin) <= FLT_EPS  )
+        return 0.0f;
+
+    float pointDensity = 0.0f;
+    bool bFound = false;
+
+    #define STEP_SIZE_NUMBER 5
+    float Step[STEP_SIZE_NUMBER] = { LightMarchingRayStep*2.0f, LightMarchingRayStep, LightMarchingRayStep*0.5f, LightMarchingRayStep*0.25f, MarchingRayStep };
+    uint StepSizeIndex = 0;
+    uint StepIteration = 1;
+    float DistCandidate = 0.0f;
+    
+    float LastDensityDelta = 0.0f;
+    float totalDensity = 0.0f;
+
+    while( true )
+    {
+        float stepDistance = (Step[StepSizeIndex] * StepIteration);
+        float sampleDist = DistCandidate + stepDistance;
+        vec3 samplePoint = origin + dir * sampleDist;
+        pointDensity = SampleDensity(samplePoint);
+        if ( pointDensity <= FLT_EPS )
+        {
+            DistCandidate = DistCandidate + (Step[StepSizeIndex] * (StepIteration-1));
+
+            StepSizeIndex++;
+            if( StepSizeIndex == STEP_SIZE_NUMBER )
+            {
+                break;
+            }
+            else
+            {
+                StepIteration = 1;  // skipping over 0 itteration of the next step size, not to sample same point again
+            }
+        }
+        else
+        {
+            totalDensity += pointDensity * DensityMultiplier * stepDistance;
+            StepIteration++;
+        }
+
+    }
     return totalDensity;
 }
 
 
-// will not give advantages until Surface search will be fast
-float DensityAlongRayOptimized(vec3 origin, vec3 dir)
+float DensityAlongRay(vec3 origin, vec3 dir)
 {
     float surfaceDistance =  FindSurface(origin, dir);
     float totalDensity = TargetDensity * DensityMultiplier * surfaceDistance;
     return totalDensity;
 }
 
-// fust as fuck boi
-// binary search.
-// visual artifacts
-// fails to correctly detect droplets of water along the ray
-float FindSurfaceFast(vec3 origin, vec3 dir)
+float FindSurface(vec3 origin, vec3 dir)
 {
-    float steps = 0.0f;
 
-    const float Precision = LightMarchingRayStep * 0.5f;
-
-    const float MaxDist = max(BoundsSize.x, max(BoundsSize.y, BoundsSize.z));
-
-    float JumpSize = MaxDist * 0.5f;
-    float surfaceDist = JumpSize;
-
-    float pointDensity = SampleDensity(origin);
-    if ( pointDensity <= 0.0f )
+    if ( SampleDensity(origin) <= FLT_EPS  )
         return 0.0f;
 
-    const uint dropTestIterrations = 4;
-    
-    do
+    float pointDensity = 0.0f;
+    bool bFound = false;
+
+    #define STEP_SIZE_NUMBER 5
+    float Step[STEP_SIZE_NUMBER] = { LightMarchingRayStep*2.0f, LightMarchingRayStep, LightMarchingRayStep*0.5f, LightMarchingRayStep*0.25f, MarchingRayStep };
+    uint StepSizeIndex = 0;
+    uint StepIteration = 1;
+    float DistCandidate = 0.0f;
+
+    while( true )
     {
-        steps += 1.0f;
-
-        vec3 samplePoint = origin + dir * surfaceDist;
+        float sampleDist = DistCandidate + (Step[StepSizeIndex] * StepIteration);
+        vec3 samplePoint = origin + dir * sampleDist;
         pointDensity = SampleDensity(samplePoint);
-
-        if (pointDensity > 0.0f)
+        if ( pointDensity <= FLT_EPS )
         {
-            // we found fluid. we should check if it's not an independent drop
-            // if it is, jump back, not forward
-            bool bDropDetected = false;
-            float dropTestItrDist = JumpSize / (dropTestIterrations+1);
-            for ( uint i = 1; i < dropTestIterrations; ++i )
-            {
-                float dropTestDist = surfaceDist - dropTestItrDist*i;
-                vec3 dropTestPoint = origin + dir * dropTestDist;
-                float dropTestDensity = SampleDensity(dropTestPoint);
-                if (dropTestDensity <= 0.0f)
-                {
-                    bDropDetected = true;
-                    break;
-                }
-            }
+            DistCandidate = DistCandidate + (Step[StepSizeIndex] * (StepIteration-1));
 
-            if ( !bDropDetected )
+            StepSizeIndex++;
+            if( StepSizeIndex == STEP_SIZE_NUMBER )
             {
-                surfaceDist += JumpSize;
+                return DistCandidate;
             }
             else
             {
-                surfaceDist -= JumpSize;
+                StepIteration = 1;  // skipping over 0 itteration of the next step size, not to sample same point again
             }
-            //surfaceDist += JumpSize;
         }
         else
         {
-            surfaceDist -= JumpSize;
+            StepIteration++;
         }
-        JumpSize *= 0.5f;
 
-    } while( JumpSize > Precision && JumpSize < MaxDist );
-    
-    //return steps;
-
-    return surfaceDist;
-
-    
+    }
 }
 
-float FindSurface(vec3 origin, vec3 dir)
+float FindSurfaceSlow(vec3 origin, vec3 dir)
 {
     float steps = 0.0f;
     float coveredDst = 0.0f;
@@ -250,12 +267,12 @@ float FindSurface(vec3 origin, vec3 dir)
     {
         steps++;
         vec3 samplePoint = origin + dir * coveredDst;
-        pointDensity = SampleDensity(samplePoint) * DensityMultiplier;
+        pointDensity = SampleDensity(samplePoint);
         
         coveredDst += LightMarchingRayStep;
 
-    } while ( pointDensity > 0.0f );
-    return steps;
+    } while ( pointDensity > FLT_EPS );
+    //return steps;
     return coveredDst - LightMarchingRayStep;
 }
 
@@ -263,12 +280,12 @@ float SampleDensity(vec3 location)
 {
     vec3 localPoint = (inverseBoundingBox * vec4(location, 1.0)).xyz;
     localPoint = localPoint + vec3(0.5f);
-    ivec3 mapSize = ivec3(DensitiesMapSize);
-    vec3 sampleCoord = localPoint * vec3(mapSize);
+    //ivec3 mapSize = ivec3(DensitiesMapSize);
+    vec3 sampleCoord = localPoint * DensitiesMapSize;
 
     float Density = imageLoad(densitiesMap, ivec3(sampleCoord.xyz)).r;
        
-    return Density >= DensityOffset ? Density : 0.0f ;
+    return max(0.0f, Density - DensityOffset);
 }
 
 bool IntersectRayBox(vec3 origin, vec3 dir, out vec3 hitLocation, out float distInsideCube2)
@@ -293,7 +310,7 @@ bool IntersectRayBox(vec3 origin, vec3 dir, out vec3 hitLocation, out float dist
     float tFar = min(min(t2.x, t2.y), t2.z);
 
     // If tNear > tFar or tFar < 0, there is no intersection
-    if (tNear > tFar || tFar < 0.0)
+    if (tNear > tFar || tFar < FLT_EPS)
     {
         return false;
     }

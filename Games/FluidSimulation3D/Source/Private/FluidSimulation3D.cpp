@@ -215,7 +215,6 @@ void FluidSimulation3D::UpdateShaderUniformParams()
 
 void FluidSimulation3D::Render()
 {
-	return;
 	if ( ParticleCount <= 0 && bReadyToRender)
 		return;
 

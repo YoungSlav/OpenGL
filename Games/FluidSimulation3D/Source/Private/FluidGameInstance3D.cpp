@@ -24,6 +24,7 @@ bool FluidGameInstance3D::Initialize_Internal()
 	Camera = NewObject<BravoCamera>("FluidCamera", EBravoCameraType::Perspective);
 	Engine->SetCamera(Camera);
 	Player = NewObject<BravoPlayer>("Player");
+	Player->SetMoveSpeed(5.0f);
 	
 	Player->SetLocation(glm::vec3(0.0f, 30.0f, 0.0) - BravoMath::forwardV*30.0f);
 	Player->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f) - Player->GetLocation_World());

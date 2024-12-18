@@ -12,7 +12,7 @@ public:
 		IBravoTickable()
 	{}
 
-
+	void SetMoveSpeed(float NewSpeed);
 
 protected:
 	virtual bool Initialize_Internal() override;

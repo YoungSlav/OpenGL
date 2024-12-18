@@ -159,6 +159,11 @@ void BravoPlayer::OnMouseScroll(const glm::vec2& DeltaScroll, float DeltaTime)
 {
 	MoveSpeed = glm::clamp(MoveSpeed + InputMouseScrollSensitivity * DeltaScroll.y, MinMoveSpeed, MaxMoveSpeed);
 }
+
+void BravoPlayer::SetMoveSpeed(float NewSpeed)
+{
+	MoveSpeed = glm::clamp(NewSpeed, MinMoveSpeed, MaxMoveSpeed);
+}
 void BravoPlayer::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& DeltaMove, float DeltaTime)
 {
 	if ( !bMouseInput || glm::all(glm::epsilonEqual(DeltaMove, glm::vec2(0.0f), FLT_EPS)) ) return;
