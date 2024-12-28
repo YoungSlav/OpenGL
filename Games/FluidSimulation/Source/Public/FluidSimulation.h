@@ -5,13 +5,11 @@
 
 struct Particle
 {
-	alignas(8) glm::vec2 Position = glm::vec2(0.0f);
-    alignas(8) glm::vec2 PredictedPosition = glm::vec2(0.0f);
-    alignas(8) glm::vec2 Velocity = glm::vec2(0.0f);
+	glm::vec2 Position = glm::vec2(0.0f);
+    glm::vec2 PredictedPosition = glm::vec2(0.0f);
+    glm::vec2 Velocity = glm::vec2(0.0f);
     float Density;
-	float iDensity;
 	float NearDensity;
-	float iNearDensity;
 };
 
 class FluidSimulation : public BravoObject, public IBravoTickable, public IBravoRenderable
@@ -113,8 +111,9 @@ private:
 	GLuint VAO = 0;
 	GLuint VBO = 0;
 	GLuint ParticlesSSBO = 0;
+	GLuint ParticlesSortedSSBO = 0;
 	
-	GLuint SortedParticlesSSBO = 0;
+	GLuint SortedCellIndiciesSSBO = 0;
 	GLuint RadixTmpSSBO = 0;
 	GLuint RadixHistogramSSBO = 0;
 
@@ -140,6 +139,7 @@ private:
 	std::shared_ptr<class BravoShaderAsset> RadixSortHistogramCompute;
 
 	std::shared_ptr<class BravoShaderAsset> FluidStartingIndiciesCompute;
+	std::shared_ptr<class BravoShaderAsset> DensityCompute;
 	std::shared_ptr<class BravoShaderAsset> PressureCompute;
 
 

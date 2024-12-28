@@ -37,11 +37,15 @@ bool FluidSimulation::Initialize_Internal()
 	glGenBuffers(1, &ParticlesSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
-		
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	glGenBuffers(1, &ParticlesSortedSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSortedSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	
-	glGenBuffers(1, &SortedParticlesSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
+	glGenBuffers(1, &SortedCellIndiciesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedCellIndiciesSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -78,6 +82,8 @@ bool FluidSimulation::Initialize_Internal()
 
 	FluidStartingIndiciesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidStartingIndicies", BravoShaderLoadingParams("Compute\\FluidStartingIndicies"));
 	PressureCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidPressure", BravoShaderLoadingParams("Compute\\FluidPressure"));
+
+	DensityCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidDensity", BravoShaderLoadingParams("Compute\\FluidDensity"));
 
 	{
 		Engine->GetInput()->OnMouseMoveDelegate.AddSP(Self<FluidSimulation>(), &FluidSimulation::OnMouseMove);
@@ -123,9 +129,13 @@ void FluidSimulation::FillBuffers()
 	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ParticlesSSBO);
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedParticlesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ParticlesSortedSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(Particle), nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, ParticlesSortedSSBO);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SortedCellIndiciesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedCellIndiciesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, RadixTmpSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, ParticleCount * sizeof(uint32) * 2, nullptr, GL_DYNAMIC_DRAW);
@@ -149,6 +159,13 @@ void FluidSimulation::FillBuffers()
 
 void FluidSimulation::UpdateShaderUniformParams()
 {
+
+	DensityScale		= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
+	NearDensityScale	= 10.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+	PressureScale		= 12.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
+	NearPressureScale	= 30.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
+	ViscosityScale		= 4.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 8)));
+
 	FluidStartingIndiciesCompute->Use();
 		FluidStartingIndiciesCompute->SetInt("ParticleCount", ParticleCount);
 	FluidStartingIndiciesCompute->StopUsage();
@@ -157,8 +174,22 @@ void FluidSimulation::UpdateShaderUniformParams()
 	GridHashingCompute->Use();
 		GridHashingCompute->SetFloat2("WorldSize", WorldSize);
 		GridHashingCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
+		GridHashingCompute->SetFloat1("iSmoothingRadius", 1.0f / SmoothingRadius);
 		GridHashingCompute->SetInt("ParticleCount", ParticleCount);
 	GridHashingCompute->StopUsage();
+
+	// density
+	DensityCompute->Use();
+		DensityCompute->SetInt("ParticleCount", ParticleCount);
+
+		DensityCompute->SetFloat2("WorldSize", WorldSize);
+		DensityCompute->SetFloat1("ParticleMass", ParticleMass);
+		DensityCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
+		DensityCompute->SetFloat1("iSmoothingRadius", 1.0f / SmoothingRadius);
+
+		DensityCompute->SetFloat1("DensityScale", DensityScale);
+		DensityCompute->SetFloat1("NearDensityScale", NearDensityScale);
+	DensityCompute->StopUsage();
 	
 	// pressure
 	PressureCompute->Use();
@@ -171,6 +202,7 @@ void FluidSimulation::UpdateShaderUniformParams()
 		PressureCompute->SetFloat1("ParticleMass", ParticleMass);
 		PressureCompute->SetFloat1("ParticleRadius", ParticleRadius);
 		PressureCompute->SetFloat1("SmoothingRadius", SmoothingRadius);
+		PressureCompute->SetFloat1("iSmoothingRadius", 1.0f / SmoothingRadius);
 		PressureCompute->SetFloat1("TargetDensity", TargetDensity);
 	
 		PressureCompute->SetFloat1("Preassure", Preassure);
@@ -183,14 +215,6 @@ void FluidSimulation::UpdateShaderUniformParams()
 		PressureCompute->SetFloat2("InteractionLocation", InteractionLocation);
 		PressureCompute->SetFloat1("InteractionRadius", InteractionRadius);
 
-		DensityScale		= 6.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
-		NearDensityScale	= 10.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
-		PressureScale		= 12.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 4)));
-		NearPressureScale	= 30.0f / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 5)));
-		ViscosityScale		= 4.0f  / (1.0f * (glm::pi<float>() * glm::pow(SmoothingRadius, 8)));
-		
-		PressureCompute->SetFloat1("DensityScale", DensityScale);
-		PressureCompute->SetFloat1("NearDensityScale", NearDensityScale);
 		PressureCompute->SetFloat1("PressureScale", PressureScale);
 		PressureCompute->SetFloat1("NearPressureScale", NearPressureScale);
 		PressureCompute->SetFloat1("ViscosityScale", ViscosityScale);
@@ -247,7 +271,7 @@ void FluidSimulation::Reset()
 	glm::vec2 MaxSpawnBounds = glm::vec2((WorldSize.x-SpawnSpacing) , (WorldSize.y-SpawnSpacing))*0.7f;
 
 	int32 maxParticles = (int32)((MaxSpawnBounds.x * MaxSpawnBounds.y) / (SpawnSpacing*SpawnSpacing));
-	ParticleCount = glm::min(maxParticles, 100000);
+	ParticleCount = glm::min(maxParticles, 200000);
 
 	FillBuffers();
 	UpdateShaderUniformParams();
@@ -338,7 +362,6 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 {
 	GridHashingCompute->Use();
 		glDispatchCompute(NumWorkGroups, 1, 1);
-		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	GridHashingCompute->StopUsage();
 
@@ -346,14 +369,19 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 	ExecuteRadixSort();
 	
 	FluidStartingIndiciesCompute->Use();
-
 		glDispatchCompute(NumWorkGroups, 1, 1);
-		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	FluidStartingIndiciesCompute->StopUsage();
 
+
+	// density
+	DensityCompute->Use();
+		glDispatchCompute(NumWorkGroups, 1, 1);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	DensityCompute->StopUsage();
+
+	// pressure
 	PressureCompute->Use();
-		// update time step
 		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
 
 		PressureCompute->SetFloat1("SimulationTimeStep", DeltaTime);
@@ -361,11 +389,10 @@ void FluidSimulation::SimulationStep(float DeltaTime)
 		PressureCompute->SetFloat2("InteractionLocation", InteractionLocation);
 		PressureCompute->SetFloat1("InteractionRadius", InteractionRadius);
 
-		glm::vec2 RandomVector = glm::vec2(1.0f);//glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
+		glm::vec2 RandomVector = glm::normalize(glm::vec2(BravoMath::Rand(-1.0f, 1.0f), BravoMath::Rand(-1.0f, 1.0f)));
 		PressureCompute->SetFloat2("RandomVector", RandomVector);
 
 		glDispatchCompute(NumWorkGroups, 1, 1);
-		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	PressureCompute->StopUsage();
 }
@@ -386,21 +413,21 @@ void FluidSimulation::ExecuteRadixSort()
 			glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 		RadixSortCompute->StopUsage();
 	}
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedCellIndiciesSSBO);
 }
 
 void FluidSimulation::UpdateRadixIteration(int32 iteration)
 {
 	if (iteration == 0 || iteration == 2)
 	{
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedParticlesSSBO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SortedCellIndiciesSSBO);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, RadixTmpSSBO);
 		
 		RadixSortPushConstants.g_shift = iteration == 0 ? 0 : 16;
 	}
 	else if (iteration == 1 || iteration == 3)
 	{
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, SortedParticlesSSBO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, SortedCellIndiciesSSBO);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, RadixTmpSSBO);
 
 		RadixSortPushConstants.g_shift = iteration == 1 ? 8 : 24;

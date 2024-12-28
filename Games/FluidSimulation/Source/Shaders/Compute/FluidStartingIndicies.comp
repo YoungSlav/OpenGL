@@ -2,14 +2,14 @@
 
 layout(local_size_x = 256) in;
 
-struct SortedParticle
+struct SortedParticleIndex
 {
     uint CellIndex;
     uint pIndex;
 };
-layout(std430, binding = 1) buffer SortedParticlesBuffer
+layout(std430, binding = 1) buffer SortedIndiciesBuffer
 {
-	SortedParticle SortedParticles[];
+	SortedParticleIndex SortedIndicies[];
 };
 
 layout(std430, binding = 2) buffer StartIndicesBuffer
@@ -17,17 +17,40 @@ layout(std430, binding = 2) buffer StartIndicesBuffer
 	uint StartIndices[];
 };
 
+struct Particle
+{
+    vec2 Position;
+    vec2 PredictedPosition;
+    vec2 Velocity;
+    float Density;
+    float NearDensity;
+};
+
+layout(std430, binding = 0) buffer ParticlesBuffer
+{
+	Particle Particles[];
+};
+
+layout(std430, binding = 5) buffer ParticlesSortBuffer
+{
+	Particle SortedParticles[];
+};
+
 uniform int ParticleCount;
+
 
 void main()
 {
     uint i = gl_GlobalInvocationID.x;
     if ( i >= ParticleCount ) return;
 
-    uint cellIndex = SortedParticles[i].CellIndex;
-    uint prevCellIndex = i != 0 ? SortedParticles[i-1].CellIndex : -1;
+    uint cellIndex = SortedIndicies[i].CellIndex;
+    uint prevCellIndex = i != 0 ? SortedIndicies[i-1].CellIndex : -1;
     if ( cellIndex != prevCellIndex )
     {
         StartIndices[cellIndex] = i;
     }
+    
+    SortedParticles[i] = Particles[SortedIndicies[i].pIndex];
+    SortedIndicies[i].pIndex = i;
 };

@@ -8,9 +8,7 @@ struct Particle
     vec2 PredictedPosition;
     vec2 Velocity;
     float Density;
-    float iDensity;
     float NearDensity;
-    float iNearDensity;
 };
 layout(std430, binding = 0) buffer ParticlesBuffer
 {
@@ -44,7 +42,5 @@ void main()
     Particles[i].PredictedPosition = Particles[i].Position;
     Particles[i].Velocity = vec2(0.0);
     Particles[i].Density = 0.0;
-    Particles[i].iDensity = 0.0;
     Particles[i].NearDensity = 0.0;
-    Particles[i].iNearDensity = 0.0;
 };

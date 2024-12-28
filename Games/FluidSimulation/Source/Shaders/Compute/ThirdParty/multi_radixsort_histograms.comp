@@ -17,13 +17,13 @@ layout(std140) uniform PushConstants {
     uint g_num_blocks_per_workgroup; // Number of blocks per workgroup
 };
 
-struct SortedParticle {
+struct SortedParticleIndex {
     uint CellIndex;
     uint pIndex;
 };
 
 layout (std430, binding = 1) buffer elements_in {
-    SortedParticle g_elements_in[];
+    SortedParticleIndex g_elements_in[];
 };
 
 layout (std430, binding = 4) buffer histograms {

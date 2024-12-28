@@ -8,23 +8,21 @@ struct Particle
     vec2 PredictedPosition;
     vec2 Velocity;
     float Density;
-    float iDensity;
     float NearDensity;
-    float iNearDensity;
 };
 layout(std430, binding = 0) buffer ParticlesBuffer
 {
 	Particle Particles[];
 };
 
-struct SortedParticle
+struct SortedParticleIndex
 {
     uint CellIndex;
     uint pIndex;
 };
-layout(std430, binding = 1) buffer SortedParticlesBuffer
+layout(std430, binding = 1) buffer SortedIndiciesBuffer
 {
-	SortedParticle SortedParticles[];
+	SortedParticleIndex SortedIndicies[];
 };
 
 layout(std430, binding = 2) buffer StartIndicesBuffer
@@ -34,6 +32,7 @@ layout(std430, binding = 2) buffer StartIndicesBuffer
 
 uniform vec2 WorldSize;
 uniform float SmoothingRadius;
+uniform float iSmoothingRadius;
 
 uniform int ParticleCount;
 
@@ -55,16 +54,16 @@ void PrepareHash(uint i)
 {
     ivec2 CellCord = GetCellCoord(Particles[i].PredictedPosition);
     uint CellHash = GetCellHash(CellCord);
-    SortedParticles[i].CellIndex = CellIndexFromHash(CellHash);
-    SortedParticles[i].pIndex = i;
+    SortedIndicies[i].CellIndex = CellIndexFromHash(CellHash);
+    SortedIndicies[i].pIndex = i;
     StartIndices[i] = ParticleCount;
 }
 
 ivec2 GetCellCoord(vec2 Position)
 {
 	vec2 normilizedPos = Position + WorldSize;
-	int cellX = int(floor(normilizedPos.x / SmoothingRadius*2.0f));
-    int cellY = int(floor(normilizedPos.y / SmoothingRadius*2.0f));
+	int cellX = int(floor(normilizedPos.x * iSmoothingRadius*2.0f));
+    int cellY = int(floor(normilizedPos.y * iSmoothingRadius*2.0f));
 	return ivec2(cellX, cellY);
 }
 

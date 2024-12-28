@@ -7,15 +7,9 @@ struct Particle
     vec2 Position;
     vec2 PredictedPosition;
     vec2 Velocity;
+
     float Density;
-    float iDensity;
     float NearDensity;
-    float iNearDensity;
-};
-struct SortedParticle
-{
-    uint CellIndex;
-    uint pIndex;
 };
 
 // BUFFERS
@@ -23,9 +17,9 @@ layout(std430, binding = 0) buffer ParticlesBuffer
 {
 	Particle Particles[];
 };
-layout(std430, binding = 1) buffer SortedParticlesBuffer
+layout(std430, binding = 5) buffer ParticlesSortedBuffer
 {
-	SortedParticle SortedParticles[];
+	Particle SortedParticles[];
 };
 layout(std430, binding = 2) buffer StartIndicesBuffer
 {
@@ -35,7 +29,6 @@ layout(std430, binding = 2) buffer StartIndicesBuffer
 // world params
 uniform vec2 WorldSize;
 uniform vec2 ContainerSize;
-uniform float MaxVelocity;
 uniform vec2 RandomVector;
 uniform int ParticleCount;
 
@@ -43,6 +36,7 @@ uniform int ParticleCount;
 uniform float ParticleMass;
 uniform float ParticleRadius;
 uniform float SmoothingRadius;
+uniform float iSmoothingRadius;
 uniform float TargetDensity;
 uniform float SimulationTimeStep;
 
@@ -70,7 +64,6 @@ uniform float InteractionRadius;
 
 
 // forces
-void CalcDensity(uint i);
 vec2 CalcFluidForces(uint i);
 
 // conversion helpers
@@ -85,6 +78,7 @@ float NearPressureKernel(float dst);
 float ViscosityKernel(float dst);
 
 // grid helpers
+uint GetCellIndex(vec2 Position);
 ivec2 GetCellCoord(vec2 Position);
 uint GetCellHash(ivec2 Coords);
 uint CellIndexFromHash(uint Hash);
@@ -107,123 +101,71 @@ const ivec2 GridOffsets[GridLookupCount] = ivec2[](
 	ivec2(-1, -1)
 );
 
+const float PredictionTimeStep = 1.0f / 120.0f;
+
 void main()
 {
     uint i = gl_GlobalInvocationID.x;
     if ( i >= ParticleCount ) return;
 
-    CalcDensity(i);
-
-    barrier();
-
     vec2 externalForces = CalcExternalForces(i);
 
     vec2 fluidForces = CalcFluidForces(i);
 
-    vec2 newVelocity = Particles[i].Velocity + ((fluidForces + externalForces) * SimulationTimeStep);
-    vec2 newPosition = Particles[i].Position + (newVelocity * SimulationTimeStep);
+    vec2 newVelocity = SortedParticles[i].Velocity + ((fluidForces + externalForces) * SimulationTimeStep);
+    vec2 newPosition = SortedParticles[i].Position + (newVelocity * SimulationTimeStep);
 
-    ResolveCollisions(Particles[i].Position, newPosition, newVelocity);
+    ResolveCollisions(SortedParticles[i].Position, newPosition, newVelocity);
 
+    // output 
     Particles[i].Position = newPosition;
-    
-
-    barrier();
-
     Particles[i].Velocity = newVelocity;
-
-    const float PredictionTimeStep = 1.0f / 120.0f;
     Particles[i].PredictedPosition = newPosition + newVelocity * PredictionTimeStep;
 };
-
-
-
-void CalcDensity(uint i)
-{
-    float Density = 0.0f;
-    float NearDensity = 0.0f;
-
-    vec2 myPosition = Particles[i].PredictedPosition;
-    ivec2 myCell = GetCellCoord(myPosition);
-    for ( uint gr = 0; gr < GridLookupCount; ++gr )
-    {
-        ivec2 lookupCell = myCell + GridOffsets[gr];
-        uint CellHash = GetCellHash(lookupCell);
-        uint CellIndex = CellIndexFromHash(CellHash);
-        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < ParticleCount; ++lookupIndex )
-        {
-            if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
-                break;
-            uint otherP = SortedParticles[lookupIndex].pIndex;
-
-            // now we got all the indices
-            vec2 otherPosition = Particles[otherP].PredictedPosition;
-            vec2 offset = otherPosition - myPosition;
-            float dst2 = dot(offset, offset);
-            if ( dst2 > SmoothingRadius*SmoothingRadius ) continue;
-            
-            // now we have all the data
-            float dst = sqrt(dst2);
-            Density += ParticleMass * DensityKernel(dst);
-            NearDensity += ParticleMass * NearDensityKernel(dst);
-        }
-    }
-    Particles[i].Density = Density;
-    Particles[i].iDensity = 1.0f / Density;
-
-    Particles[i].NearDensity = NearDensity;
-    Particles[i].iNearDensity = 1.0f / NearDensity;
-}
 
 vec2 CalcFluidForces(uint i)
 {
     vec2 viscosityForce = vec2(0.0f);
     vec2 pressureForce = vec2(0.0f);
     
-    vec2 myVelocity = Particles[i].Velocity;
-    float myDensity = Particles[i].Density;
-    float myDensityInverse = Particles[i].iDensity;
-    float myNearDensityInverse = Particles[i].iNearDensity;
-    float myNearDensity = Particles[i].NearDensity;
+    vec2 myVelocity = SortedParticles[i].Velocity;
+    float myDensity = SortedParticles[i].Density;
+    float myDensityInverse = 1.0f / SortedParticles[i].Density;
+    float myNearDensityInverse = 1.0f / SortedParticles[i].NearDensity;
+    float myNearDensity = SortedParticles[i].NearDensity;
     float myPressure = DensityToPressure(myDensity);
     float myNearPressure = NearDensityToPressure(myNearDensity);
 
-    vec2 myPosition = Particles[i].PredictedPosition;
+    vec2 myPosition = SortedParticles[i].PredictedPosition;
     ivec2 myCell = GetCellCoord(myPosition);
     for ( uint gr = 0; gr < GridLookupCount; ++gr )
     {
         ivec2 lookupCell = myCell + GridOffsets[gr];
         uint CellHash = GetCellHash(lookupCell);
         uint CellIndex = CellIndexFromHash(CellHash);
-        for ( uint lookupIndex = StartIndices[CellIndex]; lookupIndex < ParticleCount; ++lookupIndex )
+        for ( uint otherP = StartIndices[CellIndex]; otherP < ParticleCount; ++otherP )
         {
-            if ( SortedParticles[lookupIndex].CellIndex != CellIndex )
-                break;
-            uint otherP = SortedParticles[lookupIndex].pIndex;
             if ( otherP == i ) continue;
+            vec2 otherPosition = SortedParticles[otherP].PredictedPosition;
+            uint otherCellIndex = GetCellIndex(otherPosition);
+            if ( otherCellIndex != CellIndex )
+                break;
 
-            // now we got all the indices
-
-            vec2 otherPosition = Particles[otherP].PredictedPosition;
             vec2 offset = myPosition - otherPosition;
             float dst2 = dot(offset,  offset);
             if ( dst2 > SmoothingRadius*SmoothingRadius ) continue;
             
-            float dst = sqrt(dst2);
-            
-            // now we have all the data
-            
+            float dst = sqrt(dst2);            
             vec2 dir = dst > 0.0f ? offset / dst : RandomVector;
             
             
-            float otherDensity = Particles[otherP].Density;
-            float otherNearDensity = Particles[otherP].NearDensity;
+            float otherDensity = SortedParticles[otherP].Density;
+            float otherNearDensity = SortedParticles[otherP].NearDensity;
+            float otherDensityInverse = 1.0f / otherDensity;
+            float otherNearDensityInverse = 1.0f / otherNearDensity;
             
             float otherPressure = DensityToPressure(otherDensity);
             float otherNearPressure = NearDensityToPressure(otherNearDensity);
-
-            float otherDensityInverse = Particles[otherP].iDensity;
-            float otherNearDensityInverse = Particles[otherP].iNearDensity;
 
             float sharedPressure = (myPressure + otherPressure) * 0.5f;
             float sharedNearPressure = (myNearPressure + otherNearPressure) * 0.5f;
@@ -231,8 +173,8 @@ vec2 CalcFluidForces(uint i)
             pressureForce += dir * PressureKernel(dst) * sharedPressure * otherDensityInverse;
             pressureForce += dir * NearPressureKernel(dst) * sharedNearPressure * otherNearDensityInverse;
             
-            vec2 otherVelocity = Particles[otherP].Velocity;
-            viscosityForce += (otherVelocity - myVelocity) * /*ParticleMass * otherDensityInverse **/ ViscosityKernel(dst);
+            vec2 otherVelocity = SortedParticles[otherP].Velocity;
+            viscosityForce += (otherVelocity - myVelocity) * ParticleMass * otherDensityInverse * ViscosityKernel(dst);
         }
     }
     return (viscosityForce * ViscosityFactor) + (pressureForce * myDensityInverse);
@@ -243,7 +185,7 @@ vec2 CalcExternalForces(uint i)
     vec2 externalForces = vec2(0.0f, GravityForce);
     if ( InteractionForce != 0.0f )
     {
-        vec2 offset = InteractionLocation - Particles[i].Position;
+        vec2 offset = InteractionLocation - SortedParticles[i].Position;
         float dst2 = dot(offset, offset);
         if ( dst2 < InteractionRadius*InteractionRadius )
         {
@@ -255,7 +197,7 @@ vec2 CalcExternalForces(uint i)
             vec2 acceleration =
                 externalForces * gravityWeight +
                 forceDirection * normilizeDist * InteractionForce -
-                Particles[i].Velocity * normilizeDist;
+                SortedParticles[i].Velocity * normilizeDist;
 
             return acceleration;
         }
@@ -304,18 +246,6 @@ void ResolveCollisions(vec2 OldPosition, inout vec2 Position, inout vec2 Velocit
 }
 
 //// HELPERS
-
-float DensityKernel(float dst)
-{
-    float v = SmoothingRadius - dst;
-	return v * v * DensityScale;
-}
-float NearDensityKernel(float dst)
-{
-    float v = SmoothingRadius - dst;
-	return v * v * v * NearDensityScale;
-}
-
 float PressureKernel(float dst)
 {
     float v = SmoothingRadius - dst;
@@ -342,11 +272,17 @@ float NearDensityToPressure(float density)
 
 // GRID
 
+uint GetCellIndex(vec2 Position)
+{
+    return CellIndexFromHash(GetCellHash(GetCellCoord(Position)));
+}
+
+
 ivec2 GetCellCoord(vec2 Position)
 {
 	vec2 normilizedPos = Position + WorldSize;
-	int cellX = int(floor(normilizedPos.x / SmoothingRadius*2.0f));
-    int cellY = int(floor(normilizedPos.y / SmoothingRadius*2.0f));
+	int cellX = int(floor(normilizedPos.x * iSmoothingRadius*2.0f));
+    int cellY = int(floor(normilizedPos.y * iSmoothingRadius*2.0f));
 	return ivec2(cellX, cellY);
 }
 

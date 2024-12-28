@@ -14,7 +14,7 @@
 
 layout (local_size_x = WORKGROUP_SIZE) in;
 
-struct SortedParticle {
+struct SortedParticleIndex {
     uint CellIndex;
     uint pIndex;
 };
@@ -27,11 +27,11 @@ layout(std140) uniform PushConstants {
 };
 
 layout (std430, binding = 1) buffer elements_in {
-    SortedParticle g_elements_in[];
+    SortedParticleIndex g_elements_in[];
 };
 
 layout (std430, binding = 3) buffer elements_out {
-    SortedParticle g_elements_out[];
+    SortedParticleIndex g_elements_out[];
 };
 
 layout (std430, binding = 4) buffer histograms {
@@ -96,7 +96,7 @@ void main() {
         }
         barrier();
 
-        SortedParticle element_in;
+        SortedParticleIndex element_in;
         uint binID = 0;
         uint binOffset = 0;
         if (elementId < g_num_elements) {

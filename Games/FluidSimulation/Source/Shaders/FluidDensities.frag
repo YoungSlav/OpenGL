@@ -14,9 +14,7 @@ struct Particle
     vec2 PredictedPosition;
     vec2 Velocity;
     float Density;
-    float iDensity;
     float NearDensity;
-    float iNearDensity;
 };
 struct SortedParticle
 {
