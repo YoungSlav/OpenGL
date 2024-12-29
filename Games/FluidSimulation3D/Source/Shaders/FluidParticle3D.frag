@@ -6,8 +6,6 @@ struct Particle
     vec3 Position;
     vec3 PredictedPosition;
     vec3 Velocity;
-    float Density;
-    float iDensity;
 };
 
 layout(std430, binding = 0) buffer ParticlesBuffer

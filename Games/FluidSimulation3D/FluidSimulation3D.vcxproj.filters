@@ -72,5 +72,6 @@
     <None Include="Source\Shaders\Compute\FluidGenerateParticles.comp" />
     <None Include="Source\Shaders\FluidRayMarching.comp" />
     <None Include="Source\Shaders\SampleDensities.comp" />
+    <None Include="Source\Shaders\Compute\FluidDensity.comp" />
   </ItemGroup>
 </Project>

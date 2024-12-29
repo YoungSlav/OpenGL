@@ -10,7 +10,11 @@ struct Particle
 	alignas(16) glm::vec3 Position = glm::vec3(0.0f);
     alignas(16) glm::vec3 PredictedPosition = glm::vec3(0.0f);
     alignas(16) glm::vec3 Velocity = glm::vec3(0.0f);
-    alignas(4) float Density;
+};
+
+struct Density
+{
+	alignas(4) float Density;
 	alignas(4) float iDensity;
 	alignas(4) float NearDensity;
 	alignas(4) float iNearDensity;
@@ -44,7 +48,7 @@ public:
 	float CollisionDamping = 0.05f;
 	float Gravity = 10.0f;
 
-	uint32 StepsPerTick = 4;
+	uint32 StepsPerTick = 2;
 
 	float MaxVelocity = 6.0;
 
@@ -99,8 +103,10 @@ private:
 	BravoTransform ContainerTransform;
 
 	GLuint ParticlesSSBO = 0;
-	
 	GLuint SortedParticlesSSBO = 0;
+	GLuint DensitiesSSBO = 0;
+	
+	GLuint SortedCellIndiciesSSBO = 0;
 	GLuint RadixTmpSSBO = 0;
 	GLuint RadixHistogramSSBO = 0;
 
@@ -130,6 +136,7 @@ private:
 	std::shared_ptr<class BravoShaderAsset> RadixSortHistogramCompute;
 
 	std::shared_ptr<class BravoShaderAsset> FluidStartingIndiciesCompute;
+	std::shared_ptr<class BravoShaderAsset> DensityCompute;
 	std::shared_ptr<class BravoShaderAsset> PressureCompute;
 
 

@@ -31,17 +31,21 @@ bool FluidGameInstance3D::Initialize_Internal()
 	Camera->AttachTo(Player);
 	Camera->SetTransform(BravoTransform());
 
-	Simulation = NewObject<FluidSimulation3D>("FluidSimulation3D");
 
-	RaymarchingPP = NewObject<FluidPostProcess>("FluidPostProcess", Simulation, Simulation->GetBoundingBox());
-	Engine->GetViewport()->AddPostProcess(RaymarchingPP);
+	
 
 	{
+		Simulation = NewObject<FluidSimulation3D>("FluidSimulation3D");
 		auto fluidSettingsScreen = NewObject<FluidScreen_SimulationSettings>("Fluid Settings", Simulation);
 		Engine->GetViewport()->GetHUD()->AddScreen(fluidSettingsScreen);
+	}
 
-		auto postProcessSettingsScreen = NewObject<FluidScreen_PostProcessSettings>("Post process settings", RaymarchingPP);
-		Engine->GetViewport()->GetHUD()->AddScreen(postProcessSettingsScreen);
+	{
+		//RaymarchingPP = NewObject<FluidPostProcess>("FluidPostProcess", Simulation, Simulation->GetBoundingBox());
+		//Engine->GetViewport()->AddPostProcess(RaymarchingPP);
+
+		//auto postProcessSettingsScreen = NewObject<FluidScreen_PostProcessSettings>("Post process settings", RaymarchingPP);
+		//Engine->GetViewport()->GetHUD()->AddScreen(postProcessSettingsScreen);
 	}
 
 	return true;

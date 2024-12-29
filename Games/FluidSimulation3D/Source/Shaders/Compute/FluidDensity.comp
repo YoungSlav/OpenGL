@@ -1,0 +1,185 @@
+#version 430
+
+layout(local_size_x = 256) in;
+
+struct Particle
+{
+    vec3 Position;
+    vec3 PredictedPosition;
+    vec3 Velocity;
+};
+struct SortedCellIndex
+{
+    uint CellIndex;
+    uint pIndex;
+};
+
+layout(std430, binding = 5) buffer SortedParticlesBuffer
+{
+	Particle SortedParticles[];
+};
+struct Density
+{
+    float Density;
+    float iDensity;
+    float NearDensity;
+    float iNearDensity;
+};
+layout(std430, binding = 6) buffer DensitiesBuffer
+{
+	Density Densities[];
+};
+layout(std430, binding = 1) buffer SortedCellIndiciesBuffer
+{
+	SortedCellIndex SortedCellIndicies[];
+};
+layout(std430, binding = 2) buffer StartIndicesBuffer
+{
+	uint StartIndices[];
+};
+
+uniform int ParticleCount;
+
+// world params
+uniform vec3 WorldSize;
+
+// particle params
+uniform float ParticleMass;
+uniform float SmoothingRadius;
+uniform float SmoothingRadius2;
+
+// kernel scales
+uniform float DensityScale;
+uniform float NearDensityScale;
+
+// forces
+void CalcDensity(uint i);
+
+// kernels
+float DensityKernel(float dst);
+float NearDensityKernel(float dst);
+
+// grid helpers
+uint GetCellIndex(vec3 Position);
+ivec3 GetCellCoord(vec3 Position);
+uint GetCellHash(ivec3 Coords);
+uint CellIndexFromHash(uint Hash);
+
+
+const uint GridLookupCount = 27;
+const ivec3 GridOffsets[GridLookupCount] = ivec3[](
+    ivec3(0, 0, 0),
+    ivec3(1, 0, 0),
+    ivec3(-1, 0, 0),
+    ivec3(0, 1, 0),
+    ivec3(0, -1, 0),
+    ivec3(0, 0, 1),
+    ivec3(0, 0, -1),
+    ivec3(1, 1, 0),
+    ivec3(1, -1, 0),
+    ivec3(-1, 1, 0),
+    ivec3(-1, -1, 0),
+    ivec3(1, 0, 1),
+    ivec3(1, 0, -1),
+    ivec3(-1, 0, 1),
+    ivec3(-1, 0, -1),
+    ivec3(0, 1, 1),
+    ivec3(0, 1, -1),
+    ivec3(0, -1, 1),
+    ivec3(0, -1, -1),
+    ivec3(1, 1, 1),
+    ivec3(1, 1, -1),
+    ivec3(1, -1, 1),
+    ivec3(1, -1, -1),
+    ivec3(-1, 1, 1),
+    ivec3(-1, 1, -1),
+    ivec3(-1, -1, 1),
+    ivec3(-1, -1, -1)
+);
+const float PredictionTimeStep = 1.0f / 120.0f;
+
+void main()
+{
+    uint i = gl_GlobalInvocationID.x;
+    if ( i >= ParticleCount ) return;
+
+    CalcDensity(i);
+};
+
+void CalcDensity(uint i)
+{
+    float Density = 0.0f;
+    float NearDensity = 0.0f;
+
+    vec3 myPosition = SortedParticles[i].PredictedPosition;
+    ivec3 myCell = GetCellCoord(myPosition);
+    for ( uint gr = 0; gr < GridLookupCount; ++gr )
+    {
+        ivec3 lookupCell = myCell + GridOffsets[gr];
+        uint CellHash = GetCellHash(lookupCell);
+        uint CellIndex = CellIndexFromHash(CellHash);
+        for ( uint otherP = StartIndices[CellIndex]; otherP < ParticleCount; ++otherP )
+        {
+            if ( SortedCellIndicies[otherP].CellIndex != CellIndex )
+                break;
+
+            // now we got all the indices
+            vec3 otherPosition = SortedParticles[otherP].PredictedPosition;
+            vec3 offset = otherPosition - myPosition;
+            float dst2 = dot(offset, offset);
+            if ( dst2 > SmoothingRadius2 ) continue;
+            
+            // now we have all the data
+            float dst = sqrt(dst2);
+            Density += ParticleMass * DensityKernel(dst);
+            NearDensity += ParticleMass * NearDensityKernel(dst);
+        }
+    }
+    Densities[i].Density = Density;
+    Densities[i].iDensity = 1.0f / Density;
+
+    Densities[i].NearDensity = NearDensity;
+    Densities[i].iNearDensity = 1.0f / NearDensity;
+}
+
+//// HELPERS
+
+float DensityKernel(float dst)
+{
+    float v = SmoothingRadius - dst;
+	return v * v * DensityScale;
+}
+float NearDensityKernel(float dst)
+{
+    float v = SmoothingRadius - dst;
+	return v * v * v * NearDensityScale;
+}
+
+// GRID
+
+uint GetCellIndex(vec3 Position)
+{
+    return CellIndexFromHash(GetCellHash(GetCellCoord(Position)));
+}
+
+ivec3 GetCellCoord(vec3 Position)
+{
+	vec3 normilizedPos = Position + WorldSize;
+    
+    float scaleF = 1.0f / SmoothingRadius*2.0f;
+    return ivec3(floor(normilizedPos * scaleF));
+}
+
+uint GetCellHash(ivec3 Coords)
+{	
+	const uint PRIME1 = 0x9e3779b1;
+    const uint PRIME2 = 0x85ebca6b;
+    const uint PRIME3 = 0xc2b2ae35;
+
+	return Coords.y * PRIME1 + Coords.x * PRIME2 + Coords.z * PRIME3;
+}
+
+uint CellIndexFromHash(uint Hash)
+{
+    return Hash % ParticleCount;
+}
