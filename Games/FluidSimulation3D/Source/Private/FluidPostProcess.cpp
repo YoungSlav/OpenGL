@@ -17,15 +17,15 @@ bool FluidPostProcess::Initialize_Internal()
 	CreateDensitiesMap();
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidPostProcess>(), &FluidPostProcess::OnBoundingBoxTransofrmUpdated);
 
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("AntiAliasingShader", BravoShaderLoadingParams("PostProccess"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("AntiAliasingShader", BravoRenderShaderLoadingParams("PostProccess", false, false));
 	if ( !Shader )
 		return false;
 
-	RayMarchingCompute = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("FluidRayMarching", BravoShaderLoadingParams("FluidRayMarching"));
+	RayMarchingCompute = Engine->GetAssetManager()->FindOrLoad<BravoComputeShaderAsset>("FluidRayMarching", BravoComputeShaderLoadingParams("FluidRayMarching"));
 	if ( !RayMarchingCompute )
 		return false;
 
-	DensitiesSampleCompute = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("SampleDensities", BravoShaderLoadingParams("SampleDensities"));
+	DensitiesSampleCompute = Engine->GetAssetManager()->FindOrLoad<BravoComputeShaderAsset>("SampleDensities", BravoComputeShaderLoadingParams("SampleDensities"));
 	if ( !DensitiesSampleCompute )
 		return false;
 

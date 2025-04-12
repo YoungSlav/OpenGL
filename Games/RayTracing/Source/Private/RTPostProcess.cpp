@@ -14,11 +14,11 @@ bool RTPostProcess::Initialize_Internal()
 		return false;
 
 	// TODO: replace by shader that would average output from all past frames
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("AverageFrameShader", BravoShaderLoadingParams("AverageFrame"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("AverageFrameShader", BravoRenderShaderLoadingParams("AverageFrame", false, false));
 	if ( !Shader )
 		return false;
 
-	RayTracingCompute = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("RayTracing", BravoShaderLoadingParams("RayTracing"));
+	RayTracingCompute = Engine->GetAssetManager()->FindOrLoad<BravoComputeShaderAsset>("RayTracing", BravoComputeShaderLoadingParams("RayTracing"));
 	if ( !RayTracingCompute )
 		return false;
 
@@ -139,14 +139,14 @@ void RTPostProcess::Render_Internal()
 	//const glm::mat4 ViewProj = proj * view;
 	
 
-	//int32 OutputTextureUnit = BravoTextureUnitManager::BindTexture();
-	//glActiveTexture(GL_TEXTURE0 + OutputTextureUnit);
-	//glBindTexture(GL_TEXTURE_2D, RenderTarget->GetColorTexture());
+	int32 OutputTextureUnit = BravoTextureUnitManager::BindTexture();
+	glActiveTexture(GL_TEXTURE0 + OutputTextureUnit);
+	glBindTexture(GL_TEXTURE_2D, RenderTarget->GetColorTexture());
 
 	RayTracingCompute->Use();
 		glBindImageTexture(0, RenderTarget->GetColorTexture(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
-		//RayTracingCompute->SetInt("outputTexture", OutputTextureUnit);
+		RayTracingCompute->SetInt("outputTexture", OutputTextureUnit);
 
 		RayTracingCompute->SetFloat3("eyeLocation", camera->GetLocation_World());
 

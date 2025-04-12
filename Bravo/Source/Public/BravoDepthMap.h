@@ -18,5 +18,5 @@ protected:
 
 	int32 Layers = 0;
 	uint32 Size = 2048;
-	std::shared_ptr<class BravoShaderAsset> DepthMapShader;
+	std::shared_ptr<class BravoRenderShaderAsset> DepthMapShader;
 };

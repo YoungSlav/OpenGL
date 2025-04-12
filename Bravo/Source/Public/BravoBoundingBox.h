@@ -35,5 +35,5 @@ private:
 	GLuint VAO = 0;
 	GLuint VBO = 0;
 	GLuint EBO = 0;
-	std::shared_ptr<class BravoShaderAsset> Shader;
+	std::shared_ptr<class BravoRenderShaderAsset> Shader;
 };

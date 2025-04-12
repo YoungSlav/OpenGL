@@ -14,12 +14,12 @@ bool FluidPostProcess::Initialize_Internal()
 	if ( !BravoPostProcess::Initialize_Internal() )
 		return false;
 
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("FluidPostProcess", BravoShaderLoadingParams("FluidPostProcess"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("FluidPostProcess", BravoRenderShaderLoadingParams("FluidPostProcess", false, false));
 	if ( !Shader )
 		return false;
 
 	
-	DensitiesMapShader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("FluidDensities", BravoShaderLoadingParams("FluidDensities"));
+	DensitiesMapShader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("FluidDensities", BravoRenderShaderLoadingParams("FluidDensities", false, false));
 	if ( !DensitiesMapShader )
 		return false;
 

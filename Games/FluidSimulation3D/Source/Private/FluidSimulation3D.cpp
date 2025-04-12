@@ -81,18 +81,18 @@ bool FluidSimulation3D::Initialize_Internal()
 	BoundingBox->SetScale(SimulationBounds);
 	BoundingBox->OnTransformUpdated.AddSP(Self<FluidSimulation3D>(), &FluidSimulation3D::OnBoundingBoxTransofrmUpdated);
 	
-	RenderShader = AssetManager->FindOrLoad<BravoShaderAsset>("FluidParticleShader", BravoShaderLoadingParams("FluidParticle3D"));
+	RenderShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("FluidParticleShader", BravoRenderShaderLoadingParams("FluidParticle3D", false, false));
 
-	ParticleGenerationCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGenerateParticles", BravoShaderLoadingParams("Compute\\FluidGenerateParticles"));
+	ParticleGenerationCompute = AssetManager->FindOrLoad<BravoComputeShaderAsset>("FluidGenerateParticles", BravoComputeShaderLoadingParams("Compute\\FluidGenerateParticles"));
 
-	GridHashingCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidGridHashing", BravoShaderLoadingParams("Compute\\FluidGridHashing"));
+	GridHashingCompute = AssetManager->FindOrLoad<BravoComputeShaderAsset>("FluidGridHashing", BravoComputeShaderLoadingParams("Compute\\FluidGridHashing"));
 	
-	RadixSortCompute = AssetManager->FindOrLoad<BravoShaderAsset>("RadixSort", BravoShaderLoadingParams("Compute\\ThirdParty\\multi_radixsort"));
-	RadixSortHistogramCompute = AssetManager->FindOrLoad<BravoShaderAsset>("RadixSortHistogram", BravoShaderLoadingParams("Compute\\ThirdParty\\multi_radixsort_histograms"));
+	RadixSortCompute = AssetManager->FindOrLoad<BravoComputeShaderAsset>("RadixSort", BravoComputeShaderLoadingParams("Compute\\ThirdParty\\multi_radixsort"));
+	RadixSortHistogramCompute = AssetManager->FindOrLoad<BravoComputeShaderAsset>("RadixSortHistogram", BravoComputeShaderLoadingParams("Compute\\ThirdParty\\multi_radixsort_histograms"));
 
-	FluidStartingIndiciesCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidStartingIndicies", BravoShaderLoadingParams("Compute\\FluidStartingIndicies"));
-	PressureCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidPressure", BravoShaderLoadingParams("Compute\\FluidPressure"));
-	DensityCompute = AssetManager->FindOrLoad<BravoShaderAsset>("FluidDensity", BravoShaderLoadingParams("Compute\\FluidDensity"));
+	FluidStartingIndiciesCompute = AssetManager->FindOrLoad<BravoComputeShaderAsset>("FluidStartingIndicies", BravoComputeShaderLoadingParams("Compute\\FluidStartingIndicies"));
+	PressureCompute = AssetManager->FindOrLoad<BravoComputeShaderAsset>("FluidPressure", BravoComputeShaderLoadingParams("Compute\\FluidPressure"));
+	DensityCompute = AssetManager->FindOrLoad<BravoComputeShaderAsset>("FluidDensity", BravoComputeShaderLoadingParams("Compute\\FluidDensity"));
 	
 
 	{

@@ -7,21 +7,44 @@
 
 namespace ShaderProgrammConstancts
 {
-	const std::string VertexShaderExtension = ".vert";
-	const std::string FragmentShaderExtension = ".frag";
-	const std::string GeometryShaderExtension = ".geom";
-	const std::string TessellationControllShaderExtension = ".tesc";
-	const std::string TessellationEvaluationShaderExtension = ".tese";
-	const std::string ComputeShaderExtension = ".comp";
-}
+	const std::map<GLenum, std::string> Extension = {
+		{GL_VERTEX_SHADER, ".vert"},
+		{GL_FRAGMENT_SHADER, ".frag"},
+		{GL_GEOMETRY_SHADER, ".geom"},
+		{GL_TESS_CONTROL_SHADER, ".tesc"},
+		{GL_TESS_EVALUATION_SHADER, ".tese"},
+		{GL_COMPUTE_SHADER, ".comp"}
+	};
+};
 
-struct BravoShaderLoadingParams
+struct BravoRenderShaderLoadingParams
 {
-	BravoShaderLoadingParams(const std::string& _Path) :
+	BravoRenderShaderLoadingParams(const std::string& _Path, bool _bGeometry, bool _bTessellation) :
+		ShaderPath(_Path),
+		ShaderDefines(),
+		bGeometry(_bGeometry),
+		bTessellation(_bTessellation)
+	{}
+	BravoRenderShaderLoadingParams(const std::string& _Path, bool _bGeometry, bool _bTessellation, const std::map<std::string, std::string>& _ShaderDefines) :
+		ShaderPath(_Path),
+		ShaderDefines(_ShaderDefines),
+		bGeometry(_bGeometry),
+		bTessellation(_bTessellation)
+	{}
+
+	std::string ShaderPath;
+	std::map<std::string, std::string> ShaderDefines;
+	bool bGeometry = false;
+	bool bTessellation = false;
+};
+
+struct BravoComputeShaderLoadingParams
+{
+	BravoComputeShaderLoadingParams(const std::string& _Path) :
 		ShaderPath(_Path),
 		ShaderDefines()
 	{}
-	BravoShaderLoadingParams(const std::string& _Path, const std::map<std::string, std::string>& _ShaderDefines) :
+	BravoComputeShaderLoadingParams(const std::string& _Path, const std::map<std::string, std::string>& _ShaderDefines) :
 		ShaderPath(_Path),
 		ShaderDefines(_ShaderDefines)
 	{}
@@ -39,10 +62,7 @@ public:
 	BravoShaderAsset(Args&&... args) :
 		BravoAsset(std::forward<Args>(args)...)
 	{}
-
-
-	EAssetLoadingState Load(const BravoShaderLoadingParams& params);
-		
+			
 	virtual void Use() override;
 	virtual void StopUsage() override;
 
@@ -67,10 +87,12 @@ public:
 	void SetMatrix4d(const std::string& name, const glm::mat4& val) const;
 
 protected:
-	bool LoadShader(GLenum ShaderType, int32& OutShader, const BravoShaderLoadingParams& params);
+
+	virtual void ReleaseFromGPU_Internal() override;
+
+	bool LoadShader(GLenum ShaderType, GLuint& OutShader, const std::string& Path, const std::map<std::string, std::string>& ShaderDefines);
 	bool LinkProgramm();
 
-private:
 
 	GLint FindUniformLocation(const std::string& name) const;
 	
@@ -91,8 +113,48 @@ private:
 	}
 
 	std::shared_ptr<BravoTextureAsset> EmptyTexture = nullptr;
-	GLuint ShaderID = 0;
+	GLuint ProgramID = 0;
 
 	mutable std::unordered_map<std::string, GLint> LocationCache;
 	mutable std::unordered_map<std::string, std::any> ValueCache;
+};
+
+class BravoRenderShaderAsset : public BravoShaderAsset
+{
+public:
+	template <typename... Args>
+	BravoRenderShaderAsset(Args&&... args) :
+		BravoShaderAsset(std::forward<Args>(args)...)
+	{}
+
+	EAssetLoadingState Load(const BravoRenderShaderLoadingParams& params);
+
+protected:
+	virtual void ReleaseFromGPU_Internal() override;
+
+private:
+	GLuint VertexShader = 0;
+	GLuint FragmentShader = 0;
+	GLuint GeometryShader = 0;
+	GLuint TessellationControllShader = 0;
+	GLuint TessellationEvaluationShader = 0;
+};
+
+
+
+class BravoComputeShaderAsset : public BravoShaderAsset
+{
+public:
+	template <typename... Args>
+	BravoComputeShaderAsset(Args&&... args) :
+		BravoShaderAsset(std::forward<Args>(args)...)
+	{}
+
+	EAssetLoadingState Load(const BravoComputeShaderLoadingParams& params);
+
+protected:
+	virtual void ReleaseFromGPU_Internal() override;
+
+private:
+	GLuint ComputeShader = 0;
 };

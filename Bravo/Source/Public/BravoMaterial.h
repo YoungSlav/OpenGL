@@ -26,5 +26,5 @@ public:
 
 
 protected:
-	std::shared_ptr<BravoShaderAsset> ShaderAsset = nullptr;
+	std::shared_ptr<BravoRenderShaderAsset> ShaderAsset = nullptr;
 };

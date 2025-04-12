@@ -27,6 +27,7 @@
 * 
 * 
 *	ENGINE:
+* refactor GPU resourses loading and releasing procedures
 * Render function should be camera dependant
 * Objects serialization deserialization   (cerial?)
 * Physics engine integration (reactphysics3d)

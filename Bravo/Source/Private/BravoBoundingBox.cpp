@@ -49,8 +49,8 @@ bool BravoBoundingBox::Initialize_Internal()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoShaderAsset>("BoundingBoxShader",
-		BravoShaderLoadingParams("BoundingBox"));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("BoundingBoxShader",
+		BravoRenderShaderLoadingParams("BoundingBox", false, false));
 
 	UpdateVertices(nullptr);
 	SetScale(glm::vec3(10.0f));

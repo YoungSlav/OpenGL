@@ -18,7 +18,7 @@ bool BravoTerrainActor::Initialize_Internal()
 	if ( !AssetManager )
 		return false;
 
-	TerrainShader = AssetManager->FindOrLoad<BravoShaderAsset>("TerrainShader", BravoShaderLoadingParams("Terrain"));
+	TerrainShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("TerrainShader", BravoRenderShaderLoadingParams("Terrain", false, true));
 	if ( !TerrainShader )
 		return false;
 

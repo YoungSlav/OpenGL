@@ -25,6 +25,6 @@ protected:
 	virtual void OnDestroy() override;
 
 private:
-	std::shared_ptr<BravoShaderAsset> Shader;
+	std::shared_ptr<BravoRenderShaderAsset> Shader;
 	std::shared_ptr<BravoStaticMeshAsset> Mesh;
 };
