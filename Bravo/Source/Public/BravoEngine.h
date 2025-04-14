@@ -68,7 +68,7 @@ public:
 	inline std::shared_ptr<class BravoAssetManager> GetAssetManager() const { return AssetManager; }
 	inline std::shared_ptr<class BravoCamera> GetCamera() const { return Camera.expired() ? nullptr : Camera.lock(); }
 	inline std::shared_ptr<class BravoSelectionManager> GetSelectionManager() const { return SelectionManager; }
-
+	inline std::shared_ptr<class BravoTimeManager> GetTimeManager() const { return TimeManager; }
 	static std::shared_ptr<BravoEngine> GetEngine();
 
 	template<typename Class>
@@ -137,6 +137,7 @@ private:
 	std::shared_ptr<class BravoInput> Input;
 	std::shared_ptr<class BravoLightManager> LightManager;
 	std::shared_ptr<class BravoSelectionManager> SelectionManager;
+	std::shared_ptr<class BravoTimeManager> TimeManager;
 	
 	std::weak_ptr<class BravoCamera> Camera;
 

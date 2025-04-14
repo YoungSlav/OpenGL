@@ -5,6 +5,12 @@
 #include "BravoTextureAsset.h"
 #include "BravoCubemapAsset.h"
 
+#define SHADER_HOTSWAP 1
+#if SHADER_HOTSWAP
+#include <filesystem>
+#include <chrono>
+#endif
+
 namespace ShaderProgrammConstancts
 {
 	const std::map<GLenum, std::string> Extension = {
@@ -88,9 +94,10 @@ public:
 
 protected:
 
+	virtual void OnDestroy() override;
 	virtual void ReleaseFromGPU_Internal() override;
 
-	bool LoadShader(GLenum ShaderType, GLuint& OutShader, const std::string& Path, const std::map<std::string, std::string>& ShaderDefines);
+	bool LoadShader(GLenum ShaderType, GLuint& OutShader, const std::string& Path, const std::map<std::string, std::string>& ShaderDefines, std::string& OutFullPath);
 	bool LinkProgramm();
 
 
@@ -117,6 +124,36 @@ protected:
 
 	mutable std::unordered_map<std::string, GLint> LocationCache;
 	mutable std::unordered_map<std::string, std::any> ValueCache;
+
+	
+
+#if SHADER_HOTSWAP
+	struct ShaderHotswapInfo
+	{
+		ShaderHotswapInfo( GLenum _ShaderType, GLuint _Shader, const std::string& _FullPath) :
+			ShaderType(_ShaderType),
+			Shader(_Shader),
+			FullPath(_FullPath)
+		{
+			LastModificationTime = std::filesystem::last_write_time(FullPath);
+		}
+
+		GLenum ShaderType;
+		GLuint Shader;
+		std::filesystem::path FullPath;
+		std::filesystem::file_time_type LastModificationTime;
+	};
+
+	std::vector<ShaderHotswapInfo> ShaderHotswapInfos;
+
+	std::string ShaderPath;
+	std::map<std::string, std::string> ShaderDefines;
+
+public:
+	void CheckShadersForHotSwap();
+protected:
+#endif
+
 };
 
 class BravoRenderShaderAsset : public BravoShaderAsset

@@ -54,6 +54,7 @@
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_ObjectHierarchy.cpp" />
     <ClCompile Include="Source\Private\BravoTerrainActor.cpp" />
+    <ClCompile Include="Source\Private\BravoTimeManager.cpp" />
     <ClCompile Include="Source\Private\BravoViewport.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
     <ClCompile Include="Source\Private\BravoSelectionManager.cpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h" />
     <ClInclude Include="Source\Public\BravoTerrainActor.h" />
+    <ClInclude Include="Source\Public\BravoTimeManager.h" />
     <ClInclude Include="Source\Public\BravoTransform2D.h" />
     <ClInclude Include="Source\Public\BravoVertex.h" />
     <ClInclude Include="Source\Public\BravoViewport.h" />

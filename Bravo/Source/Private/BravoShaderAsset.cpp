@@ -2,6 +2,7 @@
 #include "BravoEngine.h"
 #include "BravoAssetManager.h"
 #include "BravoMaterial.h"
+#include "BravoTimeManager.h"
 
 #include <windows.h>
 #include <fstream>
@@ -12,53 +13,119 @@ EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderLoadingPa
 {
 	ProgramID = glCreateProgram();
 
-	if ( !LoadShader(GL_VERTEX_SHADER, VertexShader, params.ShaderPath, params.ShaderDefines) )
+	bool bSuccess = true;
+	std::string OutShaderPath = "";
+
+#if SHADER_HOTSWAP
+	ShaderPath = params.ShaderPath;
+	ShaderDefines = params.ShaderDefines;
+#endif
+
+	if ( LoadShader(GL_VERTEX_SHADER, VertexShader, params.ShaderPath, params.ShaderDefines, OutShaderPath) )
 	{
-		glDeleteProgram(ProgramID);
+#if SHADER_HOTSWAP
+		ShaderHotswapInfos.push_back(ShaderHotswapInfo(GL_VERTEX_SHADER, VertexShader, OutShaderPath));
+#endif
+	}
+	else
+	{
+		bSuccess = false;
 		Log::LogMessage(ELog::Error, "Failed to load VERTEX shader: {}", params.ShaderPath);
-		LoadingState = EAssetLoadingState::Failed;
-		return LoadingState;
 	}
+	glAttachShader(ProgramID, VertexShader);
 
-	if ( !LoadShader(GL_FRAGMENT_SHADER, FragmentShader, params.ShaderPath, params.ShaderDefines) )
+	if ( LoadShader(GL_FRAGMENT_SHADER, FragmentShader, params.ShaderPath, params.ShaderDefines, OutShaderPath) )
 	{
-		glDeleteProgram(ProgramID);
+#if SHADER_HOTSWAP
+		ShaderHotswapInfos.push_back(ShaderHotswapInfo(GL_FRAGMENT_SHADER, FragmentShader, OutShaderPath));
+#endif
+	}
+	else
+	{
+		bSuccess = false;
 		Log::LogMessage(ELog::Error, "Failed to load FRAGMENT shader: {}", params.ShaderPath);
-		LoadingState = EAssetLoadingState::Failed;
-		return LoadingState;
 	}
-
-	if ( params.bGeometry && !LoadShader(GL_GEOMETRY_SHADER, GeometryShader, params.ShaderPath, params.ShaderDefines) )
+	glAttachShader(ProgramID, FragmentShader);
+	if ( params.bGeometry )
 	{
-		glDeleteProgram(ProgramID);
-		Log::LogMessage(ELog::Error, "Failed to load GEOMETRY shader: {}", params.ShaderPath);
-		LoadingState = EAssetLoadingState::Failed;
-		return LoadingState;
+		if ( LoadShader(GL_GEOMETRY_SHADER, GeometryShader, params.ShaderPath, params.ShaderDefines, OutShaderPath) )
+		{
+#if SHADER_HOTSWAP
+			ShaderHotswapInfos.push_back(ShaderHotswapInfo(GL_GEOMETRY_SHADER, GeometryShader, OutShaderPath));
+#endif
+		}
+		else
+		{
+			bSuccess = false;
+			Log::LogMessage(ELog::Error, "Failed to load GEOMETRY shader: {}", params.ShaderPath);
+		}
+		glAttachShader(ProgramID, GeometryShader);
 	}
 
-	if ( params.bTessellation && !LoadShader(GL_TESS_CONTROL_SHADER, TessellationControllShader, params.ShaderPath, params.ShaderDefines) )
+	if ( params.bTessellation )
 	{
-		glDeleteProgram(ProgramID);
-		Log::LogMessage(ELog::Error, "Failed to load TESS_CONTROL shader: {}", params.ShaderPath);
-		LoadingState = EAssetLoadingState::Failed;
-		return LoadingState;
-	}
+		if ( LoadShader(GL_TESS_CONTROL_SHADER, TessellationControllShader, params.ShaderPath, params.ShaderDefines, OutShaderPath) )
+		{
+#if SHADER_HOTSWAP
+			ShaderHotswapInfos.push_back(ShaderHotswapInfo(GL_TESS_CONTROL_SHADER, TessellationControllShader, OutShaderPath));
+#endif
+		}
+		else
+		{
+			bSuccess = false;
+			Log::LogMessage(ELog::Error, "Failed to load TESS_CONTROL shader: {}", params.ShaderPath);
+		}
+		glAttachShader(ProgramID, TessellationControllShader);
 
-	if ( params.bTessellation && !LoadShader(GL_TESS_EVALUATION_SHADER, TessellationEvaluationShader, params.ShaderPath, params.ShaderDefines) )
-	{
-		glDeleteProgram(ProgramID);
-		Log::LogMessage(ELog::Error, "Failed to load TESS_EVALUATION shader: {}", params.ShaderPath);
-		LoadingState = EAssetLoadingState::Failed;
-		return LoadingState;
+		if ( LoadShader(GL_TESS_EVALUATION_SHADER, TessellationEvaluationShader, params.ShaderPath, params.ShaderDefines, OutShaderPath) )
+		{
+#if SHADER_HOTSWAP
+			ShaderHotswapInfos.push_back(ShaderHotswapInfo(GL_TESS_EVALUATION_SHADER, TessellationEvaluationShader, OutShaderPath));
+#endif
+		}
+		else
+		{
+			bSuccess = false;
+			Log::LogMessage(ELog::Error, "Failed to load TESS_EVALUATION shader: {}", params.ShaderPath);
+		}
+		glAttachShader(ProgramID, TessellationEvaluationShader);
 	}
-
 	if ( !LinkProgramm() )
 	{
+		bSuccess = false;
+		Log::LogMessage(ELog::Error, "Failed to link the program: {}", params.ShaderPath);	
+	}
+	
+	if ( !bSuccess )
+	{
+		if ( VertexShader ) glDeleteShader(VertexShader);
+		if ( FragmentShader ) glDeleteShader(FragmentShader);
+		if ( GeometryShader ) glDeleteShader(GeometryShader);
+		if ( TessellationControllShader ) glDeleteShader(TessellationControllShader);
+		if ( TessellationEvaluationShader ) glDeleteShader(TessellationEvaluationShader);
+
 		glDeleteProgram(ProgramID);
-		Log::LogMessage(ELog::Error, "Failed to link the program: {}", params.ShaderPath);
 		LoadingState = EAssetLoadingState::Failed;
 		return LoadingState;
 	}
+
+#if SHADER_HOTSWAP
+	std::weak_ptr<BravoShaderAsset> WeakThis(Self<BravoShaderAsset>());
+	Engine->GetTimeManager()->SetTimer(1.0, true,
+		[WeakThis]()
+		{
+			if ( !WeakThis.expired() )
+			{
+				WeakThis.lock()->CheckShadersForHotSwap();
+			}
+		});
+#else
+	if ( VertexShader ) glDeleteShader(VertexShader);
+	if ( FragmentShader ) glDeleteShader(FragmentShader);
+	if ( GeometryShader ) glDeleteShader(GeometryShader);
+	if ( TessellationControllShader ) glDeleteShader(TessellationControllShader);
+	if ( TessellationEvaluationShader ) glDeleteShader(TessellationEvaluationShader);
+#endif
 
 	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
 
@@ -69,27 +136,111 @@ EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderLoadingPa
 EAssetLoadingState BravoComputeShaderAsset::Load(const BravoComputeShaderLoadingParams& params)
 {
 	ProgramID = glCreateProgram();
+	bool bSuccess = true;
+	std::string OutShaderPath;
 
-	if ( !LoadShader(GL_COMPUTE_SHADER, ComputeShader, params.ShaderPath, params.ShaderDefines) )
+#if SHADER_HOTSWAP
+	ShaderPath = params.ShaderPath;
+	ShaderDefines = params.ShaderDefines;
+#endif
+
+	if ( LoadShader(GL_COMPUTE_SHADER, ComputeShader, params.ShaderPath, params.ShaderDefines, OutShaderPath) )
 	{
-		glDeleteProgram(ProgramID);
-		Log::LogMessage(ELog::Error, "Failed to load COMPUTE shader: {}", params.ShaderPath);
-		LoadingState = EAssetLoadingState::Failed;
-		return LoadingState;
+#if SHADER_HOTSWAP
+		ShaderHotswapInfos.push_back(ShaderHotswapInfo(GL_COMPUTE_SHADER, ComputeShader, OutShaderPath));
+#endif
 	}
+	else
+	{
+		bSuccess = false;
+		Log::LogMessage(ELog::Error, "Failed to load COMPUTE shader: {}", params.ShaderPath);
+	}
+	glAttachShader(ProgramID, ComputeShader);
 
 	if ( !LinkProgramm() )
 	{
-		glDeleteProgram(ProgramID);
+		bSuccess = false;
 		Log::LogMessage(ELog::Error, "Failed to link the program: {}", params.ShaderPath);
+	}
+
+	if ( !bSuccess )
+	{
+		if ( ComputeShader ) glDeleteShader(ComputeShader);
+		glDeleteProgram(ProgramID);
 		LoadingState = EAssetLoadingState::Failed;
 		return LoadingState;
 	}
+
+#if SHADER_HOTSWAP
+	std::weak_ptr<BravoShaderAsset> WeakThis(Self<BravoShaderAsset>());
+	Engine->GetTimeManager()->SetTimer(1.0, true,
+		[WeakThis]()
+		{
+			if ( !WeakThis.expired() )
+			{
+				WeakThis.lock()->CheckShadersForHotSwap();
+			}
+		});
+#else
+	if ( ComputeShader ) glDeleteShader(ComputeShader);
+#endif
 
 	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
 
 	LoadingState = EAssetLoadingState::Loaded;
 	return LoadingState;
+}
+
+#if SHADER_HOTSWAP
+void BravoShaderAsset::CheckShadersForHotSwap()
+{
+	Use();
+	for ( ShaderHotswapInfo& it : ShaderHotswapInfos )
+	{
+		std::filesystem::file_time_type ftime = std::filesystem::last_write_time(it.FullPath);
+		if ( ftime == it.LastModificationTime )
+			continue;
+
+
+		Log::LogMessage(ELog::Log, "Atempring to hotswap shader: {}", ShaderPath);
+		it.LastModificationTime = ftime;
+
+		
+
+		GLuint newShader;
+		std::string OutShaderPath;
+		if ( !LoadShader(it.ShaderType, newShader, ShaderPath, ShaderDefines, OutShaderPath) )
+		{
+			if ( newShader ) glDeleteShader(newShader);
+			Log::LogMessage(ELog::Error, "Failed to hotswap shader: {}", ShaderPath);
+			continue;
+		}
+		glDetachShader(ProgramID, it.Shader);
+
+		glDeleteShader(it.Shader);
+		it.Shader = newShader;
+
+		glAttachShader(ProgramID, newShader);
+		if ( !LinkProgramm() )
+		{
+			Log::LogMessage(ELog::Error, "Failed to link the program: {}", ShaderPath);
+			LoadingState = EAssetLoadingState::Failed;
+		}
+	}
+
+	StopUsage();
+}
+#endif
+
+void BravoShaderAsset::OnDestroy()
+{
+	BravoAsset::OnDestroy();
+#if SHADER_HOTSWAP
+	for ( auto it : ShaderHotswapInfos )
+	{
+		glDeleteShader(it.Shader);
+	}
+#endif
 }
 
 void BravoShaderAsset::ReleaseFromGPU_Internal()
@@ -101,7 +252,6 @@ void BravoShaderAsset::ReleaseFromGPU_Internal()
 void BravoRenderShaderAsset::ReleaseFromGPU_Internal()
 {
 	BravoShaderAsset::ReleaseFromGPU_Internal();
-
 	if ( VertexShader ) glDeleteShader(VertexShader);
 	if ( FragmentShader ) glDeleteShader(FragmentShader);
 	if ( GeometryShader ) glDeleteShader(GeometryShader);
@@ -112,7 +262,6 @@ void BravoRenderShaderAsset::ReleaseFromGPU_Internal()
 void BravoComputeShaderAsset::ReleaseFromGPU_Internal()
 {
 	BravoShaderAsset::ReleaseFromGPU_Internal();
-
 	if ( ComputeShader ) glDeleteShader(ComputeShader);
 }
 
@@ -132,8 +281,9 @@ void BravoShaderAsset::StopUsage()
 		EmptyTexture->StopUsage();
 }
 
-bool BravoShaderAsset::LoadShader(GLenum ShaderType, GLuint& OutShader, const std::string& Path, const std::map<std::string, std::string>& ShaderDefines)
+bool BravoShaderAsset::LoadShader(GLenum ShaderType, GLuint& OutShader, const std::string& Path, const std::map<std::string, std::string>& ShaderDefines, std::string& OutFullPath)
 {
+	OutFullPath = "";
 	OutShader = 0;
 	std::string shaderExtension = ShaderProgrammConstancts::Extension.at(ShaderType);
 	const std::string RealShaderName = Engine->GetAssetManager()->FindShader(Path + shaderExtension);
@@ -141,9 +291,11 @@ bool BravoShaderAsset::LoadShader(GLenum ShaderType, GLuint& OutShader, const st
 	std::ifstream shaderFile(RealShaderName.c_str());
 	if ( !shaderFile.is_open() )
 	{
-		Log::LogMessage(ELog::Error, "Failed to load shader: {}, no such file", RealShaderName);
+		Log::LogMessage(ELog::Error, "Failed to load shader: {}, no such file", Path);
 		return false;
 	}
+
+	OutFullPath = RealShaderName;
 
 	std::stringstream buffer;
 	buffer << shaderFile.rdbuf();
@@ -178,15 +330,15 @@ bool BravoShaderAsset::LoadShader(GLenum ShaderType, GLuint& OutShader, const st
 	if (!success)
 	{
 		glGetShaderInfoLog(Shader, 512, NULL, infoLog);
-		Log::LogMessage(ELog::Error, "Failed to compile shader: {}", RealShaderName);
+		Log::LogMessage(ELog::Error, "Failed to compile shader: {}", Path);
 		Log::LogMessage(ELog::Error, infoLog );
 		glDeleteShader(Shader);
 		return false;
 	}
 
-	Log::LogMessage(ELog::Log, "Loaded shader: {}", RealShaderName);
+	Log::LogMessage(ELog::Log, "Loaded shader: {}", Path);
 	
-	glAttachShader(ProgramID, Shader);
+	
 	OutShader = Shader;
 
 	return true;
@@ -196,6 +348,7 @@ bool BravoShaderAsset::LinkProgramm()
 {
 	int32 success;
 	int8 infoLog[512];
+	Log::LogMessage(ELog::Log, "Linking shader program");
 	glLinkProgram(ProgramID);
 	// check for linking errors
 	glGetProgramiv(ProgramID, GL_LINK_STATUS, &success);

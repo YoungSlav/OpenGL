@@ -334,6 +334,9 @@
     <ClCompile Include="Source\Private\BravoFontAsset.cpp">
       <Filter>Private\Assets</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\BravoTimeManager.cpp">
+      <Filter>Private\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -554,6 +557,9 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoBoundingBox.h">
       <Filter>Public\Actors\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoTimeManager.h">
+      <Filter>Public\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

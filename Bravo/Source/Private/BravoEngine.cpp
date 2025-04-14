@@ -9,6 +9,7 @@
 #include "IBravoRenderable.h"
 #include "BravoSelectionManager.h"
 #include "BravoViewport.h"
+#include "BravoTimeManager.h"
 
 namespace GlobalEngine
 {
@@ -34,6 +35,8 @@ bool BravoEngine::Initialize_Internal()
 	Engine = Self<BravoEngine>();
 
 	LastUsedHandle = GetHandle();
+
+	TimeManager = NewObject<BravoTimeManager>("TimeManager");
 
 	AssetManager = NewObject<BravoAssetManager>("AssetManager");
 	

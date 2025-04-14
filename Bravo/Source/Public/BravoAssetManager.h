@@ -52,6 +52,11 @@ public:
 
 				asset->OnAssetLoaded.Broadcast(asset);
 			}
+			else if ( LoadingState != EAssetLoadingState::Failed )
+			{
+				asset->Destroy();
+				return nullptr;
+			}
 			return asset;
 		}
 
