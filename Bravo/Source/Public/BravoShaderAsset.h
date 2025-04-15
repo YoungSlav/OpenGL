@@ -83,10 +83,10 @@ public:
 	void SetFloat3(const std::string& name, const glm::vec3& val) const;
 	void SetFloat4(const std::string& name, const glm::vec4& val) const;
 
-	void SetFloat1v(const std::string& name, uint32 count, const float* val) const;
-	void SetFloat2v(const std::string& name, uint32 count, const float* val) const;
-	void SetFloat3v(const std::string& name, uint32 count, const float* val) const;
-	void SetFloat4v(const std::string& name, uint32 count, const float* val) const;
+	void SetFloat1v(const std::string& name, const std::vector<float>& val) const;
+	void SetFloat2v(const std::string& name, const std::vector<glm::vec2>& val) const;
+	void SetFloat3v(const std::string& name, const std::vector<glm::vec3>& val) const;
+	void SetFloat4v(const std::string& name, const std::vector<glm::vec4>& val) const;
 
 	void SetMatrix2d(const std::string& name, const glm::mat2& val) const;
 	void SetMatrix3d(const std::string& name, const glm::mat3& val) const;
@@ -103,16 +103,28 @@ protected:
 
 	GLint FindUniformLocation(const std::string& name) const;
 	
+	using UniformValue = std::variant<
+		bool, int32, size_t, GLuint, float,
+		glm::vec2, glm::vec3, glm::vec4,
+		glm::mat2, glm::mat3, glm::mat4,
+		std::shared_ptr<BravoTextureAsset>,
+		std::shared_ptr<BravoCubemapAsset>,
+		std::vector<float>,
+		std::vector<glm::vec2>,
+		std::vector<glm::vec3>,
+		std::vector<glm::vec4>
+		>;
+	
 	template<typename T>
 	bool CheckUniformCache(const std::string& name, const T& val) const
 	{
-		auto valueIt = ValueCache.find(name);
-		if (valueIt != ValueCache.end())
+		auto it = ValueCache.find(name);
+		if (it != ValueCache.end())
 		{
-			const T& cachedValue = std::any_cast<const T&>(valueIt->second);
-            if (cachedValue == val)
+			if (std::holds_alternative<T>(it->second))
 			{
-				return true;
+				if (std::get<T>(it->second) == val)
+					return true;
 			}
 		}
 		ValueCache[name] = val;
@@ -123,7 +135,7 @@ protected:
 	GLuint ProgramID = 0;
 
 	mutable std::unordered_map<std::string, GLint> LocationCache;
-	mutable std::unordered_map<std::string, std::any> ValueCache;
+	mutable std::unordered_map<std::string, UniformValue> ValueCache;
 
 	
 
@@ -151,7 +163,49 @@ protected:
 
 public:
 	void CheckShadersForHotSwap();
+private:
+	void ReapplyCachedUniforms();
 protected:
+	template<typename T>
+	void SetValue(const std::string& name, const T& val) const
+	{
+		if constexpr (std::is_same_v<T, bool>)
+			SetBool(name, val);
+		else if constexpr (std::is_same_v<T, int32>)
+			SetInt(name, val);
+		else if constexpr (std::is_same_v<T, size_t>)
+			SetInt(name, val);
+		else if constexpr (std::is_same_v<T, GLuint>)
+			SetInt(name, val);
+		else if constexpr (std::is_same_v<T, float>)
+			SetFloat1(name, val);
+		else if constexpr (std::is_same_v<T, glm::vec2>)
+			SetFloat2(name, val);
+		else if constexpr (std::is_same_v<T, glm::vec3>)
+			SetFloat3(name, val);
+		else if constexpr (std::is_same_v<T, glm::vec4>)
+			SetFloat4(name, val);
+		else if constexpr (std::is_same_v<T, glm::mat2>)
+			SetMatrix2d(name, val);
+		else if constexpr (std::is_same_v<T, glm::mat3>)
+			SetMatrix3d(name, val);
+		else if constexpr (std::is_same_v<T, glm::mat4>)
+			SetMatrix4d(name, val);
+		else if constexpr (std::is_same_v<T, std::shared_ptr<BravoTextureAsset>>)
+			SetTexture(name, val);
+		else if constexpr (std::is_same_v<T, std::shared_ptr<BravoCubemapAsset>>)
+			SetCubemap(name, val);
+		else if constexpr (std::is_same_v<T, std::vector<float>>)
+			SetFloat1v(name, val);
+		else if constexpr (std::is_same_v<T, std::vector<glm::vec2>>)
+			SetFloat2v(name, val);
+		else if constexpr (std::is_same_v<T, std::vector<glm::vec3>>)
+			SetFloat3v(name, val);
+		else if constexpr (std::is_same_v<T, std::vector<glm::vec4>>)
+			SetFloat4v(name, val);
+		else
+			Log::LogMessage(ELog::Error, "Unsupported variant type while re-applying cached values in shader");
+	}
 #endif
 
 };

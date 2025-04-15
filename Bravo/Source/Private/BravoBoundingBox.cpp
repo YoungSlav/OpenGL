@@ -71,7 +71,7 @@ void BravoBoundingBox::UpdateVertices(const IBravoTransformable* )
 	}
 
 	Shader->Use();
-		Shader->SetFloat3v("corners", 8, &Corners[0].x);
+		Shader->SetFloat3v("corners", Corners);
 	Shader->StopUsage();
 }
 

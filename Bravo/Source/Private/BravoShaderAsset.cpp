@@ -194,6 +194,8 @@ EAssetLoadingState BravoComputeShaderAsset::Load(const BravoComputeShaderLoading
 #if SHADER_HOTSWAP
 void BravoShaderAsset::CheckShadersForHotSwap()
 {
+	bool bHotSwapped = false;
+	
 	Use();
 	for ( ShaderHotswapInfo& it : ShaderHotswapInfos )
 	{
@@ -221,14 +223,38 @@ void BravoShaderAsset::CheckShadersForHotSwap()
 		it.Shader = newShader;
 
 		glAttachShader(ProgramID, newShader);
+		
+		bHotSwapped = true;
+	}
+
+	if ( bHotSwapped )
+	{
 		if ( !LinkProgramm() )
 		{
 			Log::LogMessage(ELog::Error, "Failed to link the program: {}", ShaderPath);
 			LoadingState = EAssetLoadingState::Failed;
 		}
+
+		ReapplyCachedUniforms();
+
+		Log::LogMessage(ELog::Success, "Hotswaped {} shader", ShaderPath);
 	}
 
 	StopUsage();
+}
+
+void BravoShaderAsset::ReapplyCachedUniforms()
+{
+	std::unordered_map<std::string, UniformValue> Cache = ValueCache;
+	ValueCache.clear();
+	LocationCache.clear();
+	for (const auto& [name, value] : Cache)
+	{
+		std::visit([&](auto&& val)
+			{
+				SetValue(name, val);
+			}, value);
+	}
 }
 #endif
 
@@ -434,24 +460,25 @@ void BravoShaderAsset::SetFloat4(const std::string& name, const glm::vec4& val) 
 	glUniform4f(FindUniformLocation(name.c_str()), val.x, val.y, val.z, val.w);
 }
 
-void BravoShaderAsset::SetFloat1v(const std::string& name, uint32 count, const float* val) const
+void BravoShaderAsset::SetFloat1v(const std::string& name, const std::vector<float>& val) const
 {
-	glUniform1fv(FindUniformLocation(name.c_str()), count, val);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform1fv(FindUniformLocation(name.c_str()), static_cast<GLsizei>(val.size()), val.data());
 }
-
-void BravoShaderAsset::SetFloat2v(const std::string& name, uint32 count, const float* val) const
+void BravoShaderAsset::SetFloat2v(const std::string& name, const std::vector<glm::vec2>& val) const
 {
-	glUniform2fv(FindUniformLocation(name.c_str()), count, val);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform2fv(FindUniformLocation(name.c_str()), static_cast<GLsizei>(val.size()), reinterpret_cast<const float*>(val.data()));
 }
-
-void BravoShaderAsset::SetFloat3v(const std::string& name, uint32 count, const float* val) const
+void BravoShaderAsset::SetFloat3v(const std::string& name, const std::vector<glm::vec3>& val) const
 {
-	glUniform3fv(FindUniformLocation(name.c_str()), count, val);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform3fv(FindUniformLocation(name.c_str()), static_cast<GLsizei>(val.size()), reinterpret_cast<const float*>(val.data()));
 }
-
-void BravoShaderAsset::SetFloat4v(const std::string& name, uint32 count, const float* val) const
+void BravoShaderAsset::SetFloat4v(const std::string& name, const std::vector<glm::vec4>& val) const
 {
-	glUniform4fv(FindUniformLocation(name.c_str()), count, val);
+	if ( CheckUniformCache(name, val) ) return;
+	glUniform4fv(FindUniformLocation(name.c_str()), static_cast<GLsizei>(val.size()), reinterpret_cast<const float*>(val.data()));
 }
 
 void BravoShaderAsset::SetMatrix2d(const std::string& name, const glm::mat2& val) const
