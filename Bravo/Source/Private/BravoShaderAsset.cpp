@@ -11,6 +11,12 @@
 
 EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderLoadingParams& params)
 {
+	GLuint VertexShader = 0;
+	GLuint FragmentShader = 0;
+	GLuint GeometryShader = 0;
+	GLuint TessellationControllShader = 0;
+	GLuint TessellationEvaluationShader = 0;
+
 	ProgramID = glCreateProgram();
 
 	bool bSuccess = true;
@@ -135,6 +141,9 @@ EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderLoadingPa
 
 EAssetLoadingState BravoComputeShaderAsset::Load(const BravoComputeShaderLoadingParams& params)
 {
+	
+
+	GLuint ComputeShader = 0;
 	ProgramID = glCreateProgram();
 	bool bSuccess = true;
 	std::string OutShaderPath;
@@ -261,34 +270,19 @@ void BravoShaderAsset::ReapplyCachedUniforms()
 void BravoShaderAsset::OnDestroy()
 {
 	BravoAsset::OnDestroy();
+}
+
+void BravoShaderAsset::ReleaseFromGPU_Internal()
+{
+	BravoAsset::ReleaseFromGPU_Internal();
 #if SHADER_HOTSWAP
 	for ( auto it : ShaderHotswapInfos )
 	{
 		glDeleteShader(it.Shader);
 	}
 #endif
-}
 
-void BravoShaderAsset::ReleaseFromGPU_Internal()
-{
-	BravoAsset::ReleaseFromGPU_Internal();
 	StopUsage();
-}
-
-void BravoRenderShaderAsset::ReleaseFromGPU_Internal()
-{
-	BravoShaderAsset::ReleaseFromGPU_Internal();
-	if ( VertexShader ) glDeleteShader(VertexShader);
-	if ( FragmentShader ) glDeleteShader(FragmentShader);
-	if ( GeometryShader ) glDeleteShader(GeometryShader);
-	if ( TessellationControllShader ) glDeleteShader(TessellationControllShader);
-	if ( TessellationEvaluationShader ) glDeleteShader(TessellationEvaluationShader);
-}
-
-void BravoComputeShaderAsset::ReleaseFromGPU_Internal()
-{
-	BravoShaderAsset::ReleaseFromGPU_Internal();
-	if ( ComputeShader ) glDeleteShader(ComputeShader);
 }
 
 void BravoShaderAsset::Use()

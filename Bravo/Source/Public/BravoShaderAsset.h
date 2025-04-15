@@ -220,15 +220,6 @@ public:
 
 	EAssetLoadingState Load(const BravoRenderShaderLoadingParams& params);
 
-protected:
-	virtual void ReleaseFromGPU_Internal() override;
-
-private:
-	GLuint VertexShader = 0;
-	GLuint FragmentShader = 0;
-	GLuint GeometryShader = 0;
-	GLuint TessellationControllShader = 0;
-	GLuint TessellationEvaluationShader = 0;
 };
 
 
@@ -243,9 +234,4 @@ public:
 
 	EAssetLoadingState Load(const BravoComputeShaderLoadingParams& params);
 
-protected:
-	virtual void ReleaseFromGPU_Internal() override;
-
-private:
-	GLuint ComputeShader = 0;
 };
