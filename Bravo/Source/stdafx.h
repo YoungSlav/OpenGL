@@ -38,8 +38,12 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/intersect.hpp"
 #include "glm/gtc/epsilon.hpp"
-#include "delegates/Delegates.h"
 #include <glm/gtx/euler_angles.hpp>
+
+#include "delegates/Delegates.h"
+
+#include "rttr/type.h"
+#include "rttr/registration.h"
 
 #include "BravoTypes.h"
 
