@@ -1,5 +1,17 @@
 #include "BravoObject.h"
 #include "BravoEngine.h"
+#include "BravoReflection.h"
+
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+	registration::class_<BravoObject>("Object")
+        .property("Name", &BravoObject::GetName, &BravoObject::SetName)
+		.property_readonly("Handle", &BravoObject::GetHandle)
+		.property_readonly("Owner", &BravoObject::GetOwner)
+		.property_readonly("Children", &BravoObject::GetChildren)
+		;
+}
 
 #if TEST_MEMORY_LEAKS
 int32 ObjectsSpawned = 0;

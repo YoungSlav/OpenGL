@@ -7,6 +7,19 @@
 #include "BravoAssetManager.h"
 #include "BravoTextureUnitManager.h"
 
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+
+	registration::class_<BravoPointLightSettings>("PointLightSettings")
+		.property("Intencity", &BravoPointLightSettings::Intencity)
+		;
+
+	registration::class_<BravoPointLightActor>("PointLight")
+		.property("Settings", &BravoPointLightActor::GetSettings, &BravoPointLightActor::SetSettings)
+		;
+}
+
 bool BravoPointLightActor::Initialize_Internal()
 {
 	if ( !BravoLightActor::Initialize_Internal() )

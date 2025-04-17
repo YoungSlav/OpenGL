@@ -6,6 +6,8 @@
 
 struct BravoPointLightSettings
 {
+RTTR_ENABLE();
+public:
 	float Intencity = 100.0f;
 };
 
@@ -20,6 +22,7 @@ struct BravoPointLightShaderData
 
 class BravoPointLightActor : public BravoLightActor
 {
+	RTTR_ENABLE(BravoLightActor);
 public:
 	template <typename... Args>
 	BravoPointLightActor(const BravoPointLightSettings& _Settings, Args&&... args) :

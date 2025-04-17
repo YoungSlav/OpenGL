@@ -6,6 +6,21 @@
 #include "BravoAssetManager.h"
 #include "BravoTextureUnitManager.h"
 
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+
+	registration::class_<BravoSpotLightSettings>("SpotLightSettings")
+		.property("CutOff", &BravoSpotLightSettings::CutOff)
+		.property("OuterCutOff", &BravoSpotLightSettings::OuterCutOff)
+		.property("Intencity", &BravoSpotLightSettings::Intencity)
+		;
+
+	registration::class_<BravoSpotLightActor>("SpotLightActor")
+		.property("Settings", &BravoSpotLightActor::GetSettings, &BravoSpotLightActor::SetSettings)
+		;
+}
+
 bool BravoSpotLightActor::Initialize_Internal()
 {
 	if ( !BravoLightActor::Initialize_Internal() )

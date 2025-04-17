@@ -1,6 +1,13 @@
 #include "BravoComponent.h"
 #include "BravoActor.h"
 
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+	registration::class_<BravoComponent>("Component")
+        ;
+}
+
 bool BravoComponent::Initialize_Internal()
 {
 	if ( !BravoObject::Initialize_Internal() )

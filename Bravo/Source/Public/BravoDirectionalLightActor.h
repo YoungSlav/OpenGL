@@ -6,6 +6,8 @@
 
 struct BravoDirectionalLightSettings
 {
+	RTTR_ENABLE();
+public:
 	std::vector<float> ShadowCascadeLevels { 0.02f, 0.05f, 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.5f, 0.75f, 0.8f, 1.0f };
 	float FrustrumMultiplicator = 5.0f;
 	float Intencity = 1.0f;
@@ -27,6 +29,7 @@ struct BravoDirectionalLightShaderData
 
 class BravoDirectionalLightActor : public BravoLightActor
 {
+	RTTR_ENABLE(BravoLightActor);
 public:
 	template <typename... Args>
 	BravoDirectionalLightActor(const BravoDirectionalLightSettings& _Settings, Args&&... args) :

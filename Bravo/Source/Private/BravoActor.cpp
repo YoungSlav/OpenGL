@@ -3,6 +3,16 @@
 #include "BravoMath.h"
 #include "BravoComponent.h"
 
+
+
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+	registration::class_<BravoActor>("Actor")
+		.property_readonly("Components", &BravoActor::GetComponents)
+		;
+}
+
 void BravoActor::OnChildObjectAdded(std::weak_ptr<BravoObject> _OwnedObject)
 {
 	BravoObject::OnChildObjectAdded(_OwnedObject);

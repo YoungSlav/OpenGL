@@ -6,6 +6,7 @@
 
 class BravoComponent : public BravoObject, public IBravoTransformable
 {
+	RTTR_ENABLE(BravoObject, IBravoTransformable);
 public:
 	template <typename... Args>
 	BravoComponent(Args&&... args) :

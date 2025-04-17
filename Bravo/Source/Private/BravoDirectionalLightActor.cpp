@@ -8,6 +8,21 @@
 #include "BravoViewport.h"
 #include "BravoCamera.h"
 
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+
+	registration::class_<BravoDirectionalLightSettings>("DirectionalLightSettings")
+		.property("ShadowCascadeLevels", &BravoDirectionalLightSettings::ShadowCascadeLevels)
+		.property("FrustrumMultiplicator", &BravoDirectionalLightSettings::FrustrumMultiplicator)
+		.property("Intencity", &BravoDirectionalLightSettings::Intencity)
+		;
+
+	registration::class_<BravoDirectionalLightActor>("DirectionalLight")
+		.property("Settings", &BravoDirectionalLightActor::GetSettings, &BravoDirectionalLightActor::SetSettings)
+		.property("AmbientColor", &BravoDirectionalLightActor::GetAmbientLightColor, &BravoDirectionalLightActor::SetAmbientLightColor)
+		;
+}
 
 bool BravoDirectionalLightActor::Initialize_Internal()
 {

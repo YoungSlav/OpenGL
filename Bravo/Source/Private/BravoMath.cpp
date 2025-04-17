@@ -5,6 +5,49 @@ const glm::vec3 BravoMath::forwardV = glm::vec3(0, 0, -1.0);
 const glm::vec3 BravoMath::upV = glm::vec3(0.0, 1.0, 0.0);
 const glm::vec3 BravoMath::rightV = glm::vec3(1.0, 0.0, 0.0);
 
+RTTR_REGISTRATION
+{
+    using namespace rttr;
+
+    registration::class_<glm::vec2>("vec2")
+        .property("x", &glm::vec2::x)
+        .property("y", &glm::vec2::y);
+
+    registration::class_<glm::vec3>("vec3")
+        .property("x", &glm::vec3::x)
+        .property("y", &glm::vec3::y)
+        .property("z", &glm::vec3::z);
+
+    registration::class_<glm::vec4>("vec4")
+        .property("x", &glm::vec4::x)
+        .property("y", &glm::vec4::y)
+        .property("z", &glm::vec4::z)
+        .property("w", &glm::vec4::w);
+
+
+    registration::class_<glm::ivec2>("ivec2")
+        .property("x", &glm::ivec2::x)
+        .property("y", &glm::ivec2::y);
+
+    registration::class_<glm::ivec3>("ivec3")
+        .property("x", &glm::ivec3::x)
+        .property("y", &glm::ivec3::y)
+        .property("z", &glm::ivec3::z);
+
+    registration::class_<glm::ivec4>("ivec4")
+        .property("x", &glm::ivec4::x)
+        .property("y", &glm::ivec4::y)
+        .property("z", &glm::ivec4::z)
+        .property("w", &glm::ivec4::w);
+
+
+    registration::class_<glm::quat>("quat")
+        .property("x", &glm::quat::x)
+        .property("y", &glm::quat::y)
+        .property("z", &glm::quat::z)
+        .property("w", &glm::quat::w);
+}
+
 glm::vec3 BravoMath::NormalizeEuler(const glm::vec3& euler)
 {
 	// Convert Euler angles to rotation matrix

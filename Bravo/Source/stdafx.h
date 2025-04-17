@@ -31,7 +31,6 @@
 // third party
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/matrix_decompose.hpp"
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtx/rotate_vector.hpp"
@@ -44,9 +43,10 @@
 
 #include "rttr/type.h"
 #include "rttr/registration.h"
+#include "rttr/registration_friend.h"
 
 #include "BravoTypes.h"
-
+#include "BravoReflection.h"
 
 
 

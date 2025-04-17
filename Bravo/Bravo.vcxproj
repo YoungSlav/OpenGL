@@ -50,11 +50,14 @@
     <ClCompile Include="Source\Private\BravoPointLightShaderDataCollection.cpp" />
     <ClCompile Include="Source\Private\BravoPostProcess.cpp" />
     <ClCompile Include="Source\Private\BravoPostProcess_AntiAliasing.cpp" />
+    <ClCompile Include="Source\Private\BravoReflection.cpp" />
     <ClCompile Include="Source\Private\BravoScreen.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_ObjectHierarchy.cpp" />
     <ClCompile Include="Source\Private\BravoTerrainActor.cpp" />
     <ClCompile Include="Source\Private\BravoTimeManager.cpp" />
+    <ClCompile Include="Source\Private\BravoTransform.cpp" />
+    <ClCompile Include="Source\Private\BravoTransform2D.cpp" />
     <ClCompile Include="Source\Private\BravoViewport.cpp" />
     <ClCompile Include="Source\Private\BravoRenderTarget.cpp" />
     <ClCompile Include="Source\Private\BravoSelectionManager.cpp" />
@@ -68,6 +71,7 @@
     <ClCompile Include="Source\Private\BravoStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
     <ClCompile Include="Source\Private\BravoWidget.cpp" />
+    <ClCompile Include="Source\Private\IBravoTransformable.cpp" />
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShaderAsset.cpp" />
     <ClCompile Include="Source\Private\BravoTextureAsset.cpp" />
@@ -114,6 +118,7 @@
     <ClInclude Include="Source\Public\BravoPointLightShaderDataCollection.h" />
     <ClInclude Include="Source\Public\BravoPostProcess.h" />
     <ClInclude Include="Source\Public\BravoPostProcess_AntiAliasing.h" />
+    <ClInclude Include="Source\Public\BravoReflection.h" />
     <ClInclude Include="Source\Public\BravoScreen.h" />
     <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h" />

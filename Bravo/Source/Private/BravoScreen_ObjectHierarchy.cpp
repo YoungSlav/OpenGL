@@ -10,7 +10,7 @@ bool BravoScreen_ObjectHierarchy::Initialize_Internal()
 		return false;
 
 	SetTrueScaling(false);
-	SetSize(glm::vec2(0.2f, 1.0f));
+	SetSize(glm::vec2(0.4f, 1.0f));
 	SetMaxSize(glm::vec2(1.0f, 1.0f));
 	SetOrigin(glm::vec2(0.0f, 0.0f));
 	SetPosition(glm::vec2(0.0f, 0.0f));

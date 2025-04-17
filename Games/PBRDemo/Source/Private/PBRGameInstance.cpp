@@ -3,6 +3,7 @@
 #include "BravoViewport.h"
 #include "BravoHUD.h"
 #include "BravoScreen_Debug.h"
+#include "BravoScreen_ObjectHierarchy.h"
 #include "BravoAssetManager.h"
 #include "BravoCamera.h"
 #include "BravoPlayer.h"
@@ -18,6 +19,54 @@
 
 #include "BravoPointLightActor.h"
 
+void PrintPropertiesRecursive(rttr::instance inputInstance, int depth = 0)
+{
+	
+	rttr::instance objInstance = inputInstance.get_wrapped_instance().is_valid() ? inputInstance.get_wrapped_instance() : inputInstance;
+	
+	rttr::type objType = objInstance.get_derived_type();
+
+	std::string indent(depth * 4, ' '); // Indent for readability
+	for (auto& prop : objType.get_properties())
+	{
+		rttr::variant value = prop.get_value(objInstance);
+		rttr::type valueType = prop.get_type();
+		std::string propName = std::string(prop.get_name().data(), prop.get_name().size());
+		std::string typeName = std::string(valueType.get_name().data(), valueType.get_name().size());
+
+
+		if (value.is_sequential_container())
+		{
+			Log::LogMessage(ELog::Log, "{}{}: [", indent, propName);
+			rttr::variant_sequential_view view = value.create_sequential_view();
+			for (size_t i = 0; i < view.get_size(); ++i)
+			{
+				rttr::variant elem = view.get_value(i).extract_wrapped_value();
+				PrintPropertiesRecursive(elem, depth+1);
+			}
+			Log::LogMessage(ELog::Log, "{}]", indent);
+		}
+		else
+		{
+			if (valueType.is_class() && !valueType.get_properties().empty() && value.is_valid())
+			{
+				Log::LogMessage(ELog::Log, "{}{}:", indent, propName);
+				PrintPropertiesRecursive(value, depth + 1);
+			}
+			else
+			{
+				Log::LogMessage(ELog::Log, "{}{}: {}", indent, propName, value.to_string());
+			}
+		}
+	}
+}
+
+void PBRGameInstance::TestReflection(std::shared_ptr<BravoObject> Obj)
+{
+	//rttr::variant objInstance = Obj;
+	PrintPropertiesRecursive(Obj, 0);
+}
+
 bool PBRGameInstance::Initialize_Internal()
 {
 	if ( !BravoObject::Initialize_Internal() )
@@ -30,7 +79,11 @@ bool PBRGameInstance::Initialize_Internal()
 	{
 		auto debugScreen = NewObject<BravoScreen_Debug>("DebugScreen");
 		Engine->GetViewport()->GetHUD()->AddScreen(debugScreen);
+
+		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen", Self<PBRGameInstance>());
+		Engine->GetViewport()->GetHUD()->AddScreen(hierarchyScreen);
 	}
+
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 		
@@ -84,6 +137,8 @@ bool PBRGameInstance::Initialize_Internal()
 				backPanelMesh->SetMaterial(planeMaterial);
 			}
 		}
+
+		
 	}
 
 	const int32 squreSize = 5;
@@ -158,7 +213,7 @@ bool PBRGameInstance::Initialize_Internal()
 	//	coneMesh->SetMaterial(material);
 	//}
 	
-
+	TestReflection(Self<PBRGameInstance>());
 	return true;
 }
 

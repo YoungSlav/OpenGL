@@ -30,6 +30,8 @@ typedef MulticastDelegate<const std::shared_ptr<class BravoObject>> OnObjectDest
 
 class BravoObject : public SharedFromThis
 {
+	RTTR_ENABLE();
+
 	friend class BravoEngine;
 public:
 	BravoObject(const BravoHandle& _Handle, const std::string& _Name, const std::shared_ptr<class BravoEngine> _Engine, const std::shared_ptr<BravoObject> _Owner) :

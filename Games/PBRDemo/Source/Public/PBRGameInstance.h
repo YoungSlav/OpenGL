@@ -16,6 +16,8 @@ protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Tick(float DeltaTime) override;
 
+	void TestReflection(std::shared_ptr<BravoObject> Obj);
+
 private:
 	std::shared_ptr<class BravoCamera> Camera;
 	std::shared_ptr<class BravoPlayer> Player;

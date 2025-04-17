@@ -131,13 +131,13 @@ bool BravoGizmo::Initialize_Internal()
 	
 	Mesh->RemoveAllInstances();
 	BravoTransform transform;
-	transform.SetRotation(glm::vec3(90.0f, 0.0, 90.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 0.0, 90.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(90.0f, 90.0, 90.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 90.0, 90.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(90.0f, 180.0, 90.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 180.0, 90.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(90.0f, 270.0, 90.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 270.0, 90.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
 
 	RotationComponents.push_back(Mesh);
@@ -156,13 +156,13 @@ bool BravoGizmo::Initialize_Internal()
 
 	Mesh->RemoveAllInstances();
 	BravoTransform transform;
-	transform.SetRotation(glm::vec3(90.0f, 0.0, 0.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 0.0, 0.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(90.0f, 90.0, 0.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 90.0, 0.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(90.0f, 180.0, 0.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 180.0, 0.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(90.0f, 270.0, 0.0f));
+	transform.SetRotationEuler(glm::vec3(90.0f, 270.0, 0.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
 	RotationComponents.push_back(Mesh);
 	}
@@ -182,13 +182,13 @@ bool BravoGizmo::Initialize_Internal()
 	
 	Mesh->RemoveAllInstances();
 	BravoTransform transform;
-	transform.SetRotation(glm::vec3(0.0f, 0.0, 0.0f));
+	transform.SetRotationEuler(glm::vec3(0.0f, 0.0, 0.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(0.0f, 0.0, 90.0f));
+	transform.SetRotationEuler(glm::vec3(0.0f, 0.0, 90.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(0.0f, 0.0, 180.0f));
+	transform.SetRotationEuler(glm::vec3(0.0f, 0.0, 180.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
-	transform.SetRotation(glm::vec3(0.0f, 0.0, 270.0f));
+	transform.SetRotationEuler(glm::vec3(0.0f, 0.0, 270.0f));
 	Mesh->AddInstance(BravoInstanceData(transform));
 	
 	RotationComponents.push_back(Mesh);
