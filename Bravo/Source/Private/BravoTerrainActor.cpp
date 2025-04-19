@@ -18,11 +18,11 @@ bool BravoTerrainActor::Initialize_Internal()
 	if ( !AssetManager )
 		return false;
 
-	TerrainShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("TerrainShader", BravoRenderShaderLoadingParams("Terrain", false, true));
+	TerrainShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("TerrainShader", BravoRenderShaderSettings("Terrain", false, true));
 	if ( !TerrainShader )
 		return false;
 
-	HeightmapTexture = AssetManager->FindOrLoad<BravoTextureAsset>("TerrainTexture", BravoTextureLoadingParams(TerrainTexturePath));
+	HeightmapTexture = AssetManager->FindOrLoad<BravoTextureAsset>("TerrainTexture", BravoTextureSettings(TerrainTexturePath));
 	if ( !HeightmapTexture )
 		return false;
 	if ( HeightmapTexture->GetLoadingState() == AsyncLoading )

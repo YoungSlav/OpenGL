@@ -349,6 +349,12 @@
     <ClCompile Include="Source\Private\BravoTransform2D.cpp">
       <Filter>Private\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Private\IBravoRenderable.cpp">
+      <Filter>Private\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Private\BravoScreen_ObjectProperties.cpp">
+      <Filter>Private\HUD</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\openGL.h" />
@@ -575,6 +581,9 @@
     </ClInclude>
     <ClInclude Include="Source\Public\BravoReflection.h">
       <Filter>Public\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Public\BravoScreen_ObjectProperties.h">
+      <Filter>Public\HUD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

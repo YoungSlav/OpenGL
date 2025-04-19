@@ -20,7 +20,7 @@ bool BravoGizmo::Initialize_Internal()
 
 
 	// TRANFRORM
-	auto TransformMesh = AssetManager->FindOrLoad<BravoStaticMeshAsset>("GizmoTrAsset", BravoStaticMeshLoadingParams("Gizmo\\SM_Arrow_01.fbx"));
+	auto TransformMesh = AssetManager->FindOrLoad<BravoStaticMeshAsset>("GizmoTrAsset", BravoStaticMeshSettings("Gizmo\\SM_Arrow_01.fbx"));
 	{
 	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 0.0f);
@@ -68,7 +68,7 @@ bool BravoGizmo::Initialize_Internal()
 	}
 	
 	// SCALE
-	auto ScaleMesh = AssetManager->FindOrLoad<BravoStaticMeshAsset>("GizmoScAsset", BravoStaticMeshLoadingParams("Gizmo\\SM_Scale.fbx"));
+	auto ScaleMesh = AssetManager->FindOrLoad<BravoStaticMeshAsset>("GizmoScAsset", BravoStaticMeshSettings("Gizmo\\SM_Scale.fbx"));
 	{
 	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0, 0.0);
 	glm::vec3 Rotation = glm::vec3(0.0f, 0.0, 0.0f);
@@ -116,7 +116,7 @@ bool BravoGizmo::Initialize_Internal()
 	}
 
 	// ROTATION
-	auto RotationMesh = AssetManager->FindOrLoad<BravoStaticMeshAsset>("GizmoRotAsset", BravoStaticMeshLoadingParams("Gizmo\\SM_Angle_Smooth.fbx"));
+	auto RotationMesh = AssetManager->FindOrLoad<BravoStaticMeshAsset>("GizmoRotAsset", BravoStaticMeshSettings("Gizmo\\SM_Angle_Smooth.fbx"));
 	{
 	materailLoadingParams.AlbedoColor = glm::vec3(1.0f, 0.0, 0.0);
 

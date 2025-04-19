@@ -7,23 +7,22 @@
 #include "BravoAssetManager.h"
 
 
-EAssetLoadingState BravoTextureAsset::Load(const BravoTextureLoadingParams& params)
+EAssetLoadingState BravoTextureAsset::Load(const BravoTextureSettings& params)
 {
 	std::thread asyncLoadThread(&BravoTextureAsset::AsyncLoad, this, params);
-	//AsyncLoad(ResourcesPath, params);
 
 	LoadingState = EAssetLoadingState::AsyncLoading;
 	asyncLoadThread.detach();
 	return LoadingState;
 }
 
-void BravoTextureAsset::AsyncLoad(const BravoTextureLoadingParams& params)
+void BravoTextureAsset::AsyncLoad(const BravoTextureSettings& params)
 {
 	TextureData = std::shared_ptr<BravoTextureData>(new BravoTextureData(Engine->GetAssetManager()->FindAsset(params.TexturePath), params.bFloat, params.sRGB));
 	if ( TextureData != nullptr && TextureData->bInitialized )
 		LoadingState = EAssetLoadingState::InRAM;
 	else
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 }
 
 bool BravoTextureAsset::LoadToGPU_Internal()

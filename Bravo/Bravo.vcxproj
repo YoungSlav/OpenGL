@@ -54,6 +54,7 @@
     <ClCompile Include="Source\Private\BravoScreen.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_Debug.cpp" />
     <ClCompile Include="Source\Private\BravoScreen_ObjectHierarchy.cpp" />
+    <ClCompile Include="Source\Private\BravoScreen_ObjectProperties.cpp" />
     <ClCompile Include="Source\Private\BravoTerrainActor.cpp" />
     <ClCompile Include="Source\Private\BravoTimeManager.cpp" />
     <ClCompile Include="Source\Private\BravoTransform.cpp" />
@@ -71,6 +72,7 @@
     <ClCompile Include="Source\Private\BravoStaticMeshComponent.cpp" />
     <ClCompile Include="Source\Private\BravoTextureUnitManager.cpp" />
     <ClCompile Include="Source\Private\BravoWidget.cpp" />
+    <ClCompile Include="Source\Private\IBravoRenderable.cpp" />
     <ClCompile Include="Source\Private\IBravoTransformable.cpp" />
     <ClCompile Include="Source\Private\Log.cpp" />
     <ClCompile Include="Source\Private\BravoShaderAsset.cpp" />
@@ -122,6 +124,7 @@
     <ClInclude Include="Source\Public\BravoScreen.h" />
     <ClInclude Include="Source\Public\BravoScreen_Debug.h" />
     <ClInclude Include="Source\Public\BravoScreen_ObjectHierarchy.h" />
+    <ClInclude Include="Source\Public\BravoScreen_ObjectProperties.h" />
     <ClInclude Include="Source\Public\BravoTerrainActor.h" />
     <ClInclude Include="Source\Public\BravoTimeManager.h" />
     <ClInclude Include="Source\Public\BravoTransform2D.h" />

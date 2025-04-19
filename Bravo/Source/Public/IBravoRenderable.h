@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 enum ERenderPriority : int32
 {
@@ -17,6 +18,9 @@ typedef MulticastDelegate<const int32&> OnObjectClickedSignature;
 
 class IBravoRenderable
 {
+	RTTR_ENABLE();
+	
+
 public:
 	IBravoRenderable() = default;
 

@@ -4,6 +4,7 @@
 
 RTTR_REGISTRATION
 {
+
 	using namespace rttr;
 	registration::class_<BravoObject>("Object")
         .property("Name", &BravoObject::GetName, &BravoObject::SetName)

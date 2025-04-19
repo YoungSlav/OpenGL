@@ -19,7 +19,7 @@ bool BravoPostProcess_Outline::Initialize_Internal()
 
 	Engine->GetViewport()->OnResizeDelegate.AddSP(Self<BravoPostProcess_Outline>(), &BravoPostProcess_Outline::OnViewportResized);
 
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("OutlinePostProccess", BravoRenderShaderLoadingParams("OutlinePostProccess", false, false));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("OutlinePostProccess", BravoRenderShaderSettings("OutlinePostProccess", false, false));
 	if ( !Shader )
 		return false;
 

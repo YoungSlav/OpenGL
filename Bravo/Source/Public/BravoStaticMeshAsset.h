@@ -13,9 +13,9 @@
 #include <assimp/postprocess.h>
 #include "BravoVertex.h"
 
-struct BravoStaticMeshLoadingParams
+struct BravoStaticMeshSettings
 {
-	BravoStaticMeshLoadingParams(const std::string& _Path) :
+	BravoStaticMeshSettings(const std::string& _Path) :
 		MeshPath(_Path)
 	{}
 
@@ -32,10 +32,10 @@ public:
 
 	void Render(size_t InstanceCount);
 
-	EAssetLoadingState Load(const BravoStaticMeshLoadingParams& params);
+	EAssetLoadingState Load(const BravoStaticMeshSettings& params);
 
 protected:
-	void AsyncLoad(const BravoStaticMeshLoadingParams& params);
+	void AsyncLoad(const BravoStaticMeshSettings& params);
 
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;

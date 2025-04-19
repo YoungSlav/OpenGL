@@ -8,6 +8,7 @@
 struct BravoSpotLightSettings
 {
 	RTTR_ENABLE();
+	
 public:
 	float CutOff = 15.0f;
 	float OuterCutOff = 20.0f;
@@ -34,6 +35,7 @@ struct BravoSpotLightShaderData
 class BravoSpotLightActor : public BravoLightActor
 {
 	RTTR_ENABLE(BravoLightActor);
+	
 public:
 	template <typename... Args>
 	BravoSpotLightActor(const BravoSpotLightSettings& _Settings, Args&&... args) :

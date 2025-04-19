@@ -7,6 +7,7 @@ typedef MulticastDelegate<const class IBravoTransformable*> OnTransformUpdatedSi
 class IBravoTransformable
 {
 	RTTR_ENABLE();
+	
 public:
 	IBravoTransformable() = default;
 	IBravoTransformable(const BravoTransform& Transform);

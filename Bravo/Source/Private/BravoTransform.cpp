@@ -78,6 +78,7 @@ const glm::quat& BravoTransform::GetRotation() const
 }
 const glm::vec3& BravoTransform::GetRotationEuler() const
 {
+	RotationEuler = BravoMath::QuatToEuler(Rotation);
 	return RotationEuler;
 }
 const glm::vec3& BravoTransform::GetScale() const

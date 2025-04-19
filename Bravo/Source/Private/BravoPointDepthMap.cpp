@@ -11,7 +11,7 @@ bool BravoPointDepthMap::Initialize_Internal()
 	if ( !BravoDepthMap::Initialize_Internal() )
 		return false;
 
-	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("PointDepthMapShader", BravoRenderShaderLoadingParams("DepthMapPoint", true, false));
+	DepthMapShader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("PointDepthMapShader", BravoRenderShaderSettings("DepthMapPoint", true, false));
 
 	return true;
 }

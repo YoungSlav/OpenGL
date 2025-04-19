@@ -20,7 +20,7 @@ void BravoCubemapAsset::AsyncLoad(const BravoCubemapLoadingParams& params)
 	if ( params.TexturesPaths.size() != 6 )
 	{
 		Log::LogMessage(ELog::Error, "Invalid number of textures to initialize cubemap: {}", GetName() );
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 		return;
 	}
 	bool success = true;
@@ -31,7 +31,7 @@ void BravoCubemapAsset::AsyncLoad(const BravoCubemapLoadingParams& params)
 		success = success && Textures[i] != nullptr && Textures[i]->bInitialized;
 	}
 
-	LoadingState = success ? EAssetLoadingState::InRAM : EAssetLoadingState::Failed;
+	LoadingState = success ? EAssetLoadingState::InRAM : EAssetLoadingState::Unloaded;
 }
 
 bool BravoCubemapAsset::LoadToGPU_Internal()

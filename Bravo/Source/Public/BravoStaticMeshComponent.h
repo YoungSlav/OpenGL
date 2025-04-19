@@ -50,7 +50,8 @@ private:
 
 class BravoStaticMeshComponent : public BravoComponent, public IBravoRenderable
 {
-
+	RTTR_ENABLE(BravoComponent, IBravoRenderable);
+	
 public:
 	
 	template <typename... Args>
@@ -80,7 +81,7 @@ public:
 	void UpdateInstance(int32 Index, const BravoInstanceData& NewInstance);
 	void RemoveAllInstances();
 	void RemoveInstances(int32 Index, int32 Count);
-	std::shared_ptr<BravoStaticMeshComponent::BravoStaticMeshInstance> GetInstance(int32 Index) const;
+	std::shared_ptr<BravoStaticMeshInstance> GetInstance(int32 Index) const;
 
 	inline int32 InstanceCount() const { return (int32)Instances.size(); }
 

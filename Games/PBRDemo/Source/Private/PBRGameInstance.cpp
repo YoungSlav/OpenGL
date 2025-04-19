@@ -18,6 +18,7 @@
 #include "BravoMaterialUnlit.h"
 
 #include "BravoPointLightActor.h"
+#include "BravoSelectionManager.h"
 
 void PrintPropertiesRecursive(rttr::instance inputInstance, int depth = 0)
 {
@@ -26,7 +27,7 @@ void PrintPropertiesRecursive(rttr::instance inputInstance, int depth = 0)
 	
 	rttr::type objType = objInstance.get_derived_type();
 
-	std::string indent(depth * 4, ' '); // Indent for readability
+	std::string indent(depth * 4, ' ');
 	for (auto& prop : objType.get_properties())
 	{
 		rttr::variant value = prop.get_value(objInstance);
@@ -84,6 +85,7 @@ bool PBRGameInstance::Initialize_Internal()
 		Engine->GetViewport()->GetHUD()->AddScreen(hierarchyScreen);
 	}
 
+	Engine->GetSelectionManager()->SetAllowSelections(true);
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 		
@@ -125,7 +127,7 @@ bool PBRGameInstance::Initialize_Internal()
 
 		if ( auto backPanelMesh = backPanelActor->NewObject<BravoStaticMeshComponent>("BackPanelMesh") )
 		{
-			auto planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("plane", BravoStaticMeshLoadingParams("primitives\\plane.fbx"));
+			auto planeAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("plane", BravoStaticMeshSettings("primitives\\plane.fbx"));
 			backPanelMesh->SetScale(glm::vec3(20.0f));
 			backPanelMesh->SetMesh(planeAsset);
 			if ( auto planeMaterial = backPanelMesh->NewObject<BravoMaterialPBR>("BackPlaneMaterial") )
@@ -147,7 +149,7 @@ bool PBRGameInstance::Initialize_Internal()
 	const glm::vec3 startPos = glm::vec3(0.0, -totalSpace / 2.0f, -totalSpace / 2.0f) + glm::vec3(0.0f, offset/2.0f, offset/2.0f);
 	glm::vec3 spawnPos = startPos;
 
-	auto sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("sphere", BravoStaticMeshLoadingParams("primitives\\sphere.fbx"));
+	auto sphereAsset = AssetManager->FindOrLoad<BravoStaticMeshAsset>("sphere", BravoStaticMeshSettings("primitives\\sphere.fbx"));
 
 	BravoPBRMaterialParams sphereMaterial;
 	sphereMaterial.AlbedoColor = glm::vec3(0.6f, 0.0f, 0.0f);

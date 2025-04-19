@@ -21,14 +21,14 @@ void BravoMaterialPBR::Load(const BravoPBRMaterialParams& params)
 {
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
-	ShaderAsset = AssetManager->FindOrLoad<BravoRenderShaderAsset>("PBRShaderModel", BravoRenderShaderLoadingParams("PBRModel", false, false));
+	ShaderAsset = AssetManager->FindOrLoad<BravoRenderShaderAsset>("PBRShaderModel", BravoRenderShaderSettings("PBRModel", false, false));
 
-	AlbedoTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.AlbedoTexture, BravoTextureLoadingParams(params.AlbedoTexture, false, true));
-	MetallicTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.MetallicTexture, BravoTextureLoadingParams(params.MetallicTexture));
-	RoughnessTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.RoughnessTexture, BravoTextureLoadingParams(params.RoughnessTexture));
-	AoTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.AoTexture, BravoTextureLoadingParams(params.AoTexture));
-	NormalTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.NormalTexture, BravoTextureLoadingParams(params.NormalTexture));
-	HeightTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.HeightTexture, BravoTextureLoadingParams(params.HeightTexture));
+	AlbedoTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.AlbedoTexture, BravoTextureSettings(params.AlbedoTexture, false, true));
+	MetallicTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.MetallicTexture, BravoTextureSettings(params.MetallicTexture));
+	RoughnessTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.RoughnessTexture, BravoTextureSettings(params.RoughnessTexture));
+	AoTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.AoTexture, BravoTextureSettings(params.AoTexture));
+	NormalTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.NormalTexture, BravoTextureSettings(params.NormalTexture));
+	HeightTexture = AssetManager->FindOrLoad<BravoTextureAsset>(params.HeightTexture, BravoTextureSettings(params.HeightTexture));
 
 	
 	AlbedoColor = params.AlbedoColor;

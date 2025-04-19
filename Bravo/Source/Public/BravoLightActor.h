@@ -5,6 +5,7 @@
 class BravoLightActor : public BravoActor
 {
 	RTTR_ENABLE(BravoActor);
+	
 public:
 	template <typename... Args>
 	BravoLightActor(const glm::vec3& _LightColor, Args&&... args) :

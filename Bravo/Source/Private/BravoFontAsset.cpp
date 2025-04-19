@@ -9,12 +9,12 @@
 
 #define POINT_TO_PIXEL 1.333f
 
-EAssetLoadingState BravoFontAsset::Load(const BravoFontLoadingParams& params)
+EAssetLoadingState BravoFontAsset::Load(const BravoFontSettings& params)
 {
 	if ( !params.FontSizes.size() )
 	{
 		Log::LogMessage(ELog::Error, "Failed to load font {}. Expecting sizes array in params.", GetName() );
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 		return LoadingState;
 	}
 
@@ -28,7 +28,7 @@ EAssetLoadingState BravoFontAsset::Load(const BravoFontLoadingParams& params)
 	if ( !file.read(fontBuffer.data(), size) )
 	{
 		Log::LogMessage(ELog::Error, "Failed to read font from file {}", Path);
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 		return LoadingState;
 	}
 	stbtt_fontinfo fontInfo;
@@ -59,7 +59,7 @@ EAssetLoadingState BravoFontAsset::Load(const BravoFontLoadingParams& params)
 		Log::LogMessage(ELog::Error, "Failed to load font {}. Atlas size is too small", Path );
 		stbtt_PackEnd(&pc);
 		AtlasBitmap.clear();
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 		return LoadingState;
 	}
     stbtt_PackEnd(&pc);

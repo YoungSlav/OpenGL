@@ -39,20 +39,20 @@ public:
 		{
 			LoadedAssets.insert({Name, asset});
 			EAssetLoadingState LoadingState = asset->Load(std::forward<Args>(args)...);
-			assert(LoadingState != EAssetLoadingState::Failed);
+			assert(LoadingState != EAssetLoadingState::Unloaded);
 
 			if ( LoadingState == EAssetLoadingState::AsyncLoading )
 			{
 				PendingLoadingAssets.push_back(asset);
 			}
-			else if ( LoadingState != EAssetLoadingState::Failed )
+			else if ( LoadingState != EAssetLoadingState::Unloaded )
 			{
 				if ( LoadingState != EAssetLoadingState::Loaded )
 					asset->LoadToGPU();
 
 				asset->OnAssetLoaded.Broadcast(asset);
 			}
-			else if ( LoadingState != EAssetLoadingState::Failed )
+			else if ( LoadingState != EAssetLoadingState::Unloaded )
 			{
 				asset->Destroy();
 				return nullptr;

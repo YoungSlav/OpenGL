@@ -7,7 +7,7 @@
 
 enum EAssetLoadingState : int32
 {
-	Failed = 0,
+	Unloaded = 0,
 	AsyncLoading = 1,
 	InRAM = 2,
 	Loaded = 3
@@ -49,5 +49,5 @@ protected:
 
 
 protected:
-	EAssetLoadingState LoadingState = EAssetLoadingState::Failed;
+	EAssetLoadingState LoadingState = EAssetLoadingState::Unloaded;
 };

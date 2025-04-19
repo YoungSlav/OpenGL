@@ -23,15 +23,15 @@ namespace ShaderProgrammConstancts
 	};
 };
 
-struct BravoRenderShaderLoadingParams
+struct BravoRenderShaderSettings
 {
-	BravoRenderShaderLoadingParams(const std::string& _Path, bool _bGeometry, bool _bTessellation) :
+	BravoRenderShaderSettings(const std::string& _Path, bool _bGeometry, bool _bTessellation) :
 		ShaderPath(_Path),
 		ShaderDefines(),
 		bGeometry(_bGeometry),
 		bTessellation(_bTessellation)
 	{}
-	BravoRenderShaderLoadingParams(const std::string& _Path, bool _bGeometry, bool _bTessellation, const std::map<std::string, std::string>& _ShaderDefines) :
+	BravoRenderShaderSettings(const std::string& _Path, bool _bGeometry, bool _bTessellation, const std::map<std::string, std::string>& _ShaderDefines) :
 		ShaderPath(_Path),
 		ShaderDefines(_ShaderDefines),
 		bGeometry(_bGeometry),
@@ -44,13 +44,13 @@ struct BravoRenderShaderLoadingParams
 	bool bTessellation = false;
 };
 
-struct BravoComputeShaderLoadingParams
+struct BravoComputeShaderSettings
 {
-	BravoComputeShaderLoadingParams(const std::string& _Path) :
+	BravoComputeShaderSettings(const std::string& _Path) :
 		ShaderPath(_Path),
 		ShaderDefines()
 	{}
-	BravoComputeShaderLoadingParams(const std::string& _Path, const std::map<std::string, std::string>& _ShaderDefines) :
+	BravoComputeShaderSettings(const std::string& _Path, const std::map<std::string, std::string>& _ShaderDefines) :
 		ShaderPath(_Path),
 		ShaderDefines(_ShaderDefines)
 	{}
@@ -94,7 +94,6 @@ public:
 
 protected:
 
-	virtual void OnDestroy() override;
 	virtual void ReleaseFromGPU_Internal() override;
 
 	bool LoadShader(GLenum ShaderType, GLuint& OutShader, const std::string& Path, const std::map<std::string, std::string>& ShaderDefines, std::string& OutFullPath);
@@ -218,7 +217,7 @@ public:
 		BravoShaderAsset(std::forward<Args>(args)...)
 	{}
 
-	EAssetLoadingState Load(const BravoRenderShaderLoadingParams& params);
+	EAssetLoadingState Load(const BravoRenderShaderSettings& params);
 
 };
 
@@ -232,6 +231,6 @@ public:
 		BravoShaderAsset(std::forward<Args>(args)...)
 	{}
 
-	EAssetLoadingState Load(const BravoComputeShaderLoadingParams& params);
+	EAssetLoadingState Load(const BravoComputeShaderSettings& params);
 
 };

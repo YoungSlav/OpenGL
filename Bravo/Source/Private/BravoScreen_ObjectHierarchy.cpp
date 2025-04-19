@@ -4,6 +4,10 @@
 #include "BravoInput.h"
 #include "BravoEngine.h"
 
+#include "BravoScreen_ObjectProperties.h"
+#include "BravoHUD.h"
+#include "BravoViewport.h"
+
 bool BravoScreen_ObjectHierarchy::Initialize_Internal()
 {
 	if ( !BravoScreen::Initialize_Internal() || RootObject == nullptr )
@@ -39,11 +43,10 @@ void BravoScreen_ObjectHierarchy::Render_Internal(float DeltaTime)
 		return;
 
 	BravoScreen::Render_Internal(DeltaTime);
-
 	ImGui::SetNextWindowBgAlpha(1.0f);
 	ImGui::Begin(GetLabel().c_str(), nullptr,
 		ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoCollapse );
+		ImGuiWindowFlags_NoCollapse);
 		
 		ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
 			RenderNode_Recursive(RootObject, 0);
@@ -56,11 +59,16 @@ void BravoScreen_ObjectHierarchy::RenderNode_Recursive(const std::shared_ptr<cla
 {
 	std::string lb = obj->GetName() + "##" + std::to_string(GetHandle());
 	
-	if ( ImGui::TreeNode(lb.c_str()) )
+	if ( ImGui::TreeNodeEx(lb.c_str(), Depth == 0 ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None ) )
 	{
 		if (ImGui::IsItemClicked())
 		{
 			Log::LogMessage(ELog::Log, "Node clicked: {}", obj->GetName());
+			if ( Engine->GetViewport()->GetHUD() )
+			{
+				auto propertiesScreen = NewObject<BravoScreen_ObjectProperties>("Properties Screen", obj);
+				Engine->GetViewport()->GetHUD()->AddScreen(propertiesScreen);
+			}
 		}
 		const std::list<std::weak_ptr<BravoObject>> Children = obj->GetChildren();
 		for ( const std::weak_ptr<BravoObject>& childIt : Children )

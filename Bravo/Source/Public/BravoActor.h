@@ -8,6 +8,7 @@
 class BravoActor : public BravoObject, public IBravoTransformable
 {
 	RTTR_ENABLE(BravoObject, IBravoTransformable);
+	
 public:
 	template <typename... Args>
 	BravoActor(Args&&... args) :

@@ -9,7 +9,7 @@
 #include <sstream>
 #include <regex>
 
-EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderLoadingParams& params)
+EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderSettings& params)
 {
 	GLuint VertexShader = 0;
 	GLuint FragmentShader = 0;
@@ -111,7 +111,7 @@ EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderLoadingPa
 		if ( TessellationEvaluationShader ) glDeleteShader(TessellationEvaluationShader);
 
 		glDeleteProgram(ProgramID);
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 		return LoadingState;
 	}
 
@@ -133,16 +133,14 @@ EAssetLoadingState BravoRenderShaderAsset::Load(const BravoRenderShaderLoadingPa
 	if ( TessellationEvaluationShader ) glDeleteShader(TessellationEvaluationShader);
 #endif
 
-	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
+	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureSettings("Textures\\black.png"));
 
 	LoadingState = EAssetLoadingState::Loaded;
 	return LoadingState;
 }
 
-EAssetLoadingState BravoComputeShaderAsset::Load(const BravoComputeShaderLoadingParams& params)
+EAssetLoadingState BravoComputeShaderAsset::Load(const BravoComputeShaderSettings& params)
 {
-	
-
 	GLuint ComputeShader = 0;
 	ProgramID = glCreateProgram();
 	bool bSuccess = true;
@@ -176,7 +174,7 @@ EAssetLoadingState BravoComputeShaderAsset::Load(const BravoComputeShaderLoading
 	{
 		if ( ComputeShader ) glDeleteShader(ComputeShader);
 		glDeleteProgram(ProgramID);
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 		return LoadingState;
 	}
 
@@ -194,7 +192,7 @@ EAssetLoadingState BravoComputeShaderAsset::Load(const BravoComputeShaderLoading
 	if ( ComputeShader ) glDeleteShader(ComputeShader);
 #endif
 
-	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureLoadingParams("Textures\\black.png"));
+	EmptyTexture = Engine->GetAssetManager()->FindOrLoad<BravoTextureAsset>("BlackTextureAsset", BravoTextureSettings("Textures\\black.png"));
 
 	LoadingState = EAssetLoadingState::Loaded;
 	return LoadingState;
@@ -241,7 +239,7 @@ void BravoShaderAsset::CheckShadersForHotSwap()
 		if ( !LinkProgramm() )
 		{
 			Log::LogMessage(ELog::Error, "Failed to link the program: {}", ShaderPath);
-			LoadingState = EAssetLoadingState::Failed;
+			LoadingState = EAssetLoadingState::Unloaded;
 		}
 
 		ReapplyCachedUniforms();
@@ -267,14 +265,11 @@ void BravoShaderAsset::ReapplyCachedUniforms()
 }
 #endif
 
-void BravoShaderAsset::OnDestroy()
-{
-	BravoAsset::OnDestroy();
-}
-
 void BravoShaderAsset::ReleaseFromGPU_Internal()
 {
 	BravoAsset::ReleaseFromGPU_Internal();
+	StopUsage();
+
 #if SHADER_HOTSWAP
 	for ( auto it : ShaderHotswapInfos )
 	{
@@ -282,11 +277,13 @@ void BravoShaderAsset::ReleaseFromGPU_Internal()
 	}
 #endif
 
-	StopUsage();
+	if ( ProgramID ) glDeleteProgram(ProgramID);
 }
 
 void BravoShaderAsset::Use()
 {
+	if ( !ProgramID ) return;
+
 	static GLuint CurentShader = 0;
 	if ( CurentShader != ProgramID )
 	{
@@ -418,12 +415,10 @@ void BravoShaderAsset::SetInt(const std::string& name, const size_t val) const
 {
 	SetInt(name, (GLuint)val);
 }
-
 void BravoShaderAsset::SetInt(const std::string& name, const int32 val) const
 {
 	SetInt(name, (GLuint)val);
 }
-
 void BravoShaderAsset::SetInt(const std::string& name, const GLuint val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
@@ -435,19 +430,16 @@ void BravoShaderAsset::SetFloat1(const std::string& name, const float val) const
 	if ( CheckUniformCache(name, val) ) return;
 	glUniform1f(FindUniformLocation(name.c_str()), val);
 }
-
 void BravoShaderAsset::SetFloat2(const std::string& name, const glm::vec2& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
 	glUniform2f(FindUniformLocation(name.c_str()), val.x, val.y);
 }
-
 void BravoShaderAsset::SetFloat3(const std::string& name, const glm::vec3& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
 	glUniform3f(FindUniformLocation(name.c_str()), val.x, val.y, val.z);
 }
-
 void BravoShaderAsset::SetFloat4(const std::string& name, const glm::vec4& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
@@ -480,13 +472,11 @@ void BravoShaderAsset::SetMatrix2d(const std::string& name, const glm::mat2& val
 	if ( CheckUniformCache(name, val) ) return;
 	glUniformMatrix2fv(FindUniformLocation(name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
-
 void BravoShaderAsset::SetMatrix3d(const std::string& name, const glm::mat3& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;
 	glUniformMatrix3fv(FindUniformLocation(name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
-
 void BravoShaderAsset::SetMatrix4d(const std::string& name, const glm::mat4& val) const
 {
 	if ( CheckUniformCache(name, val) ) return;

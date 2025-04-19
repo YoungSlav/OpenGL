@@ -6,7 +6,7 @@
 #include "BravoEngine.h"
 #include "BravoAssetManager.h"
 
-EAssetLoadingState BravoStaticMeshAsset::Load(const BravoStaticMeshLoadingParams& params)
+EAssetLoadingState BravoStaticMeshAsset::Load(const BravoStaticMeshSettings& params)
 {
 	std::thread asyncLoadThread(&BravoStaticMeshAsset::AsyncLoad, this, params);
 
@@ -15,16 +15,16 @@ EAssetLoadingState BravoStaticMeshAsset::Load(const BravoStaticMeshLoadingParams
 	return LoadingState;
 }
 
-void BravoStaticMeshAsset::AsyncLoad(const BravoStaticMeshLoadingParams& params)
+void BravoStaticMeshAsset::AsyncLoad(const BravoStaticMeshSettings& params)
 {
 	// read file via ASSIMP
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(Engine->GetAssetManager()->FindAsset(params.MeshPath), aiProcess_Triangulate | aiProcess_FlipUVs  | aiProcess_CalcTangentSpace);
 	// check for errors
-	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		Log::LogMessage(ELog::Error, "Failed to load mesh: {}", importer.GetErrorString());
-		LoadingState = EAssetLoadingState::Failed;
+		LoadingState = EAssetLoadingState::Unloaded;
 		return;
 	}
 

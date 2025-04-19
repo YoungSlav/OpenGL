@@ -41,7 +41,7 @@ void BravoAssetManager::CheckPendingAssets()
 			EAssetLoadingState LoadingState = asset->GetLoadingState();
 			if (LoadingState != EAssetLoadingState::AsyncLoading )
 			{
-				if ( LoadingState != EAssetLoadingState::Failed )
+				if ( LoadingState != EAssetLoadingState::Unloaded )
 				{
 					if ( LoadingState != EAssetLoadingState::Loaded )
 						asset->LoadToGPU();

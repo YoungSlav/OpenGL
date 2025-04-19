@@ -21,9 +21,9 @@ struct BravoFontInfo
 	float Linegap = 0.0f;
 };
 
-struct BravoFontLoadingParams
+struct BravoFontSettings
 {
-	BravoFontLoadingParams(const std::string& _Path, const std::vector<uint32>& _Sizes) :
+	BravoFontSettings(const std::string& _Path, const std::vector<uint32>& _Sizes) :
 		FontPath(_Path),
 		FontSizes(_Sizes)
 	{}
@@ -41,7 +41,7 @@ public:
 	{}
 
 
-	EAssetLoadingState Load(const BravoFontLoadingParams& params);
+	EAssetLoadingState Load(const BravoFontSettings& params);
 	
 
 	virtual void Use() override;

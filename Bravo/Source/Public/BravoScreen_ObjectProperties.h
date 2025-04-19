@@ -18,13 +18,9 @@ protected:
 	virtual void Render_Internal(float DeltaTime) override;
 
 private:
-	
-	void OnToggleHUD(bool ButtonState, float DeltaTime);
-
+	bool ShowProperties(rttr::instance var, const std::string& ParentName);
 private:
 	std::shared_ptr<class BravoObject> TargetObject;
 
-	
-	bool bShowHUD = false;
 };
 

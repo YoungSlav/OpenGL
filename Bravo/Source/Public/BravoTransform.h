@@ -6,6 +6,7 @@
 class BravoTransform final
 {
 	RTTR_ENABLE();
+	
 public:
 	BravoTransform();
 
@@ -42,6 +43,6 @@ private:
 
 	glm::vec3 Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::quat Rotation = glm::quat();
-	glm::vec3 RotationEuler = glm::vec3(0.0f, 0.0f, 0.0f);
+	mutable glm::vec3 RotationEuler = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 };

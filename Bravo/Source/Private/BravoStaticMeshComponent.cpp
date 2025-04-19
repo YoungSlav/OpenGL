@@ -8,6 +8,12 @@
 #include "BravoAssetManager.h"
 
 
+RTTR_REGISTRATION
+{
+	using namespace rttr;
+	registration::class_<BravoStaticMeshComponent>("StaticMeshComponent")
+        ;
+}
 
 bool BravoStaticMeshComponent::Initialize_Internal()
 {
@@ -16,8 +22,8 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 
 	if (auto AssetManager = Engine->GetAssetManager())
 	{
-		SelectionIDShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("MeshSelectionShader", BravoRenderShaderLoadingParams("MeshSelectionID", false, false));
-		OutlineMaskShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("OutlineMaskShader", BravoRenderShaderLoadingParams("MeshOutlineMask", false, false));
+		SelectionIDShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("MeshSelectionShader", BravoRenderShaderSettings("MeshSelectionID", false, false));
+		OutlineMaskShader = AssetManager->FindOrLoad<BravoRenderShaderAsset>("OutlineMaskShader", BravoRenderShaderSettings("MeshOutlineMask", false, false));
 	}
 
 	glGenBuffers(1, &InstancesSSBO);

@@ -15,8 +15,8 @@ bool RTSceneComponent::Initialize_Internal()
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();
 
 	std::shared_ptr<BravoStaticMeshAsset> meshAsset = ComponentType == ERTComponentType::ERTComponentType_Sphere ?
-		AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereAsset", BravoStaticMeshLoadingParams("primitives\\sphere.fbx")) :
-		AssetManager->FindOrLoad<BravoStaticMeshAsset>("PlaneAsset", BravoStaticMeshLoadingParams("primitives\\plane.fbx"));
+		AssetManager->FindOrLoad<BravoStaticMeshAsset>("SphereAsset", BravoStaticMeshSettings("primitives\\sphere.fbx")) :
+		AssetManager->FindOrLoad<BravoStaticMeshAsset>("PlaneAsset", BravoStaticMeshSettings("primitives\\plane.fbx"));
 	
 		PreviewComponent = NewObject<BravoStaticMeshComponent>();
 	PreviewComponent->SetCastShadows(false);

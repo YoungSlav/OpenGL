@@ -4,9 +4,9 @@
 #include "BravoAsset.h"
 
 
-struct BravoTextureLoadingParams
+struct BravoTextureSettings
 {
-	BravoTextureLoadingParams(const std::string& _Path, bool _bFloat = false, bool _sRGB = false) :
+	BravoTextureSettings(const std::string& _Path, bool _bFloat = false, bool _sRGB = false) :
 		TexturePath(_Path),
 		bFloat(_bFloat),
 		sRGB(_sRGB)
@@ -26,7 +26,7 @@ public:
 	{}
 
 
-	EAssetLoadingState Load(const BravoTextureLoadingParams& params);
+	EAssetLoadingState Load(const BravoTextureSettings& params);
 
 	virtual void Use() override;
 	virtual void StopUsage() override;
@@ -36,7 +36,7 @@ public:
 
 protected:
 
-	void AsyncLoad(const BravoTextureLoadingParams& params);
+	void AsyncLoad(const BravoTextureSettings& params);
 
 	virtual bool LoadToGPU_Internal() override;
 	virtual void ReleaseFromGPU_Internal() override;
