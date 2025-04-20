@@ -6,9 +6,9 @@
 
 
 #define REGISTER_HANDLER(map, Type) \
-    map.insert_or_assign(rttr::type::get<Type>(), [this](rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName) { \
+    map.insert_or_assign(rttr::type::get<Type>(), [this](rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName) { \
         Type& value = var.get_value<Type>(); \
-        return HandleValue(value, var, prop, inst, ParentName); \
+        return HandleValue(value, var, propName, inst, ParentName); \
     });
 
 bool BravoScreen_ObjectProperties::Initialize_Internal()
@@ -41,9 +41,7 @@ void BravoScreen_ObjectProperties::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse);
 		
-		rttr::variant var(TargetObject);
 		ShowProperties(TargetObject);
-		//ShowProperties(TargetObject, "");
 
 	ImGui::End();
 
@@ -56,6 +54,20 @@ inline rttr::instance unwrap(const rttr::instance& inst)
 	return inst;
 }
 
+inline rttr::variant unwrap(const rttr::variant& var)
+{
+	if ( var.extract_wrapped_value() )
+		return unwrap(var.extract_wrapped_value());
+	return var;
+}
+
+inline rttr::type unwrap(const rttr::type& t)
+{
+	if ( t.is_pointer() )
+		return unwrap(t.get_raw_type());
+	return t;
+}
+
 void BravoScreen_ObjectProperties::ShowProperties(std::shared_ptr<class BravoObject> TargetObject)
 {
 	rttr::instance inputInstance(TargetObject);
@@ -66,18 +78,13 @@ void BravoScreen_ObjectProperties::ShowProperties(std::shared_ptr<class BravoObj
 
 	for (rttr::property prop : objType.get_properties())
 	{
+		if ( prop.is_readonly() ) continue;
+
 		rttr::variant value = prop.get_value(objInstance);
 		rttr::type valueType = prop.get_type();
 		std::string propName = std::string(prop.get_name().data(), prop.get_name().size());
 
-
-		if (value.is_sequential_container())
-		{
-			// TODO
-			continue;
-		}
-		
-		if ( Dispatch(value, prop, objInstance, TargetObject->GetName() + "." + propName) )
+		if ( Dispatch(value, propName, objInstance, TargetObject->GetName() + "." + propName) )
 			prop.set_value(objInstance, value);
 	}
 
@@ -96,76 +103,105 @@ float BravoScreen_ObjectProperties::DrawLabel(const std::string& propName, const
 	return valueWidth - 8;
 }
 
-bool BravoScreen_ObjectProperties::Dispatch(rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName)
+bool BravoScreen_ObjectProperties::Dispatch(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
+	if ( var.is_sequential_container() || var.is_associative_container() )
+	{
+		return HandleContainer(var, propName, inst, ParentName);
+	}
 	
-	auto it = DispatchTable.find(var.get_type());
-	if ( it != DispatchTable.end() )
-	{
-		return it->second(var, prop, inst, ParentName);
-	}
+	rttr::variant unwrapped = unwrap(var);
+	rttr::type varType = unwrapped.get_type();
 
-	rttr::instance inputInstance(var);
-	rttr::instance objInstance = unwrap(inputInstance);
-	rttr::type objType = objInstance.get_type();
-	it = DispatchTable.find(objType);
-	if ( it != DispatchTable.end() )
+	// look for dispatch in dispach table
+	// if not found, try to find parent's variant to dispatch
+	
+	while ( varType.is_valid() )
 	{
-		return it->second(var, prop, inst, ParentName);
+		auto it = DispatchTable.find(varType);
+		if ( it != DispatchTable.end() )
+			return it->second(unwrapped, propName, inst, ParentName);
+
+		// we need to unwrap from ptr type to raw type
+		auto bases = unwrap(varType).get_base_classes();
+		if ( bases.empty() )
+			break;
+		
+		// wrap raw type back into ptr, since we operate on pointers for object types
+		std::string pointerName = std::string(unwrap(*(bases.begin())).get_name()) + "*";
+
+		varType = rttr::type::get_by_name(pointerName);
 	}
-	return HandleGeneric(var, prop, inst, ParentName);
+	return HandleClass(var, propName, inst, ParentName);
 }
 
-bool BravoScreen_ObjectProperties::HandleGeneric(rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName)
+bool BravoScreen_ObjectProperties::HandleClass(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
 	rttr::instance inputInstance(var);
 	rttr::instance objInstance = unwrap(inputInstance);
 	rttr::type objType = objInstance.get_derived_type();
 	
-	std::string propName = std::string(prop.get_name().data(), prop.get_name().size());	
 	if ( !objType.is_valid() )
 		return false;
-
+	
 	bool bModify = false;
-	if (ImGui::CollapsingHeader((propName + "##." + ParentName).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx((propName + "##." + ParentName).c_str(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen ))
 	{
 		for (rttr::property prop : objType.get_properties())
 		{
+			if ( prop.is_readonly() ) continue;
+
 			rttr::variant value = prop.get_value(objInstance);
 			rttr::type valueType = prop.get_type();
-			std::string propName = std::string(prop.get_name().data(), prop.get_name().size());
-			if (value.is_sequential_container())
-			{
-				// TODO
-				continue;
-			}
-		
-			if ( Dispatch(value, prop, objInstance, ParentName + "." + propName) )
+			std::string cPropName = std::string(prop.get_name().data(), prop.get_name().size());
+			
+			if ( Dispatch(value, cPropName, objInstance, ParentName + "." + cPropName) )
 			{
 				prop.set_value(objInstance, value);
 				bModify = true;
 			}
 		}
+		ImGui::TreePop();
 	}
 	return bModify;
 }
 
-bool BravoScreen_ObjectProperties::HandleValue(BravoHandle&, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName)
+bool BravoScreen_ObjectProperties::HandleContainer(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
+{
+	bool bModify = false;
+	if ( ImGui::TreeNodeEx((propName + "##." + ParentName).c_str(), ImGuiTreeNodeFlags_OpenOnArrow ) )
+	{
+		rttr::variant_sequential_view view = var.create_sequential_view();
+		for (size_t i = 0; i < view.get_size(); ++i)
+		{
+			rttr::variant elem = view.get_value(i);
+			const std::string cPropName = std::to_string(i);
+			if ( Dispatch(elem, cPropName, inst, ParentName + "." + propName) )
+			{
+				view.set_value(i, elem);
+				bModify = true;
+			}
+		}
+
+		ImGui::TreePop();
+	}
+	return bModify;
+}
+
+bool BravoScreen_ObjectProperties::HandleValue(BravoHandle&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
 	return false;
 }
-bool BravoScreen_ObjectProperties::HandleValue(BravoObject*& val, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName)
+bool BravoScreen_ObjectProperties::HandleValue(BravoObject*& val, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
-	std::string propName = std::string(prop.get_name().data(), prop.get_name().size());
 	const float valueWidth = DrawLabel(propName, ParentName);
 	ImGui::SetNextItemWidth(valueWidth);
 	ImGui::LabelText(("##" + ParentName + "."+ propName + "." + val->GetName()).c_str(), val->GetName().c_str());
 	return false;
 }
-bool BravoScreen_ObjectProperties::HandleValue(glm::vec3& val, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName)
+bool BravoScreen_ObjectProperties::HandleValue(glm::vec3& val, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
 	bool bModify = false;
-	std::string propName = std::string(prop.get_name().data(), prop.get_name().size());
 
 	const float valueWidth = DrawLabel(propName, ParentName);
 	const float itemWidth = valueWidth / 3.0f - 4;
@@ -181,29 +217,22 @@ bool BravoScreen_ObjectProperties::HandleValue(glm::vec3& val, rttr::variant& va
 	ImGui::SetNextItemWidth(itemWidth);
 	if ( ImGui::InputFloat(("##" + ParentName + "."+ propName + ".z").c_str(), &val.z) )
 		bModify = true;
-
-	if ( bModify )
-		prop.set_value(inst, val);
-	
+		
 	return bModify;
 }
-bool BravoScreen_ObjectProperties::HandleValue(float& val, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName)
+bool BravoScreen_ObjectProperties::HandleValue(float& val, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
-	std::string propName = std::string(prop.get_name().data(), prop.get_name().size());
 	const float valueWidth = DrawLabel(propName, ParentName);
 	ImGui::SetNextItemWidth(valueWidth);
 
 	if (ImGui::InputFloat((propName + "##" + ParentName).c_str(), &val))
 	{
-		prop.set_value(inst, val);
 		return true;
 	}
 	return false;
 }
-bool BravoScreen_ObjectProperties::HandleValue(std::string& val, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName)
+bool BravoScreen_ObjectProperties::HandleValue(std::string& val, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
-	std::string propName = std::string(prop.get_name().data(), prop.get_name().size());
-	
 	const float valueWidth = DrawLabel(propName, ParentName);
 	ImGui::SetNextItemWidth(valueWidth);
 
@@ -223,7 +252,6 @@ bool BravoScreen_ObjectProperties::HandleValue(std::string& val, rttr::variant& 
 		},
 		&val) )
 	{
-		prop.set_value(inst, val);
 		return true;
 	}
 	return false;

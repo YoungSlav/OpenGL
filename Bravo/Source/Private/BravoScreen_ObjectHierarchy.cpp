@@ -59,18 +59,28 @@ void BravoScreen_ObjectHierarchy::RenderNode_Recursive(const std::shared_ptr<cla
 {
 	std::string lb = obj->GetName() + "##" + std::to_string(GetHandle());
 	
-	if ( ImGui::TreeNodeEx(lb.c_str(), Depth == 0 ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None ) )
+	const std::list<std::weak_ptr<BravoObject>>& Children = obj->GetChildren();
+	
+	ImGuiTreeNodeFlags NodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnArrow;
+	
+	if (Depth == 0) NodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
+	if ( Children.size() == 0) NodeFlags |= ImGuiTreeNodeFlags_Leaf;
+
+	bool isOpen = ImGui::TreeNodeEx(lb.c_str(), NodeFlags);
+	bool isClicked = ImGui::IsItemClicked();
+
+	
+	if (isClicked)
 	{
-		if (ImGui::IsItemClicked())
+		Log::LogMessage(ELog::Log, "Node clicked: {}", obj->GetName());
+		if ( Engine->GetViewport()->GetHUD() )
 		{
-			Log::LogMessage(ELog::Log, "Node clicked: {}", obj->GetName());
-			if ( Engine->GetViewport()->GetHUD() )
-			{
-				auto propertiesScreen = NewObject<BravoScreen_ObjectProperties>("Properties Screen", obj);
-				Engine->GetViewport()->GetHUD()->AddScreen(propertiesScreen);
-			}
+			auto propertiesScreen = NewObject<BravoScreen_ObjectProperties>("Properties Screen", obj);
+			Engine->GetViewport()->GetHUD()->AddScreen(propertiesScreen);
 		}
-		const std::list<std::weak_ptr<BravoObject>> Children = obj->GetChildren();
+	}
+	if ( isOpen )
+	{
 		for ( const std::weak_ptr<BravoObject>& childIt : Children )
 		{
 			const std::shared_ptr<BravoObject> child = childIt.expired() ? nullptr : childIt.lock();

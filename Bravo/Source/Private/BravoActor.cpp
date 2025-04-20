@@ -9,7 +9,8 @@ RTTR_REGISTRATION
 {
 	using namespace rttr;
 	registration::class_<BravoActor>("Actor")
-		.property_readonly("Components", &BravoActor::GetComponents)
+		.property("Components", &BravoActor::Components)
+		//.property("tmp", &BravoActor::tmp)
 		;
 }
 

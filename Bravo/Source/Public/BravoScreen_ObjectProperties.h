@@ -19,22 +19,24 @@ protected:
 	virtual void Render_Internal(float DeltaTime) override;
 
 
-	bool HandleGeneric(rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName);
+	bool HandleClass(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleContainer(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 
-	bool Dispatch(rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName);
-	bool HandleValue(float&, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName);
-	bool HandleValue(std::string&, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName);
-	bool HandleValue(glm::vec3&, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName);
-	bool HandleValue(BravoObject*&, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName);
-	bool HandleValue(BravoHandle&, rttr::variant& var, rttr::property& prop, rttr::instance& inst, const std::string& ParentName);
+	bool Dispatch(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleValue(float&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleValue(std::string&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleValue(glm::vec3&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleValue(BravoObject*&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleValue(BravoHandle&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 
 
 	float DrawLabel(const std::string& prop, const std::string& parent) const;
 
 private:
+
 	std::shared_ptr<class BravoObject> TargetObject;
 
-	using HandlerFn = std::function<bool(rttr::variant&, rttr::property&, rttr::instance&, const std::string&)>;
+	using HandlerFn = std::function<bool(rttr::variant&, const std::string&, rttr::instance&, const std::string&)>;
 	std::unordered_map<rttr::type, HandlerFn> DispatchTable;
 
 	const float NameWidthPercent = 0.35f;

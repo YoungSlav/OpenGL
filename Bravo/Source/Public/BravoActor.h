@@ -8,7 +8,7 @@
 class BravoActor : public BravoObject, public IBravoTransformable
 {
 	RTTR_ENABLE(BravoObject, IBravoTransformable);
-	
+	RTTR_REGISTRATION_FRIEND
 public:
 	template <typename... Args>
 	BravoActor(Args&&... args) :
@@ -25,4 +25,6 @@ protected:
 protected:
 
 	std::vector<std::shared_ptr<BravoComponent>> Components;
+
+	//std::vector<float> tmp =  {0.0f, 1.0f, 2.0f, 3.0f};
 };
