@@ -31,6 +31,8 @@ public:
 protected:
 	virtual bool Initialize_Internal() override;
 
+	void SetupimGUIStyle();
+
 
 private:
 	glm::vec2 Size = glm::ivec2(0.0f, 0.0f);

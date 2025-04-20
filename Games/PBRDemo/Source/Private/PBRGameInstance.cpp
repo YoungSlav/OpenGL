@@ -20,10 +20,17 @@
 #include "BravoPointLightActor.h"
 #include "BravoSelectionManager.h"
 
-void PrintPropertiesRecursive(rttr::instance inputInstance, int depth = 0)
+rttr::instance Unwrap(const rttr::instance& inst)
 {
-	
-	rttr::instance objInstance = inputInstance.get_wrapped_instance().is_valid() ? inputInstance.get_wrapped_instance() : inputInstance;
+	if ( inst.get_wrapped_instance().is_valid() )
+		return Unwrap(inst.get_wrapped_instance());
+	return inst;
+}
+
+void PrintPropertiesRecursive(rttr::variant var, int depth = 0)
+{
+	rttr::instance inputInstance(var);
+	rttr::instance objInstance = Unwrap(inputInstance);
 	
 	rttr::type objType = objInstance.get_derived_type();
 
