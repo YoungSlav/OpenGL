@@ -85,7 +85,8 @@ public:
 
 protected:
 	virtual bool Initialize_Internal() { return true; }
-	virtual void OnChildObjectAdded(std::weak_ptr<BravoObject> _OwnedObject) {}
+	virtual void OnChildObjectAdded(std::shared_ptr<BravoObject> _OwnedObject) {}
+	virtual void OnChildObjectRemoved(std::shared_ptr<BravoObject> _OwnedObject) {}
 	virtual void OnDestroy() {}
 	virtual void OnBeginPlay() {}
 
@@ -94,7 +95,8 @@ private:
 	BravoHandle NewHandle() const;
 	bool InitializeNewObject(std::shared_ptr<BravoObject> obj);
 
-	void AddChildObject(std::weak_ptr<BravoObject> _OwnedObject);
+	void AddChildObject(std::shared_ptr<BravoObject> _OwnedObject);
+	void RemoveChildObject(std::shared_ptr<BravoObject> obj);
 
 protected:
 	std::shared_ptr<class BravoEngine> Engine;

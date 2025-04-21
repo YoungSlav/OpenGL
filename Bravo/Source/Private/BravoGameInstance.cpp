@@ -30,6 +30,7 @@
 
 #include "BravoScreen_Debug.h"
 #include "BravoScreen_ObjectHierarchy.h"
+#include "BravoScreen_ObjectProperties.h"
 #include "BravoTerrainActor.h"
 
 bool BravoGameInstance::Initialize_Internal()
@@ -45,6 +46,9 @@ bool BravoGameInstance::Initialize_Internal()
 		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen");
 		Engine->GetViewport()->GetHUD()->AddScreen(hierarchyScreen);
 		hierarchyScreen->SetRoot(Self<BravoGameInstance>());
+
+		auto propertiesScreen = NewObject<BravoScreen_ObjectProperties>("Properties Screen");
+		Engine->GetViewport()->GetHUD()->AddScreen(propertiesScreen);
 	}
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();

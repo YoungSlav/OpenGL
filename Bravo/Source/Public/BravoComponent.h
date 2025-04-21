@@ -13,7 +13,8 @@ public:
 	BravoComponent(Args&&... args) :
 		BravoObject(std::forward<Args>(args)...),
 		IBravoTransformable()
-	{}
+	{
+	}
 
 
 	std::shared_ptr<class BravoActor> GetOwningActor() const;

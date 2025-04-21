@@ -11,7 +11,7 @@ public:
 		BravoScreen(std::forward<Args>(args)...)
 	{}
 
-	void SetTargetObject(std::weak_ptr<class BravoObject> _TargetObject);
+	void SetTargetObjects(const std::list<std::weak_ptr<class BravoObject>>& _TargetObjects);
 	void Clear();
 
 protected:
@@ -30,6 +30,7 @@ protected:
 	bool HandleValue(std::string&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleValue(glm::vec3&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleValue(BravoObject*&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleValue(class BravoStaticMeshInstance*&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleValue(BravoHandle&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 
 
@@ -40,7 +41,7 @@ protected:
 
 private:
 
-	std::weak_ptr<class BravoObject> TargetObject;
+	std::list<std::weak_ptr<class BravoObject>> TargetObjects;
 
 	using HandlerFn = std::function<bool(rttr::variant&, const std::string&, rttr::instance&, const std::string&)>;
 	std::unordered_map<rttr::type, HandlerFn> DispatchTable;

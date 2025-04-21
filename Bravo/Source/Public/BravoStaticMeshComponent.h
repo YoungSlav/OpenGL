@@ -20,15 +20,18 @@ struct BravoInstanceData
 	alignas(16) glm::mat4 Transform = glm::mat4(1.0f);
 };
 
-class BravoStaticMeshInstance : public IBravoTransformable
+class BravoStaticMeshInstance : public BravoObject, public IBravoTransformable
 {
+	RTTR_ENABLE(BravoObject, IBravoTransformable);
 public:
-	BravoStaticMeshInstance( const BravoInstanceData& data, std::shared_ptr<IBravoTransformable> _Parent, int32 _InstanceIndex) :
+
+	template <typename... Args>
+	BravoStaticMeshInstance(const BravoInstanceData& data, std::shared_ptr<IBravoTransformable> _Parent, int32 _InstanceIndex, Args&&... args) :
+		BravoObject(std::forward<Args>(args)...),
 		IBravoTransformable(BravoTransform(data.Transform), _Parent),
 		InstanceIndex(_InstanceIndex),
 		Data(data)
 	{}
-	~BravoStaticMeshInstance() = default;
 
 	void SetData(const BravoInstanceData& data)
 	{
@@ -51,7 +54,7 @@ private:
 class BravoStaticMeshComponent : public BravoComponent, public IBravoRenderable
 {
 	RTTR_ENABLE(BravoComponent, IBravoRenderable);
-	
+	RTTR_REGISTRATION_FRIEND
 public:
 	
 	template <typename... Args>

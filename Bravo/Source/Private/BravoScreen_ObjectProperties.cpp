@@ -5,6 +5,7 @@
 #include "BravoInput.h"
 #include "BravoEngine.h"
 #include "BravoSelectionManager.h"
+#include "BravoStaticMeshComponent.h"
 
 #define REGISTER_HANDLER(map, Type) \
     map.insert_or_assign(rttr::type::get<Type>(), [this](rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName) { \
@@ -22,6 +23,7 @@ bool BravoScreen_ObjectProperties::Initialize_Internal()
 	REGISTER_HANDLER(DispatchTable, std::string);
 	REGISTER_HANDLER(DispatchTable, glm::vec3);
 	REGISTER_HANDLER(DispatchTable, BravoObject*);
+	REGISTER_HANDLER(DispatchTable, BravoStaticMeshInstance*);
 	REGISTER_HANDLER(DispatchTable, BravoHandle);
 
 	if ( Engine->GetInput() )
@@ -47,16 +49,26 @@ bool BravoScreen_ObjectProperties::Initialize_Internal()
 
 void BravoScreen_ObjectProperties::OnSelectionChanged()
 {
+	TargetObjects.clear();
 	if ( Engine->GetSelectionManager() )
 	{
 		auto ActiveSelections = Engine->GetSelectionManager()->GetActiveSelections();
-		if ( ActiveSelections.size() != 1 )
+		for ( auto it : ActiveSelections )
 		{
-			Clear();
-		}
-		else
-		{
-			SetTargetObject(ActiveSelections.begin()->first);
+			if ( it.second.empty() )
+			{
+				TargetObjects.push_back(it.first);
+			}
+			else
+			{
+				if ( std::shared_ptr<BravoStaticMeshComponent> asComponent = std::dynamic_pointer_cast<BravoStaticMeshComponent>(it.first.lock()) )
+				{
+					for ( int32 i : it.second )
+					{
+						TargetObjects.push_back(asComponent->GetInstance(i));
+					}
+				}
+			}
 		}
 	}
 	else
@@ -70,19 +82,19 @@ void BravoScreen_ObjectProperties::OnToggleHUD(bool ButtonState, float DeltaTime
 	bShowHUD = !bShowHUD;
 }
 
-void BravoScreen_ObjectProperties::SetTargetObject(std::weak_ptr<class BravoObject> _TargetObject)
+void BravoScreen_ObjectProperties::SetTargetObjects(const std::list<std::weak_ptr<class BravoObject>>& _TargetObjects)
 {
-	TargetObject = _TargetObject;
+	TargetObjects = _TargetObjects;
 }
 void BravoScreen_ObjectProperties::Clear()
 {
-	TargetObject.reset();
+	TargetObjects.clear();
 }
 
 
 void BravoScreen_ObjectProperties::Render_Internal(float DeltaTime)
 {
-	if ( !bShowHUD || TargetObject.expired() )
+	if ( !bShowHUD || TargetObjects.empty() )
 		return;
 
 	BravoScreen::Render_Internal(DeltaTime);
@@ -92,9 +104,27 @@ void BravoScreen_ObjectProperties::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse);
+
+	
+	ImGuiTreeNodeFlags ThreeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+	if ( TargetObjects.size() == 1 ) ThreeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
 		
-		
-			ShowProperties(TargetObject.lock());
+	for ( auto it : TargetObjects )
+	{
+		if ( it.expired() )
+			continue;
+		std::shared_ptr<BravoObject> obj = it.lock();
+
+		if (ImGui::TreeNodeEx((obj->GetName() +"##" + std::to_string(obj->GetHandle())).c_str(), ThreeFlags ))
+		{
+			ShowProperties(obj);
+			ImGui::TreePop();
+		}
+
+		if ( TargetObjects.size() > 1 )
+			ImGui::Separator();
+	}
+			
 
 	ImGui::End();
 
@@ -207,6 +237,8 @@ bool BravoScreen_ObjectProperties::HandleClass(rttr::variant& var, const std::st
 	{
 		for (rttr::property prop : objType.get_properties())
 		{
+			if ( prop.is_readonly() ) continue;
+
 			rttr::variant value = prop.get_value(objInstance);
 			rttr::type valueType = prop.get_type();
 			std::string cPropName = std::string(prop.get_name().data(), prop.get_name().size());
@@ -252,6 +284,10 @@ bool BravoScreen_ObjectProperties::HandleEnumeration(rttr::variant& var, const s
 bool BravoScreen_ObjectProperties::HandleValue(BravoHandle&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
 	return false;
+}
+bool BravoScreen_ObjectProperties::HandleValue(BravoStaticMeshInstance*&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
+{
+	return HandleClass(var, propName, inst, ParentName);
 }
 bool BravoScreen_ObjectProperties::HandleValue(BravoObject*& val, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {

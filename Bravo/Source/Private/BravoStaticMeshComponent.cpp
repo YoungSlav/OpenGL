@@ -11,7 +11,11 @@
 RTTR_REGISTRATION
 {
 	using namespace rttr;
+	registration::class_<BravoStaticMeshInstance>("StaticMeshInstance")
+        ;
+	using namespace rttr;
 	registration::class_<BravoStaticMeshComponent>("StaticMeshComponent")
+		.property("Instances", &BravoStaticMeshComponent::Instances)
         ;
 }
 
@@ -72,11 +76,11 @@ int32 BravoStaticMeshComponent::AddInstance(const BravoInstanceData& InstanceDat
 {
 	int32 index = (int32)Instances.size();
 
-	std::shared_ptr<BravoStaticMeshInstance> newInstance(
-			new BravoStaticMeshInstance(
-				InstanceData,
-				Self<BravoStaticMeshComponent>(),
-				index));
+	std::shared_ptr<BravoStaticMeshInstance> newInstance = NewObject<BravoStaticMeshInstance>(
+		GetName() + "_instance_" + std::to_string(index),
+		InstanceData,
+		Self<BravoStaticMeshComponent>(),
+		index);
 
 	newInstance->OnTransformUpdated.AddSP(Self<BravoStaticMeshComponent>(), &BravoStaticMeshComponent::OnInstanceTransformUpdated);
 

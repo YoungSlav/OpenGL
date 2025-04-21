@@ -54,10 +54,23 @@ bool BravoObject::Initialize()
 	return Initialize_Internal();
 }
 
-void BravoObject::AddChildObject(std::weak_ptr<BravoObject> _OwnedObject)
-{
+void BravoObject::AddChildObject(std::shared_ptr<BravoObject> _OwnedObject)
+{	
+	_OwnedObject->OnObjectDestroyDelegate.AddSP(Self<BravoObject>(), &BravoObject::RemoveChildObject);
+
 	OwnedObjects.push_back(_OwnedObject);
 	OnChildObjectAdded(_OwnedObject);
+}
+
+void BravoObject::RemoveChildObject(std::shared_ptr<BravoObject> obj)
+{
+	OwnedObjects.remove_if([&](const std::weak_ptr<BravoObject>& weakObj)
+	{
+		if (auto shared = weakObj.lock())
+			return shared.get() == obj.get();
+		return false;
+    });
+	OnChildObjectRemoved(obj);
 }
 
 void BravoObject::Destroy()

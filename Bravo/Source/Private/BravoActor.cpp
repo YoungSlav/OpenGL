@@ -13,16 +13,23 @@ RTTR_REGISTRATION
 		;
 }
 
-void BravoActor::OnChildObjectAdded(std::weak_ptr<BravoObject> _OwnedObject)
+void BravoActor::OnChildObjectAdded(std::shared_ptr<BravoObject> _OwnedObject)
 {
 	BravoObject::OnChildObjectAdded(_OwnedObject);
 
-	if ( _OwnedObject.expired() )
-		return;
-	std::shared_ptr<BravoObject> o = _OwnedObject.lock();
-	if ( std::shared_ptr<BravoComponent> oc = std::dynamic_pointer_cast<BravoComponent>(o) )
+	if ( std::shared_ptr<BravoComponent> oc = std::dynamic_pointer_cast<BravoComponent>(_OwnedObject) )
 	{
 		Components.push_back(oc);
+	}
+}
+
+void BravoActor::OnChildObjectRemoved(std::shared_ptr<BravoObject> _OwnedObject)
+{
+	BravoObject::OnChildObjectRemoved(_OwnedObject);
+
+	if ( std::shared_ptr<BravoComponent> oc = std::dynamic_pointer_cast<BravoComponent>(_OwnedObject) )
+	{
+		std::erase(Components, oc);
 	}
 }
 
