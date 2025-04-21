@@ -6,7 +6,7 @@
 #include "BravoEngine.h"
 #include "BravoShaderAsset.h"
 #include "BravoAssetManager.h"
-
+#include "BravoSelectionManager.h"
 
 RTTR_REGISTRATION
 {
@@ -96,11 +96,6 @@ void BravoStaticMeshComponent::UpdateInstance(int32 Index, const BravoInstanceDa
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, InstancesSSBO);
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, Index * sizeof(BravoInstanceData), sizeof(BravoInstanceData), &InstanceData[Index]);
-
-	if ( !HighlightedInstances.empty() )
-	{
-		SetHighlights(HighlightedInstances);
-	}
 }
 
 void BravoStaticMeshComponent::RemoveAllInstances()
@@ -137,11 +132,6 @@ void BravoStaticMeshComponent::UpdateInstanceBuffer()
 	glBufferData(GL_SHADER_STORAGE_BUFFER, InstanceData.size() * sizeof(BravoInstanceData), InstanceData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	if ( !HighlightedInstances.empty() )
-	{
-		SetHighlights(HighlightedInstances);
-	}
-
 	bInstanceStateDirty = false;
 }
 
@@ -154,28 +144,31 @@ bool BravoStaticMeshComponent::IsVisisble() const
 	return IBravoRenderable::IsVisisble();
 }
 
-void BravoStaticMeshComponent::SetHighlights(const std::vector<int32>& _HighlightedInstances)
+void BravoStaticMeshComponent::UpdateHighlightedInstances()
 {
-	HighlightedInstances = _HighlightedInstances;
-	std::vector<BravoInstanceData> SelectedInstanceData;
-	SelectedInstanceData.reserve(HighlightedInstances.size());
-	for ( const int32& i : HighlightedInstances )
+	auto SelectionManager = Engine->GetSelectionManager();
+	auto Highlights = SelectionManager->GetActiveHighlights();
+
+	auto myHightlights = Highlights.find(Self<BravoStaticMeshComponent>());
+	if ( myHightlights == Highlights.end() )
 	{
-		SelectedInstanceData.push_back(Instances[i]->GetData());
+		HighlightedInstancesCount = 0;
+		return;
 	}
 
-	const std::vector<BravoInstanceData>& selectedData = HighlightedInstances.size() ? SelectedInstanceData : InstanceData;
+	const std::vector<int32>& HighlightedInstances = myHightlights->second;
+	std::vector<BravoInstanceData> HighlightedInstanceData;
+	HighlightedInstanceData.reserve(HighlightedInstances.size());
+	for ( const int32& i : HighlightedInstances )
+		HighlightedInstanceData.push_back(Instances[i]->GetData());
 
+	const std::vector<BravoInstanceData>& HighlightData = HighlightedInstances.size() ? HighlightedInstanceData : InstanceData;
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, HighlightedInstancesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, selectedData.size() * sizeof(BravoInstanceData), selectedData.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, HighlightData.size() * sizeof(BravoInstanceData), HighlightData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	HighlightedInstancesCount = int32(selectedData.size());
-}
+	HighlightedInstancesCount = int32(HighlightData.size());
 
-void BravoStaticMeshComponent::ClearHighlights()
-{
-	HighlightedInstances.clear();
 }
 
 void BravoStaticMeshComponent::OnDestroy()
@@ -275,6 +268,8 @@ void BravoStaticMeshComponent::RenderSelectionID()
 
 void BravoStaticMeshComponent::RenderOutlineMask()
 {
+	UpdateHighlightedInstances();
+
 	if ( !HighlightedInstancesCount )
 		return;
 

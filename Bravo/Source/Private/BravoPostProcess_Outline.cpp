@@ -41,9 +41,9 @@ bool BravoPostProcess_Outline::EnsureReady()
 	if ( !SelectionManager )
 		return false;
 
-	auto ActiveSelections = SelectionManager->GetActiveHighlights();
+	auto ActiveHighlights = SelectionManager->GetActiveHighlights();
 
-	if ( !ActiveSelections.size() )
+	if ( !ActiveHighlights.size() )
 		return false;
 	
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
@@ -57,16 +57,17 @@ void BravoPostProcess_Outline::Render_Internal()
 {
 	auto SelectionManager = Engine->GetSelectionManager();
 
-	auto ActiveSelections = SelectionManager->GetActiveHighlights();
+	auto ActiveHighlights = SelectionManager->GetActiveHighlights();
 		
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 
 	OutlineRenderTarget->Bind();
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	for ( auto it : ActiveSelections )
+	for ( auto it : ActiveHighlights )
 	{
-		it.first->RenderOutlineMask();
+		if ( !it.first.expired() )
+			it.first.lock()->RenderOutlineMask();
 	}
 	OutlineRenderTarget->Unbind();
 

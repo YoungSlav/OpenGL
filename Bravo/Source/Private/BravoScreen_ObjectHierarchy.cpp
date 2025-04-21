@@ -11,7 +11,7 @@
 
 bool BravoScreen_ObjectHierarchy::Initialize_Internal()
 {
-	if ( !BravoScreen::Initialize_Internal() || RootObject == nullptr )
+	if ( !BravoScreen::Initialize_Internal() )
 		return false;
 
 	SetTrueScaling(false);
@@ -40,7 +40,7 @@ void BravoScreen_ObjectHierarchy::OnToggleHUD(bool ButtonState, float DeltaTime)
 
 void BravoScreen_ObjectHierarchy::Render_Internal(float DeltaTime)
 {
-	if ( !bShowHUD )
+	if ( !bShowHUD || RootObject.expired())
 		return;
 
 	BravoScreen::Render_Internal(DeltaTime);
@@ -50,7 +50,7 @@ void BravoScreen_ObjectHierarchy::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoCollapse);
 		
 		ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
-			RenderNode_Recursive(RootObject, 0);
+			RenderNode_Recursive(RootObject.lock(), 0);
 		ImGui::EndChild();
 
 	ImGui::End();
@@ -62,8 +62,7 @@ void BravoScreen_ObjectHierarchy::RenderNode_Recursive(const std::shared_ptr<cla
 	if ( !SelectionManager )
 		return;
 
-	const std::map<std::shared_ptr<class BravoObject>, std::vector<int32>>& ActiveSelections = SelectionManager->GetActiveSelections();
-	const bool bSelected = ActiveSelections.find(obj) != ActiveSelections.end();
+	const bool bSelected = false;
 
 	std::string lb = obj->GetName() + "##" + std::to_string(GetHandle());
 	

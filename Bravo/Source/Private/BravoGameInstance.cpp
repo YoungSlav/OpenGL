@@ -42,8 +42,9 @@ bool BravoGameInstance::Initialize_Internal()
 		auto debugScreen = NewObject<BravoScreen_Debug>("DebugScreen");
 		Engine->GetViewport()->GetHUD()->AddScreen(debugScreen);
 
-		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen", Self<BravoGameInstance>());
+		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen");
 		Engine->GetViewport()->GetHUD()->AddScreen(hierarchyScreen);
+		hierarchyScreen->SetRoot(Self<BravoGameInstance>());
 	}
 	
 	std::shared_ptr<BravoAssetManager> AssetManager = Engine->GetAssetManager();

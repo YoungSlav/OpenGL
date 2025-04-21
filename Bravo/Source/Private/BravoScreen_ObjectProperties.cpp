@@ -49,7 +49,7 @@ void BravoScreen_ObjectProperties::OnSelectionChanged()
 {
 	if ( Engine->GetSelectionManager() )
 	{
-		const std::map<std::shared_ptr<class BravoObject>, std::vector<int32>>& ActiveSelections = Engine->GetSelectionManager()->GetActiveSelections();
+		auto ActiveSelections = Engine->GetSelectionManager()->GetActiveSelections();
 		if ( ActiveSelections.size() != 1 )
 		{
 			Clear();
@@ -70,19 +70,19 @@ void BravoScreen_ObjectProperties::OnToggleHUD(bool ButtonState, float DeltaTime
 	bShowHUD = !bShowHUD;
 }
 
-void BravoScreen_ObjectProperties::SetTargetObject(std::shared_ptr<class BravoObject> _TargetObject)
+void BravoScreen_ObjectProperties::SetTargetObject(std::weak_ptr<class BravoObject> _TargetObject)
 {
 	TargetObject = _TargetObject;
 }
 void BravoScreen_ObjectProperties::Clear()
 {
-	TargetObject = nullptr;
+	TargetObject.reset();
 }
 
 
 void BravoScreen_ObjectProperties::Render_Internal(float DeltaTime)
 {
-	if ( !bShowHUD || TargetObject == nullptr)
+	if ( !bShowHUD || TargetObject.expired() )
 		return;
 
 	BravoScreen::Render_Internal(DeltaTime);
@@ -93,8 +93,8 @@ void BravoScreen_ObjectProperties::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse);
 		
-		if ( TargetObject != nullptr )
-			ShowProperties(TargetObject);
+		
+			ShowProperties(TargetObject.lock());
 
 	ImGui::End();
 

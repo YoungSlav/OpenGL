@@ -11,7 +11,7 @@ public:
 		BravoScreen(std::forward<Args>(args)...)
 	{}
 
-	void SetTargetObject(std::shared_ptr<class BravoObject> _TargetObject);
+	void SetTargetObject(std::weak_ptr<class BravoObject> _TargetObject);
 	void Clear();
 
 protected:
@@ -40,7 +40,7 @@ protected:
 
 private:
 
-	std::shared_ptr<class BravoObject> TargetObject;
+	std::weak_ptr<class BravoObject> TargetObject;
 
 	using HandlerFn = std::function<bool(rttr::variant&, const std::string&, rttr::instance&, const std::string&)>;
 	std::unordered_map<rttr::type, HandlerFn> DispatchTable;

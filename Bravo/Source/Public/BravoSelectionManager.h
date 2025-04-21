@@ -21,6 +21,22 @@ typedef MulticastDelegate<> OnSelectionChangedSignature;
 
 class BravoSelectionManager : public BravoObject
 {
+	struct WeakPtrCompareSelections
+	{
+		bool operator()(const std::weak_ptr<class BravoObject>& a, const std::weak_ptr<class BravoObject>& b) const
+		{
+			return a.lock().get() < b.lock().get();
+		}
+	};
+
+	struct WeakPtrCompareHighlights
+	{
+		bool operator()(const std::weak_ptr<class IBravoRenderable>& a, const std::weak_ptr<class IBravoRenderable>& b) const
+		{
+			return a.lock().get() < b.lock().get();
+		}
+	};
+
 public:
 	template <typename... Args>
 	BravoSelectionManager(Args&&... args) :
@@ -28,8 +44,8 @@ public:
 	{}
 
 
-	const std::map<std::shared_ptr<class BravoObject>, std::vector<int32>>& GetActiveSelections() const { return ActiveSelections; }
-	const std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>>& GetActiveHighlights() const { return ActiveHighlights; }
+	const std::map<std::weak_ptr<class BravoObject>, std::vector<int32>, WeakPtrCompareSelections>& GetActiveSelections() const { return ActiveSelections; }
+	const std::map<std::weak_ptr<class IBravoRenderable>, std::vector<int32>, WeakPtrCompareHighlights>& GetActiveHighlights() const { return ActiveHighlights; }
 
 	void SetAllowSelections(bool bAllow) { bAllowSelections = bAllow; }
 
@@ -62,8 +78,10 @@ protected:
 
 private:
 
-	std::map<std::shared_ptr<IBravoRenderable>, std::vector<int32>> ActiveHighlights;
-	std::map<std::shared_ptr<class BravoObject>, std::vector<int32>> ActiveSelections;
+	
+
+	std::map<std::weak_ptr<IBravoRenderable>, std::vector<int32>, WeakPtrCompareHighlights> ActiveHighlights;
+	std::map<std::weak_ptr<class BravoObject>, std::vector<int32>, WeakPtrCompareSelections> ActiveSelections;
 	
 	glm::ivec2 Size;
 	std::shared_ptr<class BravoRenderTarget> SelectionRenderTarget;

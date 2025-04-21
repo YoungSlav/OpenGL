@@ -232,6 +232,9 @@ void BravoGizmo::OnBeginPlay()
 
 void BravoGizmo::Tick(float DeltaTime)
 {
+	if ( !IsVisisble() )
+		return;
+
 	std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 	if ( !camera )
 		return;
@@ -250,6 +253,31 @@ void BravoGizmo::Tick(float DeltaTime)
     float scaleFactor = DesiredScreenSize * (screenHeightAtGizmo / ViewportSize.y);
 
 	SetScale(glm::vec3(scaleFactor));
+
+	UpdatePosition();
+}
+
+void BravoGizmo::UpdatePosition()
+{
+	if ( bInputActive )
+		return;
+
+	glm::vec3 boundsMin(FLT_MAX);
+    glm::vec3 boundsMax(-FLT_MAX);
+
+	for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
+	{
+		if ( it.expired() )
+			continue;
+			
+		std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
+		glm::vec3 point = asTransformable->GetLocation_World();
+		boundsMin = glm::min(boundsMin, point);
+		boundsMax = glm::max(boundsMax, point);
+	}
+
+	glm::vec3 GizmoPosition = (boundsMin + boundsMax) * 0.5f;
+	SetLocation(GizmoPosition);
 }
 
 void BravoGizmo::SetGizmoState(EBravoGizmoState NewState)
@@ -512,7 +540,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 	OldIntersection = Intersection;
 }
 
-void BravoGizmo::UpdateGizmoAttachments(std::list<std::weak_ptr<IBravoTransformable>> NewAttachments)
+void BravoGizmo::UpdateGizmoAttachments(std::vector<std::weak_ptr<IBravoTransformable>> NewAttachments)
 {
 	Attachments = NewAttachments;
 }

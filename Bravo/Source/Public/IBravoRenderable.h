@@ -44,8 +44,6 @@ public:
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
 	
 	// selection
-	virtual void ClearHighlights() {};
-	virtual void SetHighlights(const std::vector<int32>& HighlightedInstances) {};
 	virtual void RenderSelectionID() {};
 	virtual void RenderOutlineMask() {};
 

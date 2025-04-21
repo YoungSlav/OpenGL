@@ -19,7 +19,7 @@ public:
 	{}
 
 
-	void UpdateGizmoAttachments(std::list<std::weak_ptr<class IBravoTransformable>> NewAttachments);
+	void UpdateGizmoAttachments(std::vector<std::weak_ptr<class IBravoTransformable>> NewAttachments);
 
 protected:
 	virtual bool Initialize_Internal() override;
@@ -27,6 +27,7 @@ protected:
 	virtual void OnBeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+	void UpdatePosition();
 
 	void OnInput_ChangeGizmo(bool ButtonState, float DeltaTime);
 
@@ -56,7 +57,7 @@ private:
 
 protected:
 
-	std::list<std::weak_ptr<class IBravoTransformable>> Attachments;
+	std::vector<std::weak_ptr<class IBravoTransformable>> Attachments;
 
 	std::list<std::shared_ptr<class BravoStaticMeshComponent>> TransformComponents;
 	std::list<std::shared_ptr<class BravoStaticMeshComponent>> RotationComponents;

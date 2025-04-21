@@ -89,11 +89,13 @@ bool PBRGameInstance::Initialize_Internal()
 		auto debugScreen = NewObject<BravoScreen_Debug>("DebugScreen");
 		Engine->GetViewport()->GetHUD()->AddScreen(debugScreen);
 
-		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen", Self<PBRGameInstance>());
+		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen");
 		Engine->GetViewport()->GetHUD()->AddScreen(hierarchyScreen);
+		hierarchyScreen->SetRoot(Self<PBRGameInstance>());
 
 		auto propertiesScreen = NewObject<BravoScreen_ObjectProperties>("Properties Screen");
 		Engine->GetViewport()->GetHUD()->AddScreen(propertiesScreen);
+
 	}
 
 	Engine->GetSelectionManager()->SetAllowSelections(true);

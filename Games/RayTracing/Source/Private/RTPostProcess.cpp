@@ -14,11 +14,11 @@ bool RTPostProcess::Initialize_Internal()
 		return false;
 
 	// TODO: replace by shader that would average output from all past frames
-	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("AverageFrameShader", BravoRenderShaderLoadingParams("AverageFrame", false, false));
+	Shader = Engine->GetAssetManager()->FindOrLoad<BravoRenderShaderAsset>("AverageFrameShader", BravoRenderShaderSettings("AverageFrame", false, false));
 	if ( !Shader )
 		return false;
 
-	RayTracingCompute = Engine->GetAssetManager()->FindOrLoad<BravoComputeShaderAsset>("RayTracing", BravoComputeShaderLoadingParams("RayTracing"));
+	RayTracingCompute = Engine->GetAssetManager()->FindOrLoad<BravoComputeShaderAsset>("RayTracing", BravoComputeShaderSettings("RayTracing"));
 	if ( !RayTracingCompute )
 		return false;
 
