@@ -26,7 +26,7 @@ void BravoHUD::SetupimGUIStyle()
 	ImFont* myFont = io.Fonts->AddFontFromFileTTF(font.c_str(), 20.0f);
 	io.FontDefault = myFont;
 	io.Fonts->Build();
-
+	
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec4* colors = style.Colors;
 

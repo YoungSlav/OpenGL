@@ -24,3 +24,34 @@ RTTR_REGISTRATION
         .property("Visible", &IBravoRenderable::IsVisisble, &IBravoRenderable::SetVisisble)
         ;
 }
+
+IBravoRenderable::IBravoRenderable(ERenderPriority _RenderPriority) :
+	RenderPriority(_RenderPriority),
+	RenderGroup(ERenderGroup::Main)
+{}
+
+IBravoRenderable::IBravoRenderable(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup) :
+	RenderPriority(_RenderPriority),
+	RenderGroup(_RenderGroup)
+{}
+
+
+ERenderPriority IBravoRenderable::GetRenderPriority() const { return RenderPriority; }
+ERenderGroup IBravoRenderable::GetRenderGroup() const { return RenderGroup; }
+
+void IBravoRenderable::SetVisisble(bool bNewVisible)
+{
+    bVisible = bNewVisible;
+}
+bool IBravoRenderable::IsVisisble() const { return bVisible; }
+
+void IBravoRenderable::SetCastShadows(bool _bCastShadows)
+{
+    bCastShadows = _bCastShadows;
+}
+bool IBravoRenderable::GetCastShadows() const { return bCastShadows; }
+
+void IBravoRenderable::ObjectClicked(int32 InstanceIndex)
+{
+	OnObjectClicked.Broadcast(InstanceIndex);
+};

@@ -16,6 +16,9 @@ public:
 		IBravoTransformable()
 	{}
 
+	void SetVisisble(bool bNewVisible, bool bPropagateToChildren = false);
+	bool IsVisisble() const { return bVisible; }
+
 	const std::vector<std::shared_ptr<BravoComponent>>& GetComponents() const { return Components; }
 
 protected:
@@ -26,5 +29,5 @@ protected:
 
 	std::vector<std::shared_ptr<BravoComponent>> Components;
 
-	//std::vector<float> tmp =  {0.0f, 1.0f, 2.0f, 3.0f};
+	bool bVisible = true;
 };

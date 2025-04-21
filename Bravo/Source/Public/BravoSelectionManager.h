@@ -2,9 +2,10 @@
 #include "stdafx.h"
 #include "BravoObject.h"
 
+
 struct BravoSelection
 {
-	std::shared_ptr<class IBravoRenderable> Object = nullptr;
+	std::shared_ptr<class BravoObject> Object = nullptr;
 	int32 InstanceIndex = 0;
 	bool operator==(const BravoSelection& rhs) const
 	{
@@ -16,6 +17,8 @@ struct BravoSelection
 	}
 };
 
+typedef MulticastDelegate<> OnSelectionChangedSignature;
+
 class BravoSelectionManager : public BravoObject
 {
 public:
@@ -25,9 +28,15 @@ public:
 	{}
 
 
-	const std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>>& GetSelections() const { return ActiveSelections; }
+	const std::map<std::shared_ptr<class BravoObject>, std::vector<int32>>& GetActiveSelections() const { return ActiveSelections; }
+	const std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>>& GetActiveHighlights() const { return ActiveHighlights; }
 
 	void SetAllowSelections(bool bAllow) { bAllowSelections = bAllow; }
+
+	void SelectObject(std::shared_ptr<BravoObject> obj, bool bAddToSelection = false);
+	void ClearSelections(bool bBroadcastChange = true);
+
+	OnSelectionChangedSignature OnSelectionChanged;
 
 protected:
 
@@ -38,23 +47,28 @@ protected:
 	void OnViewportResized(const glm::ivec2& _Size);
 
 	void OnMouseClicked(bool ButtonState, float DeltaTime);
+	
+	void DispatchSelection(BravoHandle Handle, int32 Instance, bool bSelectIndividualInstance, bool bAddToSelection, bool bSelectComponent);
 
-	void ChangeSelection(const BravoSelection& Selection);
-	void ClearSelections();
+	void AddToSelection(const BravoSelection& Selection, bool bSelectIndividualInstance);
+	void UpdateHighlights();
+	
+	void NormalizeSelections();
 
 	void SpawnGizmo();
 	void UpdateGizmo();
-	void ClearGizmo();
+	void HideGizmo();
 
 
 private:
 
-	std::map<std::shared_ptr<class IBravoRenderable>, std::vector<int32>> ActiveSelections;
+	std::map<std::shared_ptr<IBravoRenderable>, std::vector<int32>> ActiveHighlights;
+	std::map<std::shared_ptr<class BravoObject>, std::vector<int32>> ActiveSelections;
 	
 	glm::ivec2 Size;
 	std::shared_ptr<class BravoRenderTarget> SelectionRenderTarget;
 
 	std::shared_ptr<class BravoGizmo> Gizmo = nullptr;
 
-	bool bAllowSelections = false;
+	bool bAllowSelections = true;
 };

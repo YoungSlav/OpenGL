@@ -41,7 +41,7 @@ bool BravoPostProcess_Outline::EnsureReady()
 	if ( !SelectionManager )
 		return false;
 
-	auto ActiveSelections = SelectionManager->GetSelections();
+	auto ActiveSelections = SelectionManager->GetActiveHighlights();
 
 	if ( !ActiveSelections.size() )
 		return false;
@@ -57,7 +57,7 @@ void BravoPostProcess_Outline::Render_Internal()
 {
 	auto SelectionManager = Engine->GetSelectionManager();
 
-	auto ActiveSelections = SelectionManager->GetSelections();
+	auto ActiveSelections = SelectionManager->GetActiveHighlights();
 		
 	const std::shared_ptr<BravoCamera> camera = Engine->GetCamera();
 

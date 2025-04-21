@@ -424,7 +424,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 		glm::vec3 WorlDelta = (Intersection - OldIntersection) * InputMask;
 		if ( glm::length(WorlDelta) >= FLT_EPS )
 		{
-			Log::LogMessage(ELog::Log, "Translate : {}", WorlDelta);
+			//Log::LogMessage(ELog::Log, "Translate : {}", WorlDelta);
 
 			for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
 			{
@@ -432,7 +432,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 					continue;
 			
 				std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
-				asTransformable->SetLocation_World(asTransformable->GetLocation_World() + WorlDelta);
+				asTransformable->SetLocation(asTransformable->GetLocation() + WorlDelta);
 			}
 
 		
@@ -462,7 +462,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 				ActualScaleFactor = glm::vec3(ScaleFactor);
 			}
 
-			Log::LogMessage(ELog::Log, "Scale : {}", ActualScaleFactor);
+			//Log::LogMessage(ELog::Log, "Scale : {}", ActualScaleFactor);
 			
 			for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
 			{
@@ -470,7 +470,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 					continue;
 			
 				std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
-				asTransformable->SetScale_World(asTransformable->GetScale_World() * ActualScaleFactor);
+				asTransformable->SetScale(asTransformable->GetScale() * ActualScaleFactor);
 			}
 		}
 	}
@@ -486,7 +486,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 		{
 			glm::quat rotation(rad, InputPlane);
 
-			Log::LogMessage(ELog::Log, "Rotate : {}", rotation);
+			//Log::LogMessage(ELog::Log, "Rotate : {}", rotation);
 
 			for ( std::weak_ptr<IBravoTransformable>& it : Attachments )
 			{
@@ -494,7 +494,7 @@ void BravoGizmo::OnMouseMove(const glm::vec2& CurrentPosition, const glm::vec2& 
 					continue;
 			
 				std::shared_ptr<IBravoTransformable> asTransformable = it.lock();
-				asTransformable->SetRotation_World(glm::normalize(rotation * asTransformable->GetRotation_World()));
+				asTransformable->SetRotation(glm::normalize(rotation * asTransformable->GetRotation()));
 			}
 
 			std::vector<glm::quat> r;

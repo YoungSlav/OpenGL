@@ -6,6 +6,7 @@
 #include "IBravoRenderable.h"
 #include "BravoGizmo.h"
 #include "BravoStaticMeshComponent.h"
+#include "BravoActor.h"
 
 bool BravoSelectionManager::Initialize_Internal()
 {
@@ -30,6 +31,9 @@ void BravoSelectionManager::OnBeginPlay()
 		subscription.Callback.BindSP(Self<BravoSelectionManager>(), &BravoSelectionManager::OnMouseClicked);
 		Input->SubscribeKey(subscription);
 	}
+
+	SpawnGizmo();
+	HideGizmo();
 }
 
 void BravoSelectionManager::OnViewportResized(const glm::ivec2& ViewportSize)
@@ -48,80 +52,105 @@ void BravoSelectionManager::OnMouseClicked(bool ButtonState, float DeltaTime)
 {
 	if ( !bAllowSelections )
 		return;
-	if ( std::shared_ptr<BravoInput> Input = Engine->GetInput() )
-	{
-		SelectionRenderTarget->Bind();
+	std::shared_ptr<BravoInput> Input = Engine->GetInput();
+	if ( !Input )
+		return;
+	
+
+
+	SelectionRenderTarget->Bind();
 			
+		Engine->GetViewport()->RenderSelectionIDs();
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
 			
-			Engine->GetViewport()->RenderSelectionIDs();
-
-			glReadBuffer(GL_COLOR_ATTACHMENT0);
-			
-			glm::vec2 MousePosition = Input->GetMousePosition();
-			GLfloat pixelColor[2];
-			GLint mX = (GLint)MousePosition.x;
-			GLint mY = (GLint)(Size.y - (int32)MousePosition.y);
-			glReadPixels(mX, mY, 1, 1, GL_RG, GL_FLOAT, pixelColor);
+		glm::vec2 MousePosition = Input->GetMousePosition();
+		GLfloat pixelColor[2];
+		GLint mX = (GLint)MousePosition.x;
+		GLint mY = (GLint)(Size.y - (int32)MousePosition.y);
+		glReadPixels(mX, mY, 1, 1, GL_RG, GL_FLOAT, pixelColor);
 
 
-			BravoSelection selection;
-			BravoHandle handle = (BravoHandle)(pixelColor[0]);
-			if ( auto Object = Engine->FindObjectByHandle(handle) )
-			{
-				selection.Object = std::dynamic_pointer_cast<IBravoRenderable>(Object);
-				selection.InstanceIndex = (int32)(pixelColor[1]);
-				if ( selection.Object != nullptr )
-				{
-					selection.Object->ObjectClicked(selection.InstanceIndex);
-					ChangeSelection(selection);
-				}
-			}
+		BravoHandle handle = (BravoHandle)(pixelColor[0]);
+		int32 InstanceIndex = (int32)(pixelColor[1]);
 
-		SelectionRenderTarget->Unbind();
-	}
+		const bool bSelectIndividualInstance = Input->GetKeyState(GLFW_KEY_LEFT_SHIFT) || Input->GetKeyState(GLFW_KEY_RIGHT_SHIFT);
+		const bool bAddToSelection = Input->GetKeyState(GLFW_KEY_LEFT_CONTROL) || Input->GetKeyState(GLFW_KEY_RIGHT_CONTROL);
+		const bool bSelectComponent = bSelectIndividualInstance || (Input->GetKeyState(GLFW_KEY_LEFT_ALT) || Input->GetKeyState(GLFW_KEY_RIGHT_ALT));
+
+		DispatchSelection(handle, InstanceIndex, bSelectIndividualInstance, bAddToSelection, bSelectComponent);
+
+	SelectionRenderTarget->Unbind();
 }
 
-void BravoSelectionManager::ChangeSelection(const BravoSelection& Selection)
+void BravoSelectionManager::SelectObject(std::shared_ptr<BravoObject> obj, bool bAddToSelection)
 {
-	// do not select gizmo
-	if ( std::shared_ptr<BravoComponent> asComp = std::dynamic_pointer_cast<BravoComponent>(Selection.Object) )
-	{
-		if ( std::dynamic_pointer_cast<BravoGizmo>(asComp->GetOwningActor()) )
-				return;
-	}
+	DispatchSelection(obj->GetHandle(), 0, false, bAddToSelection, true);
+}
 
+void BravoSelectionManager::DispatchSelection(BravoHandle handle, int32 inst, bool bSelectIndividualInstance, bool bAddToSelection, bool bSelectComponent)
+{
+	
+
+	std::shared_ptr<BravoObject> SelectedObject = Engine->FindObjectByHandle(handle);
+	if ( !SelectedObject )
+	{
+		ClearSelections(true);
+		return;
+	}
 	std::shared_ptr<BravoInput> Input = Engine->GetInput();
 	if ( !Input )
 		return;
 
-	if ( Selection.Object->GetRenderGroup() != ERenderGroup::Main )
-		return;
-
-
-	bool bSelectIndividualInstance = Input->GetKeyState(GLFW_KEY_LEFT_SHIFT) || Input->GetKeyState(GLFW_KEY_RIGHT_SHIFT);
-	bool bAddToSelection = ActiveSelections.empty() || Input->GetKeyState(GLFW_KEY_LEFT_CONTROL) || Input->GetKeyState(GLFW_KEY_RIGHT_CONTROL);
-	
-	if ( !bAddToSelection )
+	// handle gizmo individually
+	if ( std::shared_ptr<BravoStaticMeshComponent> asComp = std::dynamic_pointer_cast<BravoStaticMeshComponent>(SelectedObject) )
 	{
-		ClearSelections();
-		ClearGizmo();
+		if ( std::dynamic_pointer_cast<BravoGizmo>(asComp->GetOwningActor()) )
+		{
+			asComp->ObjectClicked(inst);
+			return;
+		}
+	}
+	if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(SelectedObject) )
+	{
+		if ( asRenderable->GetRenderGroup() != ERenderGroup::Main )
+		{
+			return;
+		}
 	}
 
-	Selection.Object->ClearSelection();
+	if ( !bAddToSelection )
+		ClearSelections(false);
 
+	BravoSelection Selection;
+	Selection.Object = SelectedObject;
+	Selection.InstanceIndex = inst;
+	
+	if ( !bSelectComponent )
+	{
+		if ( std::shared_ptr<BravoComponent> asComp = std::dynamic_pointer_cast<BravoComponent>(SelectedObject) )
+		{
+			Selection.Object = asComp->GetOwningActor();
+			Selection.InstanceIndex = -1;
+		}
+	}
+
+	Log::LogMessage(ELog::Log, "selection : {}, {}", Selection.Object->GetName(), inst);
+
+	AddToSelection(Selection, bSelectIndividualInstance);
+}
+
+void BravoSelectionManager::AddToSelection(const BravoSelection& Selection, bool bSelectIndividualInstance)
+{
 	auto foundComp = ActiveSelections.find(Selection.Object);
 	if ( foundComp == ActiveSelections.end() )
 	{
 		// object has no active selections
-
 		std::vector<int32> InstancesToSelect;
 		if ( bSelectIndividualInstance )
 			InstancesToSelect.push_back(Selection.InstanceIndex);
 
 		ActiveSelections.insert({Selection.Object, InstancesToSelect});
-		Selection.Object->SetSelection(InstancesToSelect);
-
-		SpawnGizmo();
 	}
 	else
 	{
@@ -141,97 +170,149 @@ void BravoSelectionManager::ChangeSelection(const BravoSelection& Selection)
 				// instance is already selected
 				CurentlySelectedInstanes.erase(foundInst);
 			}
-			Selection.Object->SetSelection(CurentlySelectedInstanes);
 		}
 		else
 		{
 			// deselect entire object
 			ActiveSelections.erase(foundComp);
-	
-			if ( ActiveSelections.empty() )
-				ClearGizmo();
 		}
 	}
+	NormalizeSelections();
+	UpdateHighlights();
 
+	OnSelectionChanged.Broadcast();
+}
+
+// always keep only hightest level in selection pool.
+// if component instance is selected, but owning actor is added to selection, remove instance, etc
+// potentially respawn gizmo?
+void BravoSelectionManager::NormalizeSelections()
+{
+	for (auto it = ActiveSelections.begin(); it != ActiveSelections.end(); )
+	{
+		bool erase = false;
+		if ( std::shared_ptr<BravoComponent> asComp = std::dynamic_pointer_cast<BravoComponent>(it->first) )
+		{
+			std::shared_ptr<BravoActor> owningActor = asComp->GetOwningActor();
+			if ( ActiveSelections.find(owningActor) != ActiveSelections.end() )
+				erase = true;
+		}
+
+		if (erase)
+		{
+			it = ActiveSelections.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void BravoSelectionManager::UpdateHighlights()
+{
+	ActiveHighlights.clear();
+
+	auto highlight = [this](std::shared_ptr<IBravoRenderable> renderable, const std::vector<int32>& Instances)
+		{
+			this->ActiveHighlights.insert({renderable, Instances});
+			renderable->SetHighlights(Instances);
+		};
+
+	for ( auto it : ActiveSelections )
+	{
+		if ( std::shared_ptr<BravoActor> asActor = std::dynamic_pointer_cast<BravoActor>(it.first) )
+		{
+			// hightlight everything
+			std::vector<std::shared_ptr<BravoComponent>> components = asActor->GetComponents();
+			for ( auto it : components )
+			{
+				if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(it) )
+				{
+					highlight(asRenderable, {});
+				}
+			}
+		}
+		else if ( std::shared_ptr<IBravoRenderable> asRenderable = std::dynamic_pointer_cast<IBravoRenderable>(it.first) )
+		{
+			highlight(asRenderable, it.second);
+		}
+	}
 	UpdateGizmo();
 }
 
 void BravoSelectionManager::UpdateGizmo()
 {
-	if ( Gizmo != nullptr )
-	{
-		std::list<std::weak_ptr<IBravoTransformable>> Attachments;
+	if ( !Gizmo )
+		return;
+
+	glm::vec3 boundsMin(FLT_MAX);
+    glm::vec3 boundsMax(-FLT_MAX);
+
+	
+
+	std::list<std::weak_ptr<IBravoTransformable>> Attachments;
 		
-		for ( auto it : ActiveSelections )
+	for ( auto it : ActiveSelections )
+	{
+		if ( it.second.empty() )
 		{
-			if ( it.second.empty() )
+			if ( std::shared_ptr<IBravoTransformable> asTransformable = std::dynamic_pointer_cast<IBravoTransformable>(it.first) )
 			{
-				if ( std::shared_ptr<IBravoTransformable> asTransformable = std::dynamic_pointer_cast<IBravoTransformable>(it.first) )
-				{
-					Attachments.push_back(asTransformable);
-				}
+				Attachments.push_back(asTransformable);
+				
+				glm::vec3 point = asTransformable->GetLocation_World();
+				boundsMin = glm::min(boundsMin, point);
+				boundsMax = glm::max(boundsMax, point);
 			}
-			else if ( std::shared_ptr<BravoStaticMeshComponent> asMesh = std::dynamic_pointer_cast<BravoStaticMeshComponent>(it.first) )
+		}
+		else if ( std::shared_ptr<BravoStaticMeshComponent> asMesh = std::dynamic_pointer_cast<BravoStaticMeshComponent>(it.first) )
+		{
+			for ( const int32& InstIndex : it.second )
 			{
-				for ( const int32& InstIndex : it.second )
+				if ( std::shared_ptr<BravoStaticMeshInstance> instance = asMesh->GetInstance(InstIndex) )
 				{
-					if ( std::shared_ptr<BravoStaticMeshInstance> instance = asMesh->GetInstance(InstIndex) )
-					{
-						Attachments.push_back(instance);
-					}
+					Attachments.push_back(instance);
+
+					glm::vec3 point = instance->GetLocation_World();
+					boundsMin = glm::min(boundsMin, point);
+					boundsMax = glm::max(boundsMax, point);
 				}
 			}
 		}
-
-		Gizmo->UpdateGizmoAttachments(Attachments);
 	}
+
+	glm::vec3 GizmoPosition = (boundsMin + boundsMax) * 0.5f;
+	Gizmo->SetLocation_World(GizmoPosition);
+	Gizmo->SetVisisble(Attachments.size() != 0);
+	Gizmo->UpdateGizmoAttachments(Attachments);
 }
 
 void BravoSelectionManager::SpawnGizmo()
 {
-	if ( Gizmo != nullptr || ActiveSelections.empty() )
+	if ( Gizmo != nullptr  )
 		return;
 
-	auto it = ActiveSelections.begin();
-	if ( std::shared_ptr<IBravoTransformable> asTransformable = std::dynamic_pointer_cast<IBravoTransformable>(it->first) )
-	{
-		BravoTransform spawnTransform;
-		if ( it->second.empty() )
-		{
-			spawnTransform.SetLocation(asTransformable->GetLocation_World());
-		}
-		else if ( std::shared_ptr<BravoStaticMeshComponent> asMesh = std::dynamic_pointer_cast<BravoStaticMeshComponent>(asTransformable) )
-		{
-			if ( auto inst = asMesh->GetInstance(it->second[0]))
-			{
-				spawnTransform.SetLocation(inst->GetLocation_World());
-			}
-		}
-		else
-		{
-			return;
-		}
-
-		Gizmo = NewObject<BravoGizmo>("Gizmo");
-		Gizmo->SetTransform(spawnTransform);
-	}
-
-
-}
-void BravoSelectionManager::ClearGizmo()
-{
-	if ( Gizmo != nullptr )
-	{
-		Gizmo->Destroy();
-		Gizmo.reset();
-	}
+	BravoTransform spawnTransform;
+	Gizmo = NewObject<BravoGizmo>("Gizmo");
+	Gizmo->SetTransform(spawnTransform);
 }
 
-void BravoSelectionManager::ClearSelections()
+void BravoSelectionManager::HideGizmo()
 {
-	for ( auto it : ActiveSelections )
+	Gizmo->SetVisisble(false);
+}
+
+void BravoSelectionManager::ClearSelections(bool bBroadcastChange)
+{
+	for ( auto it : ActiveHighlights )
 	{
-		it.first->ClearSelection();
+		it.first->ClearHighlights();
 	}
+
+	HideGizmo();
 	ActiveSelections.clear();
+	ActiveHighlights.clear();
+	if ( bBroadcastChange )
+		OnSelectionChanged.Broadcast();
 }

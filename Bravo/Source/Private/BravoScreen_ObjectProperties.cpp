@@ -2,8 +2,9 @@
 
 #include "BravoActor.h"
 #include "BravoComponent.h"
+#include "BravoInput.h"
 #include "BravoEngine.h"
-
+#include "BravoSelectionManager.h"
 
 #define REGISTER_HANDLER(map, Type) \
     map.insert_or_assign(rttr::type::get<Type>(), [this](rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName) { \
@@ -13,26 +14,77 @@
 
 bool BravoScreen_ObjectProperties::Initialize_Internal()
 {
-	if ( !BravoScreen::Initialize_Internal() || TargetObject == nullptr )
+	if ( !BravoScreen::Initialize_Internal() )
 		return false;
 
 	REGISTER_HANDLER(DispatchTable, float);
+	REGISTER_HANDLER(DispatchTable, bool);
 	REGISTER_HANDLER(DispatchTable, std::string);
 	REGISTER_HANDLER(DispatchTable, glm::vec3);
 	REGISTER_HANDLER(DispatchTable, BravoObject*);
 	REGISTER_HANDLER(DispatchTable, BravoHandle);
 
+	if ( Engine->GetInput() )
+	{
+		BravoKeySubscription sub;
+		sub.Key = GLFW_KEY_GRAVE_ACCENT;
+		sub.SubscribedType = EKeySubscriptionType::Released;
+		sub.Callback.BindSP(Self<BravoScreen_ObjectProperties>(), &BravoScreen_ObjectProperties::OnToggleHUD);
+		Engine->GetInput()->SubscribeKey(sub);
+	}
+	if ( Engine->GetSelectionManager() )
+	{
+		Engine->GetSelectionManager()->OnSelectionChanged.AddSP(Self<BravoScreen_ObjectProperties>(), &BravoScreen_ObjectProperties::OnSelectionChanged);
+	}
+
 	SetTrueScaling(false);
-	SetSize(glm::vec2(0.6f, 1.0f));
+	SetSize(glm::vec2(0.3f, 1.0f));
 	SetMaxSize(glm::vec2(1.0f, 1.0f));
 	SetOrigin(glm::vec2(1.0f, 0.0f));
 	SetPosition(glm::vec2(1.0f, 0.0f));
 	return true;
 }
 
+void BravoScreen_ObjectProperties::OnSelectionChanged()
+{
+	if ( Engine->GetSelectionManager() )
+	{
+		const std::map<std::shared_ptr<class BravoObject>, std::vector<int32>>& ActiveSelections = Engine->GetSelectionManager()->GetActiveSelections();
+		if ( ActiveSelections.size() != 1 )
+		{
+			Clear();
+		}
+		else
+		{
+			SetTargetObject(ActiveSelections.begin()->first);
+		}
+	}
+	else
+	{
+		Clear();
+	}
+}
+
+void BravoScreen_ObjectProperties::OnToggleHUD(bool ButtonState, float DeltaTime)
+{
+	bShowHUD = !bShowHUD;
+}
+
+void BravoScreen_ObjectProperties::SetTargetObject(std::shared_ptr<class BravoObject> _TargetObject)
+{
+	TargetObject = _TargetObject;
+}
+void BravoScreen_ObjectProperties::Clear()
+{
+	TargetObject = nullptr;
+}
+
 
 void BravoScreen_ObjectProperties::Render_Internal(float DeltaTime)
 {
+	if ( !bShowHUD || TargetObject == nullptr)
+		return;
+
 	BravoScreen::Render_Internal(DeltaTime);
 
 	ImGui::SetNextWindowBgAlpha(1.0f);
@@ -41,7 +93,8 @@ void BravoScreen_ObjectProperties::Render_Internal(float DeltaTime)
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse);
 		
-		ShowProperties(TargetObject);
+		if ( TargetObject != nullptr )
+			ShowProperties(TargetObject);
 
 	ImGui::End();
 
@@ -105,13 +158,18 @@ float BravoScreen_ObjectProperties::DrawLabel(const std::string& propName, const
 
 bool BravoScreen_ObjectProperties::Dispatch(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
 {
+	var = unwrap(var);
+	rttr::type varType = var.get_type();
+
 	if ( var.is_sequential_container() || var.is_associative_container() )
 	{
 		return HandleContainer(var, propName, inst, ParentName);
 	}
 	
-	rttr::variant unwrapped = unwrap(var);
-	rttr::type varType = unwrapped.get_type();
+	if ( varType.is_enumeration() )
+	{
+		return HandleEnumeration(var, propName, inst, ParentName);
+	}
 
 	// look for dispatch in dispach table
 	// if not found, try to find parent's variant to dispatch
@@ -120,7 +178,7 @@ bool BravoScreen_ObjectProperties::Dispatch(rttr::variant& var, const std::strin
 	{
 		auto it = DispatchTable.find(varType);
 		if ( it != DispatchTable.end() )
-			return it->second(unwrapped, propName, inst, ParentName);
+			return it->second(var, propName, inst, ParentName);
 
 		// we need to unwrap from ptr type to raw type
 		auto bases = unwrap(varType).get_base_classes();
@@ -149,8 +207,6 @@ bool BravoScreen_ObjectProperties::HandleClass(rttr::variant& var, const std::st
 	{
 		for (rttr::property prop : objType.get_properties())
 		{
-			if ( prop.is_readonly() ) continue;
-
 			rttr::variant value = prop.get_value(objInstance);
 			rttr::type valueType = prop.get_type();
 			std::string cPropName = std::string(prop.get_name().data(), prop.get_name().size());
@@ -186,6 +242,11 @@ bool BravoScreen_ObjectProperties::HandleContainer(rttr::variant& var, const std
 		ImGui::TreePop();
 	}
 	return bModify;
+}
+
+bool BravoScreen_ObjectProperties::HandleEnumeration(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
+{
+	return false;
 }
 
 bool BravoScreen_ObjectProperties::HandleValue(BravoHandle&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
@@ -229,6 +290,10 @@ bool BravoScreen_ObjectProperties::HandleValue(float& val, rttr::variant& var, c
 	{
 		return true;
 	}
+	return false;
+}
+bool BravoScreen_ObjectProperties::HandleValue(bool& val, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)
+{
 	return false;
 }
 bool BravoScreen_ObjectProperties::HandleValue(std::string& val, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName)

@@ -7,23 +7,26 @@ class BravoScreen_ObjectProperties : public BravoScreen
 {
 public:
 	template <typename... Args>
-	BravoScreen_ObjectProperties(std::shared_ptr<class BravoObject> _TargetObject, Args&&... args) :
-		BravoScreen(std::forward<Args>(args)...),
-		TargetObject(_TargetObject)
+	BravoScreen_ObjectProperties(Args&&... args) :
+		BravoScreen(std::forward<Args>(args)...)
 	{}
 
-	void ShowProperties(std::shared_ptr<class BravoObject> TargetObject);
+	void SetTargetObject(std::shared_ptr<class BravoObject> _TargetObject);
+	void Clear();
 
 protected:
 	virtual bool Initialize_Internal() override;
 	virtual void Render_Internal(float DeltaTime) override;
 
+	void ShowProperties(std::shared_ptr<class BravoObject> TargetObject);
 
 	bool HandleClass(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleContainer(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleEnumeration(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 
 	bool Dispatch(rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleValue(float&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
+	bool HandleValue(bool&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleValue(std::string&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleValue(glm::vec3&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
 	bool HandleValue(BravoObject*&, rttr::variant& var, const std::string& propName, rttr::instance& inst, const std::string& ParentName);
@@ -31,6 +34,9 @@ protected:
 
 
 	float DrawLabel(const std::string& prop, const std::string& parent) const;
+
+	void OnToggleHUD(bool ButtonState, float DeltaTime);
+	void OnSelectionChanged();
 
 private:
 
@@ -40,5 +46,7 @@ private:
 	std::unordered_map<rttr::type, HandlerFn> DispatchTable;
 
 	const float NameWidthPercent = 0.35f;
+
+	bool bShowHUD = false;
 };
 

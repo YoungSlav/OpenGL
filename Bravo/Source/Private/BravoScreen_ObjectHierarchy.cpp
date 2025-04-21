@@ -7,6 +7,7 @@
 #include "BravoScreen_ObjectProperties.h"
 #include "BravoHUD.h"
 #include "BravoViewport.h"
+#include "BravoSelectionManager.h"
 
 bool BravoScreen_ObjectHierarchy::Initialize_Internal()
 {
@@ -57,27 +58,31 @@ void BravoScreen_ObjectHierarchy::Render_Internal(float DeltaTime)
 
 void BravoScreen_ObjectHierarchy::RenderNode_Recursive(const std::shared_ptr<class BravoObject> obj, int32 Depth)
 {
+	auto SelectionManager = Engine->GetSelectionManager();
+	if ( !SelectionManager )
+		return;
+
+	const std::map<std::shared_ptr<class BravoObject>, std::vector<int32>>& ActiveSelections = SelectionManager->GetActiveSelections();
+	const bool bSelected = ActiveSelections.find(obj) != ActiveSelections.end();
+
 	std::string lb = obj->GetName() + "##" + std::to_string(GetHandle());
 	
 	const std::list<std::weak_ptr<BravoObject>>& Children = obj->GetChildren();
 	
 	ImGuiTreeNodeFlags NodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnArrow;
 	
-	if (Depth == 0) NodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
+	if (Depth == 0 || true) NodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
 	if ( Children.size() == 0) NodeFlags |= ImGuiTreeNodeFlags_Leaf;
+	if ( bSelected )
+		NodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 	bool isOpen = ImGui::TreeNodeEx(lb.c_str(), NodeFlags);
 	bool isClicked = ImGui::IsItemClicked();
 
-	
+
 	if (isClicked)
 	{
-		Log::LogMessage(ELog::Log, "Node clicked: {}", obj->GetName());
-		if ( Engine->GetViewport()->GetHUD() )
-		{
-			auto propertiesScreen = NewObject<BravoScreen_ObjectProperties>("Properties Screen", obj);
-			Engine->GetViewport()->GetHUD()->AddScreen(propertiesScreen);
-		}
+		SelectionManager->SelectObject(obj);
 	}
 	if ( isOpen )
 	{

@@ -24,43 +24,34 @@ class IBravoRenderable
 public:
 	IBravoRenderable() = default;
 
-	IBravoRenderable(ERenderPriority _RenderPriority) :
-		RenderPriority(_RenderPriority),
-		RenderGroup(ERenderGroup::Main)
-	{}
+	IBravoRenderable(ERenderPriority _RenderPriority);
 
-	IBravoRenderable(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup) :
-		RenderPriority(_RenderPriority),
-		RenderGroup(_RenderGroup)
-	{}
+	IBravoRenderable(ERenderPriority _RenderPriority, ERenderGroup _RenderGroup);
 
 	virtual ~IBravoRenderable() = default;
 
-	ERenderPriority GetRenderPriority() const { return RenderPriority; }
-	ERenderGroup GetRenderGroup() const { return RenderGroup; }
+	ERenderPriority GetRenderPriority() const;
+	ERenderGroup GetRenderGroup() const;
 
-	void SetVisisble(bool bNewVisible) { bVisible = bNewVisible; }
-	bool IsVisisble() const { return bVisible; }
+	void SetVisisble(bool bNewVisible);
+	virtual bool IsVisisble() const;
 
-	void SetCastShadows(bool _bCastShadows) { bCastShadows = _bCastShadows; }
-	bool GetCastShadows() const { return bCastShadows; }
+	void SetCastShadows(bool _bCastShadows);
+	bool GetCastShadows() const;
 
 
 	virtual void Render() = 0;
 	virtual void RenderDepthMap(std::shared_ptr<class BravoShaderAsset> Shader) {}
 	
 	// selection
-	virtual void ClearSelection() {};
-	virtual void SetSelection(const std::vector<int32>& SelectedInstances) {};
+	virtual void ClearHighlights() {};
+	virtual void SetHighlights(const std::vector<int32>& HighlightedInstances) {};
 	virtual void RenderSelectionID() {};
 	virtual void RenderOutlineMask() {};
 
 	OnObjectClickedSignature OnObjectClicked;
 
-	void ObjectClicked(int32 InstanceIndex = 0)
-	{
-		OnObjectClicked.Broadcast(InstanceIndex);
-	};
+	void ObjectClicked(int32 InstanceIndex = 0);
 
 protected:
 	const ERenderPriority RenderPriority = Starndart;

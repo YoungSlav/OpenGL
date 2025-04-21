@@ -4,6 +4,7 @@
 #include "BravoHUD.h"
 #include "BravoScreen_Debug.h"
 #include "BravoScreen_ObjectHierarchy.h"
+#include "BravoScreen_ObjectProperties.h"
 #include "BravoAssetManager.h"
 #include "BravoCamera.h"
 #include "BravoPlayer.h"
@@ -90,6 +91,9 @@ bool PBRGameInstance::Initialize_Internal()
 
 		auto hierarchyScreen = NewObject<BravoScreen_ObjectHierarchy>("Hierarchy Screen", Self<PBRGameInstance>());
 		Engine->GetViewport()->GetHUD()->AddScreen(hierarchyScreen);
+
+		auto propertiesScreen = NewObject<BravoScreen_ObjectProperties>("Properties Screen");
+		Engine->GetViewport()->GetHUD()->AddScreen(propertiesScreen);
 	}
 
 	Engine->GetSelectionManager()->SetAllowSelections(true);

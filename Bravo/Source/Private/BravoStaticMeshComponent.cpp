@@ -31,8 +31,8 @@ bool BravoStaticMeshComponent::Initialize_Internal()
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	glGenBuffers(1, &SelectedInstancesSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SelectedInstancesSSBO);
+	glGenBuffers(1, &HighlightedInstancesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, HighlightedInstancesSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -97,9 +97,9 @@ void BravoStaticMeshComponent::UpdateInstance(int32 Index, const BravoInstanceDa
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, InstancesSSBO);
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, Index * sizeof(BravoInstanceData), sizeof(BravoInstanceData), &InstanceData[Index]);
 
-	if ( !SelectedInstances.empty() )
+	if ( !HighlightedInstances.empty() )
 	{
-		SetSelection(SelectedInstances);
+		SetHighlights(HighlightedInstances);
 	}
 }
 
@@ -137,36 +137,45 @@ void BravoStaticMeshComponent::UpdateInstanceBuffer()
 	glBufferData(GL_SHADER_STORAGE_BUFFER, InstanceData.size() * sizeof(BravoInstanceData), InstanceData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	if ( !SelectedInstances.empty() )
+	if ( !HighlightedInstances.empty() )
 	{
-		SetSelection(SelectedInstances);
+		SetHighlights(HighlightedInstances);
 	}
 
 	bInstanceStateDirty = false;
 }
 
-void BravoStaticMeshComponent::SetSelection(const std::vector<int32>& _SelectedInstances)
+bool BravoStaticMeshComponent::IsVisisble() const
 {
-	SelectedInstances = _SelectedInstances;
+	if ( std::shared_ptr<BravoActor> owningActor = GetOwningActor() )
+		if ( !owningActor->IsVisisble() )
+			return false;
+
+	return IBravoRenderable::IsVisisble();
+}
+
+void BravoStaticMeshComponent::SetHighlights(const std::vector<int32>& _HighlightedInstances)
+{
+	HighlightedInstances = _HighlightedInstances;
 	std::vector<BravoInstanceData> SelectedInstanceData;
-	SelectedInstanceData.reserve(SelectedInstances.size());
-	for ( const int32& i : SelectedInstances )
+	SelectedInstanceData.reserve(HighlightedInstances.size());
+	for ( const int32& i : HighlightedInstances )
 	{
 		SelectedInstanceData.push_back(Instances[i]->GetData());
 	}
 
-	const std::vector<BravoInstanceData>& selectedData = SelectedInstances.size() ? SelectedInstanceData : InstanceData;
+	const std::vector<BravoInstanceData>& selectedData = HighlightedInstances.size() ? SelectedInstanceData : InstanceData;
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SelectedInstancesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, HighlightedInstancesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, selectedData.size() * sizeof(BravoInstanceData), selectedData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	SelectedInstancesCount = int32(selectedData.size());
+	HighlightedInstancesCount = int32(selectedData.size());
 }
 
-void BravoStaticMeshComponent::ClearSelection()
+void BravoStaticMeshComponent::ClearHighlights()
 {
-	SelectedInstances.clear();
+	HighlightedInstances.clear();
 }
 
 void BravoStaticMeshComponent::OnDestroy()
@@ -174,8 +183,8 @@ void BravoStaticMeshComponent::OnDestroy()
 	glDeleteBuffers(1, &InstancesSSBO);
 	InstancesSSBO = 0;
 	
-	glDeleteBuffers(1, &SelectedInstancesSSBO);
-	SelectedInstancesSSBO = 0;
+	glDeleteBuffers(1, &HighlightedInstancesSSBO);
+	HighlightedInstancesSSBO = 0;
 
 	Material->Destroy();
 	Mesh->ReleaseFromGPU();
@@ -266,7 +275,7 @@ void BravoStaticMeshComponent::RenderSelectionID()
 
 void BravoStaticMeshComponent::RenderOutlineMask()
 {
-	if ( !SelectedInstancesCount )
+	if ( !HighlightedInstancesCount )
 		return;
 
 	if ( !EnsureReady() || !OutlineMaskShader || !OutlineMaskShader->EnsureGPUReady() )
@@ -289,7 +298,7 @@ void BravoStaticMeshComponent::RenderOutlineMask()
 		OutlineMaskShader->SetFloat1("OutlineColor", (float)(GetHandle()));
 		OutlineMaskShader->SetMatrix4d("transform", ModelTranform);
 
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SelectedInstancesSSBO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, HighlightedInstancesSSBO);
 		
 		Mesh->Render(Instances.size());
 

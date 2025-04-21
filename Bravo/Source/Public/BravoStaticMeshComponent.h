@@ -87,8 +87,10 @@ public:
 
 	void UpdateInstanceBuffer();
 
-	virtual void ClearSelection() override;
-	virtual void SetSelection(const std::vector<int32>& SelectedInstances) override;
+
+	virtual bool IsVisisble() const override;
+	virtual void ClearHighlights() override;
+	virtual void SetHighlights(const std::vector<int32>& HighlightedInstances) override;
 	virtual void RenderSelectionID() override;
 	virtual void RenderOutlineMask() override;
 
@@ -107,9 +109,9 @@ private:
 
 	GLuint InstancesSSBO = 0;
 	
-	GLuint SelectedInstancesSSBO = 0;
-	std::vector<int32> SelectedInstances;
-	int32 SelectedInstancesCount = 0;
+	GLuint HighlightedInstancesSSBO = 0;
+	std::vector<int32> HighlightedInstances;
+	int32 HighlightedInstancesCount = 0;
 
 
 	std::shared_ptr<BravoStaticMeshAsset> Mesh = nullptr;

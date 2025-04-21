@@ -96,7 +96,7 @@ bool BravoGameInstance::Initialize_Internal()
 		planeMat->Load(materailLoadingParams);
 		planeMesh->SetMaterial(planeMat);
 	}
-
+	 
 	//{
 	//	TestActor = NewObject<BravoActor>("TestActor");
 	//	TestActor->SetLocation(glm::vec3(0.0f, 5.0f, 0.0f));
@@ -116,8 +116,8 @@ bool BravoGameInstance::Initialize_Internal()
 	//SpawnPointLights();
 	SpawnSpotLights();
 
-	SpawnSpheres();
-	//SpawnTestInstances();
+	//SpawnSpheres();
+	SpawnTestInstances();
 
 	return true;
 }
